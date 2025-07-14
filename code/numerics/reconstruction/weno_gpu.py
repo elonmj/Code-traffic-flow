@@ -297,14 +297,12 @@ def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params):
     N_physical = grid.N_physical
     n_ghost = grid.num_ghost_cells
     
-    # 0. Appliquer les conditions aux limites (utiliser la version CPU temporairement)
+    # 0. Appliquer les conditions aux limites sur GPU
     d_U_bc = cuda.device_array_like(d_U_in)
     d_U_bc[:] = d_U_in[:]
     
-    # Conversion temporaire pour les conditions aux limites
-    U_bc_cpu = d_U_bc.copy_to_host()
-    boundary_conditions.apply_boundary_conditions(U_bc_cpu, grid, params)
-    d_U_bc = cuda.to_device(U_bc_cpu)
+    # Utiliser la version GPU des conditions aux limites
+    boundary_conditions.apply_boundary_conditions_gpu(d_U_bc, grid, params)
     
     # 1. Conversion conservées → primitives (utiliser la version CPU temporairement)
     U_bc_cpu = d_U_bc.copy_to_host()
