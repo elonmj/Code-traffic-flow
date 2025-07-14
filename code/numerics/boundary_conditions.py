@@ -415,8 +415,8 @@ def apply_boundary_conditions_gpu(d_U, grid, params):
         grid: Grid1D object with boundary info
         params: ModelParameters with boundary condition settings
     """
-    n_ghost = grid.ghost_cells
-    n_phys = grid.N
+    n_ghost = grid.num_ghost_cells
+    n_phys = grid.N_physical
     
     # Encode boundary condition types
     bc_type_map = {'inflow': 0, 'outflow': 1, 'periodic': 2, 'wall': 3, 'wall_capped': 4}
