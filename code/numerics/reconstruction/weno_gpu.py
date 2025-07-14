@@ -213,11 +213,14 @@ def _create_weno_flux_kernel(params):
                     P_R[var] = d_P_right[var, j]
                 
                 # Conversion vers variables conservées pour le flux
-                U_L = _primitives_to_conserved_gpu_device(P_L, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
-                U_R = _primitives_to_conserved_gpu_device(P_R, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
+                U_L = cuda.local.array(4, dtype=float64)
+                U_R = cuda.local.array(4, dtype=float64)
+                _primitives_to_conserved_gpu_device(P_L, U_L, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
+                _primitives_to_conserved_gpu_device(P_R, U_R, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
                 
                 # Calcul du flux Central-Upwind (version device)
-                flux = _central_upwind_flux_gpu_device(U_L, U_R, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
+                flux = cuda.local.array(4, dtype=float64)
+                _central_upwind_flux_gpu_device(U_L, U_R, flux, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
                 
                 # Stockage du flux
                 for var in range(4):
@@ -227,7 +230,7 @@ def _create_weno_flux_kernel(params):
 
 
 @cuda.jit(device=True)
-def _primitives_to_conserved_gpu_device(P_single, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c):
+def _primitives_to_conserved_gpu_device(P_single, U_out, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c):
     """
     Version device de la conversion primitives → conservées pour un seul point.
     """
@@ -247,31 +250,24 @@ def _primitives_to_conserved_gpu_device(P_single, alpha, rho_jam, epsilon, K_m, 
     w_m = v_m + p_m
     w_c = v_c + p_c
     
-    U = cuda.local.array(4, dtype=float64)
-    U[0] = rho_m
-    U[1] = w_m
-    U[2] = rho_c  
-    U[3] = w_c
-    
-    return U
+    U_out[0] = rho_m
+    U_out[1] = w_m
+    U_out[2] = rho_c  
+    U_out[3] = w_c
 
 
 @cuda.jit(device=True)
-def _central_upwind_flux_gpu_device(U_L, U_R, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c):
+def _central_upwind_flux_gpu_device(U_L, U_R, flux_out, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c):
     """
     Version device du flux Central-Upwind pour un seul point d'interface.
     """
     # Cette fonction devrait appeler la version device du solveur de Riemann
     # Pour l'instant, utilisation simplifiée (à remplacer par la vraie implémentation)
     
-    flux = cuda.local.array(4, dtype=float64)
-    
     # Approximation simple : flux = 0.5 * (F_L + F_R) (Lax-Friedrichs)
     # À remplacer par la vraie implémentation Central-Upwind
     for i in range(4):
-        flux[i] = 0.5 * (U_L[i] + U_R[i])  # Placeholder
-    
-    return flux
+        flux_out[i] = 0.5 * (U_L[i] + U_R[i])  # Placeholder
 
 
 def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params):
@@ -380,11 +376,14 @@ def _compute_weno_fluxes_kernel(d_P_left, d_P_right, d_fluxes,
             P_R[3] = d_P_right[3, j]
             
             # Conversion primitives → conservées
-            U_L = _primitives_to_conserved_gpu_device(P_L, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
-            U_R = _primitives_to_conserved_gpu_device(P_R, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
+            U_L = cuda.local.array(4, dtype=float64)
+            U_R = cuda.local.array(4, dtype=float64)
+            _primitives_to_conserved_gpu_device(P_L, U_L, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
+            _primitives_to_conserved_gpu_device(P_R, U_R, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
             
             # Flux Central-Upwind (version device)
-            flux = _central_upwind_flux_gpu_device(U_L, U_R, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
+            flux = cuda.local.array(4, dtype=float64)
+            _central_upwind_flux_gpu_device(U_L, U_R, flux, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
             
             d_fluxes[0, j] = flux[0]
             d_fluxes[1, j] = flux[1] 
