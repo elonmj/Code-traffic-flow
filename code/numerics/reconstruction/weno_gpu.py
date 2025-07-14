@@ -1,5 +1,5 @@
 import numpy as np
-from numba import cuda
+from numba import cuda, float64
 import math
 from .converter import conserved_to_primitives_arr_gpu, primitives_to_conserved_arr_gpu
 from .converter import conserved_to_primitives_arr  # Import CPU version as fallback
@@ -204,9 +204,9 @@ def _create_weno_flux_kernel(params):
         if j >= num_ghost_cells - 1 and j < num_ghost_cells + N_physical:
             if j + 1 < N_total:
                 # Pour l'interface j+1/2, utiliser P_left[j+1] et P_right[j]
-                # Reconstruction gauche à l'interface j+1/2
-                P_L = cuda.local.array(4, dtype=cuda.float64)
-                P_R = cuda.local.array(4, dtype=cuda.float64)
+                # Reconstruction à l'interface j+1/2
+                P_L = cuda.local.array(4, dtype=float64)
+                P_R = cuda.local.array(4, dtype=float64)
                 
                 for var in range(4):
                     P_L[var] = d_P_left[var, j + 1]
@@ -247,7 +247,7 @@ def _primitives_to_conserved_gpu_device(P_single, alpha, rho_jam, epsilon, K_m, 
     w_m = v_m + p_m
     w_c = v_c + p_c
     
-    U = cuda.local.array(4, dtype=cuda.float64)
+    U = cuda.local.array(4, dtype=float64)
     U[0] = rho_m
     U[1] = w_m
     U[2] = rho_c  
@@ -264,7 +264,7 @@ def _central_upwind_flux_gpu_device(U_L, U_R, alpha, rho_jam, epsilon, K_m, gamm
     # Cette fonction devrait appeler la version device du solveur de Riemann
     # Pour l'instant, utilisation simplifiée (à remplacer par la vraie implémentation)
     
-    flux = cuda.local.array(4, dtype=cuda.float64)
+    flux = cuda.local.array(4, dtype=float64)
     
     # Approximation simple : flux = 0.5 * (F_L + F_R) (Lax-Friedrichs)
     # À remplacer par la vraie implémentation Central-Upwind
@@ -366,8 +366,8 @@ def _compute_weno_fluxes_kernel(d_P_left, d_P_right, d_fluxes,
         
         if j + 1 < d_P_left.shape[1]:
             # Reconstruction à l'interface j+1/2
-            P_L = cuda.local.array(4, dtype=cuda.float64)
-            P_R = cuda.local.array(4, dtype=cuda.float64)
+            P_L = cuda.local.array(4, dtype=float64)
+            P_R = cuda.local.array(4, dtype=float64)
             
             P_L[0] = d_P_left[0, j+1]
             P_L[1] = d_P_left[1, j+1] 
