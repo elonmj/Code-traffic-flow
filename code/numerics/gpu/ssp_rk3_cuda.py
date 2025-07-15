@@ -143,7 +143,6 @@ class SSP_RK3_GPU:
         ssp_rk3_stage1_kernel[self.blocks_per_grid, self.threads_per_block](
             u_n_device, self.u_temp1_device, dt, self.flux_div_device, self.N
         )
-        cuda.syncthreads()  # Synchronisation explicite
         
         # ========== ÉTAPE 2 : u^(2) = 3/4 * u^n + 1/4 * (u^(1) + dt * L(u^(1))) ==========
         
@@ -154,7 +153,6 @@ class SSP_RK3_GPU:
         ssp_rk3_stage2_kernel[self.blocks_per_grid, self.threads_per_block](
             u_n_device, self.u_temp1_device, self.u_temp2_device, dt, self.flux_div_device, self.N
         )
-        cuda.syncthreads()  # Synchronisation explicite
         
         # ========== ÉTAPE 3 : u^(n+1) = 1/3 * u^n + 2/3 * (u^(2) + dt * L(u^(2))) ==========
         
@@ -165,7 +163,6 @@ class SSP_RK3_GPU:
         ssp_rk3_stage3_kernel[self.blocks_per_grid, self.threads_per_block](
             u_n_device, self.u_temp2_device, u_np1_device, dt, self.flux_div_device, self.N  
         )
-        cuda.syncthreads()  # Synchronisation finale
         
     def cleanup(self):
         """
