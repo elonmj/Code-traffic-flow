@@ -1,0 +1,87 @@
+# Configuration simple pour diagnostiquer CPU vs GPU
+# Test avec schémas numériques de base (pas WENO5/SSP-RK3)
+
+# Paramètres généraux
+model_type: "ARZ"
+dimension: 1
+num_classes: 2
+
+# Configuration spatiale simplifiée
+spatial:
+  N: 100  # Grille plus petite pour des calculs plus rapides
+  L: 500.0  # Domaine réduit [m] 
+  xmin: 0.0
+  xmax: 500.0
+  ghost_cells: 2  # Réduit pour schémas simples
+  boundary_conditions: "periodic"
+
+# Paramètres de grille (requis par le code)
+N: 100
+xmin: 0.0
+xmax: 500.0
+
+# Configuration temporelle simplifiée
+temporal:
+  T_final: 5.0  # Temps réduit [s]
+  t_final_sec: 5.0
+  output_dt_sec: 0.5  # Sortie plus fréquente pour diagnostic
+  CFL: 0.3  # CFL conservateur
+  time_scheme: "euler"  # Schéma temporel simple (pas SSP-RK3)
+
+# Paramètres compatibilité
+cfl_number: 0.3
+t_final: 5.0
+output_dt: 0.5
+
+# Configuration numérique SIMPLE
+numerical:
+  spatial_scheme: "first_order"  # PAS WENO5, schéma simple
+  time_scheme: "euler"           # PAS SSP-RK3, Euler explicite
+  boundary_treatment: "periodic"
+  
+# Conditions initiales simples (problème de Riemann basique)
+initial_conditions:
+  type: riemann
+  # États simples pour test [rho_m, w_m, rho_c, w_c]
+  U_L: [0.02, 20.0, 0.01, 18.0]  # 20 motos/km, 10 voitures/km à gauche
+  U_R: [0.06, 10.0, 0.03, 8.0]   # 60 motos/km, 30 voitures/km à droite
+  split_pos: 250.0  # Discontinuité au milieu
+
+# Paramètres du modèle ARZ simplifiés
+model_parameters:
+  # Motos (classe m)
+  V_max_m: 25.0  # Vitesse max motos [m/s]
+  rho_max_m: 0.3  # Densité max motos [veh/m]
+  tau_m: 1.0     # Temps de relaxation motos [s]
+  gamma_m: 1.0   # Paramètre de pression motos
+  
+  # Voitures (classe c)
+  V_max_c: 20.0  # Vitesse max voitures [m/s]
+  rho_max_c: 0.15 # Densité max voitures [veh/m]
+  tau_c: 1.5     # Temps de relaxation voitures [s]
+  gamma_c: 1.0   # Paramètre de pression voitures
+  
+  # Interaction gap-filling (paramètre clé)
+  alpha: 0.7     # Coefficient de perception moto des voitures
+
+# Qualité de route uniforme (pas de variation spatiale)
+road_quality_definition: 3  # Route de qualité moyenne uniforme
+
+# Boundary conditions simples
+boundary_conditions:
+  left:
+    type: periodic
+  right:
+    type: periodic
+
+# Configuration d'export
+output:
+  format: "npz"
+  variables: ["rho_m", "w_m", "rho_c", "w_c", "v_m", "v_c"]
+  save_intermediate: true
+
+# Configuration GPU (pour test comparatif)
+gpu:
+  enabled: true
+  memory_pool: true
+  profile: false

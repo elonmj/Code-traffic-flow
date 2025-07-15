@@ -1,0 +1,40 @@
+{
+  "validation_date": "2025-07-15T14:13:35.289687",
+  "phase": "4.3",
+  "objective": "Validation WENO5 + SSP-RK3 GPU",
+  "methodology": "Comparaison CPU vs GPU avec m\u00e9triques de pr\u00e9cision",
+  "files_analyzed": {
+    "cpu": "cpu_20250715_120153.npz",
+    "gpu": "gpu_20250715_120205.npz"
+  },
+  "accuracy": {
+    "max_abs_error": 7.851339848026887,
+    "mean_abs_error": 0.6978919141050113,
+    "max_rel_error": 74274872722.02133,
+    "mean_rel_error": 212834221.23887452,
+    "is_close": false
+  },
+  "validation_status": "FAIL",
+  "performance": {
+    "cpu_time": 43.36052989959717,
+    "gpu_time": 12.17786693572998,
+    "speedup": 3.5606013867976296
+  },
+  "simulation_metadata": {
+    "timestamp": "20250715_120206",
+    "phase": "4.3",
+    "objective": "Validation WENO5 + SSP-RK3 GPU vs CPU",
+    "approach": "Direct main_simulation.py execution",
+    "spatial_scheme": "weno5",
+    "time_scheme": "ssprk3",
+    "cpu_success": true,
+    "gpu_success": true,
+    "cpu_duration": 43.36052989959717,
+    "gpu_duration": 12.17786693572998,
+    "speedup": 3.5606013867976296,
+    "spatial_order": 5,
+    "temporal_order": 3,
+    "scenario_file": "scenario_weno5_ssprk3_gpu_validation.yml"
+  }
+}
+

@@ -441,7 +441,8 @@ def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelPara
         # Step 2: Solve Hyperbolic part for full dt
         # Dynamic solver selection based on spatial_scheme and time_scheme
         if params.spatial_scheme == 'first_order' and params.time_scheme == 'euler':
-            U_ss = solve_hyperbolic_step_cpu(U_star, dt, grid, params)
+            # Use SSP-RK3 as fallback for simple first-order Euler
+            U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params)
         elif params.spatial_scheme == 'first_order' and params.time_scheme == 'ssprk3':
             # Phase 4.2: First-order spatial + SSP-RK3 temporal (CPU et GPU)
             if params.device == 'gpu':
@@ -449,7 +450,8 @@ def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelPara
             else:
                 U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params)
         elif params.spatial_scheme == 'weno5' and params.time_scheme == 'euler':
-            U_ss = solve_hyperbolic_step_weno_cpu(U_star, dt, grid, params)
+            # Use SSP-RK3 as fallback for WENO5 + Euler
+            U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params)
         elif params.spatial_scheme == 'weno5' and params.time_scheme == 'ssprk3':
             U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params)
         else:

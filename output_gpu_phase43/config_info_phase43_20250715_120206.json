@@ -1,0 +1,19 @@
+{
+  "scenario": "scenario_weno5_ssprk3_gpu_validation.yml",
+  "execution_method": "main_simulation.py with command line args",
+  "phase": "4.3",
+  "focus": "WENO5 + SSP-RK3 integration validation",
+  "orders": {
+    "spatial": 5,
+    "temporal": 3
+  },
+  "expected_benefits": [
+    "High spatial accuracy",
+    "Strong stability preserving",
+    "GPU acceleration"
+  ],
+  "output_directories": {
+    "cpu": "results_cpu_weno5_ssprk3",
+    "gpu": "results_gpu_weno5_ssprk3"
+  }
+}
