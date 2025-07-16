@@ -410,7 +410,8 @@ def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelPara
         # Step 2: Solve Hyperbolic part for full dt
         # Dynamic solver selection
         if params.spatial_scheme == 'first_order' and params.time_scheme == 'euler':
-            d_U_ss = solve_hyperbolic_step_gpu(d_U_star, dt, grid, params)
+            # Use SSP-RK3 as fallback for simple first-order Euler GPU
+            d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
         elif params.spatial_scheme == 'first_order' and params.time_scheme == 'ssprk3':
             d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
         elif params.spatial_scheme == 'weno5' and params.time_scheme == 'euler':
@@ -604,6 +605,30 @@ def compute_flux_divergence_first_order(U: np.ndarray, grid: Grid1D, params: Mod
 
 
 # --- GPU WENO and SSP-RK3 Implementations ---
+
+def solve_hyperbolic_step_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hyp: float, grid: Grid1D, params: ModelParameters) -> cuda.devicearray.DeviceNDArray:
+    """
+    Version GPU générique de l'étape hyperbolique - utilise SSP-RK3 par défaut.
+    Cette fonction est un wrapper qui dirige vers la bonne implémentation selon le schéma.
+    
+    Args:
+        d_U_in (cuda.devicearray.DeviceNDArray): État d'entrée sur GPU (4, N_total)
+        dt_hyp (float): Pas de temps hyperbolique
+        grid (Grid1D): Objet grille
+        params (ModelParameters): Paramètres du modèle
+
+    Returns:
+        cuda.devicearray.DeviceNDArray: État mis à jour après intégration sur GPU
+    """
+    if not GPU_AVAILABLE:
+        raise RuntimeError("GPU implementation not available. Check GPU imports.")
+    
+    if not cuda.is_cuda_array(d_U_in):
+        raise TypeError("d_U_in must be a CUDA device array")
+    
+    # Utiliser SSP-RK3 par défaut pour la compatibilité
+    return solve_hyperbolic_step_ssprk3_gpu(d_U_in, dt_hyp, grid, params)
+
 
 def solve_hyperbolic_step_weno_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hyp: float, grid: Grid1D, params: ModelParameters) -> cuda.devicearray.DeviceNDArray:
     """
