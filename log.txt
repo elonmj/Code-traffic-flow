@@ -193,3 +193,13 @@ Response ended prematurely
 2025-10-01 21:32:35,009 - kaggle_manager_github - INFO - 📋 Retrieving execution logs...
 2025-10-01 21:32:35,019 - kaggle_manager_github - INFO - 📥 Downloading kernel output for: elonmj/arz-validation-section_7_3_analytical-wtkd
 2025-10-01 21:32:35,574 - kaggle_manager_github - ERROR - ❌ Error retrieving logs: 403 Client Error: Forbidden for url: https://www.kaggle.com/api/v1/kernels/output?username=elonmj&kernelslug=arz-validation-section_7_3_analytical-wtkd
+2025-10-01 22:04:42,488 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-01 22:05:00,169 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-01 22:05:00,459 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-01 22:05:00,679 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-01 22:05:00,680 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-01 22:05:00,686 - kaggle_manager_github - INFO -    M validation_kaggle_manager.py (Modified (unstaged))
+2025-10-01 22:05:00,686 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-01 22:05:00,939 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-01 22:05:04,619 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-01 22:05:04,619 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
