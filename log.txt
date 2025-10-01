@@ -175,3 +175,21 @@ Response ended prematurely
 
 2025-10-01 21:31:27,333 - kaggle_manager_github - ERROR - [ERROR] STDERR: 
 2025-10-01 21:32:01,687 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-01 21:32:15,387 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-01 21:32:20,716 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-01 21:32:21,566 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-01 21:32:21,699 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-01 21:32:21,699 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-01 21:32:21,699 - kaggle_manager_github - INFO -    M validation_kaggle_manager.py (Modified (unstaged))
+2025-10-01 21:32:21,699 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-01 21:32:22,099 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-01 21:32:23,041 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-01 21:32:23,042 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-01 21:32:27,968 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-01 21:32:34,321 - kaggle_manager_github - INFO - [SUCCESS] Kernel uploaded successfully: arz-validation-section_7_3_analytical-wtkd
+2025-10-01 21:32:34,321 - kaggle_manager_github - INFO - 🔍 Enhanced monitoring started for: elonmj/arz-validation-section_7_3_analytical-wtkd
+2025-10-01 21:32:34,321 - kaggle_manager_github - INFO - ⏱️ Timeout: 4000s, Adaptive intervals: 10s → 120s
+2025-10-01 21:32:34,999 - kaggle_manager_github - ERROR - ❌ Error checking status: 403 Client Error: Forbidden for url: https://www.kaggle.com/api/v1/kernels/status?username=elonmj&kernelslug=arz-validation-section_7_3_analytical-wtkd
+2025-10-01 21:32:35,009 - kaggle_manager_github - INFO - 📋 Retrieving execution logs...
+2025-10-01 21:32:35,019 - kaggle_manager_github - INFO - 📥 Downloading kernel output for: elonmj/arz-validation-section_7_3_analytical-wtkd
+2025-10-01 21:32:35,574 - kaggle_manager_github - ERROR - ❌ Error retrieving logs: 403 Client Error: Forbidden for url: https://www.kaggle.com/api/v1/kernels/output?username=elonmj&kernelslug=arz-validation-section_7_3_analytical-wtkd
