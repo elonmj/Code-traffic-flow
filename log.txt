@@ -91,3 +91,13 @@
 2025-10-01 20:58:03,592 - kaggle_manager_github - INFO -   Committing changes...
 2025-10-01 20:58:03,864 - kaggle_manager_github - INFO -   Changes committed successfully
 2025-10-01 20:58:03,865 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-01 20:58:09,006 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-01 20:58:12,154 - kaggle_manager_github - ERROR - ❌ Kernel upload failed: 
+2025-10-01 20:58:12,154 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-01 20:58:12,274 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-01 20:58:12,342 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-01 20:58:12,342 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-01 20:58:12,342 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-01 20:58:12,406 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-01 20:58:12,537 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-01 20:58:12,554 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
