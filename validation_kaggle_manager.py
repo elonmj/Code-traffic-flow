@@ -505,26 +505,15 @@ print("[FINISH] Validation execution complete.")
             with open(script_dir / "validation_kernel.py", "w", encoding='utf-8') as f:
                 f.write(script_content)
             
-            # Upload using Kaggle API (proven method)
-            result = subprocess.run([
-                "kaggle", "kernels", "push", "-p", str(script_dir)
-            ], capture_output=True, text=True, cwd=script_dir.parent)
+            # Upload using Kaggle API (exact same pattern as kaggle_manager_github.py)
+            print(f"[UPLOAD] Uploading validation kernel...")
+            self.api.kernels_push(str(script_dir))
             
-            if result.returncode == 0:
-                self.logger.info(f"[SUCCESS] Kernel uploaded successfully: {kernel_name}")
-                return f"{self.username}/{kernel_name}"
-            else:
-                # Log AND print errors for debugging
-                error_msg = f"[ERROR] Kernel upload failed"
-                self.logger.error(error_msg)
-                print(error_msg)
-                print(f"[ERROR] Return code: {result.returncode}")
-                print(f"[ERROR] STDOUT: {result.stdout}")
-                print(f"[ERROR] STDERR: {result.stderr}")
-                self.logger.error(f"[ERROR] Return code: {result.returncode}")
-                self.logger.error(f"[ERROR] STDOUT: {result.stdout}")
-                self.logger.error(f"[ERROR] STDERR: {result.stderr}")
-                return None
+            kernel_slug = f"{self.username}/{kernel_name}"
+            self.logger.info(f"[SUCCESS] Validation kernel uploaded: {kernel_slug}")
+            print(f"[SUCCESS] Validation kernel uploaded: {kernel_slug}")
+            
+            return kernel_slug
                 
         except Exception as e:
             error_msg = f"[CRITICAL] Kernel creation failed: {e}"
@@ -557,6 +546,12 @@ print("[FINISH] Validation execution complete.")
         
         print(f"[MONITOR] Enhanced monitoring started for: {kernel_slug}")
         print(f"[TIMEOUT] Timeout: {timeout}s, Adaptive intervals: {base_interval}s → {max_interval}s")
+        
+        # Add initial delay to allow Kaggle API to process the kernel
+        initial_delay = 120  # Wait 2 minutes before first check
+        print(f"[DELAY] Waiting {initial_delay}s for Kaggle to process kernel...")
+        print(f"[INFO] Manual check available at: https://www.kaggle.com/code/{kernel_slug}")
+        time.sleep(initial_delay)
         
         # Keywords for tracking (based on working script)
         success_keywords = [
