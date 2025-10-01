@@ -1,9 +1,22 @@
 #!/usr/bin/env python3
 """
-Validation Kaggle Manager - Adaptation du KaggleManagerGitHub pour Validation ARZ-RL
+Validation Kaggle Man    from validation_utils import RealARZValidationTest, run_real_simulation
+    from run_all_validation import ValidationOrchestrator
+    print("[SUCCESS] Validation framework imported successfully")
+except ImportError as e:
+    print(f"[WARN] Validation framework import: {e}")- Adaptation du KaggleManagerGitHub pour Validation ARZ-RL
 
 Ce module adapte le kaggle_manager_github.py qui a fonctionné pour créer un système
-d'orchestration des tests de validation ARZ-RL sur GPU Kaggle.
+d'orchestration des te            if result.returncode == 0:
+                self.logger.info(f"[SUCCESS] Kernel uploaded successfully: {kernel_name}")
+                return f"{self.username}/{kernel_name}"
+            else:
+                self.logger.error(f"[ERROR] Kernel upload failed: {result.stderr}")
+                return None
+                
+        except Exception as e:
+            self.logger.error(f"[CRITICAL] Kernel creation failed: {e}")
+            return Noneidation ARZ-RL sur GPU Kaggle.
 
 Base sur l'architecture éprouvée :
 - Git automation (ensure up-to-date before Kaggle)
@@ -40,9 +53,9 @@ try:
     sys.modules['config'] = config_mock
     
     from kaggle_manager_github import KaggleManagerGitHub
-    print("✅ KaggleManagerGitHub imported successfully (with config bypass)")
+    print("[SUCCESS] KaggleManagerGitHub imported successfully (with config bypass)")
 except ImportError as e:
-    print(f"❌ Import error: {e}")
+    print(f"[ERROR] Import error: {e}")
     sys.exit(1)
 
 # Import validation framework existant
@@ -50,9 +63,9 @@ try:
     sys.path.insert(0, str(Path(__file__).parent / "validation_ch7" / "scripts"))
     from validation_utils import RealARZValidationTest, run_real_simulation
     from run_all_validation import ValidationOrchestrator
-    print("✅ Validation framework imported successfully")
+    print("[SUCCESS] Validation framework imported successfully")
 except ImportError as e:
-    print(f"⚠️ Validation framework import: {e}")
+    print(f"[ERROR] Validation framework import: {e}")
 
 class ValidationKaggleManager(KaggleManagerGitHub):
     """
@@ -71,7 +84,7 @@ class ValidationKaggleManager(KaggleManagerGitHub):
         # Load Kaggle credentials
         kaggle_creds_path = Path("kaggle.json")
         if not kaggle_creds_path.exists():
-            raise FileNotFoundError("❌ kaggle.json credentials not found")
+            raise FileNotFoundError("[ERROR] kaggle.json credentials not found")
             
         with open(kaggle_creds_path, 'r') as f:
             creds = json.load(f)
@@ -132,8 +145,8 @@ class ValidationKaggleManager(KaggleManagerGitHub):
             }
         ]
         
-        print(f"✅ ValidationKaggleManager initialized for user: {creds['username']}")
-        print(f"📋 Validation sections configured: {len(self.validation_sections)}")
+        print(f"[SUCCESS] ValidationKaggleManager initialized for user: {creds['username']}")
+        print(f"[CONFIG] Validation sections configured: {len(self.validation_sections)}")
         
     def create_validation_kernel_script(self, section: Dict[str, Any]) -> str:
         """
@@ -154,50 +167,50 @@ import torch
 from pathlib import Path
 from datetime import datetime
 
-print("🚀 Starting ARZ-RL Validation: {section['name']}")
+print("[START] Starting ARZ-RL Validation: {section['name']}")
 print("=" * 60)
 
 # Environment info
-print("🔧 Environment Information:")
+print("[ENV] Environment Information:")
 print(f"Python version: {{sys.version}}")
 print(f"CUDA available: {{torch.cuda.is_available()}}")
 if torch.cuda.is_available():
     print(f"CUDA device: {{torch.cuda.get_device_name(0)}}")
     print(f"CUDA version: {{torch.version.cuda}}")
 else:
-    print("⚠️ CUDA not available - will attempt CPU fallback")
+    print("[WARN] CUDA not available - will attempt CPU fallback")
 
 # Clone repository avec Git automation pattern éprouvé
 def setup_repository():
     """Setup repository using proven GitHub workflow."""
-    print("\\n📥 Setting up Code-traffic-flow repository...")
+    print("\\n[SETUP] Setting up Code-traffic-flow repository...")
     
     repo_url = "{self.repo_url}"
     branch = "{self.branch}"
     
     # Clone avec pattern éprouvé
     if os.path.exists("Code-traffic-flow"):
-        print("🧹 Cleaning existing repository...")
+        print("[CLEAN] Cleaning existing repository...")
         import shutil
         shutil.rmtree("Code-traffic-flow")
     
-    print(f"📡 Cloning {{repo_url}} (branch: {{branch}})...")
+    print(f"[CLONE] Cloning {{repo_url}} (branch: {{branch}})...")
     result = subprocess.run([
         "git", "clone", "--branch", branch, "--single-branch", 
         "--depth", "1", repo_url
     ], capture_output=True, text=True)
     
     if result.returncode != 0:
-        print(f"❌ Git clone failed: {{result.stderr}}")
+        print(f"[ERROR] Git clone failed: {{result.stderr}}")
         return False
     
-    print("✅ Repository cloned successfully")
+    print("[SUCCESS] Repository cloned successfully")
     return True
 
 # Setup dependencies avec pattern éprouvé  
 def install_dependencies():
     """Install required dependencies for ARZ-RL validation."""
-    print("\\n📦 Installing dependencies...")
+    print("\\n[DEPS] Installing dependencies...")
     
     dependencies = [
         "PyYAML",
@@ -212,13 +225,13 @@ def install_dependencies():
         result = subprocess.run([sys.executable, "-m", "pip", "install", "-q", dep], 
                               capture_output=True, text=True)
         if result.returncode != 0:
-            print(f"⚠️ Warning: {{dep}} installation issues: {{result.stderr}}")
+            print(f"[WARN] Warning: {{dep}} installation issues: {{result.stderr}}")
     
-    print("✅ Dependencies installed")
+    print("[SUCCESS] Dependencies installed")
 
 # Setup repository
 if not setup_repository():
-    print("💥 Repository setup failed - aborting")
+    print("[CRITICAL] Repository setup failed - aborting")
     sys.exit(1)
 
 # Change to repo directory
@@ -232,26 +245,26 @@ install_dependencies()
 try:
     from validation_ch7.scripts.validation_utils import RealARZValidationTest, run_real_simulation
     from validation_ch7.scripts.{section["script"].replace('.py', '')} import *
-    print("✅ Validation framework imported successfully")
+    print("[SUCCESS] Validation framework imported successfully")
 except ImportError as e:
-    print(f"❌ Import error: {{e}}")
+    print(f"[ERROR] Import error: {{e}}")
     print("Attempting fallback import strategy...")
     sys.path.append('validation_ch7/scripts')
     try:
         import validation_utils
         from {section["script"].replace('.py', '')} import *
-        print("✅ Fallback import successful")
+        print("[SUCCESS] Fallback import successful")
     except ImportError as e2:
-        print(f"💥 Critical import failure: {{e2}}")
+        print(f"[CRITICAL] Critical import failure: {{e2}}")
         sys.exit(1)
 
 # Force GPU device if available
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-print(f"🎯 Using device: {{device}}")
+print(f"[DEVICE] Using device: {{device}}")
 
 # SECTION-SPECIFIC VALIDATION
 print("\\n" + "=" * 60)
-print(f"🧪 RUNNING VALIDATION: {section['name'].upper()}")
+print(f"[TEST] RUNNING VALIDATION: {section['name'].upper()}")
 print("=" * 60)
 
 # Track validation results
@@ -269,7 +282,7 @@ validation_results = {{
 try:
     # Execute section-specific validation
     if "{section['name']}" == "section_7_3_analytical":
-        print("🔬 Running analytical validation tests...")
+        print("[ANALYTICAL] Running analytical validation tests...")
         
         # Create test instance with GPU device
         analytical_tests = AnalyticalValidationTests(output_dir="results/section_7_3")
@@ -288,7 +301,7 @@ try:
         validation_results["tests_failed"] = [k for k, v in test_results.items() if v.get("status") != "SUCCESS"]
         
     elif "{section['name']}" == "section_7_4_calibration":
-        print("📊 Running calibration validation tests...")
+        print("[CALIBRATION] Running calibration validation tests...")
         
         calibration_tests = CalibrationValidationTests(output_dir="results/section_7_4")
         test_results = calibration_tests.run_all_tests(device=device)
@@ -297,7 +310,7 @@ try:
         validation_results["tests_failed"] = [k for k, v in test_results.items() if v.get("status") != "SUCCESS"]
         
     elif "{section['name']}" == "section_7_5_digital_twin":
-        print("🔄 Running digital twin validation tests...")
+        print("[DIGITAL_TWIN] Running digital twin validation tests...")
         
         digital_twin_tests = DigitalTwinValidationTests(output_dir="results/section_7_5")
         test_results = digital_twin_tests.run_all_tests(device=device)
@@ -306,7 +319,7 @@ try:
         validation_results["tests_failed"] = [k for k, v in test_results.items() if v.get("status") != "SUCCESS"]
         
     elif "{section['name']}" == "section_7_6_rl_performance":
-        print("🤖 Running RL performance validation tests...")
+        print("[RL_PERFORMANCE] Running RL performance validation tests...")
         
         rl_tests = RLPerformanceValidationTests(output_dir="results/section_7_6")
         test_results = rl_tests.run_all_tests(device=device)
@@ -315,7 +328,7 @@ try:
         validation_results["tests_failed"] = [k for k, v in test_results.items() if v.get("status") != "SUCCESS"]
         
     elif "{section['name']}" == "section_7_7_robustness":
-        print("💪 Running robustness validation tests...")
+        print("[ROBUSTNESS] Running robustness validation tests...")
         
         robustness_tests = RobustnessValidationTests(output_dir="results/section_7_7")
         test_results = robustness_tests.run_all_tests(device=device)
@@ -339,16 +352,16 @@ try:
     
     # TRACKING_SUCCESS marker pour monitoring éprouvé
     if validation_results["summary"]["all_tests_passed"]:
-        print("\\n🎉 TRACKING_SUCCESS: All validation tests passed!")
-        print(f"✅ {section['name']} - ALL {{passed_tests}} TESTS PASSED")
+        print("\\n[SUCCESS] TRACKING_SUCCESS: All validation tests passed!")
+        print(f"[PASS] {section['name']} - ALL {{passed_tests}} TESTS PASSED")
         validation_results["overall_status"] = "SUCCESS"
     else:
-        print(f"\\n⚠️ TRACKING_PARTIAL: {{passed_tests}}/{{total_tests}} tests passed")
-        print(f"❌ Failed tests: {{validation_results['tests_failed']}}")
+        print(f"\\n[PARTIAL] TRACKING_PARTIAL: {{passed_tests}}/{{total_tests}} tests passed")
+        print(f"[FAIL] Failed tests: {{validation_results['tests_failed']}}")
         validation_results["overall_status"] = "PARTIAL"
         
 except Exception as e:
-    print(f"💥 TRACKING_ERROR: Validation failed with exception: {{e}}")
+    print(f"[ERROR] TRACKING_ERROR: Validation failed with exception: {{e}}")
     validation_results["overall_status"] = "ERROR"
     validation_results["error"] = str(e)
 
@@ -374,11 +387,11 @@ session_summary = {{
 with open("session_summary.json", "w") as f:
     json.dump(session_summary, f, indent=2)
 
-print("\\n💾 Session summary saved to session_summary.json")
+print("\\n[SAVE] Session summary saved to session_summary.json")
 
 # Final status report
 print("\\n" + "=" * 60)
-print("📋 FINAL VALIDATION REPORT")
+print("[REPORT] FINAL VALIDATION REPORT")
 print("=" * 60)
 print(f"Section: {section['name']}")
 print(f"Revendications: {', '.join(section['revendications'])}")
@@ -389,16 +402,16 @@ print(f"Tests failed: {{validation_results['summary']['failed_tests']}}")
 print(f"Success rate: {{validation_results['summary']['success_rate']:.1%}}")
 
 if validation_results["overall_status"] == "SUCCESS":
-    print("\\n🎉 VALIDATION COMPLETE - ALL TESTS PASSED!")
-    print(f"✅ Revendications {', '.join(section['revendications'])} VALIDATED")
+    print("\\n[COMPLETE] VALIDATION COMPLETE - ALL TESTS PASSED!")
+    print(f"[VALIDATED] Revendications {', '.join(section['revendications'])} VALIDATED")
 elif validation_results["overall_status"] == "PARTIAL":
-    print("\\n⚠️ VALIDATION PARTIAL - SOME TESTS FAILED")
-    print(f"❌ Failed: {{validation_results['tests_failed']}}")
+    print("\\n[PARTIAL] VALIDATION PARTIAL - SOME TESTS FAILED")
+    print(f"[FAILED] Failed: {{validation_results['tests_failed']}}")
 else:
-    print("\\n💥 VALIDATION ERROR - CRITICAL FAILURE")
+    print("\\n[CRITICAL] VALIDATION ERROR - CRITICAL FAILURE")
 
 print(f"\\nEstimated runtime: {section['estimated_minutes']} minutes")
-print("🏁 Validation execution complete.")
+print("[FINISH] Validation execution complete.")
 '''
 
         return script_content
@@ -418,21 +431,21 @@ print("🏁 Validation execution complete.")
                 break
                 
         if not section:
-            self.logger.error(f"❌ Section not found: {section_name}")
+            self.logger.error(f"[ERROR] Section not found: {section_name}")
             return False, None
             
-        print(f"🚀 Running validation section: {section['name']}")
-        print(f"📋 Revendications: {', '.join(section['revendications'])}")
-        print(f"⏱️ Estimated runtime: {section['estimated_minutes']} minutes")
+        print(f"[START] Running validation section: {section['name']}")
+        print(f"[CONFIG] Revendications: {', '.join(section['revendications'])}")
+        print(f"[TIME] Estimated runtime: {section['estimated_minutes']} minutes")
         
         # STEP 1: Ensure Git is up to date (pattern éprouvé)
-        print("🔄 Step 1: Ensuring Git repository is up to date...")
+        print("[STEP1] Step 1: Ensuring Git repository is up to date...")
         if not self.ensure_git_up_to_date(self.branch):
-            print("❌ Git update failed")
+            print("[ERROR] Git update failed")
             return False, None
             
         # STEP 2: Create validation kernel  
-        print("📝 Step 2: Creating validation kernel...")
+        print("[STEP2] Step 2: Creating validation kernel...")
         kernel_script = self.create_validation_kernel_script(section)
         
         # Create unique kernel name
@@ -444,14 +457,14 @@ print("🏁 Validation execution complete.")
         kernel_slug = self._create_and_upload_validation_kernel(kernel_name, kernel_script)
         
         if not kernel_slug:
-            print("❌ Kernel upload failed")
+            print("[ERROR] Kernel upload failed")
             return False, None
             
-        print(f"✅ Kernel uploaded: {kernel_slug}")
-        print(f"🔗 URL: https://www.kaggle.com/code/{kernel_slug}")
+        print(f"[SUCCESS] Kernel uploaded: {kernel_slug}")
+        print(f"[URL] URL: https://www.kaggle.com/code/{kernel_slug}")
         
         # STEP 3: Monitor avec session_summary.json detection (pattern éprouvé)
-        print("👀 Step 3: Starting enhanced monitoring...")
+        print("[STEP3] Step 3: Starting enhanced monitoring...")
         success = self._monitor_kernel_with_session_detection(kernel_slug, timeout)
         
         return success, kernel_slug
@@ -496,10 +509,10 @@ print("🏁 Validation execution complete.")
             ], capture_output=True, text=True, cwd=script_dir.parent)
             
             if result.returncode == 0:
-                self.logger.info(f"✅ Kernel uploaded successfully: {kernel_name}")
+                self.logger.info(f"[SUCCESS] Kernel uploaded successfully: {kernel_name}")
                 return f"{self.username}/{kernel_name}"
             else:
-                self.logger.error(f"❌ Kernel upload failed: {result.stderr}")
+                self.logger.error(f" Kernel upload failed: {result.stderr}")
                 return None
                 
         except Exception as e:
@@ -518,7 +531,7 @@ print("🏁 Validation execution complete.")
         Returns comprehensive report on all revendications R1-R6.
         """
         
-        print("🚀 Starting Complete ARZ-RL Validation on Kaggle GPU")
+        print("[START] Starting Complete ARZ-RL Validation on Kaggle GPU")
         print("=" * 70)
         
         total_sections = len(self.validation_sections)
@@ -528,9 +541,9 @@ print("🏁 Validation execution complete.")
         validated_revendications = set()
         
         for i, section in enumerate(self.validation_sections):
-            print(f"\\n📋 Section {i+1}/{total_sections}: {section['name']}")
-            print(f"🎯 Revendications: {', '.join(section['revendications'])}")
-            print(f"⏱️ Estimated: {section['estimated_minutes']} minutes")
+            print(f"\\n[SECTION] Section {i+1}/{total_sections}: {section['name']}")
+            print(f"[TARGET] Revendications: {', '.join(section['revendications'])}")
+            print(f"[TIME] Estimated: {section['estimated_minutes']} minutes")
             print("-" * 50)
             
             all_revendications.update(section['revendications'])
@@ -550,7 +563,7 @@ print("🏁 Validation execution complete.")
                         'estimated_minutes': section['estimated_minutes']
                     })
                     validated_revendications.update(section['revendications'])
-                    print(f"✅ {section['name']} - SUCCESS")
+                    print(f"[SUCCESS] {section['name']} - SUCCESS")
                 else:
                     failed_sections.append({
                         'section': section['name'],
@@ -559,7 +572,7 @@ print("🏁 Validation execution complete.")
                         'kernel_slug': kernel_slug,
                         'error': 'Validation tests failed'
                     })
-                    print(f"❌ {section['name']} - FAILED")
+                    print(f"[FAILED] {section['name']} - FAILED")
                     
             except Exception as e:
                 failed_sections.append({
@@ -568,7 +581,7 @@ print("🏁 Validation execution complete.")
                     'status': 'ERROR',
                     'error': str(e)
                 })
-                print(f"💥 {section['name']} - ERROR: {e}")
+                print(f"[ERROR] {section['name']} - ERROR: {e}")
         
         # Generate final comprehensive report
         final_report = {
@@ -588,7 +601,7 @@ print("🏁 Validation execution complete.")
         
         # Print final report
         print("\\n" + "=" * 70)
-        print("🏁 COMPREHENSIVE VALIDATION REPORT")
+        print("[REPORT] COMPREHENSIVE VALIDATION REPORT")
         print("=" * 70)
         print(f"Total sections: {final_report['total_sections']}")
         print(f"Completed: {final_report['completed_sections']}")
@@ -596,23 +609,23 @@ print("🏁 Validation execution complete.")
         print(f"Success rate: {final_report['success_rate']:.1%}")
         print(f"Total estimated time: {final_report['total_estimated_minutes']} minutes")
         
-        print(f"\\n📋 REVENDICATIONS STATUS:")
+        print(f"\\n[STATUS] REVENDICATIONS STATUS:")
         print(f"Total revendications: {len(final_report['all_revendications'])}")
-        print(f"✅ Validated: {', '.join(final_report['validated_revendications'])}")
+        print(f"[SUCCESS] Validated: {', '.join(final_report['validated_revendications'])}")
         if final_report['pending_revendications']:
-            print(f"❌ Pending: {', '.join(final_report['pending_revendications'])}")
+            print(f"[PENDING] Pending: {', '.join(final_report['pending_revendications'])}")
         
         if final_report['all_validations_successful']:
-            print("\\n🎉 ALL VALIDATIONS SUCCESSFUL!")
-            print("✅ All 6 revendications (R1-R6) validated on Kaggle GPU")
+            print("\\n[COMPLETE] ALL VALIDATIONS SUCCESSFUL!")
+            print("[SUCCESS] All 6 revendications (R1-R6) validated on Kaggle GPU")
         else:
-            print("\\n⚠️ Some validations failed. Review failed sections.")
+            print("\\n[ERROR] Some validations failed. Review failed sections.")
             
         # Save comprehensive report
         with open("comprehensive_validation_report.json", "w") as f:
             json.dump(final_report, f, indent=2)
             
-        print(f"💾 Comprehensive report saved: comprehensive_validation_report.json")
+        print(f"[SAVE] Comprehensive report saved: comprehensive_validation_report.json")
         
         return final_report
 
@@ -626,7 +639,7 @@ def main():
         # Initialize validation manager
         manager = ValidationKaggleManager()
         
-        print(f"✅ Validation manager initialized")
+        print(f"[SUCCESS] Validation manager initialized")
         print(f"📋 Sections configured: {len(manager.validation_sections)}")
         
         # Show available sections
@@ -643,8 +656,8 @@ def main():
         choice = input("\\nSelect mode (1-3): ").strip()
         
         if choice == "1":
-            print("\\n🎯 Running complete validation (all revendications R1-R6)...")
-            print("⚠️ This will take several hours on Kaggle GPU")
+            print("\\n Running complete validation (all revendications R1-R6)...")
+            print("[ERROR] This will take several hours on Kaggle GPU")
             
             confirm = input("Continue? (y/N): ").strip().lower()
             if confirm != 'y':
@@ -658,7 +671,7 @@ def main():
                 print("\\n🎉 SUCCESS: All revendications validated!")
                 return 0
             else:
-                print("\\n⚠️ Some validations failed")
+                print("\\n[ERROR] Some validations failed")
                 return 1
                 
         elif choice == "2":
@@ -671,7 +684,7 @@ def main():
                 section_idx = int(section_choice) - 1
                 if 0 <= section_idx < len(manager.validation_sections):
                     section_name = manager.validation_sections[section_idx]['name']
-                    print(f"\\n🎯 Running section: {section_name}")
+                    print(f"\\n Running section: {section_name}")
                     
                     success, kernel_slug = manager.run_validation_section(section_name)
                     
@@ -679,20 +692,20 @@ def main():
                         print(f"\\n🎉 Section {section_name} completed successfully!")
                         return 0
                     else:
-                        print(f"\\n❌ Section {section_name} failed")
+                        print(f"\\n Section {section_name} failed")
                         return 1
                 else:
-                    print("❌ Invalid section number")
+                    print(" Invalid section number")
                     return 1
             except ValueError:
-                print("❌ Invalid input")
+                print(" Invalid input")
                 return 1
                 
         elif choice == "3":
             print("👋 Exiting")
             return 0
         else:
-            print("❌ Invalid choice")  
+            print(" Invalid choice")  
             return 1
             
     except Exception as e:
