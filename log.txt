@@ -203,3 +203,13 @@ Response ended prematurely
 2025-10-01 22:05:00,939 - kaggle_manager_github - INFO -   Committing changes...
 2025-10-01 22:05:04,619 - kaggle_manager_github - INFO -   Changes committed successfully
 2025-10-01 22:05:04,619 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-01 22:05:17,593 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-01 22:05:30,036 - kaggle_manager_github - INFO - [SUCCESS] Kernel uploaded successfully: arz-validation-section_7_3_analytical-tbog
+2025-10-01 22:05:36,749 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-01 22:05:37,042 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-01 22:05:37,189 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-01 22:05:37,189 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-01 22:05:37,189 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-01 22:05:37,421 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-01 22:05:37,764 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-01 22:05:37,769 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
