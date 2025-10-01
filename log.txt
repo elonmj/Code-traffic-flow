@@ -123,3 +123,18 @@
 2025-10-01 20:58:27,648 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
 2025-10-01 20:58:32,203 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
 2025-10-01 20:58:34,347 - kaggle_manager_github - ERROR - ❌ Kernel upload failed: 
+2025-10-01 21:18:22,205 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-01 21:18:34,124 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-01 21:18:34,290 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-01 21:18:34,374 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-01 21:18:34,374 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-01 21:18:34,374 - kaggle_manager_github - INFO -    M validation_kaggle_manager.py (Modified (unstaged))
+2025-10-01 21:18:34,374 - kaggle_manager_github - INFO -   ?? comprehensive_validation_report.json (Untracked)
+2025-10-01 21:18:34,374 - kaggle_manager_github - INFO -   ?? test_simple_kernel_upload.py (Untracked)
+2025-10-01 21:18:34,374 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-01 21:18:34,457 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-01 21:18:34,624 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-01 21:18:34,624 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-01 21:18:37,826 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-01 21:18:40,808 - kaggle_manager_github - ERROR -  Kernel upload failed: 
+2025-10-01 21:20:14,445 - kaggle_manager_github - INFO -   Authenticated with Kaggle API

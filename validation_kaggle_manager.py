@@ -512,11 +512,24 @@ print("[FINISH] Validation execution complete.")
                 self.logger.info(f"[SUCCESS] Kernel uploaded successfully: {kernel_name}")
                 return f"{self.username}/{kernel_name}"
             else:
-                self.logger.error(f" Kernel upload failed: {result.stderr}")
+                # Log AND print errors for debugging
+                error_msg = f"[ERROR] Kernel upload failed"
+                self.logger.error(error_msg)
+                print(error_msg)
+                print(f"[ERROR] Return code: {result.returncode}")
+                print(f"[ERROR] STDOUT: {result.stdout}")
+                print(f"[ERROR] STDERR: {result.stderr}")
+                self.logger.error(f"[ERROR] Return code: {result.returncode}")
+                self.logger.error(f"[ERROR] STDOUT: {result.stdout}")
+                self.logger.error(f"[ERROR] STDERR: {result.stderr}")
                 return None
                 
         except Exception as e:
-            self.logger.error(f"💥 Kernel creation failed: {e}")
+            error_msg = f"[CRITICAL] Kernel creation failed: {e}"
+            self.logger.error(error_msg)
+            print(error_msg)
+            import traceback
+            traceback.print_exc()
             return None
             
         finally:
@@ -640,15 +653,15 @@ def main():
         manager = ValidationKaggleManager()
         
         print(f"[SUCCESS] Validation manager initialized")
-        print(f"📋 Sections configured: {len(manager.validation_sections)}")
+        print(f"[CONFIG] Sections configured: {len(manager.validation_sections)}")
         
         # Show available sections
-        print("\\n📋 Available validation sections:")
+        print("\\n[SECTIONS] Available validation sections:")
         for i, section in enumerate(manager.validation_sections):
             print(f"  {i+1}. {section['name']} - {', '.join(section['revendications'])} ({section['estimated_minutes']}min)")
         
         # Ask user for mode
-        print("\\n🚀 Validation modes:")
+        print("\\n[MODES] Validation modes:")
         print("1. Run all sections (complete R1-R6 validation)")
         print("2. Run specific section")
         print("3. Exit")
@@ -656,26 +669,26 @@ def main():
         choice = input("\\nSelect mode (1-3): ").strip()
         
         if choice == "1":
-            print("\\n Running complete validation (all revendications R1-R6)...")
-            print("[ERROR] This will take several hours on Kaggle GPU")
+            print("\\n[FULL] Running complete validation (all revendications R1-R6)...")
+            print("[WARNING] This will take several hours on Kaggle GPU")
             
             confirm = input("Continue? (y/N): ").strip().lower()
             if confirm != 'y':
-                print("👋 Validation cancelled")
+                print("[CANCEL] Validation cancelled")
                 return 0
             
             # Run all validations
             report = manager.run_all_validation_sections()
             
             if report['all_validations_successful']:
-                print("\\n🎉 SUCCESS: All revendications validated!")
+                print("\\n[SUCCESS] SUCCESS: All revendications validated!")
                 return 0
             else:
                 print("\\n[ERROR] Some validations failed")
                 return 1
                 
         elif choice == "2":
-            print("\\n📋 Select section to run:")
+            print("\\n[SELECT] Select section to run:")
             for i, section in enumerate(manager.validation_sections):
                 print(f"  {i+1}. {section['name']}")
                 
@@ -684,32 +697,32 @@ def main():
                 section_idx = int(section_choice) - 1
                 if 0 <= section_idx < len(manager.validation_sections):
                     section_name = manager.validation_sections[section_idx]['name']
-                    print(f"\\n Running section: {section_name}")
+                    print(f"\\n[RUN] Running section: {section_name}")
                     
                     success, kernel_slug = manager.run_validation_section(section_name)
                     
                     if success:
-                        print(f"\\n🎉 Section {section_name} completed successfully!")
+                        print(f"\\n[SUCCESS] Section {section_name} completed successfully!")
                         return 0
                     else:
-                        print(f"\\n Section {section_name} failed")
+                        print(f"\\n[FAILED] Section {section_name} failed")
                         return 1
                 else:
-                    print(" Invalid section number")
+                    print("[ERROR] Invalid section number")
                     return 1
             except ValueError:
-                print(" Invalid input")
+                print("[ERROR] Invalid input")
                 return 1
                 
         elif choice == "3":
-            print("👋 Exiting")
+            print("[EXIT] Exiting")
             return 0
         else:
-            print(" Invalid choice")  
+            print("[ERROR] Invalid choice")
             return 1
             
     except Exception as e:
-        print(f"💥 Fatal error: {e}")
+        print(f"[FATAL] Fatal error: {e}")
         return 1
 
 if __name__ == "__main__":
