@@ -482,7 +482,7 @@ print("[FINISH] Validation execution complete.")
         script_dir.mkdir(parents=True, exist_ok=True)
         
         try:
-            # Create kernel metadata (adapted from proven method)
+            # Create kernel metadata (exact same pattern as kaggle_manager_github.py)
             # Use kernel_name as title to ensure slug resolution
             kernel_metadata = {
                 "id": f"{self.username}/{kernel_name}",
@@ -490,12 +490,15 @@ print("[FINISH] Validation execution complete.")
                 "code_file": "validation_kernel.py",
                 "language": "python",
                 "kernel_type": "script",
-                "is_private": True,
+                "is_private": False,  # CRITICAL: Public kernels like kaggle_manager_github.py
                 "enable_gpu": True,
+                "enable_tpu": False,  # Add missing field from reference
                 "enable_internet": True,
+                "keywords": ["arz-rl", "validation", "gpu", "traffic-flow"],  # Add keywords
                 "dataset_sources": [],
                 "competition_sources": [],
-                "kernel_sources": []
+                "kernel_sources": [],
+                "model_sources": []  # Add missing field from reference
             }
             
             # Write files

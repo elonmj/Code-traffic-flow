@@ -225,3 +225,16 @@ Response ended prematurely
 2025-10-01 22:05:57,985 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
 2025-10-01 22:06:08,662 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
 2025-10-01 22:10:56,614 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-01 22:16:59,501 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-01 22:16:59,502 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-01 22:16:59,693 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-01 22:16:59,820 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-01 22:16:59,820 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-01 22:16:59,821 - kaggle_manager_github - INFO -    M validation_kaggle_manager.py (Modified (unstaged))
+2025-10-01 22:16:59,822 - kaggle_manager_github - INFO -   ?? test_monitoring_system.py (Untracked)
+2025-10-01 22:16:59,822 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-01 22:16:59,958 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-01 22:17:00,337 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-01 22:17:00,337 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-01 22:17:07,440 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-01 22:17:09,635 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-section_7_3_analytical-ypif
