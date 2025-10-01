@@ -1,0 +1,93 @@
+# Configuration Test Stable pour Couplage Réseau
+# ===============================================
+
+# Paramètres temporels conservateurs
+temporal:
+  T_final: 50.0                 # Durée réduite (50s)
+  t_final_sec: 50.0            
+  dt: 0.001                     # Pas de temps très petit (1ms)
+  output_dt_sec: 5.0            # Sauvegarde fréquente
+
+# Paramètres spatiaux
+spatial:
+  N: 200                        # Moins de points pour simplicité
+  xmin: 0.0                     
+  xmax: 1000.0                  # Domaine plus petit
+  N_points: 100                 # Points par segment
+  L: 500.0                      # Segments plus courts
+
+# Conditions initiales très douces (format: [rho_m, w_m, rho_c, w_c])
+initial_conditions:
+  segment_1:
+    type: "uniform"
+    values: [0.005, 0.0, 0.01, 0.0]  # Densités très faibles
+  segment_2:
+    type: "uniform" 
+    values: [0.005, 0.0, 0.01, 0.0]
+
+# Configuration réseau simple
+network:
+  enabled: true
+  
+  # Deux segments courts
+  segments:
+    - id: "segment_1"
+      length: 500.0
+      start_node: "node_A"
+      end_node: "node_B"
+      capacity: 1000.0            # Capacité réduite
+      
+    - id: "segment_2"
+      length: 500.0
+      start_node: "node_B"
+      end_node: "node_C"
+      capacity: 1000.0
+
+  # Nœuds simplifiés
+  nodes:
+    - id: "node_A"
+      type: "boundary"            
+      position: 0.0
+      inflow_rate: 100.0          # Débit très faible
+      
+    - id: "node_B"
+      type: "intersection"        
+      position: 500.0
+      traffic_light:
+        enabled: false            # Pas de feux au début
+        
+    - id: "node_C"
+      type: "boundary"            
+      position: 1000.0
+      outflow_capacity: 900.0     
+
+# Paramètres physiques conservateurs
+physics:
+  # Motos
+  rho_max_m: 0.5               # Densité max réduite
+  V_max_m: 10.0                # Vitesse max réduite (36 km/h)
+  tau_m: 1.0                   # Relaxation plus lente
+  
+  # Voitures
+  rho_max_c: 0.1               
+  V_max_c: 8.0                 # Vitesse max réduite (29 km/h)
+  tau_c: 2.0                   
+  
+  # Interaction
+  alpha: 0.1                   # Interaction réduite
+  
+  # Route
+  R_constant: 3.0              # Route de très bonne qualité
+
+# Paramètres numériques conservateurs
+numerics:
+  CFL: 0.5                     # CFL très conservateur
+  weno_order: 5                
+  time_integrator: "ssprk3"    
+  
+# Sortie
+output:
+  directory: "results"
+  save_states: true
+  save_fluxes: true
+  save_metrics: true

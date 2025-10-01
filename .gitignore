@@ -7,3 +7,5 @@ ecoles.md
 # Ignore all and anywhere pycache directories
 **/__pycache__/
 
+**/.copilot-tracking/*
+.copilot-tracking/

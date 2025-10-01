@@ -1,0 +1,107 @@
+# Configuration Test Simple pour Couplage Réseau
+# ===============================================
+
+# Nom du scénario
+scenario_name: network_test_simple
+
+# Paramètres de grille (niveau racine)
+N: 400                          # Points de grille total (2 segments × 200)
+xmin: 0.0                       # Début domaine (mètres)
+xmax: 2000.0                    # Fin domaine (mètres)
+
+# Schémas numériques
+spatial_scheme: 'weno5'
+time_scheme: 'ssprk3'
+ghost_cells: 3
+
+# Paramètres temporels
+t_final: 100.0                  # Durée simulation (secondes)
+dt: 0.01                        # Pas de temps (secondes)
+output_dt: 10.0                 # Intervalle sauvegarde (secondes)
+
+# Paramètres spatiaux additionnels
+spatial:
+  N_points: 200                 # Points de grille par segment
+  L: 1000.0                     # Longueur segment (mètres)
+
+# Conditions initiales (format: [rho_m, w_m, rho_c, w_c])
+initial_conditions:
+  type: "uniform"
+  state: [0.01, 0.0, 0.02, 0.0]  # [rho_m, w_m, rho_c, w_c]
+
+# Conditions aux limites
+boundary_conditions:
+  left:
+    type: "inflow"
+    state: [0.02, 0.0, 0.03, 0.0]  # [rho_m, w_m, rho_c, w_c] flux entrant
+  right:
+    type: "outflow"
+
+# Configuration réseau
+network:
+  enabled: true
+  
+  # Définition des segments
+  segments:
+    - id: "segment_1"
+      length: 1000.0
+      start_node: "node_A"
+      end_node: "node_B"
+      capacity: 2000.0            # Véhicules/heure
+      
+    - id: "segment_2"
+      length: 1000.0
+      start_node: "node_B"
+      end_node: "node_C"
+      capacity: 2000.0
+
+  # Définition des nœuds (intersections)
+  nodes:
+    - id: "node_A"
+      type: "boundary"            # Nœud d'entrée
+      position: 0.0
+      inflow_rate: 500.0          # Véhicules/heure
+      
+    - id: "node_B"
+      type: "intersection"        # Intersection simple
+      position: 1000.0
+      traffic_light:
+        enabled: true
+        cycle_time: 60.0          # Secondes
+        green_time: 30.0          # Secondes phase verte
+        
+    - id: "node_C"
+      type: "boundary"            # Nœud de sortie
+      position: 2000.0
+      outflow_capacity: 1800.0   # Véhicules/heure
+
+# Paramètres physiques ARZ
+physics:
+  # Motos
+  rho_max_m: 1.0               # Densité max motos (veh/m)
+  V_max_m: 20.0                # Vitesse max motos (m/s)
+  tau_m: 0.5                   # Temps relaxation motos (s)
+  
+  # Voitures
+  rho_max_c: 0.2               # Densité max voitures (veh/m)
+  V_max_c: 15.0                # Vitesse max voitures (m/s)
+  tau_c: 1.0                   # Temps relaxation voitures (s)
+  
+  # Interaction
+  alpha: 0.2                   # Coefficient gap-filling
+  
+  # Route
+  R_constant: 2.0              # Qualité route (bon état)
+
+# Paramètres numériques
+numerics:
+  CFL: 0.8                     # Condition CFL
+  weno_order: 5                # Ordre WENO
+  time_integrator: "ssprk3"    # Intégrateur temporel
+  
+# Sortie
+output:
+  directory: "results"
+  save_states: true
+  save_fluxes: true
+  save_metrics: true

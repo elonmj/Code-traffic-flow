@@ -1,0 +1,16 @@
+{
+  "calibration_score": 0.05,
+  "optimization_method": "test",
+  "iterations": 10,
+  "convergence_status": true,
+  "optimal_parameters": {
+    "param1": 1.0,
+    "param2": 2.0
+  },
+  "metadata": {
+    "group_id": "test_group",
+    "timestamp": "2025-09-08T12:47:13.276337",
+    "version": "1.0",
+    "format": "calibration_result"
+  }
+}

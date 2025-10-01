@@ -1,0 +1,291 @@
+\chapter{Modélisation Mathématique des Intersections et Couplage des Segments}
+\label{chap:modeles_intersections}
+
+\section{Introduction}
+L'application du modèle ARZ multi-classes à un réseau urbain réaliste nécessite une modélisation rigoureuse des intersections. Celles-ci constituent des points de rupture où la dynamique unidimensionnelle de chaque segment est mise à l'épreuve. Pour un modèle de second ordre, le défi est double : il faut non seulement conserver la masse des véhicules, mais aussi définir comment la variable lagrangienne $ w $, qui représente l'état comportemental du conducteur (interprétée physiquement comme une "vitesse préférée" ou une "pression" exercée par le trafic environnant), est transmise à travers la complexité d'un nœud \cite{GaravelloPiccoli2006}.
+
+Cette section présente un cadre de modélisation unifié capable de gérer les types d'intersections les plus courants dans le contexte urbain ouest-africain, avant de détailler son application spécifique aux carrefours à feux, qui sont au cœur de notre étude d'optimisation. Les types d'intersections considérés sont : les carrefours giratoires (ronds-points), les jonctions non signalisées (en T ou en croix), et les carrefours contrôlés par des feux \cite{LebacqueKhoshyaran2005}.
+
+\begin{figure}[htbp]
+\centering
+\caption{Types d'intersections courants dans le contexte urbain ouest-africain}
+\label{fig:types_intersections}
+% Placeholder pour une figure montrant les différents types d'intersections
+\end{figure}
+
+\section{Concepts Fondamentaux des Intersections Routières}
+Les intersections routières constituent des éléments critiques dans tout réseau de transport urbain. Elles représentent des points de convergence où plusieurs flux de trafic se rencontrent, se divisent ou se croisent, créant des situations complexes qui nécessitent une attention particulière dans la modélisation du trafic.
+
+\subsection{Définition et Types d'Intersections}
+Une intersection routière est un point où deux ou plusieurs routes se rencontrent ou se croisent. Dans le contexte de la modélisation mathématique du trafic, ces points sont particulièrement délicats car ils rompent l'hypothèse de continuité unidimensionnelle qui sous-tend les modèles de trafic sur des segments simples. Plusieurs types d'intersections peuvent être rencontrés dans les réseaux urbains, notamment :
+
+\begin{itemize}
+    \item \textbf{Carrefours giratoires (ronds-points)} : intersections où le trafic circule dans un sens giratoire autour d'un îlot central.
+    \item \textbf{Jonctions non signalisées} : intersections en T ou en croix sans contrôle lumineux, où les règles de priorité s'appliquent.
+    \item \textbf{Carrefours contrôlés par feux de signalisation} : intersections où le passage est régulé par des feux tricolores.
+\end{itemize}
+
+\section{Formalisme Mathématique de Base}
+La modélisation mathématique des intersections nécessite une compréhension approfondie des principes fondamentaux qui régissent le comportement du trafic aux points de rupture. Cette section présente les concepts mathématiques essentiels qui sous-tendent notre approche de modélisation.
+
+\subsection{Principe de Conservation de Masse}
+Le principe fondamental de conservation de masse est au cœur de la modélisation du trafic. À chaque intersection, le nombre de véhicules qui entrent doit être égal au nombre de véhicules qui sortent, à moins qu'il n'y ait accumulation dans l'intersection elle-même. Pour un modèle multi-classes, ce principe s'exprime pour chaque classe de véhicules $ k $ :
+
+\[
+\sum_{i \in I_{\text{in}}} q_i^k = \sum_{j \in I_{\text{out}}} q_j^k + \frac{d}{dt} \int_{\text{intersection}} \rho^k(x,t) dx
+\]
+
+où $ I_{\text{in}} $ et $ I_{\text{out}} $ représentent respectivement les ensembles d'arcs entrants et sortants, $ q_i^k $ et $ q_j^k $ sont les flux de la classe $ k $ sur les arcs $ i $ et $ j $, et $ \rho^k(x,t) $ est la densité de la classe $ k $ au point $ x $ et au temps $ t $.
+
+\begin{figure}[htbp]
+\centering
+\caption{Principe de conservation de masse à une intersection}
+\label{fig:conservation_masse}
+% Placeholder pour une figure illustrant le principe de conservation de masse
+\end{figure}
+
+\subsection{Variable Lagrangienne $w$ et sa Signification Physique}
+Dans le cadre du modèle ARZ de second ordre, la variable lagrangienne $ w^k $ joue un rôle crucial dans la description du comportement dynamique du trafic. Cette variable représente l'état comportemental du conducteur et peut être interprétée physiquement comme une "vitesse préférée" ou une "pression" exercée par le trafic environnant \cite{GaravelloPiccoli2006}.
+
+Pour chaque classe de véhicules $ k $, la variable $ w^k $ est définie par la relation :
+\[
+w^k = v^k + p^k(\rho^k)
+\]
+
+où $ v^k $ est la vitesse réelle de la classe $ k $ et $ p^k(\rho^k) $ est la fonction de pression qui dépend de la densité $ \rho^k $. Cette formulation permet de capturer les effets d'hystérésis et les ondes \textit{stop-and-go} caractéristiques des modèles de second ordre.
+
+\subsection{Conditions aux Limites aux Jonctions}
+Aux points de jonction entre segments, des conditions aux limites spécifiques doivent être appliquées pour assurer la continuité physique du modèle. Ces conditions dépendent du type d'intersection et des règles de priorité en vigueur. Elles permettent de relier les variables d'état des segments amont aux variables des segments aval, en respectant les contraintes de conservation et de cohérence physique.
+
+\subsection{Enjeux de la Modélisation aux Points de Rupture}
+La modélisation des intersections pose des défis mathématiques et physiques importants. Contrairement aux segments routiers simples où les équations de conservation peuvent être appliquées de manière continue, les intersections introduisent des discontinuités qui nécessitent des conditions aux limites spécifiques. Ces points de rupture exigent :
+
+\begin{itemize}
+    \item La conservation du flux de véhicules à travers l'intersection.
+    \item La définition de règles de priorité entre les différents flux entrants.
+    \item La transmission cohérente des variables d'état (densité, vitesse, pression) d'un segment à l'autre.
+    \item La prise en compte des comportements spécifiques des différents types de véhicules, notamment dans le contexte ouest-africain où les motocyclettes jouent un rôle prépondérant.
+\end{itemize}
+
+
+
+\section{Cadre Unifié de Modélisation des Nœuds}
+Pour assurer la cohérence du modèle de réseau, nous adoptons un cadre conceptuel unifié en deux étapes pour tous les types d'intersections. Cette approche, inspirée des travaux de \cite{HoldenRisebro2015} et \cite{AndreianovPanov2012}, permet de traiter de manière cohérente les différents types d'intersections rencontrés dans les réseaux urbains.
+
+\subsection{Étape 1 : Détermination des Flux de Masse via la Logique Demande-Offre}
+Le flux de véhicules $ q_{ij}^k $ de l'arc entrant $ i $ vers l'arc sortant $ j $ pour la classe $ k $ est déterminé par le principe de la compétition entre la demande de l'amont et l'offre (capacité d'absorption) de l'aval. Ce concept, fondamental en modélisation du trafic, a été formalisé par \cite{Daganzo1995} et \cite{Lebacque1996}. Le flux effectif est limité par la demande des véhicules souhaitant traverser et par la capacité de la route en aval à les accepter :
+
+\[
+q_{ij}^k = \min\left(D_i^k(\rho_i^k, v_i^k), S_j^k(\rho_j^k)\right) \cdot \beta_{ij}^k
+\]
+
+où $ D_i^k $ est la demande de la classe $ k $ sur l'arc entrant $ i $, $ S_j^k $ est l'offre de l'arc sortant $ j $ pour la classe $ k $, et $ \beta_{ij}^k $ est le coefficient de répartition du trafic de la classe $ k $ de l'arc $ i $ vers l'arc $ j $ \cite{CocliteGaravelloPiccoli2005}.
+
+La fonction de demande est définie par :
+\[
+D_i^k(\rho_i^k, v_i^k) =
+\begin{cases}
+\rho_i^k v_i^k & \text{si } v_i^k \leq V_{e,k}(\rho_i^k) \\
+\rho_i^k V_{e,k}(\rho_i^k) & \text{si } v_i^k > V_{e,k}(\rho_i^k)
+\end{cases}
+\]
+
+La fonction d'offre est donnée par :
+\[
+S_j^k(\rho_j^k) = \min\left(\rho_{\text{jam},k} - \rho_j^k, \frac{Q_{\max,k}}{\rho_j^k}\right) \cdot V_{e,k}(\rho_j^k)
+\]
+
+où $ Q_{\max,k} $ représente le débit maximal admissible pour la classe $ k $, correspondant à la capacité limite de l'infrastructure pour cette catégorie de véhicules.
+
+Ce qui change d'un type d'intersection à l'autre, ce sont les \textbf{règles de priorité} qui modulent la "demande autorisée" à un instant donné \cite{BressonPiccoli2019}.
+
+\subsection{Étape 2 : Transmission du Comportement via un Modèle de Couplage Phénoménologique}
+Une fois les flux de masse établis, la transmission de la variable lagrangienne $ w $ est décrite par une condition de couplage phénoménologique. Cette approche évite la complexité extrême des solveurs de Riemann aux nœuds théoriques \cite{GaravelloPiccoli2006, Pares2006PathConservative} tout en offrant une flexibilité essentielle. La variable $ w $ à l'entrée d'un arc sortant est donnée par :
+
+\[
+w_{\text{out}}^k = \left(V_{e,k}(\rho_{\text{out}}^k) + p_k(\rho_{\text{out}}^k)\right) + \theta_k \cdot \left(w_{\text{in}}^k - \left(V_{e,k}(\rho_{\text{in}}^k) + p_k(\rho_{\text{in}}^k)\right)\right)
+\]
+
+Le paramètre de couplage $ \theta_k \in [0,1] $ représente le degré de "mémoire comportementale" conservée par la classe $ k $ en franchissant l'intersection. Sa signification physique se spécialise en fonction du type de nœud \cite{HertyKlar2003}.
+
+\subsection{Analyse de Stabilité Numérique}
+La condition de couplage proposée préserve la stabilité du schéma numérique pour $ \theta_k \in [0,1] $. Des valeurs de $ \theta_k $ proches de 1 peuvent induire des oscillations numériques si le pas de temps n'est pas suffisamment petit, ce qui nécessite l'utilisation d'un critère CFL adapté, essentiel pour garantir la convergence des simulations :
+
+\[
+\Delta t \leq \frac{\Delta x}{\max_k(\lambda_{1,k}, \lambda_{2,k})} \cdot (1 - \theta_{\max})
+\]
+
+où $ \lambda_{1,k} $ et $ \lambda_{2,k} $ sont les valeurs propres du système ARZ pour la classe $ k $ \cite{FanHertySeibold2014}.
+
+\begin{figure}[htbp]
+\centering
+\caption{Conditions de stabilité numérique pour le couplage aux intersections}
+\label{fig:stabilite_numerique}
+% Placeholder pour une figure illustrant les conditions de stabilité numérique
+\end{figure}
+
+\section{Spécialisation par Type d'Intersection}
+Le cadre unifié de modélisation présenté précédemment peut être spécialisé pour chaque type d'intersection en ajustant les règles de priorité et les paramètres de couplage. Cette section détaille comment le modèle s'adapte aux différents types d'intersections rencontrés dans le contexte urbain ouest-africain \cite{LebacqueKhoshyaran2005}.
+
+\subsection{Carrefour Giratoire (Rond-Point)}
+La priorité est accordée aux véhicules circulant déjà sur l'anneau \cite{BargBrockfeld2012}. La demande d'un véhicule voulant s'insérer est donc fortement limitée par le trafic circulant. Le paramètre $ \theta_k $ modélise la fluidité de la manœuvre :
+\begin{itemize}
+    \item \textbf{Insertion :} $ \theta_k^{\text{ins}} \in [0.1, 0.3] $ (adaptation forte nécessaire)
+    \item \textbf{Circulation :} $ \theta_k^{\text{circ}} \in [0.7, 0.9] $ (mouvement fluide)
+    \item \textbf{Sortie :} $ \theta_k^{\text{sort}} \in [0.8, 1.0] $ (mouvement naturel)
+\end{itemize}
+Pour les motos, ces valeurs sont généralement plus élevées en raison de leur agilité supérieure \cite{NguyenEtAl2012}.
+
+\subsection{Jonction Non Signalisée (Stop / Cédez-le-passage)}
+La hiérarchie est stricte \cite{BrockfeldKlar2002}. Le flux sur l'axe principal est prioritaire et peu perturbé ($ \theta_{\text{principal}} \approx 0.9 $). Le flux sur l'axe secondaire est subordonné, les conducteurs devant attendre une brèche, ce qui implique un arrêt ou un fort ralentissement et donc une réinitialisation quasi complète de leur état dynamique ($ \theta_{\text{secondaire}} \approx 0.1 $).
+
+\subsection{Carrefour Contrôlé par des Feux de Signalisation}
+C'est le cas le plus structuré, où les priorités sont dynamiques et explicites \cite{BandRascle2009}.
+\begin{itemize}
+    \item \textbf{Phase Rouge :} La demande autorisée est nulle. Le flux est bloqué : $ D_i^k = 0 $.
+    \item \textbf{Phase Verte :} La demande est libérée, limitée uniquement par la file d'attente accumulée et la capacité de l'aval.
+\end{itemize}
+Dans ce contexte, le paramètre $ \theta_k $ modélise la \textbf{performance et l'agressivité de l'accélération au démarrage} \cite{JinZhang2003}. Les valeurs typiques sont :
+\begin{itemize}
+    \item \textbf{Motos (okadas) :} $ \theta_{\text{moto}} \in [0.7, 0.9] $ (accélération vive)
+    \item \textbf{Voitures :} $ \theta_{\text{voiture}} \in [0.4, 0.6] $ (démarrage modéré)
+    \item \textbf{Véhicules lourds :} $ \theta_{\text{lourd}} \in [0.2, 0.4] $ (démarrage progressif)
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\caption{Paramètres de couplage $\theta_k$ pour différents types de véhicules et d'intersections}
+\label{fig:parametres_couplage}
+% Placeholder pour une figure illustrant les paramètres de couplage
+\end{figure}
+
+\section{Gestion des Intersections Saturées et Phénomène de Creeping}
+Dans le contexte béninois, les intersections saturées sont fréquentes \cite{Saumtally2012}. Notre modèle doit tenir compte de la capacité des motos à continuer de progresser même lorsque la densité atteint $ \rho_{\text{jam},c} $ pour les voitures.
+
+\subsection{Capacité Effective Différenciée}
+La capacité d'une intersection pour les motos est définie par :
+\[
+C_{\text{intersection}}^{\text{moto}} = C_{\text{base}} \cdot \left(1 + \alpha_{\text{creep}} \cdot \frac{\rho_{\text{jam},m} - \rho_{\text{jam},c}}{\rho_{\text{jam},c}}\right)
+\]
+
+où $ \alpha_{\text{creep}} \in [0.1, 0.3] $ est un facteur de correction tenant compte de la capacité de \textit{creeping} des motos \cite{FanWork2015}.
+
+\subsection{Modélisation du Creeping aux Intersections}
+Lorsque $ \rho_c \geq \rho_{\text{jam},c} $, les motos peuvent encore traverser l'intersection avec un débit résiduel :
+\[
+q_{\text{creep}}^{\text{moto}} = \rho_m \cdot v_{\text{creep}} \cdot \gamma\left(\frac{\rho_c}{\rho_{\text{jam},c}}\right)
+\]
+
+où $ v_{\text{creep}} \in [0.5, 2.0] $ km/h est la vitesse de \textit{creeping} et $ \gamma $ est une fonction décroissante modélisant l'inhibition du \textit{creeping} par la présence de voitures arrêtées, définie par exemple comme $ \gamma(x) = e^{-a(x-1)} $ pour $ x \geq 1 $, avec $ a > 0 $ \cite{FanWork2015}.
+
+\begin{figure}[htbp]
+\centering
+\caption{Modélisation du phénomène de creeping aux intersections saturées}
+\label{fig:creeping_intersection}
+% Placeholder pour une figure illustrant le phénomène de creeping
+\end{figure}
+
+\section{Stratégie de Calibration en Environnement à Données Limitées}
+Bien que notre objectif final soit l'optimisation des carrefours à feux, la calibration des paramètres du modèle, en particulier $ \theta_k $, est un défi en l'absence de données de trajectoires détaillées pour le contexte nigérian. Nous adoptons donc une stratégie de calibration hybride en utilisant le simulateur de trafic microscopique \textbf{SUMO} comme un \textbf{laboratoire numérique} \cite{KrajzewiczEtAl2012}. SUMO est choisi pour sa flexibilité et sa capacité à simuler des comportements hétérogènes, adaptés au trafic ouest-africain.
+
+L'objectif n'est pas de répliquer une intersection réelle avec une précision parfaite, mais de créer un \textbf{banc d'essai numérique avec une dynamique de trafic plausible} pour étudier le lien entre les comportements microscopiques et les paramètres de notre modèle macroscopique. Cette approche s'inscrit dans la lignée des recherches actuelles sur les modèles de trafic hybrides et informés par les données \cite{HertyKolbe2022, CanepaHerty2017}.
+
+\subsection{Méthodologie de Calibration}
+\begin{enumerate}
+    \item \textbf{Configuration Comportementale de SUMO :} Le simulateur est configuré pour refléter les caractéristiques qualitatives du trafic ouest-africain. Des types de véhicules (\texttt{vType}) sont définis :
+    \begin{itemize}
+        \item \textbf{Motos (\texttt{okadas}) :} accélération = 3.5 m/s\(^2\), décélération = 6.0 m/s\(^2\), \( \sigma = 0.8 \) (imperfection de conduite élevée)
+        \item \textbf{Voitures :} accélération = 2.0 m/s\(^2\), décélération = 4.5 m/s\(^2\), \( \sigma = 0.6 \)
+        \item \textbf{Temps de réaction :} 0.8s pour les motos, 1.2s pour les voitures
+    \end{itemize}
+    \item \textbf{Génération de Données de Référence :} Pour un carrefour à feux modélisé, nous simulons plusieurs cycles rouge/vert. Des détecteurs virtuels extraient les données macroscopiques (densité \( \rho_{\text{sumo}}^k \), vitesse \( v_{\text{sumo}}^k \)) pour chaque classe à l'entrée et à la sortie du carrefour, en se concentrant sur la phase de démarrage après le passage au vert.
+    \item \textbf{Calibration du Paramètre \( \theta_k \) :}
+    \begin{itemize}
+        \item \textbf{Reconstruction de \( w \) :} La variable \( w \) de notre modèle, absente dans SUMO, est reconstruite à partir des données de la simulation via la relation \( w_{\text{reconstruit}}^k = v_{\text{sumo}}^k + p_k(\rho_{\text{sumo}}^k) \), où \( p_k \) est la fonction de pression de notre modèle ARZ.
+        \item \textbf{Optimisation :} Le paramètre \( \theta_k \) pour chaque classe est alors calibré en résolvant :
+        \[
+        \theta_k^* = \arg\min_{\theta_k} \sum_{t} \left| w_{\text{out,prédit}}^k(t) - w_{\text{out,reconstruit}}^k(t) \right|^2
+        \]
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Validation Croisée :} La robustesse de la calibration est validée en testant les paramètres \( \theta_k^* \) sur des configurations d'intersection différentes (durées de cycles variables, compositions de trafic différentes) \cite{BouadiOuwerkerk2022}.
+
+\begin{figure}[htbp]
+\centering
+\caption{Méthodologie de calibration hybride utilisant SUMO comme laboratoire numérique}
+\label{fig:calibration_hybride}
+% Placeholder pour une figure illustrant la méthodologie de calibration
+\end{figure}
+
+\section{Intégration des Feux de Signalisation}
+Les carrefours contrôlés par feux de signalisation représentent le cas le plus structuré d'intersection, où les priorités sont dynamiques et explicites \cite{BandRascle2009}. Cette section détaille comment notre modèle intègre spécifiquement la gestion des feux de signalisation dans le cadre de l'optimisation du trafic urbain.
+
+\subsection{Modélisation des Phases de Signalisation}
+Dans le contexte des feux de signalisation, le paramètre de couplage $ \theta_k $ modélise la \textbf{performance et l'agressivité de l'accélération au démarrage} \cite{JinZhang2003}. Les valeurs typiques sont :
+\begin{itemize}
+    \item \textbf{Phase Rouge :} La demande autorisée est nulle. Le flux est bloqué : $ D_i^k = 0 $.
+    \item \textbf{Phase Verte :} La demande est libérée, limitée uniquement par la file d'attente accumulée et la capacité de l'aval.
+\end{itemize}
+
+\subsection{Paramètres de Couplage Spécifiques aux Véhicules}
+Les paramètres de couplage $ \theta_k $ varient selon le type de véhicule et leur comportement spécifique lors du démarrage après un feu rouge :
+\begin{itemize}
+    \item \textbf{Motos (okadas) :} $ \theta_{\text{moto}} \in [0.7, 0.9] $ (accélération vive)
+    \item \textbf{Voitures :} $ \theta_{\text{voiture}} \in [0.4, 0.6] $ (démarrage modéré)
+    \item \textbf{Véhicules lourds :} $ \theta_{\text{lourd}} \in [0.2, 0.4] $ (démarrage progressif)
+\end{itemize}
+
+\subsection{Gestion des Transitions de Phase}
+La transition entre les phases rouge et verte nécessite une attention particulière dans la modélisation. Lors du passage au vert, la libération du trafic accumulé dépend de la composition du trafic en attente et des caractéristiques spécifiques de chaque classe de véhicules. Cette dynamique est capturée par le modèle de couplage phénoménologique développé précédemment.
+
+\section{Validation Mathématique du Modèle d'Intersection}
+La validation mathématique du modèle d'intersection est essentielle pour garantir sa cohérence théorique et sa robustesse numérique. Cette section présente les principes fondamentaux qui sous-tendent la validité mathématique de notre approche de modélisation.
+
+\subsection{Conservation de la Masse}
+Le principe fondamental de conservation de la masse doit être vérifié à chaque intersection. Pour un modèle multi-classes, cette conservation s'exprime pour chaque classe de véhicules $ k $ :
+\[
+\sum_{i \in I_{\text{in}}} q_i^k = \sum_{j \in I_{\text{out}}} q_j^k + \frac{d}{dt} \int_{\text{intersection}} \rho^k(x,t) dx
+\]
+
+Cette équation garantit que le nombre de véhicules qui entrent dans l'intersection est égal au nombre de véhicules qui en sortent, plus toute accumulation éventuelle dans l'intersection elle-même.
+
+\subsection{Conditions de Rangine-Hugoniot aux Jonctions}
+Aux points de jonction entre segments, les conditions de Rankine-Hugoniot doivent être satisfaites pour assurer la continuité physique du modèle. Ces conditions relient les variables d'état des segments amont aux variables des segments aval, en respectant les contraintes de conservation et de cohérence physique \cite{GaravelloPiccoli2006}.
+
+Pour le modèle ARZ, ces conditions s'expriment comme suit :
+\begin{itemize}
+    \item Continuité du flux de masse : $ \rho_i v_i = \rho_j v_j $
+    \item Continuité de la variable lagrangienne : $ w_i = w_j $
+\end{itemize}
+
+où les indices $ i $ et $ j $ représentent respectivement les segments amont et aval.
+
+\subsection{Stabilité Numérique}
+L'analyse de stabilité numérique est cruciale pour garantir la convergence des simulations. La condition de couplage proposée préserve la stabilité du schéma numérique pour $ \theta_k \in [0,1] $. Des valeurs de $ \theta_k $ proches de 1 peuvent induire des oscillations numériques si le pas de temps n'est pas suffisamment petit, ce qui nécessite l'utilisation d'un critère CFL adapté :
+\[
+\Delta t \leq \frac{\Delta x}{\max_k(\lambda_{1,k}, \lambda_{2,k})} \cdot (1 - \theta_{\max})
+\]
+
+où $ \lambda_{1,k} $ et $ \lambda_{2,k} $ sont les valeurs propres du système ARZ pour la classe $ k $ \cite{FanHertySeibold2014}.
+
+\subsection{Convergence et Consistance}
+La convergence du schéma numérique vers la solution entropique du système hyperbolique est garantie sous certaines conditions de régularité. La consistance du schéma avec les équations différentielles partielles du modèle ARZ est établie par l'analyse des termes de troncature locale \cite{HoldenRisebro2015}.
+
+\begin{figure}[htbp]
+\centering
+\caption{Validation mathématique du modèle d'intersection}
+\label{fig:validation_mathematique}
+% Placeholder pour une figure illustrant la validation mathématique
+\end{figure}
+
+\section{Conclusion du Chapitre}
+Ce chapitre a présenté un cadre de modélisation mathématique unifié pour la gestion des intersections dans le contexte des modèles de trafic ARZ multi-classes. Nous avons développé une approche en deux étapes qui permet de traiter de manière cohérente les différents types d'intersections rencontrés dans les réseaux urbains ouest-africains, en particulier au Bénin.
+
+La première étape repose sur la logique demande-offre pour déterminer les flux de masse à travers les intersections, en tenant compte des règles de priorité spécifiques à chaque type d'intersection. La seconde étape utilise un modèle de couplage phénoménologique pour transmettre la variable lagrangienne $ w $, représentant l'état comportemental des conducteurs, d'un segment à l'autre.
+
+Notre approche permet de capturer les spécificités du trafic béninois, notamment la prédominance des motocyclettes et leur capacité unique à progresser même en situation de congestion extrême grâce au phénomène de \textit{creeping}. Le paramètre de couplage $ \theta_k $ a été spécialement conçu pour refléter les comportements spécifiques des différents types de véhicules lors du franchissement des intersections.
+
+La stratégie de calibration hybride utilisant SUMO comme laboratoire numérique permet de surmonter les défis liés à la pénurie de données détaillées dans le contexte ouest-africain. Cette approche fournit une base solide pour la calibration des paramètres comportementaux du modèle, en particulier ceux liés aux spécificités des motos.
+
+L'implémentation numérique du modèle d'intersection, avec son critère de stabilité CFL adapté, permet de créer un modèle physiquement cohérent et numériquement stable, tout en conservant la richesse dynamique du modèle ARZ de second ordre. Cette modélisation constitue une pierre angulaire pour l'optimisation des carrefours à feux qui sera abordée dans les chapitres suivants.

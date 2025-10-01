@@ -1,6 +1,7 @@
 import yaml
 import copy
 import os
+from typing import List, Dict, Optional
 
 # Conversion factors
 KMH_TO_MS = 1000.0 / 3600.0
@@ -60,6 +61,18 @@ class ModelParameters:
         self.initial_conditions: dict = {} # e.g., {'type': 'riemann', 'UL': ..., 'UR': ...}
         self.boundary_conditions: dict = {} # e.g., {'left': {'type': 'inflow', ...}, 'right': ...}
         self.road_quality_definition: list | str = None # List of R values or path to file
+
+        # Network parameters
+        self.has_network: bool = False  # Enable/disable network simulation
+        self.nodes: Optional[List[Dict]] = []     # Node configurations
+        self.network_segments: Optional[List[Dict]] = []  # Network segment configurations
+        self.enable_traffic_lights: bool = True   # Enable traffic lights
+        self.enable_creeping: bool = True         # Enable creeping behavior
+        self.enable_queue_management: bool = True # Enable queue management
+        self.max_queue_length: Optional[float] = 100.0      # Maximum queue length (m)
+        self.red_light_factor: Optional[float] = 0.1        # Flow reduction factor at red lights
+        self.rho_eq_m: Optional[float] = 0.01               # Equilibrium density motorcycles (veh/m)
+        self.rho_eq_c: Optional[float] = 0.01               # Equilibrium density cars (veh/m)
 
     def load_from_yaml(self, base_config_path, scenario_config_path=None):
         """
@@ -163,6 +176,21 @@ class ModelParameters:
 
         # Get mass conservation check config if present (nested or top-level)
         self.mass_conservation_check = config.get('mass_conservation_check')
+
+        # Load network configuration
+        network_config = config.get('network', {})
+        self.has_network = network_config.get('has_network', False)
+        self.nodes = network_config.get('nodes', [])
+        self.network_segments = network_config.get('segments', [])
+
+        # Load network-specific parameters (with defaults)
+        self.enable_traffic_lights = config.get('enable_traffic_lights', True)
+        self.enable_creeping = config.get('enable_creeping', True)
+        self.enable_queue_management = config.get('enable_queue_management', True)
+        self.max_queue_length = config.get('max_queue_length', 100.0)
+        self.red_light_factor = config.get('red_light_factor', 0.1)
+        self.rho_eq_m = config.get('rho_eq_m', 0.01)
+        self.rho_eq_c = config.get('rho_eq_c', 0.01)
 
         # --- Validation (Optional but recommended) ---
         self._validate_parameters()

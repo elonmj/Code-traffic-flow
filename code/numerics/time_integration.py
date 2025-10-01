@@ -916,3 +916,89 @@ def _apply_density_floor_kernel(d_U, epsilon, num_ghost_cells, N_physical):
         # Appliquer le plancher pour les densités
         d_U[0, j] = max(d_U[0, j], epsilon)  # rho_m
         d_U[2, j] = max(d_U[2, j], epsilon)  # rho_c
+
+
+# --- Network-Aware Time Integration ---
+
+def strang_splitting_step_with_network(U_n, dt, grid, params, nodes, network_coupling):
+    """
+    Strang splitting avec couplage réseau stable.
+
+    Args:
+        U_n: État au temps n
+        dt: Pas de temps
+        grid: Grille
+        params: Paramètres
+        nodes: Liste des nœuds
+        network_coupling: Gestionnaire de couplage réseau
+
+    Returns:
+        État au temps n+1
+    """
+    time = 0.0  # TODO: Passer le temps réel depuis SimulationRunner
+
+    if params.device == 'gpu':
+        # Version GPU avec couplage stable
+        from .network_coupling_stable import apply_network_coupling_stable_gpu
+        d_U_n = U_n  # Assume déjà sur GPU
+
+        # Étape 1: ODE dt/2
+        d_U_star = solve_ode_step_gpu(d_U_n, dt / 2.0, grid, params, None)
+
+        # Étape 2: Hyperbolique avec couplage réseau stable
+        d_U_with_bc = apply_network_coupling_stable_gpu(d_U_star, dt, grid, params, time)
+        d_U_ss = solve_hyperbolic_step_standard_gpu(d_U_with_bc, dt, grid, params)
+
+        # Étape 3: ODE dt/2
+        d_U_np1 = solve_ode_step_gpu(d_U_ss, dt / 2.0, grid, params, None)
+
+        return d_U_np1
+
+    else:
+        # Version CPU avec couplage stable
+        from .network_coupling_stable import apply_network_coupling_stable
+
+        # Étape 1: ODE dt/2
+        U_star = solve_ode_step_cpu(U_n, dt / 2.0, grid, params)
+
+        # Étape 2: Hyperbolique avec couplage réseau stable
+        U_with_bc = apply_network_coupling_stable(U_star, dt, grid, params, time)
+        U_ss = solve_hyperbolic_step_standard(U_with_bc, dt, grid, params)
+
+        # Étape 3: ODE dt/2
+        U_np1 = solve_ode_step_cpu(U_ss, dt / 2.0, grid, params)
+
+        return U_np1
+
+
+def solve_hyperbolic_step_standard(U, dt, grid, params):
+    """
+    Résout l'étape hyperbolique standard selon le schéma configuré.
+    """
+    if params.spatial_scheme == 'first_order' and params.time_scheme == 'euler':
+        return solve_hyperbolic_step_ssprk3(U, dt, grid, params)
+    elif params.spatial_scheme == 'first_order' and params.time_scheme == 'ssprk3':
+        return solve_hyperbolic_step_ssprk3(U, dt, grid, params)
+    elif params.spatial_scheme == 'weno5' and params.time_scheme == 'euler':
+        return solve_hyperbolic_step_ssprk3(U, dt, grid, params)
+    elif params.spatial_scheme == 'weno5' and params.time_scheme == 'ssprk3':
+        return solve_hyperbolic_step_ssprk3(U, dt, grid, params)
+    else:
+        raise ValueError(f"Unsupported scheme combination: spatial_scheme='{params.spatial_scheme}', time_scheme='{params.time_scheme}'")
+
+
+def solve_hyperbolic_step_standard_gpu(d_U, dt, grid, params):
+    """
+    Résout l'étape hyperbolique standard selon le schéma configuré (GPU).
+    """
+    if params.spatial_scheme == 'first_order' and params.time_scheme == 'euler':
+        return solve_hyperbolic_step_ssprk3_gpu(d_U, dt, grid, params)
+    elif params.spatial_scheme == 'first_order' and params.time_scheme == 'ssprk3':
+        return solve_hyperbolic_step_ssprk3_gpu(d_U, dt, grid, params)
+    elif params.spatial_scheme == 'weno5' and params.time_scheme == 'euler':
+        return solve_hyperbolic_step_weno_gpu(d_U, dt, grid, params)
+    elif params.spatial_scheme == 'weno5' and params.time_scheme == 'ssprk3':
+        return solve_hyperbolic_step_ssprk3_gpu(d_U, dt, grid, params)
+    else:
+        raise ValueError(f"Unsupported scheme combination: spatial_scheme='{params.spatial_scheme}', time_scheme='{params.time_scheme}'")
+

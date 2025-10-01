@@ -166,6 +166,32 @@ class SimulationRunner:
                 # Decide how to handle this - maybe disable the check?
                 self.mass_check_config = None # Disable check if initial calc fails
 
+        # --- Initialize Network System ---
+        if self.params.has_network:
+            if not self.quiet:
+                print("Initializing network system...")
+            self._initialize_network()
+        else:
+            self.nodes = None
+            self.network_coupling = None
+
+    def _initialize_network(self):
+        """Initialize the network nodes and coupling system."""
+        from ..core.intersection import create_intersection_from_config
+        from ..numerics.network_coupling import NetworkCoupling
+
+        self.nodes = []
+        if self.params.nodes:
+            for node_config in self.params.nodes:
+                intersection = create_intersection_from_config(node_config)
+                self.nodes.append(intersection)
+
+        self.network_coupling = NetworkCoupling(self.nodes, self.params)
+
+        if not self.quiet:
+            print(f"  Initialized {len(self.nodes)} network nodes")
+            print(f"  Network coupling system ready")
+
     def _load_road_quality(self):
         """ Loads road quality data based on the definition in params. """
         # Check if 'road' config exists and is a dictionary
@@ -403,7 +429,7 @@ class SimulationRunner:
             else:
                 self.right_bc_schedule_idx = new_idx
 
-            if not self.quiet:
+            if self.pbar is not None:
                 pbar_message = f"\nBC Change ({side.capitalize()}): Switched to type '{bc_type}' at t={current_time:.4f}s (Scheduled for [{t_start:.1f}, {t_end:.1f}))"
                 # Try to write using tqdm's method if available, otherwise print
                 try:
@@ -439,8 +465,12 @@ class SimulationRunner:
         last_output_time = self.t
 
         # Initialize tqdm progress bar, disable if quiet
-        pbar = tqdm(total=t_final, desc="Running Simulation", unit="s", initial=self.t, leave=True, disable=self.quiet)
-        self.pbar = pbar # Store pbar instance for writing messages
+        # If quiet, set pbar to None to avoid encoding issues with tqdm.write
+        if self.quiet:
+            self.pbar = None
+        else:
+            pbar = tqdm(total=t_final, desc="Running Simulation", unit="s", initial=self.t, leave=True, disable=self.quiet)
+            self.pbar = pbar # Store pbar instance for writing messages
 
         try: # Ensure pbar is closed even if errors occur
             while self.t < t_final and (max_steps is None or self.step_count < max_steps):
@@ -485,27 +515,45 @@ class SimulationRunner:
                 # Prevent excessively small dt near the end
                 if dt < self.params.epsilon:
                      # Add newline to avoid overwriting pbar
-                     pbar.write(f"\nTime step too small ({dt:.2e}), ending simulation slightly early at t={self.t:.4f}.")
+                     if self.pbar is not None:
+                         self.pbar.write(f"\nTime step too small ({dt:.2e}), ending simulation slightly early at t={self.t:.4f}.")
+                     else:
+                         if not self.quiet:
+                             print(f"\nTime step too small ({dt:.2e}), ending simulation slightly early at t={self.t:.4f}.")
                      break
 
 
                 # 4. Perform Time Step using Strang Splitting
                 # NOTE: strang_splitting_step will need modification to handle/return GPU arrays
-                if self.device == 'gpu':
-                    # Pass d_R (GPU road quality) if needed by time_integration (check its signature later)
-                    self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, d_R=self.d_R)
-                    current_U = self.d_U # Update handle
+                if self.params.has_network:
+                    # Use network-aware time integration
+                    if self.device == 'gpu':
+                        self.d_U = time_integration.strang_splitting_step_with_network(
+                            self.d_U, dt, self.grid, self.params, self.nodes, self.network_coupling
+                        )
+                        current_U = self.d_U
+                    else:
+                        self.U = time_integration.strang_splitting_step_with_network(
+                            self.U, dt, self.grid, self.params, self.nodes, self.network_coupling
+                        )
+                        current_U = self.U
                 else:
-                    self.U = time_integration.strang_splitting_step(self.U, dt, self.grid, self.params)
-                    current_U = self.U # Update handle
+                    # Standard time integration
+                    if self.device == 'gpu':
+                        self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, d_R=self.d_R)
+                        current_U = self.d_U
+                    else:
+                        self.U = time_integration.strang_splitting_step(self.U, dt, self.grid, self.params)
+                        current_U = self.U
 
 
                 # 5. Update Time
                 self.t += dt
                 self.step_count += 1
                 # Update progress bar display
-                pbar.n = min(self.t, t_final) # Set current progress
-                # pbar.refresh() # Let tqdm handle refresh automatically
+                if self.pbar is not None:
+                    self.pbar.n = min(self.t, t_final) # Set current progress
+                    # self.pbar.refresh() # Let tqdm handle refresh automatically
 
                 # --- Mass Conservation Check ---
                 if self.mass_check_config and (self.step_count % self.mass_check_config['frequency_steps'] == 0):
@@ -522,7 +570,11 @@ class SimulationRunner:
                         self.mass_m_data.append(current_mass_m)
                         self.mass_c_data.append(current_mass_c)
                     except Exception as e:
-                        pbar.write(f"Warning: Error calculating mass at t={self.t:.4f}: {e}")
+                        if self.pbar is not None:
+                            self.pbar.write(f"Warning: Error calculating mass at t={self.t:.4f}: {e}")
+                        else:
+                            if not self.quiet:
+                                print(f"Warning: Error calculating mass at t={self.t:.4f}: {e}")
 
                 # 6. Check for Numerical Issues (Positivity handled in hyperbolic step)
                 # If GPU, copy back temporarily to check for NaNs on CPU
@@ -533,7 +585,12 @@ class SimulationRunner:
                     nan_check_array = current_U
 
                 if np.isnan(nan_check_array).any():
-                    pbar.write(f"Error: NaN detected in state vector at t = {self.t:.4f}, step {self.step_count}.")
+                    error_msg = f"Error: NaN detected in state vector at t = {self.t:.4f}, step {self.step_count}."
+                    if self.pbar is not None:
+                        self.pbar.write(error_msg)
+                    else:
+                        if not self.quiet:
+                            print(error_msg)
                     # Optionally save the state just before NaN for debugging
                     # Consider saving the GPU state if possible, or the CPU copy
                     # io.data_manager.save_simulation_data("nan_state.npz", self.times, self.states, self.grid, self.params) # Saves CPU states list
@@ -551,10 +608,18 @@ class SimulationRunner:
                         self.states.append(np.copy(current_U[:, self.grid.physical_cell_indices]))
                     last_output_time = self.t
                     # Use pbar.write to print messages without breaking the bar
-                    pbar.write(f"  Stored output at t = {self.t:.4f} s (Step {self.step_count})")
+                    # Check if pbar is available before writing
+                    if self.pbar is not None:
+                        self.pbar.write(f"  Stored output at t = {self.t:.4f} s (Step {self.step_count})")
+                    else:
+                        # In quiet mode or if pbar is None, we don't print this specific message
+                        # unless there's a specific need. For now, let's keep it quiet if quiet=True.
+                        if not self.quiet:
+                            print(f"  Stored output at t = {self.t:.4f} s (Step {self.step_count})")
 
         finally:
-            pbar.close() # Close the progress bar
+            if self.pbar is not None:
+                self.pbar.close() # Close the progress bar
 
         end_time = time.time()
         # Add newline before final summary prints

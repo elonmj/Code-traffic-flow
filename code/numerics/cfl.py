@@ -294,6 +294,6 @@ def validate_and_correct_cfl(dt, max_abs_lambda, grid, params, tolerance=0.5):
     else:
         dt_corrected = dt
         if cfl_actual > 0.1:  # Afficher info si CFL significatif
-            warning_message = f"✅ CFL OK: {cfl_actual:.3f} ≤ {cfl_limit:.3f}"
-    
+            #warning_message = f"✅ CFL OK: {cfl_actual:.3f} ≤ {cfl_limit:.3f}"
+            pass
     return dt_corrected, cfl_actual, warning_message

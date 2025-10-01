@@ -1,0 +1,33 @@
+# Scenario Configuration for Stationary Free Flow Test
+
+scenario_name: "stationary_free_flow_test"
+
+# Time parameters (very short run)
+t_final: 1.0     # Run for 1 second to get initial state
+output_dt: 1.0   # Output every 1 second
+
+# Grid parameters (directly defined for SimulationRunner)
+N: 100
+xmin: 0.0
+xmax: 1000.0 # 1 km
+
+# Road quality (constant for this test)
+# Defined under 'road' dictionary
+road:
+  quality_type: "uniform"
+  quality_value: 3 # All cells have road category 3
+
+# Boundary Conditions (periodic for simplicity)
+boundary_conditions:
+  left:
+    type: "periodic"
+  right:
+    type: "periodic"
+
+# Initial Conditions: Uniform equilibrium state
+# This will compute w_m, w_c based on rho_m, rho_c, R_val
+initial_conditions:
+  type: "uniform_equilibrium"
+  rho_m: 50.0  # veh/km
+  rho_c: 20.0  # veh/km
+  R_val: 3     # Road category

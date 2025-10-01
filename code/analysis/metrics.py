@@ -104,3 +104,172 @@ def calculate_total_mass(state_physical: np.ndarray, grid: Grid1D, class_index: 
 #         print(f"Caught unexpected error for invalid class_index: {e}")
 #
 #     print("calculate_total_mass tests completed.")
+
+def compute_mape(observed, simulated):
+    """
+    Calcule l'erreur relative moyenne absolue (MAPE)
+    
+    Args:
+        observed (np.ndarray): Valeurs observées/référence
+        simulated (np.ndarray): Valeurs simulées
+    
+    Returns:
+        float: MAPE en pourcentage
+    """
+    observed = np.asarray(observed)
+    simulated = np.asarray(simulated)
+    mask = observed != 0
+    if not np.any(mask):
+        return np.inf
+    return np.mean(np.abs((observed[mask] - simulated[mask]) / observed[mask])) * 100
+
+def compute_rmse(observed, simulated):
+    """
+    Calcule l'erreur quadratique moyenne (RMSE)
+    
+    Args:
+        observed (np.ndarray): Valeurs observées/référence
+        simulated (np.ndarray): Valeurs simulées
+    
+    Returns:
+        float: RMSE
+    """
+    observed = np.asarray(observed)
+    simulated = np.asarray(simulated)
+    return np.sqrt(np.mean((observed - simulated)**2))
+
+def compute_geh(observed, simulated):
+    """
+    Calcule la statistique GEH pour les flux de trafic
+    
+    Args:
+        observed (np.ndarray): Flux observés
+        simulated (np.ndarray): Flux simulés
+    
+    Returns:
+        np.ndarray: Statistiques GEH pour chaque point
+    """
+    observed = np.asarray(observed)
+    simulated = np.asarray(simulated)
+    # Éviter division par zéro
+    denominator = observed + simulated
+    mask = denominator > 0
+    geh = np.zeros_like(observed)
+    geh[mask] = np.sqrt(2 * (observed[mask] - simulated[mask])**2 / denominator[mask])
+    return geh
+
+def compute_theil_u(observed, simulated):
+    """
+    Calcule le coefficient de Theil U
+    
+    Args:
+        observed (np.ndarray): Valeurs observées
+        simulated (np.ndarray): Valeurs simulées
+    
+    Returns:
+        float: Coefficient de Theil U
+    """
+    observed = np.asarray(observed)
+    simulated = np.asarray(simulated)
+    numerator = np.sqrt(np.mean((observed - simulated)**2))
+    denominator = np.sqrt(np.mean(observed**2)) + np.sqrt(np.mean(simulated**2))
+    return numerator / denominator if denominator > 0 else np.inf
+
+def calculate_convergence_order(grid_sizes, errors):
+    """
+    Calcule l'ordre de convergence numérique
+    
+    Args:
+        grid_sizes (list): Tailles de grille (N)
+        errors (list): Erreurs correspondantes (L2, etc.)
+    
+    Returns:
+        list: Ordres de convergence entre grilles consécutives
+    """
+    grid_sizes = np.asarray(grid_sizes)
+    errors = np.asarray(errors)
+    
+    if len(grid_sizes) < 2:
+        return []
+    
+    orders = []
+    for i in range(1, len(grid_sizes)):
+        h1 = 1.0 / grid_sizes[i-1]  # dx = L/N
+        h2 = 1.0 / grid_sizes[i]
+        e1 = errors[i-1]
+        e2 = errors[i]
+        
+        if e1 > 0 and e2 > 0 and h1 != h2:
+            order = np.log(e1/e2) / np.log(h1/h2)
+            orders.append(order)
+        else:
+            orders.append(np.nan)
+    
+    return orders
+
+def analytical_riemann_solution(x, t, rho_left, v_left, rho_right, v_right, params):
+    """
+    Solution analytique pour problème de Riemann ARZ simplifié
+    
+    Args:
+        x (np.ndarray): Positions
+        t (float): Temps
+        rho_left, v_left: État gauche (densité, vitesse)
+        rho_right, v_right: État droit (densité, vitesse)
+        params: Paramètres du modèle (V0, tau, etc.)
+    
+    Returns:
+        tuple: (rho(x,t), v(x,t)) solutions analytiques
+    """
+    # Solution simplifiée pour cas particuliers (onde de raréfaction/choc)
+    # Implémentation basique - à raffiner selon les cas
+    
+    x = np.asarray(x)
+    rho = np.zeros_like(x)
+    v = np.zeros_like(x)
+    
+    # Position de discontinuité initiale
+    x0 = 0.0
+    
+    # Vitesses caractéristiques approximatives
+    c_left = v_left + rho_left * params.V0 / params.tau  # Approximation
+    c_right = v_right + rho_right * params.V0 / params.tau
+    
+    # Position du front à l'instant t
+    front_pos = x0 + 0.5 * (c_left + c_right) * t
+    
+    # Assignation simple gauche/droite
+    mask_left = x < front_pos
+    rho[mask_left] = rho_left
+    v[mask_left] = v_left
+    rho[~mask_left] = rho_right
+    v[~mask_left] = v_right
+    
+    return rho, v
+
+def analytical_equilibrium_profile(x, params, rho0=0.1, perturbation_amplitude=0.05):
+    """
+    Profil d'équilibre analytique pour validation
+    
+    Args:
+        x (np.ndarray): Positions
+        params: Paramètres du modèle
+        rho0: Densité d'équilibre de base
+        perturbation_amplitude: Amplitude des perturbations
+    
+    Returns:
+        tuple: (rho_eq(x), v_eq(x)) profils d'équilibre
+    """
+    x = np.asarray(x)
+    
+    # Profil de densité avec petites variations
+    rho_eq = rho0 * (1 + perturbation_amplitude * np.sin(2 * np.pi * x / (x[-1] - x[0])))
+    
+    # Vitesse d'équilibre selon relation V-rho
+    v_eq = params.V0 * (1 - rho_eq / params.rho_max)
+    
+    # Assurer positivité
+    rho_eq = np.maximum(rho_eq, 0.01)
+    v_eq = np.maximum(v_eq, 0.1)
+    
+    return rho_eq, v_eq

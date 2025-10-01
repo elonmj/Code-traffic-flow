@@ -10,7 +10,9 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 import argparse
+import json
 import time
+is_kaggle = 'KAGGLE_KERNEL_RUN_TYPE' in os.environ
 
 
 try:
@@ -31,81 +33,94 @@ def main():
     Parses command-line arguments for configuration files,
     runs the simulation, and saves the results.
     """
-    parser = argparse.ArgumentParser(description="Run a single ARZ traffic simulation scenario.")
-    parser.add_argument(
-        '--scenario',
-        required=True,
-        help="Path to the scenario configuration YAML file."
-    )
-    parser.add_argument(
-        '--base_config',
-        default='config/config_base.yml',
-        help="Path to the base configuration YAML file (default: config/config_base.yml)."
-    )
-    parser.add_argument(
-        '--output_dir',
-        default='results',
-        help="Directory to save the simulation results (default: results)."
-    )
-    parser.add_argument(
-        '--estimate',
-        action='store_true',
-        help="Run a short simulation to estimate total time instead of a full run."
-    )
-    parser.add_argument(
-        '--estimate_steps',
-        type=int,
-        default=1000,
-        help="Number of steps to run for time estimation (used with --estimate)."
-    )
-    parser.add_argument(
-        '--quiet',
-        action='store_true',
-        help="Suppress most output messages during the simulation."
-    )
-    parser.add_argument(
-        '--device',
-        choices=['cpu', 'gpu'],
-        default='cpu',
-        help="Specify the device to use for computation: 'cpu' or 'gpu' (default: 'cpu')."
-    )
-
-    args = parser.parse_args()
-
-    # --- Configuration Paths ---
-    # Assume paths are relative to the current working directory where the script is run
-    scenario_config_path = args.scenario
-    base_config_path = args.base_config
-    output_dir = args.output_dir
+    if is_kaggle:
+        with open(os.path.join(parent_dir, 'config.json'), 'r') as f:
+            config = json.load(f)
+        scenario_config_path = config['scenario']
+        base_config_path = config['base_config']
+        output_dir = '/kaggle/working/'
+        device = config['device']
+        estimate = config['estimate']
+        estimate_steps = 1000
+        quiet = False
+        import subprocess
+        subprocess.run(['pip', 'install', '-r', os.path.join(parent_dir, 'requirements_simulation.txt')])
+    else:
+        parser = argparse.ArgumentParser(description="Run a single ARZ traffic simulation scenario.")
+        parser.add_argument(
+            '--scenario',
+            required=True,
+            help="Path to the scenario configuration YAML file."
+        )
+        parser.add_argument(
+            '--base_config',
+            default='config/config_base.yml',
+            help="Path to the base configuration YAML file (default: config/config_base.yml)."
+        )
+        parser.add_argument(
+            '--output_dir',
+            default='results',
+            help="Directory to save the simulation results (default: results)."
+        )
+        parser.add_argument(
+            '--estimate',
+            action='store_true',
+            help="Run a short simulation to estimate total time instead of a full run."
+        )
+        parser.add_argument(
+            '--estimate_steps',
+            type=int,
+            default=1000,
+            help="Number of steps to run for time estimation (used with --estimate)."
+        )
+        parser.add_argument(
+            '--quiet',
+            action='store_true',
+            help="Suppress most output messages during the simulation."
+        )
+        parser.add_argument(
+            '--device',
+            choices=['cpu', 'gpu'],
+            default='cpu',
+            help="Specify the device to use for computation: 'cpu' or 'gpu' (default: 'cpu')."
+        )
+        args = parser.parse_args()
+        scenario_config_path = args.scenario
+        base_config_path = args.base_config
+        output_dir = args.output_dir
+        device = args.device
+        estimate = args.estimate
+        estimate_steps = args.estimate_steps
+        quiet = args.quiet
 
     # Always print initial simulation info
     print("-" * 50)
-    if args.estimate:
-        print(f"Starting Time Estimation Run ({args.estimate_steps} steps)")
+    if estimate:
+        print(f"Starting Time Estimation Run ({estimate_steps} steps)")
     else:
         print(f"Starting Full Simulation")
     print(f"Scenario Config: {scenario_config_path}")
     print(f"Base Config:     {base_config_path}")
-    if not args.estimate: # Only show output dir for full run
+    if not estimate: # Only show output dir for full run
         print(f"Output Dir:      {output_dir}")
     print("-" * 50)
 
 
-    if args.estimate:
+    if estimate:
         try:
             # --- Initialize Runner for Estimation ---
             # SimulationRunner handles loading configs internally
             runner_est = SimulationRunner(
                 scenario_config_path=scenario_config_path,
                 base_config_path=base_config_path,
-                quiet=args.quiet, # Pass quiet flag
-                device=args.device # Pass the device argument
+                quiet=quiet, # Pass quiet flag
+                device=device # Pass the device argument
             )
 
             # --- Run Simulation for Estimation Steps ---
             start_wall_time = time.time()
             # Run with max_steps set, t_final is still needed for dt calculation context
-            runner_est.run(t_final=runner_est.params.t_final, max_steps=args.estimate_steps)
+            runner_est.run(t_final=runner_est.params.t_final, max_steps=estimate_steps)
             end_wall_time = time.time()
 
             # --- Calculate Estimates ---
@@ -132,7 +147,7 @@ def main():
 
 
             # --- Print Estimates ---
-            if not args.quiet:
+            if not quiet:
                 print("-" * 50)
                 print("Time Estimation Results:")
                 print(f"  Estimation run duration: {elapsed_wall_time:.2f} seconds")
@@ -173,8 +188,8 @@ def main():
             runner = SimulationRunner(
                 scenario_config_path=scenario_config_path,
                 base_config_path=base_config_path,
-                quiet=args.quiet, # Pass quiet flag
-                device=args.device # Pass the device argument
+                quiet=quiet, # Pass quiet flag
+                device=device # Pass the device argument
             )
 
             # --- Print Loaded Parameters (DEBUGGING) ---
@@ -189,7 +204,7 @@ def main():
             times, states = runner.run()
             end_run_time = time.time() # Record time after run
             run_duration = end_run_time - start_run_time
-            if args.quiet: # Print duration if quiet mode suppressed it
+            if quiet: # Print duration if quiet mode suppressed it
                 print(f"Total run() duration (quiet mode): {run_duration:.2f} seconds.")
 
 
@@ -214,7 +229,7 @@ def main():
                 params=runner.params
             )
 
-            if not args.quiet:
+            if not quiet:
                 print("-" * 50)
                 print("Simulation completed successfully.")
                 print("-" * 50)

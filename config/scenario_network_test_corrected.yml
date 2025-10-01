@@ -1,0 +1,137 @@
+# Test du couplage réseau corrigé - conservation de la masse
+
+# Paramètres généraux
+model_type: "ARZ"
+dimension: 1
+num_classes: 2
+
+# Paramètres de grille (requis par le code)
+N: 100
+xmin: 0.0
+xmax: 1000.0
+
+# Paramètres compatibilité
+cfl_number: 0.3
+t_final: 10.0
+output_dt: 0.5
+
+physics:
+  alpha: 1.5              # Paramètre du diagramme fondamental
+  rho_jam: 0.2            # Densité de congestion [veh/m]
+  
+  # Vitesses maximales par catégorie [m/s]
+  v_max_m:    # Motos
+    cat1: 16.67  # ~60 km/h
+    cat2: 13.89  # ~50 km/h  
+    cat3: 11.11  # ~40 km/h
+  v_max_c:    # Voitures
+    cat1: 13.89  # ~50 km/h
+    cat2: 11.11  # ~40 km/h
+    cat3: 8.33   # ~30 km/h
+    
+  # Paramètres relaxation ODE
+  tau_relax_m: 2.0        # Temps relaxation motos [s]
+  tau_relax_c: 3.0        # Temps relaxation voitures [s]
+  
+  # Paramètres flow breakdown
+  K_m: 0.4               # Densité critique motos
+  gamma_m: 2.0           # Exposant breakdown motos
+  K_c: 0.3               # Densité critique voitures  
+  gamma_c: 1.5           # Exposant breakdown voitures
+  
+  # Paramètre creeping
+  rho_jam_eq: 0.8        # Seuil équivalence densité
+  V_creeping: 1.0        # Vitesse creeping [m/s]
+
+numerics:
+  epsilon: 1e-12         # Seuil numérique
+  device: cpu            # cpu ou gpu
+  spatial_scheme: first_order  # first_order ou weno5
+  time_scheme: ssprk3    # euler ou ssprk3
+  use_riemann_solver: false
+
+# Configuration spatiale 
+spatial:
+  N: 100
+  L: 1000.0  
+  xmin: 0.0
+  xmax: 1000.0
+  ghost_cells: 3
+  boundary_conditions: "dirichlet"
+
+# Configuration temporelle
+temporal:
+  T_final: 10.0
+  t_final_sec: 10.0
+  output_dt_sec: 0.5
+  CFL: 0.3
+  time_scheme: "ssprk3"
+
+grid:
+  L: 1000.0             # Longueur domaine [m]
+  N: 100                # Nombre de cellules physiques
+  xmin: 0.0             # Position minimale [m]
+  xmax: 1000.0          # Position maximale [m]
+  num_ghost_cells: 3    # Cellules fantômes
+  CFL: 0.3              # Nombre CFL
+
+time:
+  t_final: 10.0         # Temps final [s]
+  output_dt: 0.5        # Pas de temps sortie [s]
+  output_frequency: 0.5 # Fréquence sortie [s]
+
+# Configuration réseau simple - un seul nœud, deux segments
+network:
+  has_network: true
+  segments:
+    - id: "seg1"
+      length: 500.0
+      start_position: 0.0
+      end_position: 500.0
+      start_node_id: "source"
+      end_node_id: "junction1"
+    - id: "seg2" 
+      length: 500.0
+      start_position: 500.0
+      end_position: 1000.0
+      start_node_id: "junction1"
+      end_node_id: "sink"
+  
+  nodes:
+    - id: "source"
+      type: "source"
+      position: 0.0
+      segments: ["seg1"]
+      capacity: 0.15
+    - id: "junction1"
+      type: "intersection"
+      position: 500.0
+      segments: ["seg1", "seg2"]
+      turn_ratios:
+        "seg1->seg2": 1.0  # Tout le trafic passe
+    - id: "sink"
+      type: "sink"
+      position: 1000.0
+      segments: ["seg2"]
+
+# Conditions initiales - densité uniforme faible
+initial_conditions:
+  type: uniform
+  state: [0.02, 0.30, 0.03, 0.36]  # [rho_m, w_m, rho_c, w_c] - densités faibles, flux modérés
+
+# Conditions aux limites - injection constante
+boundary_conditions:
+  left:
+    type: dirichlet
+    rho_m: 0.05        # Injection motos [veh/m]
+    rho_c: 0.08        # Injection voitures [veh/m]
+    v_m: 15.0          # Vitesse motos [m/s] 
+    v_c: 12.0          # Vitesse voitures [m/s]
+  right:
+    type: neumann      # Sortie libre
+
+# Sortie
+output:
+  save_data: true
+  output_dir: "./results"
+  filename: "network_test_corrected"

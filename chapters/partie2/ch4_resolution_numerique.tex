@@ -1,0 +1,108 @@
+\chapter{Stratégie de Résolution Numérique Haute-Fidélité}
+\label{chap:strategie_resolution_numerique}
+
+\section{Introduction}
+La mise en œuvre numérique de notre modèle ARZ étendu constitue un défi majeur, directement hérité des propriétés mathématiques établies au Chapitre 4. La résolution doit adresser simultanément plusieurs difficultés spécifiques et interdépendantes :
+\begin{enumerate}
+    \item La \textbf{non-homogénéité spatiale} introduite par la qualité de l'infrastructure $R(x)$.
+    \item La \textbf{raideur (stiffness)} potentielle des termes de relaxation, en particulier avec le temps de réaction adaptatif des motos $\tau_m(\rho)$.
+    \item Les \textbf{conditions de couplage complexes aux nœuds}, qui doivent assurer la transmission cohérente des variables.
+\end{enumerate}
+
+Ce chapitre détaille la stratégie numérique de haute-fidélité que nous avons développée pour relever ces défis. Chaque composant est choisi et justifié par sa capacité à traiter une ou plusieurs de ces spécificités.
+
+\section{Architecture Générale du Schéma Numérique}
+
+\subsection{Discrétisation par la Méthode des Volumes Finis : De la Loi de Conservation à la Forme Semi-Discrète}
+Le choix fondamental de notre discrétisation spatiale est la \textbf{méthode des volumes finis (FVM)}. Sa principale vertu est qu'elle garantit, par construction, la conservation des quantités (comme la masse des véhicules) au niveau discret, ce qui est impératif pour la validité physique de nos simulations.
+
+Le processus de dérivation est le suivant. Considérons une loi de conservation générique pour notre vecteur d'état $\mathbf{U}$, en incluant le terme source $\mathbf{S}$ :
+\[ \frac{\partial \mathbf{U}}{\partial t} + \frac{\partial \mathbf{F}(\mathbf{U})}{\partial x} = \mathbf{S} \]
+
+\textbf{Étape 1 : Intégration sur un volume de contrôle.}
+Nous intégrons cette EDP sur un "volume de contrôle" (une cellule) $\mathcal{C}_j = [x_{j-1/2}, x_{j+1/2}]$ de taille $\Delta x$:
+\[ \int_{x_{j-1/2}}^{x_{j+1/2}} \frac{\partial \mathbf{U}}{\partial t} \,dx + \int_{x_{j-1/2}}^{x_{j+1/2}} \frac{\partial \mathbf{F}(\mathbf{U})}{\partial x} \,dx = \int_{x_{j-1/2}}^{x_{j+1/2}} \mathbf{S} \,dx \]
+
+\textbf{Étape 2 : Définition de la moyenne de cellule.}
+La variable que nous allons résoudre numériquement n'est pas la valeur ponctuelle de $\mathbf{U}$, mais sa moyenne sur la cellule $\mathcal{C}_j$:
+\[ \mathbf{U}_j(t) = \frac{1}{\Delta x} \int_{x_{j-1/2}}^{x_{j+1/2}} \mathbf{U}(x,t) \,dx \]
+En supposant les limites de la cellule fixes, le premier terme de l'équation intégrée devient $\frac{d}{dt} (\Delta x \mathbf{U}_j) = \Delta x \frac{d\mathbf{U}_j}{dt}$. Le terme source est approché par sa valeur moyenne dans la cellule, $\Delta x \mathbf{S}_j$.
+
+\textbf{Étape 3 : Application du théorème fondamental de l'analyse.}
+Le terme de flux est transformé par le théorème fondamental de l'analyse (qui est la version 1D du théorème de la divergence) :
+\[ \int_{x_{j-1/2}}^{x_{j+1/2}} \frac{\partial \mathbf{F}(\mathbf{U})}{\partial x} \,dx = \mathbf{F}(\mathbf{U}(x_{j+1/2}, t)) - \mathbf{F}(\mathbf{U}(x_{j-1/2}, t)) \]
+
+\textbf{Étape 4 : Introduction du flux numérique.}
+L'équation exacte pour la moyenne de cellule est donc :
+\[ \frac{d\mathbf{U}_j}{dt} = - \frac{1}{\Delta x} \left[ \mathbf{F}(\mathbf{U}(x_{j+1/2}, t)) - \mathbf{F}(\mathbf{U}(x_{j-1/2}, t)) \right] + \mathbf{S}_j \]
+Le problème crucial est que nous ne connaissons pas les valeurs exactes de $\mathbf{U}$ aux interfaces $x_{j\pm1/2}$, d'autant plus que la solution peut y être discontinue (un choc). Nous devons donc approcher le flux aux interfaces par un \textbf{flux numérique}, noté $\mathbf{F}^*$. Ce flux numérique est une fonction qui dépend de l'état du trafic de part et d'autre de l'interface (par exemple, à partir des moyennes des cellules $\mathbf{U}_j$ et $\mathbf{U}_{j+1}$) :
+\[ \mathbf{F}^*_{j+1/2} \approx \mathbf{F}(\mathbf{U}(x_{j+1/2}, t)) \]
+Le flux numérique doit être cohérent, c'est-à-dire que si l'état est le même des deux côtés, il doit retourner le flux physique : $\mathbf{F}^*(\mathbf{V}, \mathbf{V}) = \mathbf{F}(\mathbf{V})$.
+
+\textbf{Étape 5 : La forme semi-discrète finale.}
+En remplaçant le flux exact par le flux numérique, nous obtenons la forme semi-discrète qui est le point de départ de notre résolution temporelle :
+\[ \frac{d\mathbf{U}_j}{dt} = - \frac{1}{\Delta x} (\mathbf{F}^*_{j+1/2} - \mathbf{F}^*_{j-1/2}) + \mathbf{S}_j \]
+Le cœur du défi numérique réside désormais dans la conception d'un flux numérique $\mathbf{F}^*$ qui soit à la fois stable et précis. C'est ce qui justifie le recours aux méthodes avancées décrites dans les sections suivantes.
+
+La gestion du terme source non-homogène, $\mathbf{S}(\mathbf{U}, R(x))$, requiert une attention particulière. Nous supposons que la fonction $R(x)$ est connue, potentiellement sur une grille de discrétisation plus fine que celle du trafic. Pour chaque cellule $\mathcal{C}_j$, une valeur moyenne $\bar{R}_j$ est calculée par une quadrature d'ordre élevé.
+
+Si $R(x)$ présente une discontinuité forte (ex: un nid-de-poule majeur) à un point $x_d$, ce point est traité comme une \textbf{interface interne}. Le schéma de volumes finis est alors appliqué de part et d'autre de cette interface, avec un flux numérique spécifique à $x_d$ qui modélise la perte de performance des véhicules la traversant. Bien que cette approche capture la physique, elle réduit localement l'ordre de précision du schéma à 1 au voisinage de la discontinuité.
+Pour les discontinuités de $R(x)$, nous utilisons un solveur de Riemann local qui calcule le flux numérique $\mathbf{F}^*_{j+1/2}$ en résolvant le problème de Riemann associé aux états $\mathbf{U}_j$ et $\mathbf{U}_{j+1}$ avec leurs valeurs respectives $R(x_j)$ et $R(x_{j+1})$. Cette approche, similaire à celle utilisée pour les nœuds de réseau, garantit la conservation de la masse à travers la discontinuité.
+
+\subsection{Découplage par Fractionnement d'Opérateurs : Justification du Schéma de Strang}
+L'erreur introduite par un fractionnement d'opérateurs est proportionnelle au commutateur $[\mathcal{L}, \mathcal{S}] = \mathcal{L}\mathcal{S} - \mathcal{S}\mathcal{L}$ des opérateurs de convection et de source. Dans notre modèle, les dépendances de $\mathbf{S}$ à $\rho$ via $\tau_m(\rho)$ et $V_{e,i}$ rendent ce commutateur significatif. Un fractionnement d'ordre 1 (type Godunov) introduirait une erreur en $O(\Delta t)$ qui dégraderait la solution. Le schéma de Strang, avec une erreur en $O(\Delta t^2)$, est donc indispensable pour maintenir une haute précision globale, ce qui est justifié par des tests de convergence numériques.
+
+\section{Le Solveur Haute-Fidélité pour la Partie Hyperbolique}
+
+\subsection{Le Principe WENO et son Application à notre Modèle Couplé}
+Le mécanisme adaptatif de la méthode WENO5 est crucial pour gérer les couplages non-linéaires de notre modèle. Une onde de choc sur la densité totale $\rho$ va générer une discontinuité dans la densité effective perçue par les motos, $\rho_{\text{eff},m} = \rho_m + \alpha(\rho) \rho_c$, via la fonction $\alpha(\rho)$. Les indicateurs de régularité du WENO sont capables de détecter cette discontinuité induite et d'ajuster la reconstruction pour la capturer sans oscillations, une tâche où des schémas plus simples échoueraient.
+
+\subsection{Analyse du Schéma de Flux et de l'Intégration Temporelle}
+
+\subsubsection{Justification du Flux Central-Upwind}
+La complexité de la matrice Jacobienne 4x4 couplée de notre système rend les schémas basés sur une décomposition en vecteurs propres (comme Roe) excessivement coûteux. Le schéma \textbf{Central-Upwind (CU)} est donc préféré car il ne requiert que l'estimation des vitesses d'onde extrêmes, offrant un excellent compromis entre robustesse, efficacité et faible dissipation numérique, ce qui est essentiel pour ne pas atténuer les phénomènes physiques subtils.
+
+\subsubsection{Condition CFL Spécifique au Modèle}
+La condition de stabilité (CFL) doit intégrer les dépendances de notre modèle. La vitesse d'onde maximale $\lambda_{\max}$ dépend de l'état local $\mathbf{U}_j$ et de la qualité de l'infrastructure $R(x_j)$. Le pas de temps est donc adapté dynamiquement :
+\[ \Delta t = \text{CFL} \cdot \min_{j} \left( \frac{\Delta x}{\lambda_{\max}(\mathbf{U}_j, R(x_j))} \right) \]
+où $\lambda_{\max}$ est calculée numériquement sur tout le réseau à chaque itération.
+
+\section{Mise en Œuvre sur le Réseau et Couplage Numérique aux Nœuds}
+
+\subsection{Gestion des Conditions aux Limites Globales du Réseau}
+Les frontières du réseau sont traitées comme des nœuds spéciaux.
+\begin{itemize}
+    \item \textbf{Entrées (Sources)} : Une entrée est un nœud avec un seul arc sortant. La "Demande" est imposée par un profil de trafic donné $q_{in}(t)$, et l'état $w_{in}$ est supposé être à l'équilibre.
+    \item \textbf{Sorties (Puise)} : Une sortie est un nœud avec un seul arc entrant. L'"Offre" est supposée infinie (conditions de circulation libre), ce qui signifie que le trafic n'est jamais bloqué par l'aval.
+\end{itemize}
+
+\subsection{Le Solveur de Riemann du Nœud : Algorithme Détaillé}
+\textbf{Algorithme 5.2 : Solveur de Riemann pour un Nœud de Réseau}
+
+\begin{enumerate}
+    \item \textbf{Pour chaque arc entrant $i$ et classe $k$:}
+    \item \quad \textbf{Si} $k=m$ ET $\rho_c \ge \rho_{\text{jam},c}$ \textbf{Alors} $D_i^m = \rho_{im} v_{\text{creep}} \gamma(\rho_{ic}/\rho_{\text{jam},c})$  (\textit{Flux de Creeping})
+    \item \quad \textbf{Sinon} Calculer la Demande $D_i^k$ à partir de l'état amont $\mathbf{U}_i$.
+    \item \textbf{Pour chaque arc sortant $j$ et classe $k$:}
+    \item \quad Calculer l'Offre $S_j^k$, qui est le flux maximal que l'arc peut absorber. L'offre $S_j^k$ est calculée comme le maximum du débit $q_k(\rho) = \rho v_k(\rho)$ pour $\rho \in [0, \rho_{\text{jam},k}]$, résolu numériquement par une méthode de recherche de maximum sur la courbe fondamentale de chaque classe.
+    \item \textbf{Résoudre le problème de maximisation du flux} pour obtenir les flux effectifs $q_{ij}^k$.
+    \item \textbf{Pour chaque arc sortant $j$ et classe $k$:}
+    \item \quad Calculer la densité entrante $\rho_{\text{out},j}^k$ à partir du flux total $\sum_i q_{ij}^k$.
+    \item \quad Calculer la moyenne pondérée des variables lagrangiennes entrantes : $\bar{w}_{\text{in},j}^k = \frac{\sum_i q_{ij}^k w_{ik}}{\sum_i q_{ij}^k}$. Ce choix physique donne plus de poids au comportement des véhicules qui contribuent le plus au flux.
+    \item \quad Calculer la variable lagrangienne de sortie : $w_{\text{out},j}^k = w_{e,k}(\rho_{\text{out},j}^k) + \theta_k \cdot (\bar{w}_{\text{in},j}^k - \bar{w}_{e,k}(\rho_{\text{in},j}^k))$.
+    \item \textbf{Retourner} les flux et les états de sortie.
+\end{enumerate}
+
+\section{Robustesse, Sensibilité et Limites}
+
+\subsection{Analyse de Sensibilité et Impact des Paramètres Numériques}
+\begin{itemize}
+    \item \textbf{Impact de WENO} : La capacité du WENO5 à résoudre les courtes longueurs d'onde est essentielle pour capturer l'émergence des ondes \textit{stop-and-go}. Des tests montrent qu'un WENO d'ordre inférieur (WENO3) tend à amortir ces instabilités plus rapidement, sous-estimant ainsi la congestion dynamique.
+    \item \textbf{Impact de la Dissipation} : Le faible niveau de dissipation du schéma Central-Upwind est crucial. Un schéma plus dissipatif pourrait "effacer" numériquement le phénomène de \textit{creeping}, qui est de faible amplitude par nature.
+\end{itemize}
+
+\subsection{Stabilité face aux Comportements Extrêmes}
+Les comportements agressifs des motos sont modélisés par une valeur de $\theta_m$ proche de 1. Ceci peut potentiellement déstabiliser le schéma de couplage au nœud. La robustesse est ici assurée par deux éléments : l'intégrateur temporel SSP, conçu pour gérer de telles conditions sans introduire d'oscillations, et l'adaptation dynamique du pas de temps via la condition CFL qui se resserre automatiquement dans les zones de forte interaction.
+
+\section{Conclusion du Chapitre}
+Ce chapitre a détaillé la stratégie de résolution numérique de haute-fidélité, en justifiant chaque composant par rapport aux défis spécifiques de notre modèle ARZ étendu. L'architecture (FVM, Strang), les solveurs (WENO, Central-Upwind, SSP-RK) et l'algorithme de couplage aux nœuds ont été adaptés pour gérer la non-homogénéité, la raideur, les couplages non-linéaires et les comportements spécifiques du trafic béninois. Des tests de convergence et une analyse de sensibilité confirment la robustesse et la précision de notre implémentation. Nous disposons ainsi d'une plateforme de simulation numériquement fiable, prête pour les études quantitatives qui suivront.

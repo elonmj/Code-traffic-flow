@@ -1,0 +1,71 @@
+# Base Configuration for ARZ Simulation
+
+# Scenario name (will be overridden by scenario config)
+scenario_name: "base_scenario"
+
+# Default time parameters (will be overridden by scenario config)
+t_final_sec: 60.0     # 1 minute default
+output_dt_sec: 10.0   # Output every 10 seconds default
+
+# Default output directory (relative to where script is run)
+output_dir: "results"
+
+# Default grid parameters (will be overridden by scenario config)
+grid:
+  N_cells: 100
+  x_min_m: 0.0
+  x_max_m: 1000.0 # 1 km
+  num_ghost_cells: 2
+
+# Default road quality (will be overridden by scenario config)
+# This is a placeholder, as R(x) is usually defined per scenario
+road_quality_default: 3 # Default to category 3 if not specified
+
+# Boundary Conditions (will be overridden by scenario config)
+boundary_conditions:
+  left:
+    type: "periodic" # Default BC
+  right:
+    type: "periodic" # Default BC
+
+# Initial Conditions (will be overridden by scenario config)
+# Placeholder, as ICs are scenario-specific
+initial_conditions:
+  type: "uniform"
+  state:
+    rho_m_veh_m: 0.01  # Very low density
+    w_m_ms: 10.0       # Initial guess for w_m
+    rho_c_veh_m: 0.01  # Very low density
+    w_c_ms: 10.0       # Initial guess for w_c
+
+# Physical Parameters (Base Values)
+# Units: km/h for speeds, seconds for time, veh/km for density unless otherwise specified
+alpha: 0.4
+V_creeping_kmh: 5.0 # km/h
+rho_jam_veh_km: 250.0 # veh/km
+pressure:
+  gamma_m: 1.5
+  gamma_c: 2.0
+  K_m_kmh: 10.0 # km/h
+  K_c_kmh: 15.0 # km/h
+relaxation:
+  tau_m_sec: 5.0 # seconds
+  tau_c_sec: 10.0 # seconds
+# Vmax values per road category R (km/h)
+Vmax_kmh:
+  c: {1: 75.0, 2: 60.0, 3: 35.0, 4: 25.0, 5: 10.0, 9: 35.0}
+  m: {1: 85.0, 2: 70.0, 3: 50.0, 4: 45.0, 5: 30.0, 9: 50.0}
+# Default Flux Composition (can be overridden by scenario)
+flux_composition:
+  urban: {m: 0.75, c: 0.25}
+  interurban: {m: 0.50, c: 0.50}
+
+# Numerical Parameters
+cfl_number: 0.8
+ghost_cells: 2
+# ODE Solver options for Strang Splitting
+ode_solver: 'RK45' # Default, e.g., 'LSODA', 'Radau', 'BDF' for stiff
+ode_rtol: 1.0e-6
+ode_atol: 1.0e-6
+# Small epsilon for numerical stability
+epsilon: 1.0e-10

@@ -1,0 +1,35 @@
+# Scenario Configuration for Classical Riemann Problem Test
+
+scenario_name: "riemann_problem_test"
+
+# Time parameters
+t_final: 10.0     # Run for 10 seconds to see wave propagation
+output_dt: 1.0   # Output every 1 second
+
+# Grid parameters
+N: 200
+xmin: 0.0
+xmax: 2000.0 # 2 km
+
+# Road quality (constant for this test)
+road:
+  quality_type: "uniform"
+  quality_value: 3 # All cells have road category 3
+
+# Boundary Conditions (outflow to let waves exit)
+boundary_conditions:
+  left:
+    type: "outflow"
+  right:
+    type: "outflow"
+
+# Initial Conditions: Riemann problem
+# Two constant states separated by a discontinuity at split_pos
+initial_conditions:
+  type: "riemann"
+  # Left state (rho_m, w_m, rho_c, w_c)
+  U_L: [0.02, 15.0, 0.01, 10.0]  # Low density, high speed (veh/m, m/s)
+  # Right state (rho_m, w_m, rho_c, w_c)
+  U_R: [0.15, 5.0, 0.10, 3.0]   # High density, low speed (veh/m, m/s)
+  # Position of the discontinuity (in meters)
+  split_pos: 1000.0 # Middle of the domain

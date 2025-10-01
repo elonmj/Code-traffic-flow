@@ -1,0 +1,90 @@
+{
+  "parameters": {
+    "max_speed_primary": 60.0,
+    "max_speed_secondary": 50.0,
+    "max_speed_tertiary": 40.0,
+    "flow_capacity_primary": 1800,
+    "flow_capacity_secondary": 1500,
+    "flow_capacity_tertiary": 1200,
+    "lane_change_probability": 0.1,
+    "intersection_delay_primary": 15.0,
+    "intersection_delay_secondary": 20.0,
+    "intersection_delay_tertiary": 25.0,
+    "speed_adaptation_factor": 0.8,
+    "congestion_threshold": 0.7,
+    "peak_hour_factor": 1.2,
+    "off_peak_factor": 0.9,
+    "weather_impact_factor": 1.0,
+    "incident_impact_factor": 0.5,
+    "estimated_avg_speed": 52.714285714285715,
+    "estimated_avg_density": 10.0,
+    "congestion_index": 0.12321428571428572,
+    "data_segments": 70
+  },
+  "metrics": {
+    "rmse": 0.15,
+    "mae": 0.12,
+    "r2": 0.82,
+    "congestion_index": 0.12321428571428572
+  },
+  "network_statistics": {
+    "total_segments": 70,
+    "avg_speed": 52.714285714285715,
+    "avg_density": 10.0,
+    "congestion_index": 0.12321428571428572,
+    "speed_distribution": {
+      "mean": 52.714285714285715,
+      "median": 50.0,
+      "std": 7.731462358705605,
+      "min": 40.0,
+      "max": 60.0,
+      "percentiles": {
+        "25": 50.0,
+        "75": 60.0,
+        "90": 60.0
+      }
+    },
+    "density_distribution": {
+      "mean": 10.0,
+      "median": 10.0,
+      "std": 0.0,
+      "min": 10.0,
+      "max": 10.0,
+      "percentiles": {
+        "25": 10.0,
+        "75": 10.0,
+        "90": 10.0
+      }
+    }
+  },
+  "data_info": {
+    "source_file": "data/fichier_de_travail_corridor.xlsx",
+    "num_segments": 70,
+    "data_quality": {
+      "total_segments": 70,
+      "complete_segments": 0,
+      "missing_data_rate": {
+        "u": 0.0,
+        "v": 0.0,
+        "name_clean": 0.0,
+        "highway": 0.0,
+        "length": 0.0,
+        "oneway": 0.0,
+        "lanes_manual": 1.0,
+        "Rx_manual": 1.0,
+        "maxspeed_manual_kmh": 1.0
+      },
+      "road_type_distribution": {
+        "primary": 33,
+        "secondary": 23,
+        "tertiary": 14
+      }
+    }
+  },
+  "metadata": {
+    "group_id": "victoria_island_corridor",
+    "timestamp": "2025-09-08T16:26:05.738240",
+    "version": "1.0",
+    "format": "calibration_result"
+  }
+}
