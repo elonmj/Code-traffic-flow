@@ -138,3 +138,23 @@
 2025-10-01 21:18:37,826 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
 2025-10-01 21:18:40,808 - kaggle_manager_github - ERROR -  Kernel upload failed: 
 2025-10-01 21:20:14,445 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-01 21:27:28,417 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-01 21:27:37,053 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-01 21:27:38,146 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-01 21:27:38,394 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-01 21:27:38,394 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-01 21:27:38,395 - kaggle_manager_github - INFO -    M validation_kaggle_manager.py (Modified (unstaged))
+2025-10-01 21:27:38,396 - kaggle_manager_github - INFO -   ?? debug_encoding_validation.py (Untracked)
+2025-10-01 21:27:38,396 - kaggle_manager_github - INFO -   ?? test_minimal_kernel.py (Untracked)
+2025-10-01 21:27:38,396 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-01 21:27:38,563 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-01 21:27:38,824 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-01 21:27:38,824 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-01 21:27:42,921 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-01 21:27:47,850 - kaggle_manager_github - ERROR - [ERROR] Kernel upload failed
+2025-10-01 21:27:47,850 - kaggle_manager_github - ERROR - [ERROR] Return code: 1
+2025-10-01 21:27:47,850 - kaggle_manager_github - ERROR - [ERROR] STDOUT: Your kernel title does not resolve to the specified id. This may result in surprising behavior. We suggest making your title something that resolves to the specified id. See https://en.wikipedia.org/wiki/Clean_URL#Slug for more information on how slugs are determined.
+400 Client Error: Bad Request for url: https://www.kaggle.com/api/v1/kernels/push
+
+2025-10-01 21:27:47,850 - kaggle_manager_github - ERROR - [ERROR] STDERR: 
+2025-10-01 21:28:43,302 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
