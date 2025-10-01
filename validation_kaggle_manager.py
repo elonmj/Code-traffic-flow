@@ -482,11 +482,10 @@ print("[FINISH] Validation execution complete.")
         
         try:
             # Create kernel metadata (adapted from proven method)
-            # Title should match the slug for kernel_name
-            clean_title = kernel_name.replace('-', ' ').replace('_', ' ').title()
+            # Use kernel_name as title to ensure slug resolution
             kernel_metadata = {
                 "id": f"{self.username}/{kernel_name}",
-                "title": clean_title,
+                "title": kernel_name,
                 "code_file": "validation_kernel.py",
                 "language": "python",
                 "kernel_type": "script",

@@ -158,3 +158,20 @@
 
 2025-10-01 21:27:47,850 - kaggle_manager_github - ERROR - [ERROR] STDERR: 
 2025-10-01 21:28:43,302 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-01 21:31:09,107 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-01 21:31:09,308 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-01 21:31:09,414 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-01 21:31:09,416 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-01 21:31:09,416 - kaggle_manager_github - INFO -    M validation_kaggle_manager.py (Modified (unstaged))
+2025-10-01 21:31:09,416 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-01 21:31:09,548 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-01 21:31:09,881 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-01 21:31:09,881 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-01 21:31:13,234 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-01 21:31:27,296 - kaggle_manager_github - ERROR - [ERROR] Kernel upload failed
+2025-10-01 21:31:27,316 - kaggle_manager_github - ERROR - [ERROR] Return code: 1
+2025-10-01 21:31:27,319 - kaggle_manager_github - ERROR - [ERROR] STDOUT: Your kernel title does not resolve to the specified id. This may result in surprising behavior. We suggest making your title something that resolves to the specified id. See https://en.wikipedia.org/wiki/Clean_URL#Slug for more information on how slugs are determined.
+Response ended prematurely
+
+2025-10-01 21:31:27,333 - kaggle_manager_github - ERROR - [ERROR] STDERR: 
+2025-10-01 21:32:01,687 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
