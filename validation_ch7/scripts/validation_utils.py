@@ -17,14 +17,14 @@ arz_model_path = project_root / "arz_model"
 sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(arz_model_path))  # Add arz_model directory explicitly
 
-# Direct imports - sys.path should be set up by caller (kernel script or local runner)
-# The kernel script adds both project_root and project_root/arz_model to sys.path BEFORE importing
-from simulation.runner import SimulationRunner
-from analysis.metrics import (calculate_total_mass, compute_mape as metrics_mape, 
+# Direct imports using arz_model prefix to work with Python -m execution
+# This avoids relative import issues when arz_model uses internal relative imports
+from arz_model.simulation.runner import SimulationRunner
+from arz_model.analysis.metrics import (calculate_total_mass, compute_mape as metrics_mape, 
                               compute_rmse, compute_geh, compute_theil_u, 
                               calculate_convergence_order, analytical_riemann_solution, 
                               analytical_equilibrium_profile)
-from core.parameters import ModelParameters
+from arz_model.core.parameters import ModelParameters
 
 # Utiliser les fonctions du module metrics pour éviter la duplication
 def compute_mape(observed, simulated):
