@@ -428,3 +428,12 @@ Response ended prematurely
 2025-10-02 19:31:34,611 - kaggle_manager_github - INFO - 📝 Detected local changes:
 2025-10-02 19:31:34,611 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
 2025-10-02 19:31:34,611 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-02 19:31:34,803 - kaggle_manager_github - INFO - 💬 Using custom commit message: FINAL TEST: Complete Section 7.3 with TypeError fixes (R3)
+2025-10-02 19:31:34,803 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-02 19:31:35,054 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-02 19:31:35,054 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-02 19:31:42,342 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-02 19:31:43,577 - kaggle_manager_github - ERROR - [CRITICAL] Kernel creation failed: 429 Client Error: Too Many Requests for url: https://www.kaggle.com/api/v1/kernels/push
+2025-10-02 22:23:55,064 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-02 22:23:55,064 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-02 22:23:55,165 - kaggle_manager_github - INFO - 📍 Current branch: main
