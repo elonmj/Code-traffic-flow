@@ -516,7 +516,11 @@ print("[FINISH] Validation execution complete.")
             
             # Get the ACTUAL slug from Kaggle's response (not our generated one!)
             # Kaggle may change the slug based on title resolution
-            kernel_slug = response.ref if hasattr(response, 'ref') else f"{self.username}/{kernel_name}"
+            # response.ref format: "/code/{username}/{slug}" - extract just "username/slug"
+            if hasattr(response, 'ref') and response.ref:
+                kernel_slug = response.ref.replace('/code/', '')
+            else:
+                kernel_slug = f"{self.username}/{kernel_name}"
             self.logger.info(f"[SUCCESS] Validation kernel uploaded: {kernel_slug}")
             print(f"[SUCCESS] Validation kernel uploaded: {kernel_slug}")
             
