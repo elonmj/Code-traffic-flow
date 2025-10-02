@@ -17,40 +17,14 @@ code_path = project_root / "code"
 sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(code_path))  # Add code directory explicitly
 
-# Initialize imported names to None to ensure they exist in module namespace
-SimulationRunner = None
-ModelParameters = None
-calculate_total_mass = None
-metrics_mape = None
-compute_rmse = None
-compute_geh = None
-compute_theil_u = None
-calculate_convergence_order = None
-analytical_riemann_solution = None
-analytical_equilibrium_profile = None
-
-try:
-    from simulation.runner import SimulationRunner
-    from analysis.metrics import (calculate_total_mass, compute_mape as metrics_mape, 
-                                  compute_rmse, compute_geh, compute_theil_u, 
-                                  calculate_convergence_order, analytical_riemann_solution, 
-                                  analytical_equilibrium_profile)
-    from core.parameters import ModelParameters
-except ImportError as e:
-    print(f"Erreur d'import : {e}")
-    print("Vérifiez que le script est lancé depuis le bon répertoire")
-    # Fallback: try absolute imports
-    try:
-        from code.simulation.runner import SimulationRunner
-        from code.analysis.metrics import (calculate_total_mass, compute_mape as metrics_mape, 
-                                          compute_rmse, compute_geh, compute_theil_u, 
-                                          calculate_convergence_order, analytical_riemann_solution, 
-                                          analytical_equilibrium_profile)
-        from code.core.parameters import ModelParameters
-        print("✓ Fallback imports successful")
-    except ImportError as e2:
-        print(f"✗ Fallback imports also failed: {e2}")
-        raise  # Re-raise to make the failure explicit
+# Direct imports - sys.path should be set up by caller (kernel script or local runner)
+# The kernel script adds both project_root and project_root/code to sys.path BEFORE importing
+from simulation.runner import SimulationRunner
+from analysis.metrics import (calculate_total_mass, compute_mape as metrics_mape, 
+                              compute_rmse, compute_geh, compute_theil_u, 
+                              calculate_convergence_order, analytical_riemann_solution, 
+                              analytical_equilibrium_profile)
+from core.parameters import ModelParameters
 
 # Utiliser les fonctions du module metrics pour éviter la duplication
 def compute_mape(observed, simulated):

@@ -1,0 +1,113 @@
+{
+  "summary": {
+    "success_rate": 0.0,
+    "scenarios_passed": 0,
+    "total_scenarios": 3,
+    "avg_flow_improvement": 0.0,
+    "avg_efficiency_improvement": 0.0,
+    "avg_delay_reduction": 0.0,
+    "avg_learning_progress": 0.0
+  },
+  "scenarios": {
+    "traffic_light_control": {
+      "success": "False",
+      "baseline_performance": {
+        "total_flow": 0.04014806402097892,
+        "avg_speed": 0.11386327490194478,
+        "avg_density": 0.35675910976075564,
+        "efficiency": 0.16059225608391567,
+        "delay": 62.259704078328426,
+        "throughput": 0.32118451216783134
+      },
+      "rl_performance": {
+        "total_flow": 0.03855147320118788,
+        "avg_speed": 0.11505303679377966,
+        "avg_density": 0.33957791549901595,
+        "efficiency": 0.15420589280475155,
+        "delay": 61.53314943211059,
+        "throughput": 0.30841178560950305
+      },
+      "improvements": {
+        "flow_improvement": -3.9767566848472575,
+        "speed_improvement": 1.0449039805498868,
+        "efficiency_improvement": -3.97675668484724,
+        "delay_reduction": 1.1669741399730433
+      },
+      "rl_learning": {
+        "learning_progress": 0.2,
+        "performance_improvement": 0.0297,
+        "convergence_stability": 0
+      },
+      "criteria_met": "3",
+      "total_criteria": 5
+    },
+    "ramp_metering": {
+      "success": "False",
+      "baseline_performance": {
+        "total_flow": 0.03932806487505455,
+        "avg_speed": 0.1140125735135341,
+        "avg_density": 0.3490111530174852,
+        "efficiency": 0.15731225950021813,
+        "delay": 62.16769952175795,
+        "throughput": 0.3146245190004364
+      },
+      "rl_performance": {
+        "total_flow": 0.03847822959495589,
+        "avg_speed": 0.11357323668979663,
+        "avg_density": 0.3423098783713593,
+        "efficiency": 0.15391291837982354,
+        "delay": 62.43913014340214,
+        "throughput": 0.30782583675964714
+      },
+      "improvements": {
+        "flow_improvement": -2.160887607357724,
+        "speed_improvement": -0.3853406779606753,
+        "efficiency_improvement": -2.1608876073576897,
+        "delay_reduction": -0.4366103679760388
+      },
+      "rl_learning": {
+        "learning_progress": 0.2,
+        "performance_improvement": 0.02376,
+        "convergence_stability": 0
+      },
+      "criteria_met": "3",
+      "total_criteria": 5
+    },
+    "adaptive_speed_control": {
+      "success": "False",
+      "baseline_performance": {
+        "total_flow": 0.03843249737572462,
+        "avg_speed": 0.11351543085396211,
+        "avg_density": 0.34163817178278755,
+        "efficiency": 0.15372998950289854,
+        "delay": 62.47500009308884,
+        "throughput": 0.30745997900579697
+      },
+      "rl_performance": {
+        "total_flow": 0.03997077054762486,
+        "avg_speed": 0.11228546905958689,
+        "avg_density": 0.3588824845267014,
+        "efficiency": 0.1598830821904994,
+        "delay": 63.246974938089394,
+        "throughput": 0.31976616438099886
+      },
+      "improvements": {
+        "flow_improvement": 4.002532432024224,
+        "speed_improvement": -1.083519469663617,
+        "efficiency_improvement": 4.002532432024169,
+        "delay_reduction": -1.2356540117651873
+      },
+      "rl_learning": {
+        "learning_progress": 0.2,
+        "performance_improvement": 0.0198,
+        "convergence_stability": 0
+      },
+      "criteria_met": "3",
+      "total_criteria": 5
+    }
+  },
+  "validation_type": "rl_performance",
+  "revendications": [
+    "R5"
+  ]
+}

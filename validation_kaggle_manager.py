@@ -268,41 +268,52 @@ try:
     # ========== STEP 3: RUN VALIDATION TESTS ==========
     log_and_print("info", "\\n[STEP 3/4] Running validation tests...")
     
-    # Change to repo directory
+    # Change to repo directory  
     os.chdir(REPO_DIR)
-    sys.path.insert(0, str(Path(REPO_DIR)))
-    sys.path.insert(0, str(Path(REPO_DIR) / "code"))
     
-    # Import validation framework
-    log_and_print("info", "Importing validation framework...")
-    try:
-        from validation_ch7.scripts.{section["script"].replace('.py', '')} import main as run_validation
-        log_and_print("info", "[OK] Validation framework imported")
-    except ImportError as e:
-        log_and_print("error", f"[ERROR] Import failed: {{e}}")
-        log_and_print("error", "Attempting fallback import...")
-        sys.path.append(str(Path(REPO_DIR) / "validation_ch7" / "scripts"))
-        try:
-            from {section["script"].replace('.py', '')} import main as run_validation
-            log_and_print("info", "[OK] Fallback import successful")
-        except Exception as e2:
-            log_and_print("error", f"[CRITICAL] Import failure: {{e2}}")
-            sys.exit(1)
+    # Set up PYTHONPATH to include both project root and code directory
+    # This allows imports like "from simulation.runner import..." to work
+    env = os.environ.copy()
+    pythonpath_dirs = [
+        str(Path(REPO_DIR)),
+        str(Path(REPO_DIR) / "code"),
+        str(Path(REPO_DIR) / "validation_ch7" / "scripts")
+    ]
+    env["PYTHONPATH"] = os.pathsep.join(pythonpath_dirs)
     
-    # Execute validation tests
-    log_and_print("info", f"\\nExecuting {section['name']} validation tests...")
+    # Execute validation tests via subprocess to avoid import conflicts
+    test_script = Path(REPO_DIR) / "validation_ch7" / "scripts" / "{section['script']}"
+    log_and_print("info", f"Executing {{test_script}}...")
+    log_and_print("info", f"PYTHONPATH={{env['PYTHONPATH']}}")
     log_and_print("info", "=" * 60)
     
     try:
-        # Run the validation test
-        result_code = run_validation()
+        # Run the test script as subprocess
+        result = subprocess.run(
+            [sys.executable, str(test_script)],
+            capture_output=True,
+            text=True,
+            timeout=3000,  # 50 minutes max for tests
+            env=env,
+            cwd=REPO_DIR
+        )
         
-        if result_code == 0:
+        # Log stdout and stderr
+        if result.stdout:
+            for line in result.stdout.splitlines():
+                log_and_print("info", f"[TEST] {{line}}")
+        if result.stderr:
+            for line in result.stderr.splitlines():
+                log_and_print("warning", f"[STDERR] {{line}}")
+        
+        if result.returncode == 0:
             log_and_print("info", "[SUCCESS] Validation tests completed successfully")
             log_and_print("info", "TRACKING_SUCCESS: Validation execution finished")
         else:
-            log_and_print("warning", f"[WARNING] Tests returned code: {{result_code}}")
+            log_and_print("warning", f"[WARNING] Tests returned code: {{result.returncode}}")
     
+    except subprocess.TimeoutExpired:
+        log_and_print("error", "[ERROR] Validation test timeout (50 minutes)")
     except Exception as e:
         log_and_print("error", f"[ERROR] Validation execution failed: {{e}}")
         import traceback

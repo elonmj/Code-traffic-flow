@@ -359,3 +359,24 @@ Response ended prematurely
 2025-10-02 15:14:46,246 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
 2025-10-02 15:14:49,468 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
 2025-10-02 15:14:52,267 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-wxsr
+2025-10-02 15:22:59,598 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-02 15:22:59,608 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-02 15:22:59,918 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-02 15:23:00,119 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-02 15:23:00,121 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-02 15:23:00,121 - kaggle_manager_github - INFO -    D test_minimal_kernel.py (Deleted (unstaged))
+2025-10-02 15:23:00,121 - kaggle_manager_github - INFO -    D test_monitoring_system.py (Deleted (unstaged))
+2025-10-02 15:23:00,123 - kaggle_manager_github - INFO -    D test_real_validation_gpu.py (Deleted (unstaged))
+2025-10-02 15:23:00,124 - kaggle_manager_github - INFO -    D test_simple_kernel_upload.py (Deleted (unstaged))
+2025-10-02 15:23:00,124 - kaggle_manager_github - INFO -    D test_validation_kaggle_manager.py (Deleted (unstaged))
+2025-10-02 15:23:00,124 - kaggle_manager_github - INFO -    M validation_ch7/scripts/validation_utils.py (Modified (unstaged))
+2025-10-02 15:23:00,126 - kaggle_manager_github - INFO -   ?? validation_output/results/elonmj_arz-validation-wxsr/ (Untracked)
+2025-10-02 15:23:00,126 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-02 15:23:00,388 - kaggle_manager_github - INFO - 💬 Using custom commit message: Section 7.3.1: Fixed global namespace for metrics functions - Riemann validation (R1)
+2025-10-02 15:23:00,391 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-02 15:23:00,838 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-02 15:23:00,838 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-02 15:23:06,436 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-02 15:23:09,461 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-whog
+2025-10-02 15:35:34,937 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-02 15:35:34,942 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
