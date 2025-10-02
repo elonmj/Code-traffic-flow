@@ -422,3 +422,9 @@ Response ended prematurely
 2025-10-02 19:01:34,902 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
 2025-10-02 19:01:39,517 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
 2025-10-02 19:01:42,690 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-xvek
+2025-10-02 19:31:34,134 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-02 19:31:34,136 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-02 19:31:34,461 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-02 19:31:34,611 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-02 19:31:34,611 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-02 19:31:34,611 - kaggle_manager_github - INFO - 📦 Adding all changes...
