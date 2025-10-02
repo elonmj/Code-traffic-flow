@@ -94,11 +94,13 @@ class ValidationKaggleManager(KaggleManagerGitHub):
         os.environ['KAGGLE_USERNAME'] = creds['username']
         os.environ['KAGGLE_KEY'] = creds['key']
         
-        # Store username for kernel metadata
-        self.username = creds['username']
-        
         # Initialize base KaggleManagerGitHub avec GitHub repo approprié
         super().__init__()
+        
+        # CRITICAL: Override username AFTER super().__init__() because parent class sets it from env
+        # The parent's __init__ calls self._get_username() which reads from os.environ['KAGGLE_USERNAME']
+        # So we must override AFTER to ensure joselonm username is used, not elonmj
+        self.username = creds['username']
         
         # Override pour notre repo et configuration
         self.repo_url = "https://github.com/elonmj/Code-traffic-flow.git"
