@@ -94,6 +94,9 @@ class ValidationKaggleManager(KaggleManagerGitHub):
         os.environ['KAGGLE_USERNAME'] = creds['username']
         os.environ['KAGGLE_KEY'] = creds['key']
         
+        # Store username for kernel metadata
+        self.username = creds['username']
+        
         # Initialize base KaggleManagerGitHub avec GitHub repo approprié
         super().__init__()
         
