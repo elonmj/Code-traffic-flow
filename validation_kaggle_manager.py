@@ -481,10 +481,11 @@ print("=" * 80)
         print("[STEP2] Step 2: Creating validation kernel...")
         kernel_script = self.create_validation_kernel_script(section)
         
-        # Create unique kernel name
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        # Create unique kernel name (simplified to avoid title resolution issues)
         random_suffix = ''.join(random.choices(string.ascii_lowercase, k=4))
-        kernel_name = f"{self.kernel_base_name}-{section['name']}-{random_suffix}"
+        # Extract section number (e.g., "section_7_3_analytical" -> "73")
+        section_num = section['name'].replace('section_', '').replace('_analytical', '').replace('_', '')
+        kernel_name = f"{self.kernel_base_name}-{section_num}-{random_suffix}"
         
         # Upload kernel using proven method
         kernel_slug = self._create_and_upload_validation_kernel(kernel_name, kernel_script)
@@ -522,7 +523,7 @@ print("=" * 80)
             # Create kernel metadata (EXACT pattern from kaggle_manager_github.py)
             kernel_metadata = {
                 "id": f"{self.username}/{kernel_name}",
-                "title": f"ARZ Validation {kernel_name.split('-')[-1].upper()}",  # Human-readable title
+                "title": kernel_name,  # Use kernel_name as title for better slug resolution
                 "code_file": f"{kernel_name}.py",  # CRITICAL: Must match actual filename
                 "language": "python",
                 "kernel_type": "script",
