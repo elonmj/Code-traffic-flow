@@ -1,0 +1,45 @@
+2025-10-02 14:14:55,816 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-10-02 14:14:55,816 - INFO - Branch: main
+2025-10-02 14:15:01,480 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-10-02 14:15:01,480 - INFO - PyTorch: 2.6.0+cu124
+2025-10-02 14:15:01,530 - INFO - CUDA available: True
+2025-10-02 14:15:01,551 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-10-02 14:15:01,551 - INFO - CUDA version: 12.4
+2025-10-02 14:15:01,551 - INFO - 
+[STEP 1/4] Cloning repository from GitHub...
+2025-10-02 14:15:01,551 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-10-02 14:15:02,320 - INFO - [OK] Repository cloned successfully
+2025-10-02 14:15:02,320 - INFO - TRACKING_SUCCESS: Repository cloned
+2025-10-02 14:15:02,320 - INFO - 
+[STEP 2/4] Installing dependencies...
+2025-10-02 14:15:02,320 - INFO - Installing PyYAML...
+2025-10-02 14:15:06,147 - INFO - Installing matplotlib...
+2025-10-02 14:15:09,065 - INFO - Installing pandas...
+2025-10-02 14:15:11,950 - INFO - Installing scipy...
+2025-10-02 14:15:14,791 - INFO - Installing numpy...
+2025-10-02 14:15:17,673 - INFO - [OK] Dependencies installed
+2025-10-02 14:15:17,674 - INFO - TRACKING_SUCCESS: Dependencies ready
+2025-10-02 14:15:17,674 - INFO - 
+[STEP 3/4] Running validation tests...
+2025-10-02 14:15:17,674 - INFO - Importing validation framework...
+2025-10-02 14:15:23,001 - ERROR - [ERROR] Import failed: cannot import name 'compute_rmse' from 'validation_utils' (/kaggle/working/Code-traffic-flow/validation_ch7/scripts/validation_utils.py)
+2025-10-02 14:15:23,002 - ERROR - Attempting fallback import...
+2025-10-02 14:15:23,002 - ERROR - [CRITICAL] Import failure: cannot import name 'compute_rmse' from 'validation_utils' (/kaggle/working/Code-traffic-flow/validation_ch7/scripts/validation_utils.py)
+2025-10-02 14:15:23,002 - INFO - 
+[STEP 4/4] Copying artifacts and cleaning up...
+2025-10-02 14:15:23,003 - INFO - [ARTIFACTS] Copying validation results...
+2025-10-02 14:15:23,005 - INFO - [OK] Results copied to: /kaggle/working/validation_results
+2025-10-02 14:15:23,006 - INFO - [ARTIFACTS] NPZ files: 1
+2025-10-02 14:15:23,007 - INFO - [ARTIFACTS] PNG files: 0
+2025-10-02 14:15:23,007 - INFO - [ARTIFACTS] TEX files: 6
+2025-10-02 14:15:23,007 - INFO - [ARTIFACTS] JSON files: 5
+2025-10-02 14:15:23,007 - INFO - TRACKING_SUCCESS: Artifacts copied
+2025-10-02 14:15:23,007 - INFO - [SUCCESS] All artifacts copied successfully
+2025-10-02 14:15:23,007 - INFO - [CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow
+2025-10-02 14:15:23,020 - INFO - [OK] Cleanup completed - only validation results remain
+2025-10-02 14:15:23,020 - INFO - TRACKING_SUCCESS: Cleanup completed
+2025-10-02 14:15:23,020 - INFO - [OK] Session summary created: /kaggle/working/validation_results/session_summary.json
+2025-10-02 14:15:23,020 - INFO - TRACKING_SUCCESS: Session summary created
+2025-10-02 14:15:23,021 - INFO - 
+[FINAL] Validation workflow completed
+2025-10-02 14:15:23,021 - INFO - Remote logging finalized - ready for download

@@ -17,6 +17,18 @@ code_path = project_root / "code"
 sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(code_path))  # Add code directory explicitly
 
+# Initialize imported names to None to ensure they exist in module namespace
+SimulationRunner = None
+ModelParameters = None
+calculate_total_mass = None
+metrics_mape = None
+compute_rmse = None
+compute_geh = None
+compute_theil_u = None
+calculate_convergence_order = None
+analytical_riemann_solution = None
+analytical_equilibrium_profile = None
+
 try:
     from simulation.runner import SimulationRunner
     from analysis.metrics import (calculate_total_mass, compute_mape as metrics_mape, 
@@ -38,6 +50,7 @@ except ImportError as e:
         print("✓ Fallback imports successful")
     except ImportError as e2:
         print(f"✗ Fallback imports also failed: {e2}")
+        raise  # Re-raise to make the failure explicit
 
 # Utiliser les fonctions du module metrics pour éviter la duplication
 def compute_mape(observed, simulated):

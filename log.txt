@@ -345,3 +345,17 @@ Response ended prematurely
 2025-10-02 15:09:20,103 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
 2025-10-02 15:09:23,865 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
 2025-10-02 15:09:27,466 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-zsaq
+2025-10-02 15:14:45,882 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-02 15:14:45,883 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-02 15:14:45,979 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-02 15:14:46,032 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-02 15:14:46,032 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-02 15:14:46,032 - kaggle_manager_github - INFO -    M validation_kaggle_manager.py (Modified (unstaged))
+2025-10-02 15:14:46,032 - kaggle_manager_github - INFO -   ?? validation_output/results/elonmj_arz-validation-zsaq/ (Untracked)
+2025-10-02 15:14:46,032 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-02 15:14:46,128 - kaggle_manager_github - INFO - 💬 Using custom commit message: Section 7.3.1: Fixed exec fallback import - Riemann validation (R1)
+2025-10-02 15:14:46,128 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-02 15:14:46,246 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-02 15:14:46,246 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-02 15:14:49,468 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-02 15:14:52,267 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-wxsr
