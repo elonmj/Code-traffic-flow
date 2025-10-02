@@ -13,18 +13,31 @@ import os
 
 # Ajout du chemin vers le code existant
 project_root = Path(__file__).parent.parent.parent
+code_path = project_root / "code"
 sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(code_path))  # Add code directory explicitly
 
 try:
-    from code.simulation.runner import SimulationRunner
-    from code.analysis.metrics import (calculate_total_mass, compute_mape as metrics_mape, 
-                                      compute_rmse, compute_geh, compute_theil_u, 
-                                      calculate_convergence_order, analytical_riemann_solution, 
-                                      analytical_equilibrium_profile)
-    from code.core.parameters import ModelParameters
+    from simulation.runner import SimulationRunner
+    from analysis.metrics import (calculate_total_mass, compute_mape as metrics_mape, 
+                                  compute_rmse, compute_geh, compute_theil_u, 
+                                  calculate_convergence_order, analytical_riemann_solution, 
+                                  analytical_equilibrium_profile)
+    from core.parameters import ModelParameters
 except ImportError as e:
     print(f"Erreur d'import : {e}")
     print("Vérifiez que le script est lancé depuis le bon répertoire")
+    # Fallback: try absolute imports
+    try:
+        from code.simulation.runner import SimulationRunner
+        from code.analysis.metrics import (calculate_total_mass, compute_mape as metrics_mape, 
+                                          compute_rmse, compute_geh, compute_theil_u, 
+                                          calculate_convergence_order, analytical_riemann_solution, 
+                                          analytical_equilibrium_profile)
+        from code.core.parameters import ModelParameters
+        print("✓ Fallback imports successful")
+    except ImportError as e2:
+        print(f"✗ Fallback imports also failed: {e2}")
 
 # Utiliser les fonctions du module metrics pour éviter la duplication
 def compute_mape(observed, simulated):

@@ -289,3 +289,26 @@ Response ended prematurely
 2025-10-02 09:21:51,701 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
 2025-10-02 09:21:54,801 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-cgvv
 2025-10-02 11:47:21,804 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-02 12:04:54,255 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-02 12:04:54,255 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-02 12:04:54,433 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -   M  aggle_manager_github.py (Modified (staged))
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -    M log.txt (Modified (unstaged))
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -    M validation_ch7/scripts/test_section_7_3_analytical.py (Modified (unstaged))
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -    M validation_kaggle_manager.py (Modified (unstaged))
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -   ?? IMPLEMENTATION_SUMMARY.txt (Untracked)
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -   ?? VALIDATION_SYSTEM_README.md (Untracked)
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -   ?? WORKFLOW_TEST_SUMMARY.md (Untracked)
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -   ?? test_minimal_riemann_npz.py (Untracked)
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -   ?? validation_ch7/results/npz/ (Untracked)
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -   ?? validation_ch7/results/test_minimal_riemann.yml (Untracked)
+2025-10-02 12:04:54,542 - kaggle_manager_github - INFO -   ?? validation_cli.py (Untracked)
+2025-10-02 12:04:54,551 - kaggle_manager_github - INFO -   ?? validation_output/ (Untracked)
+2025-10-02 12:04:54,551 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-02 12:04:54,682 - kaggle_manager_github - INFO - 💬 Using custom commit message: Chapter 7 Validation - Workflow test: Riemann problems + NPZ generation + cleanup verification
+2025-10-02 12:04:54,682 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-02 12:04:54,903 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-02 12:04:54,903 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-02 12:04:59,046 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-02 12:05:02,105 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-kyoz
