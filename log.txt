@@ -468,3 +468,12 @@ Response ended prematurely
 2025-10-03 00:29:22,791 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
 2025-10-03 00:29:22,791 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
 2025-10-03 00:29:22,895 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-03 00:29:22,956 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-03 00:29:22,956 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-03 00:29:22,956 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-03 00:29:23,004 - kaggle_manager_github - INFO - 💬 Using custom commit message: Section 7.3: REAL FIX - username override après super().__init__() pour utiliser joselonm
+2025-10-03 00:29:23,004 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-03 00:29:23,103 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-03 00:29:23,103 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-03 00:29:26,151 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-03 00:29:27,325 - kaggle_manager_github - ERROR - [CRITICAL] Kernel creation failed: 403 Client Error: Forbidden for url: https://www.kaggle.com/api/v1/kernels/push

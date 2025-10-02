@@ -97,9 +97,9 @@ class ValidationKaggleManager(KaggleManagerGitHub):
         # Initialize base KaggleManagerGitHub avec GitHub repo approprié
         super().__init__()
         
-        # CRITICAL: Override username AFTER super().__init__() because parent class sets it from env
-        # The parent's __init__ calls self._get_username() which reads from os.environ['KAGGLE_USERNAME']
-        # So we must override AFTER to ensure joselonm username is used, not elonmj
+        # CRITICAL FIX: Override username AFTER super().__init__()
+        # Parent class sets self.username = self._get_username() which reads from env
+        # We MUST override it AFTER to ensure joselonm is used instead of being overwritten
         self.username = creds['username']
         
         # Override pour notre repo et configuration
