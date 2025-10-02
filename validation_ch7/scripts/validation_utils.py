@@ -47,6 +47,15 @@ def compute_mape(observed, simulated):
 # Les fonctions compute_rmse, compute_geh, compute_theil_u sont maintenant dans metrics.py
 # Accessible via les imports directs : compute_rmse, compute_geh, compute_theil_u
 
+# Re-export these functions to make them available for "from validation_utils import ..."
+__all__ = ['compute_mape', 'compute_rmse', 'compute_geh', 'compute_theil_u',
+           'calculate_total_mass', 'calculate_convergence_order',
+           'analytical_riemann_solution', 'analytical_equilibrium_profile',
+           'run_validation_test', 'run_real_simulation', 'run_convergence_analysis',
+           'create_riemann_scenario_config', 'generate_tex_snippet', 'generate_latex_table',
+           'save_validation_results', 'save_figure', 'create_summary_table',
+           'ValidationTest', 'RealARZValidationTest']
+
 class ValidationTest:
     """Base class for validation tests."""
     
