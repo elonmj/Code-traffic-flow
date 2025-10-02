@@ -482,31 +482,33 @@ print("[FINISH] Validation execution complete.")
         script_dir.mkdir(parents=True, exist_ok=True)
         
         try:
-            # Create kernel metadata (exact same pattern as kaggle_manager_github.py)
-            # Use kernel_name as title to ensure slug resolution
+            # Create kernel script file (EXACT pattern from kaggle_manager_github.py)
+            script_file = script_dir / f"{kernel_name}.py"
+            with open(script_file, 'w', encoding='utf-8') as f:
+                f.write(script_content)
+            
+            # Create kernel metadata (EXACT pattern from kaggle_manager_github.py)
             kernel_metadata = {
                 "id": f"{self.username}/{kernel_name}",
-                "title": kernel_name,
-                "code_file": "validation_kernel.py",
+                "title": f"ARZ Validation {kernel_name.split('-')[-1].upper()}",  # Human-readable title
+                "code_file": f"{kernel_name}.py",  # CRITICAL: Must match actual filename
                 "language": "python",
                 "kernel_type": "script",
                 "is_private": False,  # CRITICAL: Public kernels like kaggle_manager_github.py
                 "enable_gpu": True,
-                "enable_tpu": False,  # Add missing field from reference
+                "enable_tpu": False,
                 "enable_internet": True,
-                "keywords": ["arz-rl", "validation", "gpu", "traffic-flow"],  # Add keywords
+                "keywords": ["arz-rl", "validation", "gpu", "traffic-flow"],
                 "dataset_sources": [],
-                "competition_sources": [],
                 "kernel_sources": [],
-                "model_sources": []  # Add missing field from reference
+                "competition_sources": [],
+                "model_sources": []
             }
             
-            # Write files
-            with open(script_dir / "kernel-metadata.json", "w") as f:
+            # Save metadata
+            metadata_file = script_dir / "kernel-metadata.json"
+            with open(metadata_file, 'w', encoding='utf-8') as f:
                 json.dump(kernel_metadata, f, indent=2)
-                
-            with open(script_dir / "validation_kernel.py", "w", encoding='utf-8') as f:
-                f.write(script_content)
             
             # Upload using Kaggle API (exact same pattern as kaggle_manager_github.py)
             print(f"[UPLOAD] Uploading validation kernel...")
