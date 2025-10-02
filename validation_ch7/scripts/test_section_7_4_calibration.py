@@ -21,7 +21,7 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from validation_ch7.scripts import validation_utils
-from code.analysis import metrics
+from arz_model.analysis import metrics
 
 class RealCalibrationValidationTest(validation_utils.RealARZValidationTest):
     """Test de calibration utilisant vraies données Victoria Island"""

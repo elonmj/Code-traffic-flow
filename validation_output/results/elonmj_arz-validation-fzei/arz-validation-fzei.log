@@ -1,0 +1,70 @@
+[{"stream_name":"stdout","time":1.478140079,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":1.478200816,"data":"ARZ-RL VALIDATION: SECTION_7_3_ANALYTICAL\n"}
+,{"stream_name":"stdout","time":1.478206795,"data":"Revendications: R1, R3\n"}
+,{"stream_name":"stdout","time":1.47821103,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":1.478279311,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":1.478541921,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":9.744189823,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":9.744271808,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":9.791862049,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":9.812649081,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":9.812750353,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":9.812832846,"data":"\n"}
+,{"stream_name":"stdout","time":9.812848153000001,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":9.812989484,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":10.971060148,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":10.971162765,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":10.971209102,"data":"\n"}
+,{"stream_name":"stdout","time":10.97121673,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":10.971361987,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":15.284248089,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":18.159460228,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":21.019469913,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":23.896067309,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":26.698055332,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":26.698090075,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":26.698096341,"data":"\n"}
+,{"stream_name":"stdout","time":26.698101686,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":26.698168563,"data":"Executing /kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_3_analytical.py...\n"}
+,{"stream_name":"stdout","time":26.698284781,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/code:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":26.698326831,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":33.317477812999996,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":33.317638859,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_3_analytical.py\", line 17, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":33.317756627,"data":"[STDERR]     from validation_utils import (run_validation_test, generate_tex_snippet, save_figure, \n"}
+,{"stream_name":"stdout","time":33.317837962,"data":"[STDERR]     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":33.31791378,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/validation_utils.py\", line 22, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":33.317962173,"data":"[STDERR]     from simulation.runner import SimulationRunner\n"}
+,{"stream_name":"stdout","time":33.318044026,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/code/simulation/__init__.py\", line 4, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":33.318126106,"data":"[STDERR]     from .runner import *\n"}
+,{"stream_name":"stdout","time":33.318195178,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/code/simulation/runner.py\", line 9, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":33.318262682,"data":"[STDERR]     from ..analysis import metrics\n"}
+,{"stream_name":"stdout","time":33.318356076,"data":"[STDERR] ImportError: attempted relative import beyond top-level package\n"}
+,{"stream_name":"stdout","time":33.318433543,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":33.318496584,"data":"\n"}
+,{"stream_name":"stdout","time":33.318502588,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":33.31859041,"data":"[ARTIFACTS] Copying validation results...\n"}
+,{"stream_name":"stdout","time":33.321107731,"data":"[OK] Results copied to: /kaggle/working/validation_results\n"}
+,{"stream_name":"stdout","time":33.322259122,"data":"[ARTIFACTS] NPZ files: 1\n"}
+,{"stream_name":"stdout","time":33.322356169,"data":"[ARTIFACTS] PNG files: 0\n"}
+,{"stream_name":"stdout","time":33.322449766,"data":"[ARTIFACTS] TEX files: 6\n"}
+,{"stream_name":"stdout","time":33.322512506,"data":"[ARTIFACTS] JSON files: 5\n"}
+,{"stream_name":"stdout","time":33.322606764,"data":"TRACKING_SUCCESS: Artifacts copied\n"}
+,{"stream_name":"stdout","time":33.322734528,"data":"[SUCCESS] All artifacts copied successfully\n"}
+,{"stream_name":"stdout","time":33.322850769,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":33.336932622,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":33.336960003,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":33.337293298,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":33.337349649,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":33.33743888,"data":"\n"}
+,{"stream_name":"stdout","time":33.337445878,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":33.337488927,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":33.337633089,"data":"\n"}
+,{"stream_name":"stdout","time":33.337649544,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":33.33765375,"data":"VALIDATION SECTION_7_3_ANALYTICAL COMPLETED\n"}
+,{"stream_name":"stdout","time":33.33765744,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":33.337661517,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":36.287954563,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":36.288002281,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":36.326300188,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":37.474758592,"data":"[NbConvertApp] Writing 320483 bytes to __results__.html\n"}
+]

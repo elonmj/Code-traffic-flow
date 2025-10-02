@@ -271,26 +271,27 @@ try:
     # Change to repo directory  
     os.chdir(REPO_DIR)
     
-    # Set up PYTHONPATH to include both project root and code directory
+    # Set up PYTHONPATH to include both project root and arz_model directory
     # This allows imports like "from simulation.runner import..." to work
     env = os.environ.copy()
     pythonpath_dirs = [
         str(Path(REPO_DIR)),
-        str(Path(REPO_DIR) / "code"),
+        str(Path(REPO_DIR) / "arz_model"),
         str(Path(REPO_DIR) / "validation_ch7" / "scripts")
     ]
     env["PYTHONPATH"] = os.pathsep.join(pythonpath_dirs)
     
-    # Execute validation tests via subprocess to avoid import conflicts
-    test_script = Path(REPO_DIR) / "validation_ch7" / "scripts" / "{section['script']}"
-    log_and_print("info", f"Executing {{test_script}}...")
+    # Execute validation tests via subprocess as a module to properly handle package imports
+    # Using -m ensures Python treats code/ as a proper package
+    test_module = "validation_ch7.scripts.{section['script'].replace('.py', '')}"
+    log_and_print("info", f"Executing Python module: {{test_module}}...")
     log_and_print("info", f"PYTHONPATH={{env['PYTHONPATH']}}")
     log_and_print("info", "=" * 60)
     
     try:
-        # Run the test script as subprocess
+        # Run the test script as a Python module (-m flag)
         result = subprocess.run(
-            [sys.executable, str(test_script)],
+            [sys.executable, "-m", test_module],
             capture_output=True,
             text=True,
             timeout=3000,  # 50 minutes max for tests

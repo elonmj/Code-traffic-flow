@@ -11,7 +11,7 @@ from pathlib import Path
 # Add project paths
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
-sys.path.insert(0, str(project_root / "code"))
+sys.path.insert(0, str(project_root / "arz_model"))
 sys.path.insert(0, str(project_root / "validation_ch7" / "scripts"))
 
 def test_minimal_riemann_npz():
@@ -25,7 +25,7 @@ def test_minimal_riemann_npz():
     print("\n[1/5] Importing validation framework...")
     try:
         from validation_ch7.scripts.validation_utils import create_riemann_scenario_config, run_real_simulation
-        from code.io.data_manager import save_simulation_data
+        from arz_model.io.data_manager import save_simulation_data
         from datetime import datetime
         print("✓ Imports successful")
     except ImportError as e:

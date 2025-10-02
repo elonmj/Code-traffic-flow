@@ -21,18 +21,18 @@ from pathlib import Path
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
-sys.path.append(str(project_root / "code"))
+sys.path.append(str(project_root / "arz_model"))
 
 from validation_ch7.scripts.validation_utils import (
     ValidationTest, create_test_config, run_mock_simulation,
     generate_latex_table, save_validation_results
 )
-from code.analysis.metrics import (
+from arz_model.analysis.metrics import (
     compute_mape, compute_rmse, compute_geh, compute_theil_u,
     calculate_total_mass
 )
-from code.simulation.runner import SimulationRunner
-from code.core.parameters import ModelParameters
+from arz_model.simulation.runner import SimulationRunner
+from arz_model.core.parameters import ModelParameters
 
 
 class DigitalTwinValidationTest(ValidationTest):

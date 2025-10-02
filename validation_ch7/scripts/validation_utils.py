@@ -13,12 +13,12 @@ import os
 
 # Ajout du chemin vers le code existant
 project_root = Path(__file__).parent.parent.parent
-code_path = project_root / "code"
+arz_model_path = project_root / "arz_model"
 sys.path.insert(0, str(project_root))
-sys.path.insert(0, str(code_path))  # Add code directory explicitly
+sys.path.insert(0, str(arz_model_path))  # Add arz_model directory explicitly
 
 # Direct imports - sys.path should be set up by caller (kernel script or local runner)
-# The kernel script adds both project_root and project_root/code to sys.path BEFORE importing
+# The kernel script adds both project_root and project_root/arz_model to sys.path BEFORE importing
 from simulation.runner import SimulationRunner
 from analysis.metrics import (calculate_total_mass, compute_mape as metrics_mape, 
                               compute_rmse, compute_geh, compute_theil_u, 

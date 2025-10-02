@@ -121,10 +121,10 @@ class AnalyticalValidationTests:
                 npz_file = npz_dir / f"riemann_test_{i+1}_{timestamp}.npz"
                 
                 # Import data_manager NPZ saving
-                code_path = Path(__file__).parent.parent.parent / "code"
-                if str(code_path) not in sys.path:
-                    sys.path.insert(0, str(code_path))
-                from code.io.data_manager import save_simulation_data
+                arz_model_path = Path(__file__).parent.parent.parent / "arz_model"
+                if str(arz_model_path) not in sys.path:
+                    sys.path.insert(0, str(arz_model_path))
+                from arz_model.io.data_manager import save_simulation_data
                 
                 save_simulation_data(
                     str(npz_file),
@@ -208,10 +208,10 @@ class AnalyticalValidationTests:
             npz_dir = self.output_dir / "npz"
             npz_dir.mkdir(parents=True, exist_ok=True)
             
-            code_path = Path(__file__).parent.parent.parent / "code"
-            if str(code_path) not in sys.path:
-                sys.path.insert(0, str(code_path))
-            from code.io.data_manager import save_simulation_data
+            arz_model_path = Path(__file__).parent.parent.parent / "arz_model"
+            if str(arz_model_path) not in sys.path:
+                sys.path.insert(0, str(arz_model_path))
+            from arz_model.io.data_manager import save_simulation_data
             from datetime import datetime
             
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
