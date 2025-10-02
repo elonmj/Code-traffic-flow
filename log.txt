@@ -412,3 +412,13 @@ Response ended prematurely
 2025-10-02 18:52:49,955 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-zphl
 2025-10-02 19:01:34,218 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
 2025-10-02 19:01:34,224 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-02 19:01:34,402 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-02 19:01:34,507 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-02 19:01:34,509 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-02 19:01:34,509 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-02 19:01:34,633 - kaggle_manager_github - INFO - 💬 Using custom commit message: Fix: Config paths updated to scenarios/ (R2)
+2025-10-02 19:01:34,634 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-02 19:01:34,902 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-02 19:01:34,902 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-02 19:01:39,517 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-02 19:01:42,690 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-xvek

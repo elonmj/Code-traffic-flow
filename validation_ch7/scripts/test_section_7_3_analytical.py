@@ -401,18 +401,31 @@ def main():
     riemann_orders = [r.get('convergence_order', 0) for r in results['riemann'] if r.get('convergence_order', 0) > 0]
     avg_riemann_order = np.mean(riemann_orders) if riemann_orders else 0
     
-    print(f"Ordre convergence manufactured : {results['convergence']['average_order']:.2f}")
+    # Handle convergence results (could be dict or list if failed)
+    if isinstance(results['convergence'], dict) and 'average_order' in results['convergence']:
+        convergence_order = results['convergence']['average_order']
+    else:
+        convergence_order = 0.0
+    
+    print(f"Ordre convergence manufactured : {convergence_order:.2f}")
     print(f"Ordre convergence Riemann : {avg_riemann_order:.2f} (théorique: 5.0)")
-    print(f"Conservation masse : {results['equilibrium']['mass_conservation_error']:.2e}")
+    
+    # Handle equilibrium results safely
+    if isinstance(results['equilibrium'], dict) and 'mass_conservation_error' in results['equilibrium']:
+        mass_error = results['equilibrium']['mass_conservation_error']
+    else:
+        mass_error = 1.0  # Default to failed if not available
+    
+    print(f"Conservation masse : {mass_error:.2e}")
     
     # Critères de validation réalistes pour un modèle de trafic
     # Considérer aussi les ordres de convergence des tests Riemann (qui sont excellents!)
     riemann_orders = [r.get('convergence_order', 0) for r in results['riemann'] if r.get('convergence_order', 0) > 0]
     avg_riemann_order = np.mean(riemann_orders) if riemann_orders else 0
     
-    convergence_ok = (results['convergence']['average_order'] > 4.0 or avg_riemann_order > 4.0)  # Ordre WENO acceptable
+    convergence_ok = (convergence_order > 4.0 or avg_riemann_order > 4.0)  # Ordre WENO acceptable
     riemann_ok = riemann_success >= int(0.6 * total_riemann)  # 60% de réussite minimum
-    mass_conservation_ok = results['equilibrium']['mass_conservation_error'] < 1e-4  # Conservation très réaliste pour modèle trafic
+    mass_conservation_ok = mass_error < 1e-4  # Conservation très réaliste pour modèle trafic
     
     if riemann_ok and convergence_ok and mass_conservation_ok:
         print("[SUCCES] VALIDATION R1 : REUSSIE - Precision numerique confirmee")
