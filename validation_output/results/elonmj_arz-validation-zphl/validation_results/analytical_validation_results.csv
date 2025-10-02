@@ -1,0 +1,6 @@
+case_name,l2_error,convergence_order,status,error
+Choc simple motos,inf,0.0,ERROR,Simulation failed
+Raréfaction voitures,inf,0.0,ERROR,Simulation failed
+Vacuum motos,inf,0.0,ERROR,Simulation failed
+Contact discontinu,inf,0.0,ERROR,Simulation failed
+Multi-classes interaction,inf,0.0,ERROR,Simulation failed

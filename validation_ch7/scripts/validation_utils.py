@@ -99,7 +99,7 @@ def run_validation_test(scenario_path, test_name, validation_func, **kwargs):
             'error': str(e)
         }
 
-def run_real_simulation(scenario_path, base_config_path="config/config_base.yml", device='cpu', override_params=None):
+def run_real_simulation(scenario_path, base_config_path="scenarios/config_base.yml", device='cpu', override_params=None):
     """
     Run real ARZ simulation using actual SimulationRunner.
     Returns structured simulation results for validation tests.
@@ -140,7 +140,7 @@ def run_real_simulation(scenario_path, base_config_path="config/config_base.yml"
 class RealARZValidationTest(ValidationTest):
     """Base class for real ARZ validation tests using SimulationRunner."""
     
-    def __init__(self, test_name, section, scenario_path, base_config_path="config/config_base.yml"):
+    def __init__(self, test_name, section, scenario_path, base_config_path="scenarios/config_base.yml"):
         super().__init__(test_name, section)
         self.scenario_path = scenario_path
         self.base_config_path = base_config_path
@@ -173,7 +173,7 @@ class RealARZValidationTest(ValidationTest):
             'overall_conservation': mass_error_m < tolerance and mass_error_c < tolerance
         }
 
-def run_convergence_analysis(scenario_base_path, grid_sizes=[50, 100, 200, 400], base_config_path="config/config_base.yml"):
+def run_convergence_analysis(scenario_base_path, grid_sizes=[50, 100, 200, 400], base_config_path="scenarios/config_base.yml"):
     """
     Run convergence analysis using real simulations with different grid resolutions.
     Returns convergence order analysis for WENO5 scheme validation.

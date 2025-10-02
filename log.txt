@@ -404,3 +404,9 @@ Response ended prematurely
 2025-10-02 18:52:41,867 - kaggle_manager_github - INFO - 📝 Detected local changes:
 2025-10-02 18:52:41,867 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
 2025-10-02 18:52:41,867 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-02 18:52:42,004 - kaggle_manager_github - INFO - 💬 Using custom commit message: Phase 1 Complete: Absolute imports arz_model.* working (R1)
+2025-10-02 18:52:42,004 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-02 18:52:42,192 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-02 18:52:42,192 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-02 18:52:46,811 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-02 18:52:49,955 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-zphl

@@ -1,0 +1,126 @@
+{
+  "summary": {
+    "success_rate": 100.0,
+    "conditions_passed": 5,
+    "total_conditions": 5,
+    "avg_stability_score": 0.7,
+    "avg_robustness_score": 0.7733187989688648,
+    "avg_completion_ratio": 1.0
+  },
+  "conditions": {
+    "very_low_capacity": {
+      "success": true,
+      "stability": {
+        "has_nan": false,
+        "has_inf": false,
+        "density_bounds_violated": false,
+        "velocity_bounds_violated": false,
+        "mass_conservation_violated": true,
+        "max_density_variation": 0.12195513291970367,
+        "max_velocity_variation": 0.296289303607173,
+        "stability_score": 0.7
+      },
+      "performance": {
+        "completion_ratio": 1.0,
+        "avg_flow_efficiency": 0.6800117230998579,
+        "solution_quality": 0.6719709770352089,
+        "robustness_score": 0.7727919077440409
+      },
+      "criteria_met": 5,
+      "total_criteria": 5,
+      "simulation_length": 30
+    },
+    "capacity_bottleneck": {
+      "success": true,
+      "stability": {
+        "has_nan": false,
+        "has_inf": false,
+        "density_bounds_violated": false,
+        "velocity_bounds_violated": false,
+        "mass_conservation_violated": true,
+        "max_density_variation": 0.10321039443403424,
+        "max_velocity_variation": 0.30793589022910894,
+        "stability_score": 0.7
+      },
+      "performance": {
+        "completion_ratio": 1.0,
+        "avg_flow_efficiency": 0.6817625758942631,
+        "solution_quality": 0.6762951823572714,
+        "robustness_score": 0.7750468457111875
+      },
+      "criteria_met": 5,
+      "total_criteria": 5,
+      "simulation_length": 30
+    },
+    "oscillating_capacity": {
+      "success": true,
+      "stability": {
+        "has_nan": false,
+        "has_inf": false,
+        "density_bounds_violated": false,
+        "velocity_bounds_violated": false,
+        "mass_conservation_violated": true,
+        "max_density_variation": 0.10687308658793937,
+        "max_velocity_variation": 0.2888182810097346,
+        "stability_score": 0.7
+      },
+      "performance": {
+        "completion_ratio": 1.0,
+        "avg_flow_efficiency": 0.6831931526984444,
+        "solution_quality": 0.6709714121112194,
+        "robustness_score": 0.773346510654021
+      },
+      "criteria_met": 5,
+      "total_criteria": 5,
+      "simulation_length": 30
+    },
+    "extreme_density": {
+      "success": true,
+      "stability": {
+        "has_nan": false,
+        "has_inf": false,
+        "density_bounds_violated": false,
+        "velocity_bounds_violated": false,
+        "mass_conservation_violated": true,
+        "max_density_variation": 0.10984282910502163,
+        "max_velocity_variation": 0.3302527302857884,
+        "stability_score": 0.7
+      },
+      "performance": {
+        "completion_ratio": 1.0,
+        "avg_flow_efficiency": 0.6804948603734073,
+        "solution_quality": 0.6743990412031925,
+        "robustness_score": 0.7739080745932991
+      },
+      "criteria_met": 5,
+      "total_criteria": 5,
+      "simulation_length": 30
+    },
+    "near_vacuum": {
+      "success": true,
+      "stability": {
+        "has_nan": false,
+        "has_inf": false,
+        "density_bounds_violated": false,
+        "velocity_bounds_violated": false,
+        "mass_conservation_violated": true,
+        "max_density_variation": 0.11526703470040939,
+        "max_velocity_variation": 0.2660312488156991,
+        "stability_score": 0.7
+      },
+      "performance": {
+        "completion_ratio": 1.0,
+        "avg_flow_efficiency": 0.6811189050176378,
+        "solution_quality": 0.6679124615912104,
+        "robustness_score": 0.7715006561417755
+      },
+      "criteria_met": 5,
+      "total_criteria": 5,
+      "simulation_length": 30
+    }
+  },
+  "validation_type": "robustness",
+  "revendications": [
+    "R6"
+  ]
+}
