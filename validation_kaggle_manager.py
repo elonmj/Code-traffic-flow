@@ -510,17 +510,30 @@ print("=" * 80)
         Create and upload validation kernel using proven method from KaggleManagerGitHub.
         """
         
+        print("[DEBUG] ========================================")
+        print("[DEBUG] KERNEL CREATION - DETAILED LOGGING")
+        print("[DEBUG] ========================================")
+        print(f"[DEBUG] Step 1: Kernel name = {kernel_name}")
+        print(f"[DEBUG] Step 2: self.username = {self.username}")
+        print(f"[DEBUG] Step 3: KAGGLE_USERNAME env = {os.environ.get('KAGGLE_USERNAME')}")
+        print(f"[DEBUG] Step 4: Script length = {len(script_content)} chars")
+        
         # Create script directory
         script_dir = Path("kaggle_validation_temp")
         if script_dir.exists():
             shutil.rmtree(script_dir)
         script_dir.mkdir(parents=True, exist_ok=True)
         
+        print(f"[DEBUG] Step 5: Created temp directory: {script_dir.absolute()}")
+        
         try:
             # Create kernel script file (EXACT pattern from kaggle_manager_github.py)
             script_file = script_dir / f"{kernel_name}.py"
             with open(script_file, 'w', encoding='utf-8') as f:
                 f.write(script_content)
+            
+            print(f"[DEBUG] Step 6: Created script file: {script_file.absolute()}")
+            print(f"[DEBUG] Step 7: Building kernel metadata...")
             
             # Create kernel metadata (EXACT pattern from kaggle_manager_github.py)
             kernel_metadata = {
@@ -540,26 +553,69 @@ print("=" * 80)
                 "model_sources": []
             }
             
+            print(f"[DEBUG] Step 8: Metadata content:")
+            print(f"[DEBUG]   - id: {kernel_metadata['id']}")
+            print(f"[DEBUG]   - title: {kernel_metadata['title']}")
+            print(f"[DEBUG]   - code_file: {kernel_metadata['code_file']}")
+            print(f"[DEBUG]   - is_private: {kernel_metadata['is_private']}")
+            print(f"[DEBUG]   - enable_gpu: {kernel_metadata['enable_gpu']}")
+            print(f"[DEBUG]   - enable_internet: {kernel_metadata['enable_internet']}")
+            
             # Save metadata
             metadata_file = script_dir / "kernel-metadata.json"
             with open(metadata_file, 'w', encoding='utf-8') as f:
                 json.dump(kernel_metadata, f, indent=2)
             
+            print(f"[DEBUG] Step 9: Saved metadata to: {metadata_file.absolute()}")
+            print(f"[DEBUG] Step 10: Files in {script_dir}:")
+            for f in script_dir.iterdir():
+                print(f"[DEBUG]   - {f.name} ({f.stat().st_size} bytes)")
+            
             # Upload using Kaggle API (exact same pattern as kaggle_manager_github.py)
-            print(f"[UPLOAD] Uploading validation kernel...")
-            response = self.api.kernels_push(str(script_dir))
+            print(f"[DEBUG] Step 11: UPLOADING KERNEL NOW...")
+            print(f"[DEBUG] Calling: self.api.kernels_push('{script_dir}')")
+            print(f"[DEBUG] API username check: {getattr(self.api, 'username', 'N/A')}")
             
-            # Get the ACTUAL slug from Kaggle's response (not our generated one!)
-            # Kaggle may change the slug based on title resolution
-            # response.ref format: "/code/{username}/{slug}" - extract just "username/slug"
-            if hasattr(response, 'ref') and response.ref:
-                kernel_slug = response.ref.replace('/code/', '')
-            else:
-                kernel_slug = f"{self.username}/{kernel_name}"
-            self.logger.info(f"[SUCCESS] Validation kernel uploaded: {kernel_slug}")
-            print(f"[SUCCESS] Validation kernel uploaded: {kernel_slug}")
-            
-            return kernel_slug
+            try:
+                response = self.api.kernels_push(str(script_dir))
+                print(f"[DEBUG] Step 12: Upload successful! Response type: {type(response)}")
+                print(f"[DEBUG] Response attributes: {dir(response)}")
+                
+                # Get the ACTUAL slug from Kaggle's response (not our generated one!)
+                # Kaggle may change the slug based on title resolution
+                # response.ref format: "/code/{username}/{slug}" - extract just "username/slug"
+                if hasattr(response, 'ref') and response.ref:
+                    kernel_slug = response.ref.replace('/code/', '')
+                    print(f"[DEBUG] Step 13: Extracted slug from response.ref: {kernel_slug}")
+                else:
+                    kernel_slug = f"{self.username}/{kernel_name}"
+                    print(f"[DEBUG] Step 13: No ref in response, using fallback: {kernel_slug}")
+                
+                self.logger.info(f"[SUCCESS] Validation kernel uploaded: {kernel_slug}")
+                print(f"[SUCCESS] Validation kernel uploaded: {kernel_slug}")
+                print("[DEBUG] ========================================")
+                
+                return kernel_slug
+                
+            except Exception as upload_error:
+                print(f"[DEBUG] Step 12: Upload FAILED!")
+                print(f"[DEBUG] Error type: {type(upload_error).__name__}")
+                print(f"[DEBUG] Error message: {str(upload_error)}")
+                
+                # Check if there's a response object
+                if hasattr(upload_error, 'response'):
+                    print(f"[DEBUG] HTTP Response status: {upload_error.response.status_code}")
+                    print(f"[DEBUG] HTTP Response headers:")
+                    for key, value in upload_error.response.headers.items():
+                        print(f"[DEBUG]   {key}: {value}")
+                    print(f"[DEBUG] HTTP Response body:")
+                    print(f"[DEBUG] {upload_error.response.text}")
+                
+                # Don't cleanup - let's inspect the files
+                print(f"[DEBUG] NOT cleaning up {script_dir} - inspect the files!")
+                print(f"[DEBUG] Metadata file: {metadata_file}")
+                print(f"[DEBUG] Script file: {script_file}")
+                raise
                 
         except Exception as e:
             error_msg = f"[CRITICAL] Kernel creation failed: {e}"
