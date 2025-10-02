@@ -398,3 +398,9 @@ Response ended prematurely
 2025-10-02 18:34:08,601 - kaggle_manager_github - INFO - 📍 Current branch: main
 2025-10-02 18:34:08,704 - kaggle_manager_github - INFO -   Git repository is clean and up to date
 2025-10-02 18:34:11,712 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-iadb
+2025-10-02 18:52:41,535 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-02 18:52:41,543 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-02 18:52:41,752 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-02 18:52:41,867 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-02 18:52:41,867 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-02 18:52:41,867 - kaggle_manager_github - INFO - 📦 Adding all changes...
