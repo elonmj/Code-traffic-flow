@@ -512,9 +512,11 @@ print("[FINISH] Validation execution complete.")
             
             # Upload using Kaggle API (exact same pattern as kaggle_manager_github.py)
             print(f"[UPLOAD] Uploading validation kernel...")
-            self.api.kernels_push(str(script_dir))
+            response = self.api.kernels_push(str(script_dir))
             
-            kernel_slug = f"{self.username}/{kernel_name}"
+            # Get the ACTUAL slug from Kaggle's response (not our generated one!)
+            # Kaggle may change the slug based on title resolution
+            kernel_slug = response.ref if hasattr(response, 'ref') else f"{self.username}/{kernel_name}"
             self.logger.info(f"[SUCCESS] Validation kernel uploaded: {kernel_slug}")
             print(f"[SUCCESS] Validation kernel uploaded: {kernel_slug}")
             

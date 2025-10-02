@@ -250,3 +250,15 @@ Response ended prematurely
 2025-10-01 22:20:02,651 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
 2025-10-01 22:20:07,645 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
 2025-10-01 22:20:10,679 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-section_7_3_analytical-dymd
+2025-10-02 08:57:20,277 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-02 08:57:20,278 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-02 08:57:20,588 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-02 08:57:20,713 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-02 08:57:20,715 - kaggle_manager_github - INFO -   M  og.txt (Modified (staged))
+2025-10-02 08:57:20,716 - kaggle_manager_github - INFO -    M validation_kaggle_manager.py (Modified (unstaged))
+2025-10-02 08:57:20,716 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-02 08:57:20,904 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-02 08:57:21,357 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-02 08:57:21,369 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-02 08:57:26,138 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-02 08:57:29,435 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-section_7_3_analytical-epqv
