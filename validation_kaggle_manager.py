@@ -283,7 +283,7 @@ try:
         log_and_print("error", "Attempting fallback import...")
         sys.path.append(str(Path(REPO_DIR) / "validation_ch7" / "scripts"))
         try:
-            exec(f"from {{section['script'].replace('.py', '')}} import main as run_validation")
+            from {section["script"].replace('.py', '')} import main as run_validation
             log_and_print("info", "[OK] Fallback import successful")
         except Exception as e2:
             log_and_print("error", f"[CRITICAL] Import failure: {{e2}}")
