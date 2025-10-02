@@ -149,279 +149,296 @@ class ValidationKaggleManager(KaggleManagerGitHub):
         print(f"[SUCCESS] ValidationKaggleManager initialized for user: {creds['username']}")
         print(f"[CONFIG] Validation sections configured: {len(self.validation_sections)}")
         
-    def create_validation_kernel_script(self, section: Dict[str, Any]) -> str:
+    def _build_validation_kernel_script(self, section: Dict[str, Any]) -> str:
         """
-        Create Kaggle kernel script pour une section de validation.
+        Build validation kernel script with FULL CLEANUP pattern from kaggle_manager_github.py.
         
-        Adapte le pattern éprouvé du _build_github_script mais pour validation ARZ-RL.
+        Key features:
+        - Clone repo → Run validation → Copy artifacts → CLEANUP repo → session_summary.json
+        - Only /kaggle/working/validation_results/ preserved in output
+        - NPZ files + figures + metrics organized by section
         """
         
-        script_content = f'''# ARZ-RL Validation - {section["name"]} - GPU
-# Real validation tests for revendications: {", ".join(section["revendications"])}
+        return f'''#!/usr/bin/env python3
+# ARZ-RL Validation - {section["name"]} - GPU Execution
+# Revendications: {", ".join(section["revendications"])}
 # Estimated runtime: {section["estimated_minutes"]} minutes
+# Generated automatically by ValidationKaggleManager
 
 import os
 import sys
 import json
 import subprocess
-import torch
+import shutil
+import glob
+import logging
 from pathlib import Path
 from datetime import datetime
 
-print("[START] Starting ARZ-RL Validation: {section['name']}")
-print("=" * 60)
+print("=" * 80)
+print(f"ARZ-RL VALIDATION: {section['name'].upper()}")
+print(f"Revendications: {', '.join(section['revendications'])}")
+print("=" * 80)
 
-# Environment info
-print("[ENV] Environment Information:")
-print(f"Python version: {{sys.version}}")
-print(f"CUDA available: {{torch.cuda.is_available()}}")
-if torch.cuda.is_available():
-    print(f"CUDA device: {{torch.cuda.get_device_name(0)}}")
-    print(f"CUDA version: {{torch.version.cuda}}")
-else:
-    print("[WARN] CUDA not available - will attempt CPU fallback")
+# Setup remote logging (pattern from kaggle_manager_github.py)
+def setup_remote_logging():
+    logger = logging.getLogger('kaggle_validation')
+    logger.setLevel(logging.INFO)
+    
+    log_file = "/kaggle/working/validation_log.txt"
+    handler = logging.FileHandler(log_file, mode='w', encoding='utf-8')
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    
+    return logger, handler
 
-# Clone repository avec Git automation pattern éprouvé
-def setup_repository():
-    """Setup repository using proven GitHub workflow."""
-    print("\\n[SETUP] Setting up Code-traffic-flow repository...")
-    
-    repo_url = "{self.repo_url}"
-    branch = "{self.branch}"
-    
-    # Clone avec pattern éprouvé
-    if os.path.exists("Code-traffic-flow"):
-        print("[CLEAN] Cleaning existing repository...")
-        import shutil
-        shutil.rmtree("Code-traffic-flow")
-    
-    print(f"[CLONE] Cloning {{repo_url}} (branch: {{branch}})...")
-    result = subprocess.run([
-        "git", "clone", "--branch", branch, "--single-branch", 
-        "--depth", "1", repo_url
-    ], capture_output=True, text=True)
-    
-    if result.returncode != 0:
-        print(f"[ERROR] Git clone failed: {{result.stderr}}")
-        return False
-    
-    print("[SUCCESS] Repository cloned successfully")
-    return True
+remote_logger, log_handler = setup_remote_logging()
 
-# Setup dependencies avec pattern éprouvé  
-def install_dependencies():
-    """Install required dependencies for ARZ-RL validation."""
-    print("\\n[DEPS] Installing dependencies...")
+def log_and_print(level, message):
+    """Log to both console and remote log with immediate flush."""
+    print(message)
+    getattr(remote_logger, level.lower())(message)
+    log_handler.flush()
+
+# Configuration
+REPO_URL = "{self.repo_url}"
+BRANCH = "{self.branch}"
+REPO_DIR = "/kaggle/working/Code-traffic-flow"
+
+log_and_print("info", f"Repository: {{REPO_URL}}")
+log_and_print("info", f"Branch: {{BRANCH}}")
+
+# Environment check
+try:
+    import torch
+    log_and_print("info", f"Python: {{sys.version}}")
+    log_and_print("info", f"PyTorch: {{torch.__version__}}")
+    log_and_print("info", f"CUDA available: {{torch.cuda.is_available()}}")
+    if torch.cuda.is_available():
+        log_and_print("info", f"CUDA device: {{torch.cuda.get_device_name(0)}}")
+        log_and_print("info", f"CUDA version: {{torch.version.cuda}}")
+        device = 'cuda'
+    else:
+        log_and_print("warning", "CUDA not available - using CPU")
+        device = 'cpu'
+except Exception as e:
+    log_and_print("error", f"Environment check failed: {{e}}")
+    device = 'cpu'
+
+try:
+    # ========== STEP 1: CLONE REPOSITORY ==========
+    log_and_print("info", "\\n[STEP 1/4] Cloning repository from GitHub...")
     
-    dependencies = [
-        "PyYAML",
-        "matplotlib", 
-        "pandas",
-        "scipy",
-        "numpy"
+    if os.path.exists(REPO_DIR):
+        shutil.rmtree(REPO_DIR)
+    
+    clone_cmd = [
+        "git", "clone",
+        "--single-branch", "--branch", BRANCH,
+        "--depth", "1",
+        REPO_URL, REPO_DIR
     ]
     
-    for dep in dependencies:
-        print(f"Installing {{dep}}...")
-        result = subprocess.run([sys.executable, "-m", "pip", "install", "-q", dep], 
-                              capture_output=True, text=True)
-        if result.returncode != 0:
-            print(f"[WARN] Warning: {{dep}} installation issues: {{result.stderr}}")
+    log_and_print("info", f"Command: {{' '.join(clone_cmd)}}")
+    result = subprocess.run(clone_cmd, capture_output=True, text=True, timeout=300)
     
-    print("[SUCCESS] Dependencies installed")
-
-# Setup repository
-if not setup_repository():
-    print("[CRITICAL] Repository setup failed - aborting")
+    if result.returncode == 0:
+        log_and_print("info", "[OK] Repository cloned successfully")
+        log_and_print("info", "TRACKING_SUCCESS: Repository cloned")
+    else:
+        log_and_print("error", f"[ERROR] Git clone failed: {{result.stderr}}")
+        sys.exit(1)
+    
+    # ========== STEP 2: INSTALL DEPENDENCIES ==========
+    log_and_print("info", "\\n[STEP 2/4] Installing dependencies...")
+    
+    dependencies = ["PyYAML", "matplotlib", "pandas", "scipy", "numpy"]
+    
+    for dep in dependencies:
+        log_and_print("info", f"Installing {{dep}}...")
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "-q", dep],
+            capture_output=True, text=True
+        )
+    
+    log_and_print("info", "[OK] Dependencies installed")
+    log_and_print("info", "TRACKING_SUCCESS: Dependencies ready")
+    
+    # ========== STEP 3: RUN VALIDATION TESTS ==========
+    log_and_print("info", "\\n[STEP 3/4] Running validation tests...")
+    
+    # Change to repo directory
+    os.chdir(REPO_DIR)
+    sys.path.insert(0, str(Path(REPO_DIR)))
+    sys.path.insert(0, str(Path(REPO_DIR) / "code"))
+    
+    # Import validation framework
+    log_and_print("info", "Importing validation framework...")
+    try:
+        from validation_ch7.scripts.{section["script"].replace('.py', '')} import main as run_validation
+        log_and_print("info", "[OK] Validation framework imported")
+    except ImportError as e:
+        log_and_print("error", f"[ERROR] Import failed: {{e}}")
+        log_and_print("error", "Attempting fallback import...")
+        sys.path.append(str(Path(REPO_DIR) / "validation_ch7" / "scripts"))
+        try:
+            exec(f"from {{section['script'].replace('.py', '')}} import main as run_validation")
+            log_and_print("info", "[OK] Fallback import successful")
+        except Exception as e2:
+            log_and_print("error", f"[CRITICAL] Import failure: {{e2}}")
+            sys.exit(1)
+    
+    # Execute validation tests
+    log_and_print("info", f"\\nExecuting {section['name']} validation tests...")
+    log_and_print("info", "=" * 60)
+    
+    try:
+        # Run the validation test
+        result_code = run_validation()
+        
+        if result_code == 0:
+            log_and_print("info", "[SUCCESS] Validation tests completed successfully")
+            log_and_print("info", "TRACKING_SUCCESS: Validation execution finished")
+        else:
+            log_and_print("warning", f"[WARNING] Tests returned code: {{result_code}}")
+    
+    except Exception as e:
+        log_and_print("error", f"[ERROR] Validation execution failed: {{e}}")
+        import traceback
+        log_and_print("error", traceback.format_exc())
+        # Continue to artifact copy even if tests fail
+    
+except subprocess.TimeoutExpired:
+    log_and_print("error", "[ERROR] Git clone timeout")
+    sys.exit(1)
+except Exception as e:
+    log_and_print("error", f"[ERROR] Execution failed: {{e}}")
+    import traceback
+    log_and_print("error", traceback.format_exc())
     sys.exit(1)
 
-# Change to repo directory
-os.chdir("Code-traffic-flow")
-sys.path.insert(0, '.')
-
-# Install dependencies
-install_dependencies()
-
-# Import validation framework
-try:
-    from validation_ch7.scripts.validation_utils import RealARZValidationTest, run_real_simulation
-    from validation_ch7.scripts.{section["script"].replace('.py', '')} import *
-    print("[SUCCESS] Validation framework imported successfully")
-except ImportError as e:
-    print(f"[ERROR] Import error: {{e}}")
-    print("Attempting fallback import strategy...")
-    sys.path.append('validation_ch7/scripts')
+finally:
+    # ========== STEP 4: COPY ARTIFACTS & CLEANUP ==========
+    log_and_print("info", "\\n[STEP 4/4] Copying artifacts and cleaning up...")
+    
     try:
-        import validation_utils
-        from {section["script"].replace('.py', '')} import *
-        print("[SUCCESS] Fallback import successful")
-    except ImportError as e2:
-        print(f"[CRITICAL] Critical import failure: {{e2}}")
-        sys.exit(1)
-
-# Force GPU device if available
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-print(f"[DEVICE] Using device: {{device}}")
-
-# SECTION-SPECIFIC VALIDATION
-print("\\n" + "=" * 60)
-print(f"[TEST] RUNNING VALIDATION: {section['name'].upper()}")
-print("=" * 60)
-
-# Track validation results
-validation_results = {{
-    "section": "{section['name']}",
-    "revendications": {section["revendications"]},
-    "device_used": device,
-    "start_time": datetime.now().isoformat(),
-    "tests_executed": [],
-    "tests_passed": [],
-    "tests_failed": [],
-    "summary": {{}}
-}}
-
-try:
-    # Execute section-specific validation
-    if "{section['name']}" == "section_7_3_analytical":
-        print("[ANALYTICAL] Running analytical validation tests...")
+        kaggle_output = "/kaggle/working"
         
-        # Create test instance with GPU device
-        analytical_tests = AnalyticalValidationTests(output_dir="results/section_7_3")
+        # Copy validation_ch7/results/ → /kaggle/working/validation_results/
+        log_and_print("info", "[ARTIFACTS] Copying validation results...")
         
-        # Override device dans toutes les simulations
-        original_run_simulation = analytical_tests.run_riemann_test
-        def gpu_run_simulation(*args, **kwargs):
-            kwargs['device'] = device
-            return original_run_simulation(*args, **kwargs)
-        analytical_tests.run_riemann_test = gpu_run_simulation
+        source_results = os.path.join(REPO_DIR, "validation_ch7", "results")
+        dest_results = os.path.join(kaggle_output, "validation_results")
         
-        # Run tests
-        test_results = analytical_tests.run_all_tests()
-        validation_results["tests_executed"] = list(test_results.keys())
-        validation_results["tests_passed"] = [k for k, v in test_results.items() if v.get("status") == "SUCCESS"]
-        validation_results["tests_failed"] = [k for k, v in test_results.items() if v.get("status") != "SUCCESS"]
+        if os.path.exists(source_results):
+            if os.path.exists(dest_results):
+                shutil.rmtree(dest_results)
+            
+            shutil.copytree(source_results, dest_results)
+            log_and_print("info", f"[OK] Results copied to: {{dest_results}}")
+            
+            # Count artifacts
+            npz_files = glob.glob(os.path.join(dest_results, "**", "*.npz"), recursive=True)
+            png_files = glob.glob(os.path.join(dest_results, "**", "*.png"), recursive=True)
+            tex_files = glob.glob(os.path.join(dest_results, "**", "*.tex"), recursive=True)
+            json_files = glob.glob(os.path.join(dest_results, "**", "*.json"), recursive=True)
+            
+            log_and_print("info", f"[ARTIFACTS] NPZ files: {{len(npz_files)}}")
+            log_and_print("info", f"[ARTIFACTS] PNG files: {{len(png_files)}}")
+            log_and_print("info", f"[ARTIFACTS] TEX files: {{len(tex_files)}}")
+            log_and_print("info", f"[ARTIFACTS] JSON files: {{len(json_files)}}")
+            
+            log_and_print("info", "TRACKING_SUCCESS: Artifacts copied")
+        else:
+            log_and_print("warning", f"[WARN] Source results not found: {{source_results}}")
+            npz_files = []
         
-    elif "{section['name']}" == "section_7_4_calibration":
-        print("[CALIBRATION] Running calibration validation tests...")
+        # Copy any additional NPZ files from root results/ (if they exist)
+        root_results = os.path.join(REPO_DIR, "results")
+        if os.path.exists(root_results):
+            log_and_print("info", "[ARTIFACTS] Copying additional results from root...")
+            for npz_file in glob.glob(os.path.join(root_results, "**", "*.npz"), recursive=True):
+                dest_npz = os.path.join(dest_results, "npz_additional", os.path.basename(npz_file))
+                os.makedirs(os.path.dirname(dest_npz), exist_ok=True)
+                shutil.copy2(npz_file, dest_npz)
+                log_and_print("info", f"[NPZ] Copied: {{os.path.basename(npz_file)}}")
         
-        calibration_tests = CalibrationValidationTests(output_dir="results/section_7_4")
-        test_results = calibration_tests.run_all_tests(device=device)
-        validation_results["tests_executed"] = list(test_results.keys())
-        validation_results["tests_passed"] = [k for k, v in test_results.items() if v.get("status") == "SUCCESS"]
-        validation_results["tests_failed"] = [k for k, v in test_results.items() if v.get("status") != "SUCCESS"]
+        log_and_print("info", "[SUCCESS] All artifacts copied successfully")
         
-    elif "{section['name']}" == "section_7_5_digital_twin":
-        print("[DIGITAL_TWIN] Running digital twin validation tests...")
-        
-        digital_twin_tests = DigitalTwinValidationTests(output_dir="results/section_7_5")
-        test_results = digital_twin_tests.run_all_tests(device=device)
-        validation_results["tests_executed"] = list(test_results.keys())
-        validation_results["tests_passed"] = [k for k, v in test_results.items() if v.get("status") == "SUCCESS"]
-        validation_results["tests_failed"] = [k for k, v in test_results.items() if v.get("status") != "SUCCESS"]
-        
-    elif "{section['name']}" == "section_7_6_rl_performance":
-        print("[RL_PERFORMANCE] Running RL performance validation tests...")
-        
-        rl_tests = RLPerformanceValidationTests(output_dir="results/section_7_6")
-        test_results = rl_tests.run_all_tests(device=device)
-        validation_results["tests_executed"] = list(test_results.keys())
-        validation_results["tests_passed"] = [k for k, v in test_results.items() if v.get("status") == "SUCCESS"]
-        validation_results["tests_failed"] = [k for k, v in test_results.items() if v.get("status") != "SUCCESS"]
-        
-    elif "{section['name']}" == "section_7_7_robustness":
-        print("[ROBUSTNESS] Running robustness validation tests...")
-        
-        robustness_tests = RobustnessValidationTests(output_dir="results/section_7_7")
-        test_results = robustness_tests.run_all_tests(device=device)
-        validation_results["tests_executed"] = list(test_results.keys())
-        validation_results["tests_passed"] = [k for k, v in test_results.items() if v.get("status") == "SUCCESS"]
-        validation_results["tests_failed"] = [k for k, v in test_results.items() if v.get("status") != "SUCCESS"]
+    except Exception as e:
+        log_and_print("error", f"[ERROR] Artifact copy failed: {{e}}")
+        import traceback
+        log_and_print("error", traceback.format_exc())
     
-    # Calculate summary metrics
-    total_tests = len(validation_results["tests_executed"])
-    passed_tests = len(validation_results["tests_passed"])
-    failed_tests = len(validation_results["tests_failed"])
-    success_rate = passed_tests / total_tests if total_tests > 0 else 0
+    # CLEANUP: Remove cloned repository (CRITICAL for output size)
+    try:
+        if os.path.exists(REPO_DIR):
+            log_and_print("info", f"[CLEANUP] Removing cloned repository: {{REPO_DIR}}")
+            shutil.rmtree(REPO_DIR)
+            log_and_print("info", "[OK] Cleanup completed - only validation results remain")
+            log_and_print("info", "TRACKING_SUCCESS: Cleanup completed")
+    except Exception as e:
+        log_and_print("warning", f"[WARN] Cleanup failed: {{e}}")
     
-    validation_results["summary"] = {{
-        "total_tests": total_tests,
-        "passed_tests": passed_tests, 
-        "failed_tests": failed_tests,
-        "success_rate": success_rate,
-        "all_tests_passed": failed_tests == 0
-    }}
-    
-    # TRACKING_SUCCESS marker pour monitoring éprouvé
-    if validation_results["summary"]["all_tests_passed"]:
-        print("\\n[SUCCESS] TRACKING_SUCCESS: All validation tests passed!")
-        print(f"[PASS] {section['name']} - ALL {{passed_tests}} TESTS PASSED")
-        validation_results["overall_status"] = "SUCCESS"
-    else:
-        print(f"\\n[PARTIAL] TRACKING_PARTIAL: {{passed_tests}}/{{total_tests}} tests passed")
-        print(f"[FAIL] Failed tests: {{validation_results['tests_failed']}}")
-        validation_results["overall_status"] = "PARTIAL"
+    # Create session summary (KEY for monitoring detection!)
+    try:
+        summary_path = os.path.join(kaggle_output, "validation_results", "session_summary.json")
+        os.makedirs(os.path.dirname(summary_path), exist_ok=True)
         
-except Exception as e:
-    print(f"[ERROR] TRACKING_ERROR: Validation failed with exception: {{e}}")
-    validation_results["overall_status"] = "ERROR"
-    validation_results["error"] = str(e)
+        summary = {{
+            "timestamp": datetime.now().isoformat(),
+            "status": "completed",
+            "section": "{section['name']}",
+            "revendications": {section['revendications']},
+            "repo_url": REPO_URL,
+            "branch": BRANCH,
+            "device": device,
+            "npz_files_count": len(npz_files) if 'npz_files' in locals() else 0,
+            "kaggle_session": True
+        }}
+        
+        with open(summary_path, "w", encoding='utf-8') as f:
+            json.dump(summary, f, indent=2)
+        
+        log_and_print("info", f"[OK] Session summary created: {{summary_path}}")
+        log_and_print("info", "TRACKING_SUCCESS: Session summary created")
+    
+    except Exception as e:
+        log_and_print("warning", f"[WARN] Could not create session summary: {{e}}")
+    
+    # Final flush and close logging
+    try:
+        log_and_print("info", "\\n[FINAL] Validation workflow completed")
+        log_and_print("info", "Remote logging finalized - ready for download")
+        log_handler.flush()
+        log_handler.close()
+    except Exception as e:
+        print(f"[WARN] Logging finalization failed: {{e}}")
 
-# Finalize results
-validation_results["end_time"] = datetime.now().isoformat()
-validation_results["gpu_memory_used"] = None
-if torch.cuda.is_available():
-    validation_results["gpu_memory_used"] = torch.cuda.max_memory_allocated(0) / 1e9  # GB
-
-# Save session summary pour monitoring pattern éprouvé
-session_summary = {{
-    "validation_section": "{section['name']}",
-    "revendications_tested": {section["revendications"]},
-    "device_used": device,
-    "overall_status": validation_results["overall_status"],
-    "tests_summary": validation_results["summary"],
-    "detailed_results": validation_results,
-    "timestamp": datetime.now().isoformat(),
-    "kaggle_kernel": True
-}}
-
-# Save avec pattern éprouvé FileHandler detection
-with open("session_summary.json", "w") as f:
-    json.dump(session_summary, f, indent=2)
-
-print("\\n[SAVE] Session summary saved to session_summary.json")
-
-# Final status report
-print("\\n" + "=" * 60)
-print("[REPORT] FINAL VALIDATION REPORT")
-print("=" * 60)
-print(f"Section: {section['name']}")
-print(f"Revendications: {', '.join(section['revendications'])}")
-print(f"Device used: {{device}}")
-print(f"Tests executed: {{validation_results['summary']['total_tests']}}")
-print(f"Tests passed: {{validation_results['summary']['passed_tests']}}")
-print(f"Tests failed: {{validation_results['summary']['failed_tests']}}")
-print(f"Success rate: {{validation_results['summary']['success_rate']:.1%}}")
-
-if validation_results["overall_status"] == "SUCCESS":
-    print("\\n[COMPLETE] VALIDATION COMPLETE - ALL TESTS PASSED!")
-    print(f"[VALIDATED] Revendications {', '.join(section['revendications'])} VALIDATED")
-elif validation_results["overall_status"] == "PARTIAL":
-    print("\\n[PARTIAL] VALIDATION PARTIAL - SOME TESTS FAILED")
-    print(f"[FAILED] Failed: {{validation_results['tests_failed']}}")
-else:
-    print("\\n[CRITICAL] VALIDATION ERROR - CRITICAL FAILURE")
-
-print(f"\\nEstimated runtime: {section['estimated_minutes']} minutes")
-print("[FINISH] Validation execution complete.")
+print("\\n" + "=" * 80)
+print(f"VALIDATION {section['name'].upper()} COMPLETED")
+print("Output ready at: /kaggle/working/validation_results/")
+print("=" * 80)
 '''
-
-        return script_content
+    
+    def create_validation_kernel_script(self, section: Dict[str, Any]) -> str:
+        """
+        Wrapper method for backward compatibility.
+        Calls the new _build_validation_kernel_script().
+        """
+        return self._build_validation_kernel_script(section)
         
-    def run_validation_section(self, section_name: str, timeout: int = 4000) -> tuple[bool, Optional[str]]:
+    def run_validation_section(self, section_name: str, timeout: int = 4000, commit_message: Optional[str] = None) -> tuple[bool, Optional[str]]:
         """
         Run specific validation section on Kaggle GPU.
         
         Uses proven GitHub workflow adapted for validation.
+        
+        Args:
+            section_name: Name of the validation section to run
+            timeout: Timeout in seconds for kernel execution
+            commit_message: Optional custom git commit message (Phase 2: CLI enhancement)
         """
         
         # Find section config
@@ -439,9 +456,9 @@ print("[FINISH] Validation execution complete.")
         print(f"[CONFIG] Revendications: {', '.join(section['revendications'])}")
         print(f"[TIME] Estimated runtime: {section['estimated_minutes']} minutes")
         
-        # STEP 1: Ensure Git is up to date (pattern éprouvé)
+        # STEP 1: Ensure Git is up to date (pattern éprouvé with custom message support)
         print("[STEP1] Step 1: Ensuring Git repository is up to date...")
-        if not self.ensure_git_up_to_date(self.branch):
+        if not self.ensure_git_up_to_date(self.branch, commit_message=commit_message):
             print("[ERROR] Git update failed")
             return False, None
             

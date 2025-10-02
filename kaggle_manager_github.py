@@ -128,7 +128,7 @@ class KaggleManagerGitHub:
         """Get authenticated Kaggle username."""
         return os.environ.get('KAGGLE_USERNAME', '')
 
-    def ensure_git_up_to_date(self, branch: str = "feature/training-config-updates") -> bool:
+    def ensure_git_up_to_date(self, branch: str = "feature/training-config-updates", commit_message: Optional[str] = None) -> bool:
         """
         CORE FEATURE: Automatic Git workflow (status -> add -> commit -> push).
         
@@ -137,6 +137,7 @@ class KaggleManagerGitHub:
         
         Args:
             branch: Git branch to work with
+            commit_message: Optional custom commit message (Phase 2: CLI Enhancement)
             
         Returns:
             bool: True if Git is up to date, False if errors occurred
@@ -196,12 +197,17 @@ class KaggleManagerGitHub:
                 self.logger.error(f"❌ Git add failed: {result.stderr}")
                 return False
             
-            # Create commit message with timestamp
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            commit_message = f"Auto-commit before Kaggle workflow - {timestamp}\n\nUpdated for GitHub-based Kaggle execution"
+            # Create commit message (custom or auto-generated)
+            if commit_message:
+                final_commit_message = commit_message
+                self.logger.info(f"💬 Using custom commit message: {commit_message}")
+            else:
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                final_commit_message = f"Auto-commit before Kaggle workflow - {timestamp}\n\nUpdated for GitHub-based Kaggle execution"
+                self.logger.info("💬 Using auto-generated commit message")
             
             self.logger.info("  Committing changes...")
-            result = subprocess.run(['git', 'commit', '-m', commit_message], 
+            result = subprocess.run(['git', 'commit', '-m', final_commit_message], 
                                   capture_output=True, text=True, cwd=os.getcwd())
             
             if result.returncode != 0:

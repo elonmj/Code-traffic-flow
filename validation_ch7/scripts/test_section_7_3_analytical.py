@@ -110,7 +110,30 @@ class AnalyticalValidationTests:
                 # Extract final state for comparison
                 final_state = simulation_result['states'][-1]
                 grid = simulation_result['grid']
+                params = simulation_result['params']
                 x_sim = grid.cell_centers(include_ghost=False)
+                
+                # SAVE NPZ FILE (Phase 1: NPZ Integration)
+                npz_dir = self.output_dir / "npz"
+                npz_dir.mkdir(parents=True, exist_ok=True)
+                from datetime import datetime
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                npz_file = npz_dir / f"riemann_test_{i+1}_{timestamp}.npz"
+                
+                # Import data_manager NPZ saving
+                code_path = Path(__file__).parent.parent.parent / "code"
+                if str(code_path) not in sys.path:
+                    sys.path.insert(0, str(code_path))
+                from code.io.data_manager import save_simulation_data
+                
+                save_simulation_data(
+                    str(npz_file),
+                    simulation_result['times'],
+                    simulation_result['states'],
+                    grid,
+                    params
+                )
+                print(f"[NPZ] Saved: {npz_file.name}")
                 
                 # Extract density and velocity (motorcycles class)
                 rho_sim = final_state[0, :]  # Motorcycle density
@@ -179,6 +202,30 @@ class AnalyticalValidationTests:
         grid_sizes = convergence_result['grid_sizes']
         errors = convergence_result['errors']
         convergence_orders = convergence_result['convergence_order']
+        
+        # SAVE NPZ FILES for convergence test (Phase 1: NPZ Integration)
+        if 'simulations' in convergence_result:
+            npz_dir = self.output_dir / "npz"
+            npz_dir.mkdir(parents=True, exist_ok=True)
+            
+            code_path = Path(__file__).parent.parent.parent / "code"
+            if str(code_path) not in sys.path:
+                sys.path.insert(0, str(code_path))
+            from code.io.data_manager import save_simulation_data
+            from datetime import datetime
+            
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            for sim_data in convergence_result['simulations']:
+                N = sim_data['grid'].N_physical
+                npz_file = npz_dir / f"convergence_N{N}_{timestamp}.npz"
+                save_simulation_data(
+                    str(npz_file),
+                    sim_data['times'],
+                    sim_data['states'],
+                    sim_data['grid'],
+                    sim_data['params']
+                )
+                print(f"[NPZ] Saved convergence N={N}: {npz_file.name}")
         
         for i, (N, error) in enumerate(zip(grid_sizes, errors)):
             dx = 1000.0 / N  # Domain length / grid size
@@ -369,8 +416,7 @@ def main():
     
     if riemann_ok and convergence_ok and mass_conservation_ok:
         print("[SUCCES] VALIDATION R1 : REUSSIE - Precision numerique confirmee")
-        import sys
-        sys.exit(0)  # Succès
+        return 0  # Return success code instead of sys.exit() for Kaggle compatibility
     else:
         print("[ECHEC] VALIDATION R1 : ECHEC - Verifier les methodes numeriques")
         if not riemann_ok:
@@ -379,8 +425,9 @@ def main():
             print(f"  - Ordre convergence : {results['convergence']['average_order']:.2f} < 4.0")
         if not mass_conservation_ok:
             print(f"  - Conservation masse : {results['equilibrium']['mass_conservation_error']:.2e} > 1e-4")
-        import sys
-        sys.exit(1)  # Échec
+        return 1  # Return failure code instead of sys.exit()
 
 if __name__ == "__main__":
-    main()
+    import sys
+    result_code = main()
+    sys.exit(result_code)  # Only exit when run as main script

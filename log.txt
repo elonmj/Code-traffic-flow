@@ -275,3 +275,17 @@ Response ended prematurely
 2025-10-02 09:12:14,744 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
 2025-10-02 09:12:18,926 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
 2025-10-02 09:12:21,897 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: /code/elonmj/arz-validation-dppk
+2025-10-02 09:21:48,268 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-02 09:21:48,268 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-02 09:21:48,379 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-02 09:21:48,441 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-02 09:21:48,457 - kaggle_manager_github - INFO -   M  aggle_manager_github.py (Modified (staged))
+2025-10-02 09:21:48,457 - kaggle_manager_github - INFO -    M log.txt (Modified (unstaged))
+2025-10-02 09:21:48,457 - kaggle_manager_github - INFO -    M validation_kaggle_manager.py (Modified (unstaged))
+2025-10-02 09:21:48,457 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-02 09:21:48,535 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-02 09:21:48,644 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-02 09:21:48,644 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-02 09:21:51,701 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-02 09:21:54,801 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-cgvv
+2025-10-02 11:47:21,804 - kaggle_manager_github - INFO -   Authenticated with Kaggle API

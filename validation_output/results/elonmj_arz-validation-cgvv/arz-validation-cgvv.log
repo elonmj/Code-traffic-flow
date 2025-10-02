@@ -1,0 +1,31 @@
+[{"stream_name":"stdout","time":6.255031512,"data":"[START] Starting ARZ-RL Validation: section_7_3_analytical\n"}
+,{"stream_name":"stdout","time":6.255092249,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":6.255096562,"data":"[ENV] Environment Information:\n"}
+,{"stream_name":"stdout","time":6.25509926,"data":"Python version: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":6.300760334,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":6.321837714,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":6.321865548,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":6.321870131,"data":"\n"}
+,{"stream_name":"stdout","time":6.321873757,"data":"[SETUP] Setting up Code-traffic-flow repository...\n"}
+,{"stream_name":"stdout","time":6.321877686,"data":"[CLONE] Cloning https://github.com/elonmj/Code-traffic-flow.git (branch: main)...\n"}
+,{"stream_name":"stdout","time":7.247726429,"data":"[SUCCESS] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":7.247758121,"data":"\n"}
+,{"stream_name":"stdout","time":7.247763647,"data":"[DEPS] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":7.247767547,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":11.185806158,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":14.069389428,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":16.965031026,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":19.873270724,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":22.814113311,"data":"[SUCCESS] Dependencies installed\n"}
+,{"stream_name":"stdout","time":26.300172858,"data":"Erreur d'import : No module named 'code.simulation'; 'code' is not a package\n"}
+,{"stream_name":"stdout","time":26.300201191,"data":"Vérifiez que le script est lancé depuis le bon répertoire\n"}
+,{"stream_name":"stdout","time":26.361143589,"data":"Erreur d'import : No module named 'code.simulation'; 'code' is not a package\n"}
+,{"stream_name":"stdout","time":26.361168918,"data":"Vérifiez que le script est lancé depuis le bon répertoire\n"}
+,{"stream_name":"stdout","time":26.361174702,"data":"[ERROR] Import error: cannot import name 'compute_rmse' from 'validation_utils' (/kaggle/working/Code-traffic-flow/validation_ch7/scripts/validation_utils.py)\n"}
+,{"stream_name":"stdout","time":26.361179181,"data":"Attempting fallback import strategy...\n"}
+,{"stream_name":"stdout","time":26.36157314,"data":"[CRITICAL] Critical import failure: cannot import name 'compute_rmse' from 'validation_utils' (/kaggle/working/Code-traffic-flow/validation_ch7/scripts/validation_utils.py)\n"}
+,{"stream_name":"stderr","time":29.244640807,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":29.244687963,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":29.295111733,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":30.374676867,"data":"[NbConvertApp] Writing 318650 bytes to __results__.html\n"}
+]
