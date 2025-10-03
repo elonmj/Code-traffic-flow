@@ -345,8 +345,9 @@ finally:
         
         log_and_print("info", f"[ARTIFACTS] Copying results for {{section_name}}...")
         
-        # Source: validation_ch7/results/section_7_3_analytical/
-        source_section = os.path.join(REPO_DIR, "validation_ch7", "results", section_name)
+        # Source: validation_output/results/local_test/section_7_3_analytical/
+        # (Tests génèrent dans validation_output/, PAS dans validation_ch7/results/)
+        source_section = os.path.join(REPO_DIR, "validation_output", "results", "local_test", section_name)
         
         # Destination: /kaggle/working/section_7_3_analytical/
         dest_section = os.path.join(kaggle_output, section_name)
@@ -378,6 +379,8 @@ finally:
             log_and_print("info", "TRACKING_SUCCESS: Artifacts copied")
         else:
             log_and_print("warning", f"[WARN] Source section not found: {{source_section}}")
+            log_and_print("warning", f"[INFO] Expected path: validation_output/results/local_test/{{section_name}}/")
+            log_and_print("warning", f"[INFO] Run test locally first to generate artifacts")
             log_and_print("info", "[FALLBACK] Creating empty structure...")
             os.makedirs(dest_section, exist_ok=True)
             npz_files = []

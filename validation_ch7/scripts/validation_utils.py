@@ -44,7 +44,109 @@ __all__ = ['compute_mape', 'compute_rmse', 'compute_geh', 'compute_theil_u',
            'run_validation_test', 'run_real_simulation', 'run_convergence_analysis',
            'create_riemann_scenario_config', 'generate_tex_snippet', 'generate_latex_table',
            'save_validation_results', 'save_figure', 'create_summary_table',
-           'ValidationTest', 'RealARZValidationTest']
+           'ValidationTest', 'RealARZValidationTest', 'ValidationSection']
+
+
+class ValidationSection:
+    """
+    CLASSE DE BASE ARCHITECTURALE - Une section = Un dossier organisé
+    
+    Définit l'architecture propre pour TOUTES les sections de validation.
+    Chaque test (7.3, 7.4, 7.5, etc.) hérite de cette classe et obtient
+    automatiquement la structure organisée.
+    
+    Architecture Standard:
+    validation_output/results/{kernel_slug}/section_7_X_name/
+    ├── figures/              # PNG visualisations (300 DPI)
+    ├── data/
+    │   ├── npz/             # Données simulation binaires
+    │   ├── scenarios/       # Configurations YAML
+    │   └── metrics/         # CSV/JSON métriques
+    ├── latex/               # Templates LaTeX remplis
+    └── session_summary.json # Metadata de session
+    
+    NOTE: Lors des tests locaux, output_base="validation_output/results/local_test"
+          Lors de l'upload Kaggle, le manager copie depuis validation_output/
+    """
+    
+    def __init__(self, section_name: str, output_base: str = "validation_output/results/local_test"):
+        """
+        Initialise l'architecture standard pour une section
+        
+        Args:
+            section_name: Nom de la section (ex: "section_7_3_analytical")
+            output_base: Dossier racine (défaut: "validation_output/results/local_test")
+                        En production Kaggle: "validation_output/results/{kernel_slug}"
+        """
+        self.section_name = section_name
+        self.output_dir = Path(output_base) / section_name
+        
+        # Structure organisée par TYPE de contenu
+        self.figures_dir = self.output_dir / "figures"
+        self.npz_dir = self.output_dir / "data" / "npz"
+        self.scenarios_dir = self.output_dir / "data" / "scenarios"
+        self.metrics_dir = self.output_dir / "data" / "metrics"
+        self.latex_dir = self.output_dir / "latex"
+        
+        # Créer toute la structure automatiquement
+        self._create_directories()
+        
+        # Initialiser le dictionnaire de résultats pour LaTeX
+        self.results = {}
+    
+    def _create_directories(self):
+        """Crée tous les dossiers de la structure organisée"""
+        directories = [
+            self.figures_dir,
+            self.npz_dir,
+            self.scenarios_dir,
+            self.metrics_dir,
+            self.latex_dir
+        ]
+        
+        for directory in directories:
+            directory.mkdir(parents=True, exist_ok=True)
+        
+        print(f"[ARCHITECTURE] Structure créée: {self.output_dir}")
+        print(f"  - Figures:   {self.figures_dir.relative_to(Path.cwd())}")
+        print(f"  - NPZ:       {self.npz_dir.relative_to(Path.cwd())}")
+        print(f"  - Scenarios: {self.scenarios_dir.relative_to(Path.cwd())}")
+        print(f"  - Metrics:   {self.metrics_dir.relative_to(Path.cwd())}")
+        print(f"  - LaTeX:     {self.latex_dir.relative_to(Path.cwd())}")
+    
+    def save_session_summary(self, additional_info: dict = None):
+        """
+        Génère session_summary.json avec comptage d'artefacts
+        
+        Args:
+            additional_info: Dictionnaire avec infos supplémentaires à inclure
+        """
+        from datetime import datetime
+        import json
+        
+        summary = {
+            'section': self.section_name,
+            'timestamp': datetime.now().isoformat(),
+            'artifacts': {
+                'figures': len(list(self.figures_dir.glob('*.png'))),
+                'npz_files': len(list(self.npz_dir.glob('*.npz'))),
+                'scenarios': len(list(self.scenarios_dir.glob('*.yml'))),
+                'latex_files': len(list(self.latex_dir.glob('*.tex'))),
+                'csv_files': len(list(self.metrics_dir.glob('*.csv'))),
+                'json_files': len(list(self.metrics_dir.glob('*.json')))
+            }
+        }
+        
+        if additional_info:
+            summary.update(additional_info)
+        
+        summary_path = self.output_dir / 'session_summary.json'
+        with open(summary_path, 'w', encoding='utf-8') as f:
+            json.dump(summary, f, indent=2)
+        
+        print(f"[SUMMARY] Created: {summary_path.relative_to(Path.cwd())}")
+        return summary
+
 
 class ValidationTest:
     """Base class for validation tests."""

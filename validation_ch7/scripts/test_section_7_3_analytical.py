@@ -22,46 +22,25 @@ from validation_utils import (run_validation_test, generate_tex_snippet, save_fi
                             calculate_convergence_order, analytical_riemann_solution, 
                             analytical_equilibrium_profile,
                             setup_publication_style, plot_riemann_solution,
-                            plot_convergence_order, plot_fundamental_diagram)
+                            plot_convergence_order, plot_fundamental_diagram,
+                            ValidationSection)  # IMPORT CLASSE DE BASE ARCHITECTURALE
 
-class AnalyticalValidationTests:
+class AnalyticalValidationTests(ValidationSection):  # HÉRITE DE ValidationSection
     """Classe pour les tests de validation analytique"""
     
-    def __init__(self, output_dir="validation_ch7/results/section_7_3_analytical"):
+    def __init__(self):
         """
-        Initialise la structure organisée pour Section 7.3
+        Initialise Section 7.3 avec l'architecture standard
         
-        Structure:
-        section_7_3_analytical/
-        ├── figures/           # PNG visualisations
-        ├── data/
-        │   ├── npz/          # Données simulation
-        │   ├── scenarios/    # Config YAML
-        │   └── metrics/      # CSV/JSON métriques
-        ├── latex/            # Template rempli
-        └── session_summary.json
+        L'architecture est AUTOMATIQUEMENT créée par la classe de base:
+        - figures/
+        - data/npz/, data/scenarios/, data/metrics/
+        - latex/
         """
-        self.output_dir = Path(output_dir)
+        # Appeler le constructeur de la classe de base
+        super().__init__(section_name="section_7_3_analytical")
         
-        # Structure organisée par type de contenu
-        self.figures_dir = self.output_dir / "figures"
-        self.npz_dir = self.output_dir / "data" / "npz"
-        self.scenarios_dir = self.output_dir / "data" / "scenarios"
-        self.metrics_dir = self.output_dir / "data" / "metrics"
-        self.latex_dir = self.output_dir / "latex"
-        
-        # Créer toute la structure
-        for directory in [self.figures_dir, self.npz_dir, self.scenarios_dir, 
-                         self.metrics_dir, self.latex_dir]:
-            directory.mkdir(parents=True, exist_ok=True)
-        
-        print(f"[INIT] Structure créée dans: {self.output_dir}")
-        print(f"  - Figures: {self.figures_dir}")
-        print(f"  - NPZ: {self.npz_dir}")
-        print(f"  - Scenarios: {self.scenarios_dir}")
-        print(f"  - Metrics: {self.metrics_dir}")
-        print(f"  - LaTeX: {self.latex_dir}")
-        
+        # Configuration spécifique à Section 7.3
         self.riemann_cases = [
             {
                 "name": "Choc simple motos",
@@ -461,29 +440,16 @@ class AnalyticalValidationTests:
         df_riemann.to_csv(metrics_csv, index=False)
         print(f"[METRICS] Saved: {metrics_csv}")
         
-        # Session summary JSON au root de section
-        session_summary = self.output_dir / "session_summary.json"
-        import json
-        from datetime import datetime
-        summary_data = {
-            "timestamp": datetime.now().isoformat(),
-            "section": "section_7_3_analytical",
-            "status": "completed",
-            "tests_run": {
-                "riemann": len(riemann_results),
-                "convergence": 1 if isinstance(convergence_results, dict) else 0,
-                "equilibrium": 1 if equilibrium_results else 0
+        # Session summary JSON - utiliser la méthode de la classe de base
+        test_status = {
+            'tests_run': {
+                'riemann': len(riemann_results),
+                'convergence': 1 if isinstance(convergence_results, dict) else 0,
+                'equilibrium': 1 if equilibrium_results else 0
             },
-            "artifacts": {
-                "figures": len(list(self.figures_dir.glob("*.png"))),
-                "npz": len(list(self.npz_dir.glob("*.npz"))),
-                "scenarios": len(list(self.scenarios_dir.glob("*.yml"))),
-                "latex": 1 if output_path.exists() else 0
-            }
+            'status': 'completed'
         }
-        with open(session_summary, 'w', encoding='utf-8') as f:
-            json.dump(summary_data, f, indent=2)
-        print(f"[SUMMARY] Created: {session_summary}")
+        self.save_session_summary(additional_info=test_status)
         
         print(f"\n[OK] Section 7.3 complete : {self.output_dir}")
         return all_results

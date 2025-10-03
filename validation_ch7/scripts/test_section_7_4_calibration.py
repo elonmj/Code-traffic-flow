@@ -21,17 +21,17 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from validation_ch7.scripts import validation_utils
+from validation_ch7.scripts.validation_utils import ValidationSection  # IMPORT CLASSE DE BASE
 from arz_model.analysis import metrics
 
-class RealCalibrationValidationTest(validation_utils.RealARZValidationTest):
+class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE ValidationSection
     """Test de calibration utilisant vraies données Victoria Island"""
     
     def __init__(self):
-        super().__init__(
-            test_name="CalibrationVictoriaIsland",
-            section="7.4",
-            scenario_path=""  # Will create dynamically
-        )
+        # Initialiser l'architecture standard via classe de base
+        super().__init__(section_name="section_7_4_calibration")
+        
+        # Configuration spécifique à Section 7.4
         self.victoria_island_file = project_root / "data" / "processed_victoria_island.json"
         self.speed_data_file = project_root / "Code_RL" / "data" / "donnees_vitesse_historique.csv"
         self.corridor_file = project_root / "Code_RL" / "data" / "fichier_de_travail_corridor.csv"
