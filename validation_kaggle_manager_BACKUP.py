@@ -1,11 +1,23 @@
 #!/usr/bin/env python3
 """
-Validation Kaggle ManagerGitHub pour Validation ARZ-RL
+Validation Kaggle Man    from validation_utils import RealARZValidationTest, run_real_simulation
+    from run_all_validation import ValidationOrchestrator
+    print("[SUCCESS] Validation framework imported successfully")
+except ImportError as e:
+    print(f"[WARN] Validation framework import: {e}")- Adaptation du KaggleManagerGitHub pour Validation ARZ-RL
 
 Ce module adapte le kaggle_manager_github.py qui a fonctionné pour créer un système
-d'orchestration des tests de validation ARZ-RL sur GPU Kaggle.
+d'orchestration des te            if result.returncode == 0:
+                self.logger.info(f"[SUCCESS] Kernel uploaded successfully: {kernel_name}")
+                return f"{self.username}/{kernel_name}"
+            else:
+                self.logger.error(f"[ERROR] Kernel upload failed: {result.stderr}")
+                return None
+                
+        except Exception as e:
+            self.logger.error(f"[CRITICAL] Kernel creation failed: {e}")
+            return Noneidation ARZ-RL sur GPU Kaggle.
 
-   
 Base sur l'architecture éprouvée :
 - Git automation (ensure up-to-date before Kaggle)
 - GitHub-based kernel (clone public repo)  
@@ -30,13 +42,21 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 
-# Import Kaggle API
+# Import du KaggleManagerGitHub comme base
 try:
-    from kaggle.api.kaggle_api_extended import KaggleApi
-    KAGGLE_AVAILABLE = True
-except ImportError:
-    KAGGLE_AVAILABLE = False
-    print("[ERROR] Kaggle package not installed. Install with: pip install kaggle")
+    # Temporary bypass for Config import issue
+    import sys
+    from unittest.mock import MagicMock
+    
+    # Mock the config module to bypass dependency
+    config_mock = MagicMock()
+    config_mock.Config = MagicMock()
+    sys.modules['config'] = config_mock
+    
+    from kaggle_manager_github import KaggleManagerGitHub
+    print("[SUCCESS] KaggleManagerGitHub imported successfully (with config bypass)")
+except ImportError as e:
+    print(f"[ERROR] Import error: {e}")
     sys.exit(1)
 
 # Import validation framework existant
@@ -48,29 +68,19 @@ try:
 except ImportError as e:
     print(f"[ERROR] Validation framework import: {e}")
 
-
-
-class ValidationKaggleManager:
+class ValidationKaggleManager(KaggleManagerGitHub):
     """
-    Gestionnaire autonome pour validation ARZ-RL sur Kaggle GPU.
+    Adaptation du KaggleManagerGitHub pour les tests de validation ARZ-RL.
     
-    Fonctionnalités complètes :
-    - Lecture credentials kaggle.json
-    - Git automation (ensure up-to-date before Kaggle)
-    - GitHub-based kernel (clone public repo)
-    - session_summary.json detection
-    - Enhanced monitoring
-    - Utilisation des test_section_* existants
-    
-    INDÉPENDANT - Ne dépend plus de KaggleManagerGitHub.
+    Utilise l'architecture éprouvée du KaggleManagerGitHub mais adaptée pour :
+    - Lancer les test_section_* sur GPU Kaggle 
+    - Valider les 6 revendications R1-R6 avec vraies simulations
+    - Maintenir cohérence paramètres entre local et Kaggle
+    - Générer résultats LaTeX authentiques
     """
     
     def __init__(self):
         """Initialize avec credentials kaggle.json."""
-        
-        # Vérifier disponibilité Kaggle API
-        if not KAGGLE_AVAILABLE:
-            raise ImportError("[ERROR] Kaggle package not installed. Install with: pip install kaggle")
         
         # Load Kaggle credentials
         kaggle_creds_path = Path("kaggle.json")
@@ -80,18 +90,16 @@ class ValidationKaggleManager:
         with open(kaggle_creds_path, 'r') as f:
             creds = json.load(f)
             
-        # Set environment variables pour Kaggle API
+        # Set environment variables pour KaggleManagerGitHub
         os.environ['KAGGLE_USERNAME'] = creds['username']
         os.environ['KAGGLE_KEY'] = creds['key']
         
-        # Initialize Kaggle API directement (pas d'héritage)
-        self.api = KaggleApi()
-        self.api.authenticate()
+        # Initialize base KaggleManagerGitHub avec GitHub repo approprié
+        super().__init__()
         
-        # Initialize logging
-        self.logger = self._setup_logging()
-        
-        # Configuration utilisateur
+        # CRITICAL FIX: Override username AFTER super().__init__()
+        # Parent class sets self.username = self._get_username() which reads from env
+        # We MUST override it AFTER to ensure joselonm is used instead of being overwritten
         self.username = creds['username']
         
         # Override pour notre repo et configuration
@@ -145,168 +153,6 @@ class ValidationKaggleManager:
         
         print(f"[SUCCESS] ValidationKaggleManager initialized for user: {creds['username']}")
         print(f"[CONFIG] Validation sections configured: {len(self.validation_sections)}")
-    
-    def _setup_logging(self) -> logging.Logger:
-        """Setup dedicated logging with both console and file handlers."""
-        logger = logging.getLogger('validation_kaggle_manager')
-        logger.setLevel(logging.INFO)
-        
-        if not logger.handlers:
-            # Console handler
-            console_handler = logging.StreamHandler()
-            formatter = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-            )
-            console_handler.setFormatter(formatter)
-            logger.addHandler(console_handler)
-            
-            # File handler with immediate flush for real-time logging
-            log_file = Path.cwd() / "log.txt"
-            file_handler = logging.FileHandler(log_file, mode='a', encoding='utf-8')
-            file_handler.setFormatter(formatter)
-            logger.addHandler(file_handler)
-            
-            # Store file handler reference for forced flush
-            self._file_handler = file_handler
-        
-        return logger
-    
-    def ensure_git_up_to_date(self, branch: str = "main", commit_message: Optional[str] = None) -> bool:
-        """
-        CORE FEATURE: Automatic Git workflow (status -> add -> commit -> push).
-        
-        Cette fonctionnalité est CRUCIALE car Kaggle clonait du code obsolète
-        quand les changements locaux n'étaient pas pushés sur GitHub.
-        
-        Args:
-            branch: Git branch to work with
-            commit_message: Optional custom commit message
-            
-        Returns:
-            bool: True if Git is up to date, False if errors occurred
-        """
-        self.logger.info("🔍 Checking Git status and ensuring changes are pushed...")
-        
-        try:
-            # Check if we're in a git repository
-            result = subprocess.run(['git', 'rev-parse', '--git-dir'], 
-                                  capture_output=True, text=True, cwd=os.getcwd())
-            if result.returncode != 0:
-                self.logger.warning("📁 Not in a Git repository - skipping Git automation")
-                return True
-            
-            # Get current branch
-            result = subprocess.run(['git', 'branch', '--show-current'], 
-                                  capture_output=True, text=True, cwd=os.getcwd())
-            current_branch = result.stdout.strip()
-            self.logger.info(f"📍 Current branch: {current_branch}")
-            
-            # Check git status
-            result = subprocess.run(['git', 'status', '--porcelain'], 
-                                  capture_output=True, text=True, cwd=os.getcwd())
-            
-            if result.returncode != 0:
-                self.logger.error(f"❌ Git status failed: {result.stderr}")
-                return False
-            
-            status_output = result.stdout.strip()
-            
-            if not status_output:
-                # Check if we need to push commits
-                result = subprocess.run(['git', 'rev-list', '--count', f'{current_branch}..origin/{current_branch}'], 
-                                      capture_output=True, text=True, cwd=os.getcwd())
-                if result.returncode == 0:
-                    behind_count = int(result.stdout.strip()) if result.stdout.strip().isdigit() else 0
-                    if behind_count == 0:
-                        self.logger.info("✅ Git repository is clean and up to date")
-                        return True
-            
-            # There are changes - show them
-            if status_output:
-                self.logger.info("📝 Detected local changes:")
-                for line in status_output.split('\n'):
-                    if line.strip():
-                        status_code = line[:2]
-                        file_path = line[3:] if len(line) > 3 else line
-                        description = self._get_git_status_description(status_code)
-                        self.logger.info(f"  {status_code} {file_path} ({description})")
-            
-            # Add all changes
-            self.logger.info("📦 Adding all changes...")
-            result = subprocess.run(['git', 'add', '.'], 
-                                  capture_output=True, text=True, cwd=os.getcwd())
-            
-            if result.returncode != 0:
-                self.logger.error(f"❌ Git add failed: {result.stderr}")
-                return False
-            
-            # Create commit message
-            if commit_message is None:
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                commit_message = f"Auto-commit before Kaggle validation - {timestamp}"
-            
-            self.logger.info("💾 Committing changes...")
-            result = subprocess.run(['git', 'commit', '-m', commit_message], 
-                                  capture_output=True, text=True, cwd=os.getcwd())
-            
-            if result.returncode != 0:
-                # Check if it's just "nothing to commit"
-                if "nothing to commit" in result.stdout.lower() or "working tree clean" in result.stdout.lower():
-                    self.logger.info("✅ No changes to commit - repository is clean")
-                else:
-                    self.logger.error(f"❌ Git commit failed: {result.stderr}")
-                    return False
-            else:
-                self.logger.info("✅ Changes committed successfully")
-            
-            # Push to remote
-            return self._git_push(branch)
-            
-        except subprocess.TimeoutExpired:
-            self.logger.error("❌ Git command timed out")
-            return False
-        except Exception as e:
-            self.logger.error(f"❌ Git workflow failed: {e}")
-            return False
-    
-    def _git_push(self, branch: str) -> bool:
-        """Push changes to remote repository."""
-        self.logger.info(f"📤 Pushing to remote branch: {branch}")
-        
-        try:
-            result = subprocess.run(['git', 'push', 'origin', branch], 
-                                  capture_output=True, text=True, cwd=os.getcwd(), timeout=60)
-            
-            if result.returncode == 0:
-                self.logger.info("✅ Changes pushed successfully to GitHub")
-                return True
-            else:
-                self.logger.error(f"❌ Git push failed: {result.stderr}")
-                return False
-                
-        except subprocess.TimeoutExpired:
-            self.logger.error("❌ Git push timed out")
-            return False
-        except Exception as e:
-            self.logger.error(f"❌ Git push error: {e}")
-            return False
-    
-    def _get_git_status_description(self, status_code: str) -> str:
-        """Convert Git status codes to human-readable descriptions."""
-        status_map = {
-            'M ': 'Modified (staged)',
-            ' M': 'Modified (unstaged)',
-            'MM': 'Modified (staged and unstaged)',
-            'A ': 'Added (staged)',
-            ' A': 'Added (unstaged)',
-            'D ': 'Deleted (staged)',
-            ' D': 'Deleted (unstaged)',
-            'R ': 'Renamed (staged)',
-            'C ': 'Copied (staged)',
-            '??': 'Untracked',
-            '!!': 'Ignored'
-        }
-        return status_map.get(status_code, f'Unknown ({status_code})')
         
     def _build_validation_kernel_script(self, section: Dict[str, Any]) -> str:
         """
