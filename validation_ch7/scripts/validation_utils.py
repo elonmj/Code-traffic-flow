@@ -145,7 +145,7 @@ class ValidationSection:
         with open(summary_path, 'w', encoding='utf-8') as f:
             json.dump(summary, f, indent=2)
         
-        print(f"[SUMMARY] Created: {summary_path.relative_to(Path.cwd())}")
+        print(f"[SUMMARY] Created: {summary_path}")
         return summary
 
 
