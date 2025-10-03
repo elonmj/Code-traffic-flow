@@ -1,0 +1,26 @@
+N: 200
+boundary_conditions:
+  left:
+    state: &id001
+    - 0.4
+    - 5.0
+    - 0.0
+    - 0.0
+    type: inflow
+  right:
+    type: outflow
+initial_conditions:
+  U_L: *id001
+  U_R:
+  - 0.1
+  - 25.0
+  - 0.0
+  - 0.0
+  split_pos: 500.0
+  type: riemann
+output_dt: 5.0
+road_quality_definition: 3
+scenario_name: riemann_validation_test
+t_final: 2.0
+xmax: 10.0
+xmin: 0.0

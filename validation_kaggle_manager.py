@@ -647,7 +647,7 @@ print("=" * 80)
         current_interval = base_interval
         
         print(f"[MONITOR] Enhanced monitoring started for: {kernel_slug}")
-        print(f"[TIMEOUT] Timeout: {timeout}s, Adaptive intervals: {base_interval}s → {max_interval}s")
+        print(f"[TIMEOUT] Timeout: {timeout}s, Adaptive intervals: {base_interval}s -> {max_interval}s")
         
         # Add initial delay to allow Kaggle API to process the kernel
         initial_delay = 120  # Wait 2 minutes before first check
