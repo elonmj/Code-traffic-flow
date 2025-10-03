@@ -542,7 +542,7 @@ print("=" * 80)
                 "code_file": f"{kernel_name}.py",  # CRITICAL: Must match actual filename
                 "language": "python",
                 "kernel_type": "script",
-                "is_private": True,  # TEMPORARY: joselonm needs phone verification for public notebooks
+                "is_private": False,  # elonmj has phone verification - can use public notebooks
                 "enable_gpu": True,
                 "enable_tpu": False,
                 "enable_internet": True,
