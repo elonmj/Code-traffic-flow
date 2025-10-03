@@ -493,3 +493,11 @@ Response ended prematurely
 2025-10-03 00:44:10,853 - kaggle_manager_github - INFO - 📍 Current branch: main
 2025-10-03 00:44:11,099 - kaggle_manager_github - INFO -   Git repository is clean and up to date
 2025-10-03 00:44:13,410 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-73-knhe
+2025-10-03 01:00:57,165 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-03 01:00:57,180 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-03 01:00:57,397 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-03 01:00:57,679 - kaggle_manager_github - INFO -   Git repository is clean and up to date
+2025-10-03 01:00:58,718 - kaggle_manager_github - ERROR - [CRITICAL] Kernel creation failed: 403 Client Error: Forbidden for url: https://www.kaggle.com/api/v1/kernels/push
+2025-10-03 01:02:25,053 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
+2025-10-03 01:02:25,056 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-03 01:02:25,316 - kaggle_manager_github - INFO - 📍 Current branch: main
