@@ -1,0 +1,18 @@
+{
+  "section": "section_7_3_analytical",
+  "timestamp": "2025-10-03T13:48:49.065249",
+  "artifacts": {
+    "figures": 5,
+    "npz_files": 5,
+    "scenarios": 5,
+    "latex_files": 1,
+    "csv_files": 1,
+    "json_files": 0
+  },
+  "tests_run": {
+    "riemann": 5,
+    "convergence": 0,
+    "equilibrium": 1
+  },
+  "status": "completed"
+}

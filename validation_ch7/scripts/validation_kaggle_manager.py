@@ -800,8 +800,8 @@ print("=" * 80)
         start_time = time.time()
         
         # Adaptive monitoring intervals (exponential backoff)
-        base_interval = 10  # Start with 10 seconds
-        max_interval = 120  # Cap at 2 minutes
+        base_interval = 35  # Start with 35 seconds
+        max_interval = 240  # Cap at 4"""""""""""""""""""""""""z minutes
         current_interval = base_interval
         
         print(f"[MONITOR] Enhanced monitoring started for: {kernel_slug}")
@@ -1130,7 +1130,7 @@ print("=" * 80)
             print(f"[ERROR] Failed to download results: {e}")
             return False
 
-    def run_all_validation_sections(self, timeout_per_section: int = 4000) -> Dict[str, Any]:
+    def run_all_validation_sections(self, timeout_per_section: int = 12000) -> Dict[str, Any]:
         """
         Run all validation sections sequentially on Kaggle GPU.
         

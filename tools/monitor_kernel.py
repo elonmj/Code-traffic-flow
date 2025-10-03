@@ -26,7 +26,7 @@ try:
     # Utiliser directement la méthode de monitoring
     success = manager._monitor_kernel_with_session_detection(
         kernel_slug=kernel_slug,
-        timeout=4000  # 66 minutes max
+        timeout=36000  # 10 hours max
     )
     
     if success:

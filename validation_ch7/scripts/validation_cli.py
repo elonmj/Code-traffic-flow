@@ -38,8 +38,8 @@ def main():
     parser.add_argument(
         '--timeout',
         type=int,
-        default=4000,
-        help='Kaggle kernel timeout in seconds (default: 4000)'
+        default=8000,
+        help='Kaggle kernel timeout in seconds (default: 8000)'
     )
     
     args = parser.parse_args()
