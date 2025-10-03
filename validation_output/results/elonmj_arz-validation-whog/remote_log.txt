@@ -1,3 +1,0 @@
-[INFO] Kernel elonmj/arz-validation-whog completed successfully
-[OK] Validation completed successfully!
-[SUCCESS] VALIDATION SUCCESS: All tests completed successfully
