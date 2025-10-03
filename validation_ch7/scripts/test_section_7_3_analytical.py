@@ -27,9 +27,40 @@ from validation_utils import (run_validation_test, generate_tex_snippet, save_fi
 class AnalyticalValidationTests:
     """Classe pour les tests de validation analytique"""
     
-    def __init__(self, output_dir="validation_ch7/results"):
+    def __init__(self, output_dir="validation_ch7/results/section_7_3_analytical"):
+        """
+        Initialise la structure organisée pour Section 7.3
+        
+        Structure:
+        section_7_3_analytical/
+        ├── figures/           # PNG visualisations
+        ├── data/
+        │   ├── npz/          # Données simulation
+        │   ├── scenarios/    # Config YAML
+        │   └── metrics/      # CSV/JSON métriques
+        ├── latex/            # Template rempli
+        └── session_summary.json
+        """
         self.output_dir = Path(output_dir)
-        self.output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Structure organisée par type de contenu
+        self.figures_dir = self.output_dir / "figures"
+        self.npz_dir = self.output_dir / "data" / "npz"
+        self.scenarios_dir = self.output_dir / "data" / "scenarios"
+        self.metrics_dir = self.output_dir / "data" / "metrics"
+        self.latex_dir = self.output_dir / "latex"
+        
+        # Créer toute la structure
+        for directory in [self.figures_dir, self.npz_dir, self.scenarios_dir, 
+                         self.metrics_dir, self.latex_dir]:
+            directory.mkdir(parents=True, exist_ok=True)
+        
+        print(f"[INIT] Structure créée dans: {self.output_dir}")
+        print(f"  - Figures: {self.figures_dir}")
+        print(f"  - NPZ: {self.npz_dir}")
+        print(f"  - Scenarios: {self.scenarios_dir}")
+        print(f"  - Metrics: {self.metrics_dir}")
+        print(f"  - LaTeX: {self.latex_dir}")
         
         self.riemann_cases = [
             {
@@ -118,19 +149,14 @@ class AnalyticalValidationTests:
                 params = simulation_result['params']
                 x_sim = grid.cell_centers(include_ghost=False)
                 
-                # SAVE NPZ FILE (Phase 1: NPZ Integration)
-                npz_dir = self.output_dir / "npz"
-                npz_dir.mkdir(parents=True, exist_ok=True)
-                from datetime import datetime
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                npz_file = npz_dir / f"riemann_test_{i+1}_{timestamp}.npz"
-                
                 # Import data_manager NPZ saving
                 arz_model_path = Path(__file__).parent.parent.parent / "arz_model"
                 if str(arz_model_path) not in sys.path:
                     sys.path.insert(0, str(arz_model_path))
                 from arz_model.io.data_manager import save_simulation_data
                 
+                # Sauvegarder NPZ dans data/npz/
+                npz_file = self.npz_dir / f"riemann_test_{i+1}.npz"
                 save_simulation_data(
                     str(npz_file),
                     simulation_result['times'],
@@ -138,7 +164,14 @@ class AnalyticalValidationTests:
                     grid,
                     params
                 )
-                print(f"[NPZ] Saved: {npz_file.name}")
+                print(f"[NPZ] Saved: {npz_file}")
+                
+                # Sauvegarder scenario YAML dans data/scenarios/
+                scenario_file = self.scenarios_dir / f"riemann_test_{i+1}.yml"
+                import shutil
+                if scenario_path.exists():
+                    shutil.copy2(scenario_path, scenario_file)
+                    print(f"[SCENARIO] Saved: {scenario_file}")
                 
                 # ============================================================
                 # GÉNÉRATION DE FIGURE PUBLICATION-READY (intégrée au test)
@@ -153,10 +186,8 @@ class AnalyticalValidationTests:
                 rho_exact_interp = np.interp(x_sim, x, rho_exact)
                 v_exact_interp = np.interp(x_sim, x, v_exact)
                 
-                figures_dir = self.output_dir / "figures"
-                figures_dir.mkdir(parents=True, exist_ok=True)
-                
-                figure_path = figures_dir / f"riemann_test_{i+1}_{case['name'].replace(' ', '_').lower()}.png"
+                # Figure dans figures/
+                figure_path = self.figures_dir / f"riemann_test_{i+1}_{case['name'].replace(' ', '_').lower()}.png"
                 
                 # Générer la figure avec solution analytique et simulée
                 fig = plot_riemann_solution(
@@ -169,7 +200,7 @@ class AnalyticalValidationTests:
                 )
                 plt.close(fig)  # Libérer mémoire
                 
-                print(f"[FIGURE] Generated: {figure_path.name}")
+                print(f"[FIGURE] Generated: {figure_path}")
                 # ============================================================
                 
                 # Calcul des erreurs on same grid
@@ -403,32 +434,58 @@ class AnalyticalValidationTests:
         template_data.update(equilibrium_results)
         
         # Ajout des placeholders manquants
-        template_data["convergence_plot_path"] = "validation_ch7/results/convergence_analysis.png"
+        template_data["convergence_plot_path"] = "figures/convergence_order_weno5.png"
         
-        # Génération du fichier LaTeX
+        # Génération du fichier LaTeX dans latex/
         template_path = Path("validation_ch7/templates/section_7_3_analytical.tex")
-        output_path = self.output_dir / "section_7_3_content.tex"
+        output_path = self.latex_dir / "section_7_3_content.tex"
         
         if template_path.exists():
             with open(template_path, 'r', encoding='utf-8') as f:
                 template_content = f.read()
             
             generate_tex_snippet(template_data, template_content, output_path)
+            print(f"[LATEX] Generated: {output_path}")
         else:
             print(f"[WARNING] Template not found: {template_path}")
         
-        # Sauvegarde des résultats bruts
+        # Sauvegarde des métriques CSV dans data/metrics/
         all_results = {
             "riemann": riemann_results,
             "convergence": convergence_results,
             "equilibrium": equilibrium_results
         }
         
-        results_path = self.output_dir / "analytical_validation_results.csv"
+        metrics_csv = self.metrics_dir / "riemann_validation_metrics.csv"
         df_riemann = pd.DataFrame(riemann_results)
-        df_riemann.to_csv(results_path, index=False)
+        df_riemann.to_csv(metrics_csv, index=False)
+        print(f"[METRICS] Saved: {metrics_csv}")
         
-        print(f"\n[OK] Section 7.3 generee : {output_path}")
+        # Session summary JSON au root de section
+        session_summary = self.output_dir / "session_summary.json"
+        import json
+        from datetime import datetime
+        summary_data = {
+            "timestamp": datetime.now().isoformat(),
+            "section": "section_7_3_analytical",
+            "status": "completed",
+            "tests_run": {
+                "riemann": len(riemann_results),
+                "convergence": 1 if isinstance(convergence_results, dict) else 0,
+                "equilibrium": 1 if equilibrium_results else 0
+            },
+            "artifacts": {
+                "figures": len(list(self.figures_dir.glob("*.png"))),
+                "npz": len(list(self.npz_dir.glob("*.npz"))),
+                "scenarios": len(list(self.scenarios_dir.glob("*.yml"))),
+                "latex": 1 if output_path.exists() else 0
+            }
+        }
+        with open(session_summary, 'w', encoding='utf-8') as f:
+            json.dump(summary_data, f, indent=2)
+        print(f"[SUMMARY] Created: {session_summary}")
+        
+        print(f"\n[OK] Section 7.3 complete : {self.output_dir}")
         return all_results
 
 def main():

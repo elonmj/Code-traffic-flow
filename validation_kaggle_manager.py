@@ -341,47 +341,48 @@ finally:
     
     try:
         kaggle_output = "/kaggle/working"
+        section_name = "{section['name']}"  # e.g., section_7_3_analytical
         
-        # Copy validation_ch7/results/ → /kaggle/working/validation_results/
-        log_and_print("info", "[ARTIFACTS] Copying validation results...")
+        log_and_print("info", f"[ARTIFACTS] Copying results for {{section_name}}...")
         
-        source_results = os.path.join(REPO_DIR, "validation_ch7", "results")
-        dest_results = os.path.join(kaggle_output, "validation_results")
+        # Source: validation_ch7/results/section_7_3_analytical/
+        source_section = os.path.join(REPO_DIR, "validation_ch7", "results", section_name)
         
-        if os.path.exists(source_results):
-            if os.path.exists(dest_results):
-                shutil.rmtree(dest_results)
+        # Destination: /kaggle/working/section_7_3_analytical/
+        dest_section = os.path.join(kaggle_output, section_name)
+        
+        if os.path.exists(source_section):
+            # Clean destination if exists
+            if os.path.exists(dest_section):
+                shutil.rmtree(dest_section)
             
-            shutil.copytree(source_results, dest_results)
-            log_and_print("info", f"[OK] Results copied to: {{dest_results}}")
+            # Copy ENTIRE section directory (already organized with figures/, data/, latex/)
+            shutil.copytree(source_section, dest_section)
+            log_and_print("info", f"[OK] Section copied to: {{dest_section}}")
             
-            # Count artifacts
-            npz_files = glob.glob(os.path.join(dest_results, "**", "*.npz"), recursive=True)
-            png_files = glob.glob(os.path.join(dest_results, "**", "*.png"), recursive=True)
-            tex_files = glob.glob(os.path.join(dest_results, "**", "*.tex"), recursive=True)
-            json_files = glob.glob(os.path.join(dest_results, "**", "*.json"), recursive=True)
+            # Count artifacts by type
+            npz_files = glob.glob(os.path.join(dest_section, "data", "npz", "*.npz"))
+            png_files = glob.glob(os.path.join(dest_section, "figures", "*.png"))
+            yml_files = glob.glob(os.path.join(dest_section, "data", "scenarios", "*.yml"))
+            tex_files = glob.glob(os.path.join(dest_section, "latex", "*.tex"))
+            json_files = glob.glob(os.path.join(dest_section, "*.json"))
+            csv_files = glob.glob(os.path.join(dest_section, "data", "metrics", "*.csv"))
             
             log_and_print("info", f"[ARTIFACTS] NPZ files: {{len(npz_files)}}")
-            log_and_print("info", f"[ARTIFACTS] PNG files: {{len(png_files)}}")
+            log_and_print("info", f"[ARTIFACTS] PNG figures: {{len(png_files)}}")
+            log_and_print("info", f"[ARTIFACTS] YAML scenarios: {{len(yml_files)}}")
             log_and_print("info", f"[ARTIFACTS] TEX files: {{len(tex_files)}}")
             log_and_print("info", f"[ARTIFACTS] JSON files: {{len(json_files)}}")
+            log_and_print("info", f"[ARTIFACTS] CSV metrics: {{len(csv_files)}}")
             
             log_and_print("info", "TRACKING_SUCCESS: Artifacts copied")
         else:
-            log_and_print("warning", f"[WARN] Source results not found: {{source_results}}")
+            log_and_print("warning", f"[WARN] Source section not found: {{source_section}}")
+            log_and_print("info", "[FALLBACK] Creating empty structure...")
+            os.makedirs(dest_section, exist_ok=True)
             npz_files = []
         
-        # Copy any additional NPZ files from root results/ (if they exist)
-        root_results = os.path.join(REPO_DIR, "results")
-        if os.path.exists(root_results):
-            log_and_print("info", "[ARTIFACTS] Copying additional results from root...")
-            for npz_file in glob.glob(os.path.join(root_results, "**", "*.npz"), recursive=True):
-                dest_npz = os.path.join(dest_results, "npz_additional", os.path.basename(npz_file))
-                os.makedirs(os.path.dirname(dest_npz), exist_ok=True)
-                shutil.copy2(npz_file, dest_npz)
-                log_and_print("info", f"[NPZ] Copied: {{os.path.basename(npz_file)}}")
-        
-        log_and_print("info", "[SUCCESS] All artifacts copied successfully")
+        log_and_print("info", "[SUCCESS] All artifacts organized and copied")
         
     except Exception as e:
         log_and_print("error", f"[ERROR] Artifact copy failed: {{e}}")
@@ -782,8 +783,11 @@ print("=" * 80)
                         pass
 
                 # Persist artifacts (for debugging and future reference)
+                # Structure: validation_output/results/{kernel_slug}/section_7_X_analytical/
                 persist_dir = Path('validation_output') / 'results' / kernel_slug.replace('/', '_')
                 persist_dir.mkdir(parents=True, exist_ok=True)
+                
+                print(f"[PERSIST] Persisted kernel artifacts to: {persist_dir}")
                 
                 for name in os.listdir(temp_dir):
                     try:
