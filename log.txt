@@ -501,3 +501,14 @@ Response ended prematurely
 2025-10-03 01:02:25,053 - kaggle_manager_github - INFO -   Authenticated with Kaggle API
 2025-10-03 01:02:25,056 - kaggle_manager_github - INFO - 🔍 Checking Git status and ensuring changes are pushed...
 2025-10-03 01:02:25,316 - kaggle_manager_github - INFO - 📍 Current branch: main
+2025-10-03 01:02:25,409 - kaggle_manager_github - INFO - 📝 Detected local changes:
+2025-10-03 01:02:25,409 - kaggle_manager_github - INFO -   M  aggle.json (Modified (staged))
+2025-10-03 01:02:25,409 - kaggle_manager_github - INFO -    M log.txt (Modified (unstaged))
+2025-10-03 01:02:25,409 - kaggle_manager_github - INFO - 📦 Adding all changes...
+2025-10-03 01:02:25,539 - kaggle_manager_github - INFO - 💬 Using custom commit message: Section 7.3 with elonmj - verified account
+2025-10-03 01:02:25,539 - kaggle_manager_github - INFO -   Committing changes...
+2025-10-03 01:02:25,771 - kaggle_manager_github - INFO -   Changes committed successfully
+2025-10-03 01:02:25,771 - kaggle_manager_github - INFO - 📤 Pushing to remote branch: main
+2025-10-03 01:02:30,089 - kaggle_manager_github - INFO -   Changes pushed successfully to GitHub
+2025-10-03 01:02:33,040 - kaggle_manager_github - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-73-utbr
+2025-10-03 10:16:15,062 - kaggle_manager_github - INFO -   Authenticated with Kaggle API

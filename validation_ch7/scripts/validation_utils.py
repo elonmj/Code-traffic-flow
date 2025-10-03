@@ -4,6 +4,9 @@ Utilitaires de validation pour le Chapitre 7
 Fonctions communes pour tous les tests de validation
 """
 
+import matplotlib
+matplotlib.use('Agg')  # Backend headless pour Kaggle GPU (pas de display)
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -88,23 +91,28 @@ def run_validation_test(scenario_path, test_name, validation_func, **kwargs):
         results['status'] = 'SUCCESS'
         results['test_name'] = test_name
         
-        print(f"✅ {test_name} : SUCCÈS")
+        print(f"[OK] {test_name} : SUCCES")
         return results
         
     except Exception as e:
-        print(f"❌ {test_name} : ÉCHEC - {e}")
+        print(f"[ERREUR] {test_name} : ECHEC - {e}")
         return {
             'status': 'FAILED',
             'test_name': test_name,
             'error': str(e)
         }
 
-def run_real_simulation(scenario_path, base_config_path="scenarios/config_base.yml", device='cpu', override_params=None):
+def run_real_simulation(scenario_path, base_config_path=None, device='cpu', override_params=None):
     """
     Run real ARZ simulation using actual SimulationRunner.
     Returns structured simulation results for validation tests.
     """
     try:
+        # Default base_config_path to project root
+        if base_config_path is None:
+            project_root = Path(__file__).parent.parent.parent
+            base_config_path = str(project_root / "scenarios" / "config_base.yml")
+        
         # Create SimulationRunner with real physics
         runner = SimulationRunner(
             scenario_config_path=scenario_path,
@@ -173,11 +181,16 @@ class RealARZValidationTest(ValidationTest):
             'overall_conservation': mass_error_m < tolerance and mass_error_c < tolerance
         }
 
-def run_convergence_analysis(scenario_base_path, grid_sizes=[50, 100, 200, 400], base_config_path="scenarios/config_base.yml"):
+def run_convergence_analysis(scenario_base_path, grid_sizes=[50, 100, 200, 400], base_config_path=None):
     """
     Run convergence analysis using real simulations with different grid resolutions.
     Returns convergence order analysis for WENO5 scheme validation.
     """
+    # Default base_config_path to project root
+    if base_config_path is None:
+        project_root = Path(__file__).parent.parent.parent
+        base_config_path = str(project_root / "scenarios" / "config_base.yml")
+    
     errors = []
     results_data = []
     
@@ -367,10 +380,225 @@ def create_summary_table(results_list, output_path):
         with open(tex_path, 'w', encoding='utf-8') as f:
             f.write(latex_table)
         
-        print(f"📋 Tableau généré : {csv_path}, {tex_path}")
+        print(f"[TABLE] Tableau genere : {csv_path}, {tex_path}")
         
         return df
         
     except Exception as e:
-        print(f"❌ Erreur création tableau : {e}")
+        print(f"[ERREUR] Erreur creation tableau : {e}")
         return None
+
+
+# ============================================================================
+# PUBLICATION-QUALITY PLOTTING UTILITIES FOR CHAPTER 7
+# ============================================================================
+
+def setup_publication_style():
+    """Configure matplotlib pour des figures publication-ready (thèse)"""
+    plt.rcParams.update({
+        # Police et taille
+        'font.family': 'serif',
+        'font.serif': ['Computer Modern', 'Times New Roman'],
+        'font.size': 10,
+        'axes.labelsize': 11,
+        'axes.titlesize': 12,
+        'xtick.labelsize': 9,
+        'ytick.labelsize': 9,
+        'legend.fontsize': 9,
+        
+        # Résolution et qualité
+        'figure.dpi': 150,
+        'savefig.dpi': 300,
+        'savefig.format': 'png',
+        'savefig.bbox': 'tight',
+        
+        # LaTeX rendering (optionnel, nécessite LaTeX installé)
+        'text.usetex': False,  # Set to True if you have LaTeX installed
+        'text.latex.preamble': r'\usepackage{amsmath}',
+        
+        # Grille et style
+        'axes.grid': True,
+        'grid.alpha': 0.3,
+        'grid.linestyle': '--',
+        'axes.axisbelow': True,
+        
+        # Couleurs
+        'axes.prop_cycle': plt.cycler('color', ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']),
+        
+        # Lignes
+        'lines.linewidth': 1.5,
+        'lines.markersize': 6,
+    })
+
+
+def plot_riemann_solution(x, rho_sim, v_sim, rho_exact=None, v_exact=None, 
+                          case_name="Riemann Problem", output_path=None, 
+                          show_analytical=True):
+    """
+    Génère une figure publication-ready pour un problème de Riemann.
+    
+    Args:
+        x: array, coordonnées spatiales
+        rho_sim: array, densité simulée
+        v_sim: array, vitesse simulée
+        rho_exact: array (optionnel), densité analytique
+        v_exact: array (optionnel), vitesse analytique
+        case_name: str, nom du cas pour le titre
+        output_path: str/Path, chemin de sauvegarde
+        show_analytical: bool, afficher solution analytique si disponible
+    
+    Returns:
+        matplotlib.figure.Figure: Figure générée
+    """
+    setup_publication_style()
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+    
+    # Plot densité
+    ax1.plot(x, rho_sim, 'b-', linewidth=2, label='Simulation ARZ-RL')
+    if show_analytical and rho_exact is not None:
+        ax1.plot(x, rho_exact, 'r--', linewidth=1.5, alpha=0.7, label='Solution analytique')
+    ax1.set_xlabel('Position $x$ (m)')
+    ax1.set_ylabel(r'Densité $\rho$ (véh/m)')
+    ax1.set_title(f'{case_name} - Profil de densité')
+    ax1.legend(loc='best')
+    ax1.grid(True, alpha=0.3)
+    
+    # Plot vitesse
+    ax2.plot(x, v_sim, 'b-', linewidth=2, label='Simulation ARZ-RL')
+    if show_analytical and v_exact is not None:
+        ax2.plot(x, v_exact, 'r--', linewidth=1.5, alpha=0.7, label='Solution analytique')
+    ax2.set_xlabel('Position $x$ (m)')
+    ax2.set_ylabel('Vitesse $v$ (m/s)')
+    ax2.set_title(f'{case_name} - Profil de vitesse')
+    ax2.legend(loc='best')
+    ax2.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    
+    if output_path:
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(output_path, dpi=300, bbox_inches='tight')
+        print(f"[FIGURE] Saved: {output_path}")
+    
+    return fig
+
+
+def plot_convergence_order(grid_sizes, errors, theoretical_order=5.0,
+                           output_path=None, scheme_name="WENO5"):
+    """
+    Génère un plot log-log de l'ordre de convergence.
+    
+    Args:
+        grid_sizes: array, tailles de grille testées
+        errors: array, erreurs L2 correspondantes
+        theoretical_order: float, ordre théorique attendu
+        output_path: str/Path, chemin de sauvegarde
+        scheme_name: str, nom du schéma numérique
+    
+    Returns:
+        matplotlib.figure.Figure: Figure générée
+    """
+    setup_publication_style()
+    
+    fig, ax = plt.subplots(1, 1, figsize=(8, 6))
+    
+    # Plot des erreurs observées
+    ax.loglog(grid_sizes, errors, 'bo-', linewidth=2, markersize=8, 
+              label=f'{scheme_name} - Erreur observée')
+    
+    # Ligne théorique (pente = -theoretical_order)
+    if len(grid_sizes) >= 2:
+        # Calcul de la ligne théorique passant par le premier point
+        N0, E0 = grid_sizes[0], errors[0]
+        N_theory = np.array([grid_sizes[0], grid_sizes[-1]])
+        E_theory = E0 * (N_theory / N0) ** (-theoretical_order)
+        
+        ax.loglog(N_theory, E_theory, 'r--', linewidth=1.5, alpha=0.7,
+                 label=f'Ordre théorique $O(h^{{{theoretical_order:.0f}}})$')
+    
+    # Calcul de l'ordre observé moyen
+    if len(grid_sizes) >= 2 and len(errors) >= 2:
+        log_N = np.log(grid_sizes)
+        log_E = np.log(errors)
+        observed_order = -np.polyfit(log_N, log_E, 1)[0]
+        
+        ax.text(0.05, 0.95, f'Ordre observé: {observed_order:.2f}',
+                transform=ax.transAxes, verticalalignment='top',
+                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+    
+    ax.set_xlabel('Nombre de cellules $N$')
+    ax.set_ylabel('Erreur $L^2$')
+    ax.set_title(f'Analyse de convergence - Schéma {scheme_name}')
+    ax.legend(loc='best')
+    ax.grid(True, which='both', alpha=0.3)
+    
+    plt.tight_layout()
+    
+    if output_path:
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(output_path, dpi=300, bbox_inches='tight')
+        print(f"[FIGURE] Saved: {output_path}")
+    
+    return fig
+
+
+def plot_fundamental_diagram(rho, v, rho_eq=None, v_eq=None,
+                             output_path=None, title="Diagramme Fondamental"):
+    """
+    Génère un diagramme fondamental (densité vs vitesse ou débit).
+    
+    Args:
+        rho: array, densités
+        v: array, vitesses
+        rho_eq: array (optionnel), densités d'équilibre théoriques
+        v_eq: array (optionnel), vitesses d'équilibre théoriques
+        output_path: str/Path, chemin de sauvegarde
+        title: str, titre de la figure
+    
+    Returns:
+        matplotlib.figure.Figure: Figure générée
+    """
+    setup_publication_style()
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+    
+    # Diagramme vitesse-densité
+    ax1.scatter(rho, v, alpha=0.5, s=10, label='Simulation')
+    if rho_eq is not None and v_eq is not None:
+        ax1.plot(rho_eq, v_eq, 'r-', linewidth=2, label='Équilibre théorique')
+    ax1.set_xlabel(r'Densité $\rho$ (véh/m)')
+    ax1.set_ylabel('Vitesse $v$ (m/s)')
+    ax1.set_title('Relation vitesse-densité')
+    ax1.legend(loc='best')
+    ax1.grid(True, alpha=0.3)
+    
+    # Diagramme débit-densité
+    q = rho * v
+    ax2.scatter(rho, q, alpha=0.5, s=10, label='Simulation')
+    if rho_eq is not None and v_eq is not None:
+        q_eq = rho_eq * v_eq
+        ax2.plot(rho_eq, q_eq, 'r-', linewidth=2, label='Équilibre théorique')
+    ax2.set_xlabel(r'Densité $\rho$ (véh/m)')
+    ax2.set_ylabel(r'Débit $q$ (véh/s)')
+    ax2.set_title('Relation débit-densité')
+    ax2.legend(loc='best')
+    ax2.grid(True, alpha=0.3)
+    
+    fig.suptitle(title, fontsize=14)
+    plt.tight_layout()
+    
+    if output_path:
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(output_path, dpi=300, bbox_inches='tight')
+        print(f"[FIGURE] Saved: {output_path}")
+    
+    return fig
+
+
+# Update __all__ to include new plotting functions
+__all__.extend(['setup_publication_style', 'plot_riemann_solution', 
+                'plot_convergence_order', 'plot_fundamental_diagram'])

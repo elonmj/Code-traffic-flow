@@ -4,6 +4,9 @@ Test Section 7.3 - Validation par Solutions Analytiques
 Tests des problèmes de Riemann, convergence numérique et états d'équilibre
 """
 
+import matplotlib
+matplotlib.use('Agg')  # Backend headless pour Kaggle GPU (pas de display)
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -17,7 +20,9 @@ sys.path.append(str(Path(__file__).parent))
 from validation_utils import (run_validation_test, generate_tex_snippet, save_figure, 
                             compute_mape, compute_rmse, compute_geh, compute_theil_u,
                             calculate_convergence_order, analytical_riemann_solution, 
-                            analytical_equilibrium_profile)
+                            analytical_equilibrium_profile,
+                            setup_publication_style, plot_riemann_solution,
+                            plot_convergence_order, plot_fundamental_diagram)
 
 class AnalyticalValidationTests:
     """Classe pour les tests de validation analytique"""
@@ -135,7 +140,11 @@ class AnalyticalValidationTests:
                 )
                 print(f"[NPZ] Saved: {npz_file.name}")
                 
-                # Extract density and velocity (motorcycles class)
+                # ============================================================
+                # GÉNÉRATION DE FIGURE PUBLICATION-READY (intégrée au test)
+                # ============================================================
+                
+                # Extract density and velocity BEFORE saving figure (was wrongly placed after)
                 rho_sim = final_state[0, :]  # Motorcycle density
                 w_sim = final_state[1, :]    # Motorcycle momentum
                 v_sim = np.where(rho_sim > 1e-8, w_sim / rho_sim, 0.0)  # Calculate velocity
@@ -143,6 +152,25 @@ class AnalyticalValidationTests:
                 # Interpolate analytical solution to simulation grid
                 rho_exact_interp = np.interp(x_sim, x, rho_exact)
                 v_exact_interp = np.interp(x_sim, x, v_exact)
+                
+                figures_dir = self.output_dir / "figures"
+                figures_dir.mkdir(parents=True, exist_ok=True)
+                
+                figure_path = figures_dir / f"riemann_test_{i+1}_{case['name'].replace(' ', '_').lower()}.png"
+                
+                # Générer la figure avec solution analytique et simulée
+                fig = plot_riemann_solution(
+                    x_sim, rho_sim, v_sim,
+                    rho_exact=rho_exact_interp,
+                    v_exact=v_exact_interp,
+                    case_name=case["name"],
+                    output_path=figure_path,
+                    show_analytical=True
+                )
+                plt.close(fig)  # Libérer mémoire
+                
+                print(f"[FIGURE] Generated: {figure_path.name}")
+                # ============================================================
                 
                 # Calcul des erreurs on same grid
                 l2_error_rho = np.sqrt(np.mean((rho_exact_interp - rho_sim)**2))
@@ -189,14 +217,15 @@ class AnalyticalValidationTests:
         
         print(f"\n=== Analyse de Convergence WENO5 ===")
         
-        # Use existing convergence test scenario
-        base_scenario = "config/scenario_convergence_test.yml"
+        # Use existing convergence test scenario with absolute path
+        project_root = Path(__file__).parent.parent.parent
+        base_scenario = str(project_root / "config" / "scenario_convergence_test.yml")
         
         from validation_utils import run_convergence_analysis
         convergence_result = run_convergence_analysis(base_scenario, grid_sizes)
         
         if convergence_result is None:
-            print("❌ Convergence analysis failed")
+            print("[WARN] Convergence analysis failed")
             return []
             
         grid_sizes = convergence_result['grid_sizes']
@@ -245,6 +274,26 @@ class AnalyticalValidationTests:
             average_order = np.mean(convergence_orders)
         else:
             average_order = convergence_orders if isinstance(convergence_orders, (int, float)) else 0.0
+        
+        # ============================================================
+        # GÉNÉRATION DE FIGURE DE CONVERGENCE (intégrée au test)
+        # ============================================================
+        figures_dir = self.output_dir / "figures"
+        figures_dir.mkdir(parents=True, exist_ok=True)
+        
+        convergence_figure_path = figures_dir / "convergence_order_weno5.png"
+        
+        fig = plot_convergence_order(
+            np.array(grid_sizes),
+            np.array(errors),
+            theoretical_order=5.0,
+            output_path=convergence_figure_path,
+            scheme_name="WENO5"
+        )
+        plt.close(fig)
+        
+        print(f"[FIGURE] Generated convergence plot: {convergence_figure_path.name}")
+        # ============================================================
         
         return {
             "grid_sizes": grid_sizes,
@@ -358,13 +407,15 @@ class AnalyticalValidationTests:
         
         # Génération du fichier LaTeX
         template_path = Path("validation_ch7/templates/section_7_3_analytical.tex")
+        output_path = self.output_dir / "section_7_3_content.tex"
         
         if template_path.exists():
             with open(template_path, 'r', encoding='utf-8') as f:
                 template_content = f.read()
             
-            output_path = self.output_dir / "section_7_3_content.tex"
             generate_tex_snippet(template_data, template_content, output_path)
+        else:
+            print(f"[WARNING] Template not found: {template_path}")
         
         # Sauvegarde des résultats bruts
         all_results = {
