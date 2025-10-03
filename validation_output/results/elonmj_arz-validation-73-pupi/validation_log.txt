@@ -1,0 +1,68 @@
+2025-10-03 12:37:40,496 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-10-03 12:37:40,496 - INFO - Branch: main
+2025-10-03 12:37:46,096 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-10-03 12:37:46,096 - INFO - PyTorch: 2.6.0+cu124
+2025-10-03 12:37:46,148 - INFO - CUDA available: True
+2025-10-03 12:37:46,169 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-10-03 12:37:46,169 - INFO - CUDA version: 12.4
+2025-10-03 12:37:46,169 - INFO - 
+[STEP 1/4] Cloning repository from GitHub...
+2025-10-03 12:37:46,169 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-10-03 12:37:47,251 - INFO - [OK] Repository cloned successfully
+2025-10-03 12:37:47,252 - INFO - TRACKING_SUCCESS: Repository cloned
+2025-10-03 12:37:47,252 - INFO - 
+[STEP 2/4] Installing dependencies...
+2025-10-03 12:37:47,252 - INFO - Installing PyYAML...
+2025-10-03 12:37:51,253 - INFO - Installing matplotlib...
+2025-10-03 12:37:54,197 - INFO - Installing pandas...
+2025-10-03 12:37:57,152 - INFO - Installing scipy...
+2025-10-03 12:38:00,128 - INFO - Installing numpy...
+2025-10-03 12:38:03,116 - INFO - [OK] Dependencies installed
+2025-10-03 12:38:03,116 - INFO - TRACKING_SUCCESS: Dependencies ready
+2025-10-03 12:38:03,117 - INFO - 
+[STEP 3/4] Running validation tests...
+2025-10-03 12:38:03,117 - INFO - Executing Python module: validation_ch7.scripts.test_section_7_3_analytical...
+2025-10-03 12:38:03,117 - INFO - PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts
+2025-10-03 12:38:03,117 - INFO - ============================================================
+2025-10-03 12:38:09,797 - INFO - [TEST] === Validation Section 7.3 : Tests Analytiques ===
+2025-10-03 12:38:09,797 - INFO - [TEST] [ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_3_analytical
+2025-10-03 12:38:09,798 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-03 12:38:09,798 - WARNING - [STDERR]   File "<frozen runpy>", line 198, in _run_module_as_main
+2025-10-03 12:38:09,798 - WARNING - [STDERR]   File "<frozen runpy>", line 88, in _run_code
+2025-10-03 12:38:09,798 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_3_analytical.py", line 519, in <module>
+2025-10-03 12:38:09,798 - WARNING - [STDERR]     result_code = main()
+2025-10-03 12:38:09,798 - WARNING - [STDERR]                   ^^^^^^
+2025-10-03 12:38:09,798 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_3_analytical.py", line 462, in main
+2025-10-03 12:38:09,798 - WARNING - [STDERR]     validator = AnalyticalValidationTests()
+2025-10-03 12:38:09,798 - WARNING - [STDERR]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-03 12:38:09,798 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_3_analytical.py", line 41, in __init__
+2025-10-03 12:38:09,798 - WARNING - [STDERR]     super().__init__(section_name="section_7_3_analytical")
+2025-10-03 12:38:09,798 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/validation_utils.py", line 92, in __init__
+2025-10-03 12:38:09,798 - WARNING - [STDERR]     self._create_directories()
+2025-10-03 12:38:09,799 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/validation_utils.py", line 111, in _create_directories
+2025-10-03 12:38:09,799 - WARNING - [STDERR]     print(f"  - Figures:   {self.figures_dir.relative_to(Path.cwd())}")
+2025-10-03 12:38:09,799 - WARNING - [STDERR]                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-03 12:38:09,799 - WARNING - [STDERR]   File "/usr/lib/python3.11/pathlib.py", line 730, in relative_to
+2025-10-03 12:38:09,799 - WARNING - [STDERR]     raise ValueError("{!r} is not in the subpath of {!r}"
+2025-10-03 12:38:09,799 - WARNING - [STDERR] ValueError: 'validation_output/results/local_test/section_7_3_analytical/figures' is not in the subpath of '/kaggle/working/Code-traffic-flow' OR one path is relative and the other is absolute.
+2025-10-03 12:38:09,799 - WARNING - [WARNING] Tests returned code: 1
+2025-10-03 12:38:09,799 - INFO - 
+[STEP 4/4] Copying artifacts and cleaning up...
+2025-10-03 12:38:09,799 - INFO - [ARTIFACTS] Copying results for section_7_3_analytical...
+2025-10-03 12:38:09,800 - INFO - [OK] Section copied to: /kaggle/working/section_7_3_analytical
+2025-10-03 12:38:09,801 - INFO - [ARTIFACTS] NPZ files: 0
+2025-10-03 12:38:09,801 - INFO - [ARTIFACTS] PNG figures: 0
+2025-10-03 12:38:09,801 - INFO - [ARTIFACTS] YAML scenarios: 0
+2025-10-03 12:38:09,801 - INFO - [ARTIFACTS] TEX files: 0
+2025-10-03 12:38:09,801 - INFO - [ARTIFACTS] JSON files: 0
+2025-10-03 12:38:09,801 - INFO - [ARTIFACTS] CSV metrics: 0
+2025-10-03 12:38:09,801 - INFO - TRACKING_SUCCESS: Artifacts copied
+2025-10-03 12:38:09,802 - INFO - [SUCCESS] All artifacts organized and copied
+2025-10-03 12:38:09,802 - INFO - [CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow
+2025-10-03 12:38:09,813 - INFO - [OK] Cleanup completed - only validation results remain
+2025-10-03 12:38:09,814 - INFO - TRACKING_SUCCESS: Cleanup completed
+2025-10-03 12:38:09,814 - INFO - [OK] Session summary created: /kaggle/working/validation_results/session_summary.json
+2025-10-03 12:38:09,814 - INFO - TRACKING_SUCCESS: Session summary created
+2025-10-03 12:38:09,814 - INFO - 
+[FINAL] Validation workflow completed
+2025-10-03 12:38:09,814 - INFO - Remote logging finalized - ready for download

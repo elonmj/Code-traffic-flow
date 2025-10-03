@@ -108,11 +108,12 @@ class ValidationSection:
             directory.mkdir(parents=True, exist_ok=True)
         
         print(f"[ARCHITECTURE] Structure créée: {self.output_dir}")
-        print(f"  - Figures:   {self.figures_dir.relative_to(Path.cwd())}")
-        print(f"  - NPZ:       {self.npz_dir.relative_to(Path.cwd())}")
-        print(f"  - Scenarios: {self.scenarios_dir.relative_to(Path.cwd())}")
-        print(f"  - Metrics:   {self.metrics_dir.relative_to(Path.cwd())}")
-        print(f"  - LaTeX:     {self.latex_dir.relative_to(Path.cwd())}")
+        # Use absolute paths for display to avoid relative_to() errors on Kaggle
+        print(f"  - Figures:   {self.figures_dir}")
+        print(f"  - NPZ:       {self.npz_dir}")
+        print(f"  - Scenarios: {self.scenarios_dir}")
+        print(f"  - Metrics:   {self.metrics_dir}")
+        print(f"  - LaTeX:     {self.latex_dir}")
     
     def save_session_summary(self, additional_info: dict = None):
         """

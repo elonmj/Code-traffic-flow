@@ -604,7 +604,7 @@ print("=" * 80)
         """
         return self._build_validation_kernel_script(section)
         
-    def run_validation_section(self, section_name: str, timeout: int = 4000, commit_message: Optional[str] = None) -> tuple[bool, Optional[str]]:
+    def run_validation_section(self, section_name: str, timeout: int = 64000, commit_message: Optional[str] = None) -> tuple[bool, Optional[str]]:
         """
         Run specific validation section on Kaggle GPU.
         
