@@ -65,3 +65,21 @@
 2025-10-04 13:11:32,366 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-04 13:11:36,939 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-04 13:11:39,742 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-74calibration-voup
+2025-10-04 17:16:38,071 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-04 17:16:38,261 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-04 17:16:38,375 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-04 17:16:38,375 - validation_kaggle_manager - INFO -   D  alidation_ch7/figures/section_7_4/fig_calibration_error_histogram.png (Deleted (staged))
+2025-10-04 17:16:38,378 - validation_kaggle_manager - INFO -    D validation_ch7/figures/section_7_4/fig_calibration_metrics.png (Deleted (unstaged))
+2025-10-04 17:16:38,378 - validation_kaggle_manager - INFO -    D validation_ch7/figures/section_7_4/fig_calibration_scatter.png (Deleted (unstaged))
+2025-10-04 17:16:38,378 - validation_kaggle_manager - INFO -    D validation_ch7/figures/section_7_4/fig_calibration_timeseries.png (Deleted (unstaged))
+2025-10-04 17:16:38,378 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/test_section_7_5_digital_twin.py (Modified (unstaged))
+2025-10-04 17:16:38,378 - validation_kaggle_manager - INFO -   ?? chapters/partie3/images/ (Untracked)
+2025-10-04 17:16:38,378 - validation_kaggle_manager - INFO -   ?? chapters/partie3/section_7_4_calibration_content.tex (Untracked)
+2025-10-04 17:16:38,378 - validation_kaggle_manager - INFO -   ?? validation_ch7/scripts/README_SECTION_7_5.md (Untracked)
+2025-10-04 17:16:38,378 - validation_kaggle_manager - INFO -   ?? validation_ch7/scripts/run_kaggle_validation_section_7_5.py (Untracked)
+2025-10-04 17:16:38,378 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-04 17:16:38,529 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-04 17:16:38,844 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-04 17:16:38,846 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-04 17:16:44,608 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-04 17:16:48,531 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-75digitaltwin-tydg

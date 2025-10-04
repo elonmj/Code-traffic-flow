@@ -1,0 +1,3 @@
+test_name,revendication,tests_total,tests_passed,success_rate_pct,overall_success
+behavioral_reproduction,R4,3,,0.0,False
+robustness_degraded_conditions,R6,3,0.0,0.0,False

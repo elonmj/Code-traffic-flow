@@ -214,7 +214,23 @@ def run_real_simulation(scenario_path, base_config_path=None, device='cpu', over
         # Default base_config_path to project root
         if base_config_path is None:
             project_root = Path(__file__).parent.parent.parent
-            base_config_path = str(project_root / "scenarios" / "config_base.yml")
+            # Try multiple possible locations for config_base.yml
+            possible_paths = [
+                project_root / "config" / "config_base.yml",  # Primary location
+                project_root / "scenarios" / "config_base.yml",  # Alternative
+                project_root / "arz_model" / "config" / "config_base.yml",  # Third option
+            ]
+            
+            base_config_path = None
+            for path in possible_paths:
+                if path.exists():
+                    base_config_path = str(path)
+                    break
+            
+            if base_config_path is None:
+                raise FileNotFoundError(
+                    f"config_base.yml not found in any of: {[str(p) for p in possible_paths]}"
+                )
         
         # Create SimulationRunner with real physics
         runner = SimulationRunner(
