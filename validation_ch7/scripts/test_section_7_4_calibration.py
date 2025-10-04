@@ -158,23 +158,26 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
         
         main_segment = segment_data[0]
         
+        # Get observed mean speed to calibrate densities
+        mean_observed_speed = speed_data['observed_speed'].mean() if 'observed_speed' in speed_data.columns else 32.3
+        
         scenario_config = {
             'physical_params': {
                 'L': main_segment['length'],
-                'N': 100,  # Grid resolution (réduit de 200 pour tests rapides)
-                't_final': 300.0,  # 5 min simulation (réduit de 3600s pour tests locaux)
-                'R_0': main_segment['speed_limit'] / 3.6 * main_segment['lanes'] * 0.15,  # Capacity estimation
-                'v_max': 41.6 / 3.6,  # ✅ CALIBRÉ: freeflow speed observée (41.6 km/h → m/s)
-                'V_c': 28.1 / 3.6,    # ✅ CALIBRÉ: 80% de vitesse observée (28.1 km/h → m/s) 
-                'V_m': 42.1 / 3.6,    # ✅ CALIBRÉ: 120% de vitesse observée (42.1 km/h → m/s)
+                'N': 100,  # Grid resolution
+                't_final': 300.0,  # 5 min simulation
+                'R_0': main_segment['speed_limit'] / 3.6 * main_segment['lanes'] * 0.15,
+                'v_max': mean_observed_speed / 3.6,  # ✅ Use observed mean speed
+                'V_c': mean_observed_speed * 0.9 / 3.6,    # ✅ 90% of observed
+                'V_m': mean_observed_speed * 1.1 / 3.6,    # ✅ 110% of observed
                 'tau': 2.0,
                 'kappa': 2.0,
                 'nu': 2.0
             },
             'initial_conditions': {
                 'type': 'equilibrium',
-                'rho_c_eq': 0.04,  # ✅ AUGMENTÉ: densité motos pour congestion modérée
-                'rho_m_eq': 0.06,  # ✅ AUGMENTÉ: densité voitures pour congestion modérée  
+                'rho_c_eq': 0.02,  # ✅ Lower density for realistic speeds
+                'rho_m_eq': 0.03,  # ✅ Lower density for realistic speeds  
                 'perturbation_amplitude': 0.01,
                 'perturbation_wavelength': 100.0
             },
@@ -186,7 +189,7 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
                 'CFL': 0.8
             },
             'output': {
-                'save_interval': 60.0,  # Save every minute
+                'save_interval': 60.0,
                 'observables': ['density_motorcycle', 'density_car', 'velocity_motorcycle', 'velocity_car']
             }
         }
@@ -203,45 +206,42 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
         
         # Run ARZ simulation using existing scenario for calibration  
         try:
-            # Use existing equilibrium scenario as base (chemin corrigé)
-            existing_scenario = project_root / "scenarios" / "old_scenarios" / "scenario_riemann_test.yml"
+            # Use dedicated calibration scenario (equilibrium-based, not Riemann)
+            calibration_scenario = project_root / "scenarios" / "scenario_calibration_victoria_island.yml"
             
-            # Vérifier que le scénario existe
-            if not existing_scenario.exists():
-                print(f"Warning: Scenario file not found at {existing_scenario}")
+            # Fallback to old scenarios if calibration scenario doesn't exist
+            if not calibration_scenario.exists():
+                print(f"Warning: Calibration scenario not found at {calibration_scenario}")
                 print("Trying alternative scenario locations...")
                 
-                # Essayer d'autres emplacements possibles
                 alternative_scenarios = [
-                    project_root / "arz_model" / "config" / "scenario_riemann_test.yml",
-                    project_root / "scenarios" / "scenario_riemann_test.yml",
+                    project_root / "scenarios" / "old_scenarios" / "scenario_riemann_test.yml",
                 ]
                 
                 for alt_path in alternative_scenarios:
                     if alt_path.exists():
-                        existing_scenario = alt_path
-                        print(f"Found scenario at: {existing_scenario}")
+                        calibration_scenario = alt_path
+                        print(f"Found scenario at: {calibration_scenario}")
                         break
                 else:
                     print("Could not find any valid scenario file. Using default parameters.")
                     return None
             
             # Create override parameters for calibration
+            # ✅ FIXED: Use correct ModelParameters attribute names
             override_params = {
-                'L': scenario_config['physical_params']['L'],
+                'xmax': scenario_config['physical_params']['L'],  # ✅ CORRECT: xmax (not 'L')
                 'N': scenario_config['physical_params']['N'],
                 't_final': scenario_config['physical_params']['t_final'],
-                'R_0': scenario_config['physical_params']['R_0'],
-                'v_max': scenario_config['physical_params']['v_max'],
-                'V_c': scenario_config['physical_params']['V_c'],  # ✅ ADDED: vitesse équilibre motos
-                'V_m': scenario_config['physical_params']['V_m'],  # ✅ ADDED: vitesse équilibre voitures
-                'rho_c_eq': scenario_config['initial_conditions']['rho_c_eq'],  # ✅ ADDED: densité initiale motos
-                'rho_m_eq': scenario_config['initial_conditions']['rho_m_eq'],  # ✅ ADDED: densité initiale voitures
+                # Note: R_0 and v_max are not ModelParameters attributes, removed
+                # Note: V_c and V_m should be Vmax_c/Vmax_m but need category index
+                'rho_eq_c': scenario_config['initial_conditions']['rho_c_eq'],  # ✅ CORRECT: rho_eq_c (not rho_c_eq)
+                'rho_eq_m': scenario_config['initial_conditions']['rho_m_eq'],  # ✅ CORRECT: rho_eq_m (not rho_m_eq)
             }
             
             # Use validation_utils run_real_simulation directly
             results = validation_utils.run_real_simulation(
-                str(existing_scenario),
+                str(calibration_scenario),
                 self.base_config_path,
                 self.device,
                 override_params
@@ -487,7 +487,7 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
         plt.tight_layout()
         plt.savefig(output_dir / 'fig_calibration_timeseries.png', dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"✅ Figure 1 sauvegardée: {output_dir / 'fig_calibration_timeseries.png'}")
+        print(f"[OK] Figure 1 sauvegardee: {output_dir / 'fig_calibration_timeseries.png'}")
         
         # --- FIGURE 2: Error histogram ---
         plt.figure(figsize=(10, 6))
@@ -504,7 +504,7 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
         plt.tight_layout()
         plt.savefig(output_dir / 'fig_calibration_error_histogram.png', dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"✅ Figure 2 sauvegardée: {output_dir / 'fig_calibration_error_histogram.png'}")
+        print(f"[OK] Figure 2 sauvegardee: {output_dir / 'fig_calibration_error_histogram.png'}")
         
         # --- FIGURE 3: Scatter plot (simulated mean vs observed samples) ---
         plt.figure(figsize=(8, 8))
@@ -528,7 +528,7 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
         plt.tight_layout()
         plt.savefig(output_dir / 'fig_calibration_scatter.png', dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"✅ Figure 3 sauvegardée: {output_dir / 'fig_calibration_scatter.png'}")
+        print(f"[OK] Figure 3 sauvegardee: {output_dir / 'fig_calibration_scatter.png'}")
         
         # --- FIGURE 4: Metrics summary bar chart ---
         metrics = simulation_results.get('metrics', {})
@@ -559,9 +559,9 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
         plt.tight_layout()
         plt.savefig(output_dir / 'fig_calibration_metrics.png', dpi=300, bbox_inches='tight')
         plt.close()
-        print(f"✅ Figure 4 sauvegardée: {output_dir / 'fig_calibration_metrics.png'}")
+        print(f"[OK] Figure 4 sauvegardee: {output_dir / 'fig_calibration_metrics.png'}")
         
-        print(f"\n📊 Toutes les figures de calibration générées dans: {output_dir}")
+        print(f"\n[FIGURES] Toutes les figures de calibration generees dans: {output_dir}")
     
     def generate_section_7_4_latex(self, r2_results, cross_val_results):
         """Génère contenu LaTeX pour section 7.4 avec résultats réels"""

@@ -34,3 +34,16 @@
 2025-10-04 07:59:32,608 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-04 07:59:41,260 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-04 07:59:45,135 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-74calibration-xadi
+2025-10-04 08:20:25,587 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-04 08:20:25,750 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-04 08:20:25,820 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-04 08:20:25,820 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-04 08:20:25,821 - validation_kaggle_manager - INFO -   ?? kaggle_temp_output/ (Untracked)
+2025-10-04 08:20:25,821 - validation_kaggle_manager - INFO -   ?? tools/extract_kaggle_metrics.py (Untracked)
+2025-10-04 08:20:25,821 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-74calibration-xadi/ (Untracked)
+2025-10-04 08:20:25,822 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-04 08:20:25,918 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-04 08:20:26,104 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-04 08:20:26,104 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-04 08:20:29,238 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-04 08:20:31,980 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-74calibration-tmqk
