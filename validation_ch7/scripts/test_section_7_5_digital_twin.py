@@ -47,19 +47,19 @@ class DigitalTwinValidationTest(ValidationSection):
         self.behavioral_patterns = {
             'free_flow': {
                 'description': 'Trafic fluide sans congestion',
-                'density_range_m': (0.010, 0.020),  # veh/m
+                'density_range_m': (10.0e-3, 20.0e-3),  # 10-20 veh/km in SI (veh/m)
                 'velocity_range_m': (20.0, 28.0),   # m/s (72-100 km/h)
                 'expected_mape_threshold': 25.0
             },
             'congestion': {
                 'description': 'Congestion modérée avec onde de choc',
-                'density_range_m': (0.050, 0.080),  # veh/m
+                'density_range_m': (50.0e-3, 80.0e-3),  # 50-80 veh/km
                 'velocity_range_m': (8.0, 15.0),    # m/s (29-54 km/h)
                 'expected_mape_threshold': 30.0
             },
             'jam_formation': {
                 'description': 'Formation et dissolution de bouchon',
-                'density_range_m': (0.080, 0.100),  # veh/m
+                'density_range_m': (80.0e-3, 100.0e-3),  # 80-100 veh/km
                 'velocity_range_m': (2.0, 8.0),     # m/s (7-29 km/h)
                 'expected_mape_threshold': 40.0
             }
@@ -101,6 +101,7 @@ class DigitalTwinValidationTest(ValidationSection):
         Returns:
             Path to created scenario YAML file
         """
+        # Base configuration
         scenario_config = {
             'scenario_name': f'digital_twin_{scenario_type}',
             'N': grid_size,
@@ -108,34 +109,38 @@ class DigitalTwinValidationTest(ValidationSection):
             'xmax': 5000.0,  # 5 km domain
             't_final': final_time,
             'output_dt': 10.0,
-            'CFL': 0.4,
-            'road_quality_definition': perturbation.get('road_quality', 2) if perturbation else 2,
+            'CFL': 0.3,  # More conservative
             'boundary_conditions': {
                 'left': {'type': 'periodic'},
                 'right': {'type': 'periodic'}
+            },
+            'road': {
+                'type': 'uniform',
+                'R_val': perturbation.get('road_quality', 2) if perturbation else 2
             }
         }
         
         # Configure initial conditions based on scenario type
         if scenario_type == 'free_flow':
-            rho_m = 0.012
-            rho_c = 0.008
-            v_m = 25.0  # 90 km/h
-            v_c = 27.8  # 100 km/h
+            # Light traffic: 12-15 veh/km in SI units (veh/m)
+            rho_m_bg = 12.0e-3
+            rho_c_bg = 8.0e-3
             
-            if perturbation:
-                if 'multiplier' in perturbation:
-                    rho_m *= perturbation['multiplier']
-                    rho_c *= perturbation['multiplier']
-                    v_m *= perturbation.get('velocity_multiplier', 1.0)
-                    v_c *= perturbation.get('velocity_multiplier', 1.0)
+            if perturbation and 'multiplier' in perturbation:
+                rho_m_bg *= perturbation['multiplier']
+                rho_c_bg *= perturbation['multiplier']
             
             scenario_config['initial_conditions'] = {
-                'type': 'uniform',
-                'rho_m': rho_m,
-                'rho_c': rho_c,
-                'v_m': v_m,
-                'v_c': v_c
+                'type': 'sine_wave_perturbation',
+                'R_val': perturbation.get('road_quality', 2) if perturbation else 2,
+                'background_state': {
+                    'rho_m': rho_m_bg,
+                    'rho_c': rho_c_bg
+                },
+                'perturbation': {
+                    'amplitude': 2.0e-3,  # Small fluctuation
+                    'wave_number': 1
+                }
             }
             scenario_config['parameters'] = {
                 'V0_m': 27.8,
@@ -147,26 +152,32 @@ class DigitalTwinValidationTest(ValidationSection):
             }
         
         elif scenario_type == 'congestion':
-            rho_m_bg = 0.030
-            rho_c_bg = 0.020
-            rho_m_peak = 0.070
-            rho_c_peak = 0.050
+            # Moderate congestion: 30-70 veh/km
+            rho_m_bg = 30.0e-3
+            rho_c_bg = 20.0e-3
+            rho_m_peak = 70.0e-3
+            rho_c_peak = 50.0e-3
             
-            if perturbation:
-                if 'multiplier' in perturbation:
-                    rho_m_bg *= perturbation['multiplier']
-                    rho_c_bg *= perturbation['multiplier']
-                    rho_m_peak *= perturbation['multiplier']
-                    rho_c_peak *= perturbation['multiplier']
+            if perturbation and 'multiplier' in perturbation:
+                mult = perturbation['multiplier']
+                rho_m_bg *= mult
+                rho_c_bg *= mult
+                rho_m_peak *= mult
+                rho_c_peak *= mult
             
             scenario_config['initial_conditions'] = {
-                'type': 'gaussian_pulse',
-                'center': 2500.0,
-                'width': 500.0,
-                'rho_m_background': rho_m_bg,
-                'rho_c_background': rho_c_bg,
-                'rho_m_peak': rho_m_peak,
-                'rho_c_peak': rho_c_peak
+                'type': 'gaussian_density_pulse',
+                'R_val': perturbation.get('road_quality', 2) if perturbation else 2,
+                'background_state': {
+                    'rho_m': rho_m_bg,
+                    'rho_c': rho_c_bg
+                },
+                'pulse': {
+                    'center': 2500.0,
+                    'width': 500.0,
+                    'amplitude_m': rho_m_peak - rho_m_bg,
+                    'amplitude_c': rho_c_peak - rho_c_bg
+                }
             }
             scenario_config['parameters'] = {
                 'V0_m': 22.2,
@@ -178,40 +189,29 @@ class DigitalTwinValidationTest(ValidationSection):
             }
         
         elif scenario_type == 'jam_formation':
-            rho_m_left = 0.040
-            rho_c_left = 0.025
-            rho_m_right = 0.090
-            rho_c_right = 0.060
-            v_m_left = 15.0
-            v_c_left = 16.7
-            v_m_right = 5.0
-            v_c_right = 6.0
+            # Heavy jam: 40-90 veh/km
+            rho_m_left = 40.0e-3
+            rho_c_left = 25.0e-3
+            rho_m_right = 90.0e-3
+            rho_c_right = 60.0e-3
             
-            if perturbation:
-                if 'multiplier' in perturbation:
-                    rho_m_left *= perturbation['multiplier']
-                    rho_c_left *= perturbation['multiplier']
-                    rho_m_right *= perturbation['multiplier']
-                    rho_c_right *= perturbation['multiplier']
-                if 'velocity_multiplier' in perturbation:
-                    v_m_left *= perturbation['velocity_multiplier']
-                    v_c_left *= perturbation['velocity_multiplier']
-                    v_m_right *= perturbation['velocity_multiplier']
-                    v_c_right *= perturbation['velocity_multiplier']
+            if perturbation and 'multiplier' in perturbation:
+                mult = perturbation['multiplier']
+                rho_m_left *= mult
+                rho_c_left *= mult
+                rho_m_right *= mult
+                rho_c_right *= mult
             
             scenario_config['initial_conditions'] = {
-                'type': 'step_function',
+                'type': 'step_density',
+                'R_val': perturbation.get('road_quality', 2) if perturbation else 2,
                 'left_state': {
                     'rho_m': rho_m_left,
-                    'rho_c': rho_c_left,
-                    'v_m': v_m_left,
-                    'v_c': v_c_left
+                    'rho_c': rho_c_left
                 },
                 'right_state': {
                     'rho_m': rho_m_right,
-                    'rho_c': rho_c_right,
-                    'v_m': v_m_right,
-                    'v_c': v_c_right
+                    'rho_c': rho_c_right
                 },
                 'transition_x': 2500.0,
                 'transition_width': 100.0
