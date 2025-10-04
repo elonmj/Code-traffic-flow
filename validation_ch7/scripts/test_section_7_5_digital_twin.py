@@ -257,11 +257,10 @@ class DigitalTwinValidationTest(ValidationSection):
                     final_time=100.0
                 )
                 
-                # Run real simulation
-                base_config_path = str(project_root / "config" / "config_base.yml")
+                # Run real simulation - use fallback path resolution in run_real_simulation()
                 sim_result = run_real_simulation(
                     str(scenario_path),
-                    base_config_path=base_config_path,
+                    base_config_path=None,  # Let run_real_simulation() find the correct path
                     device='cpu'
                 )
                 
@@ -375,11 +374,10 @@ class DigitalTwinValidationTest(ValidationSection):
                     perturbation=perturbation
                 )
                 
-                # Run simulation
-                base_config_path = str(project_root / "config" / "config_base.yml")
+                # Run simulation - use fallback path resolution
                 sim_result = run_real_simulation(
                     str(scenario_path),
-                    base_config_path=base_config_path,
+                    base_config_path=None,  # Let run_real_simulation() find the correct path
                     device='cpu'
                 )
                 

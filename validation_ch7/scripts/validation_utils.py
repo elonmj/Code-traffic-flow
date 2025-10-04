@@ -224,7 +224,9 @@ def run_real_simulation(scenario_path, base_config_path=None, device='cpu', over
             base_config_path = None
             for path in possible_paths:
                 if path.exists():
-                    base_config_path = str(path)
+                    # CRITICAL FIX: Convert to ABSOLUTE path to ensure it works regardless of CWD
+                    base_config_path = str(path.resolve())
+                    print(f"[DEBUG] Found config_base.yml at: {base_config_path}")
                     break
             
             if base_config_path is None:
