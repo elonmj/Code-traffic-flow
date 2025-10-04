@@ -550,6 +550,12 @@ class SimulationRunner:
                 # 5. Update Time
                 self.t += dt
                 self.step_count += 1
+                
+                # Print périodique pour suivre l'avancement (tous les 50 steps)
+                if self.step_count % 50 == 0 and not self.quiet:
+                    progress_percent = (self.t / t_final) * 100 if t_final > 0 else 0
+                    print(f"[PROGRESS] Step {self.step_count}: t={self.t:.2f}/{t_final:.2f}s ({progress_percent:.1f}%) | dt={dt:.4f}s")
+                
                 # Update progress bar display
                 if self.pbar is not None:
                     self.pbar.n = min(self.t, t_final) # Set current progress

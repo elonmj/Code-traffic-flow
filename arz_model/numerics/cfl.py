@@ -5,6 +5,9 @@ from ..grid.grid1d import Grid1D
 from ..core.parameters import ModelParameters
 from ..core import physics # Import the physics module
 
+# Global counter for CFL correction messages
+_cfl_correction_count = 0
+
 # --- CUDA Kernel for Max Wavespeed Calculation ---
 
 # Define block size for reduction (must be power of 2)
@@ -279,21 +282,30 @@ def validate_and_correct_cfl(dt, max_abs_lambda, grid, params, tolerance=0.5):
     cfl_limit = tolerance
     warning_message = ""
     
+    # Compteur global pour limiter l'affichage (1 message sur 100)
+    global _cfl_correction_count
+    if '_cfl_correction_count' not in globals():
+        _cfl_correction_count = 0
+    
     if cfl_actual > cfl_limit:
         # ⚠️ CORRECTION CRITIQUE CFL
         dt_corrected = cfl_limit * grid.dx / max_abs_lambda if max_abs_lambda > params.epsilon else dt
         
-        warning_message = (
-            f"🚨 CORRECTION CFL AUTOMATIQUE:\n"
-            f"   CFL calculé: {cfl_actual:.3f} > limite {cfl_limit:.3f}\n"
-            f"   dt original: {dt:.6e} s\n"
-            f"   dt corrigé:  {dt_corrected:.6e} s\n"
-            f"   Facteur correction: {dt/dt_corrected:.1f}x\n"
-            f"   v_max détectée: {max_abs_lambda:.2f} m/s"
-        )
+        _cfl_correction_count += 1
+        
+        # Afficher seulement le 1er message, puis 1 sur 100
+        if _cfl_correction_count == 1 or _cfl_correction_count % 100 == 0:
+            warning_message = (
+                f"[!] CORRECTION CFL AUTOMATIQUE (#{_cfl_correction_count}):\n"
+                f"   CFL calculé: {cfl_actual:.3f} > limite {cfl_limit:.3f}\n"
+                f"   dt original: {dt:.6e} s\n"
+                f"   dt corrigé:  {dt_corrected:.6e} s\n"
+                f"   Facteur correction: {dt/dt_corrected:.1f}x\n"
+                f"   v_max détectée: {max_abs_lambda:.2f} m/s"
+            )
     else:
         dt_corrected = dt
         if cfl_actual > 0.1:  # Afficher info si CFL significatif
-            #warning_message = f"✅ CFL OK: {cfl_actual:.3f} ≤ {cfl_limit:.3f}"
+            #warning_message = f"[OK] CFL OK: {cfl_actual:.3f} <= {cfl_limit:.3f}"
             pass
     return dt_corrected, cfl_actual, warning_message
