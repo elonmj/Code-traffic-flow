@@ -24,13 +24,19 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
 
 from validation_ch7.scripts.validation_utils import (
-    ValidationSection, setup_publication_style, run_real_simulation
+    ValidationSection, setup_publication_style
 )
 from arz_model.analysis.metrics import (
     calculate_total_mass
 )
-from arz_model.simulation.runner import SimulationRunner
+# --- Intégration Code_RL ---
+# Ajout du chemin vers le projet Code_RL pour l'import de l'environnement et de l'agent
+code_rl_path = project_root.parent / "Code_RL"
+sys.path.append(str(code_rl_path))
 
+from src.environments.arz_traffic_env import ArzTrafficEnv
+from src.train import train_agent
+from stable_baselines3 import PPO
 
 class RLPerformanceValidationTest(ValidationSection):
     """
@@ -55,6 +61,7 @@ class RLPerformanceValidationTest(ValidationSection):
             }
         }
         self.test_results = {}
+        self.models_dir = self.output_dir / "data" / "models"
     
     def _create_scenario_config(self, scenario_type: str) -> Path:
         """Crée un fichier de configuration YAML pour un scénario de contrôle."""
@@ -98,11 +105,10 @@ class RLPerformanceValidationTest(ValidationSection):
             self.time_step = 0
             
         def get_action(self, state):
-            """Logique de contrôle simple basée sur l'état actuel."""
-            # NOTE: 'state' est l'état complet du simulateur (U)
-            # Pour une vraie implémentation, il faudrait extraire les observations pertinentes
-            avg_density = np.mean(state[0, :] + state[2, :])
-
+            """Logique de contrôle simple basée sur l'observation de l'environnement."""
+            # L'observation est maintenant un vecteur simplifié, pas l'état complet U
+            # Exemple d'observation: [avg_density, avg_speed, queue_length]
+            avg_density = state[0]
             if self.scenario_type == 'traffic_light_control':
                 # Feu de signalisation à cycle fixe
                 return 1.0 if (self.time_step % 120) < 60 else 0.0
@@ -119,42 +125,29 @@ class RLPerformanceValidationTest(ValidationSection):
 
     class RLController:
         """Wrapper pour un agent RL. Charge un modèle pré-entraîné."""
-        class BaselineController:
-                        return max(0.2, 0.8 - (predicted_density - 0.5) * 2)
-                    # Anticipatory speed control
         def __init__(self, scenario_type):
             self.scenario_type = scenario_type
-            self.agent = self._load_agent(scenario_type)
+            self.model_path = model_path
+            self.agent = self._load_agent()
 
-        def _load_agent(self, scenario_type):
+        def _load_agent(self):
             """Charge un agent RL pré-entraîné."""
-            # from stable_baselines3 import PPO
-            # model_path = f"models/rl_agent_{scenario_type}.zip"
-            # if not Path(model_path).exists():
-            #     print(f"  [WARNING] Modèle RL non trouvé: {model_path}. Utilisation d'une politique aléatoire.")
-            #     return None
-            # return PPO.load(model_path)
-            print(f"  [INFO] Chargement du modèle RL pour '{scenario_type}' (placeholder).")
-            return None # Placeholder
+            if not self.model_path.exists():
+                print(f"  [WARNING] Modèle RL non trouvé: {self.model_path}. L'agent ne pourra pas agir.")
+                return None
+            print(f"  [INFO] Chargement du modèle RL depuis : {self.model_path}")
+            return PPO.load(str(self.model_path))
 
         def get_action(self, state):
             """Prédit une action en utilisant l'agent RL."""
             if self.agent:
-                # obs = self._extract_observation(state)
-                # action, _ = self.agent.predict(obs, deterministic=True)
-                # return action
-                pass
+                action, _ = self.agent.predict(state, deterministic=True)
+                # L'action de SB3 peut être un array, on extrait la valeur
+                return float(action[0]) if isinstance(action, np.ndarray) else float(action)
             
-            # Logique de fallback si l'agent n'est pas chargé
-            # Simule une politique apprise légèrement meilleure que la baseline
-            avg_density = np.mean(state[0, :] + state[2, :])
-            if self.scenario_type == 'traffic_light_control':
-                return 1.0 if avg_density > 0.04 else 0.0 # Plus réactif
-            elif self.scenario_type == 'ramp_metering':
-                return 0.4 if avg_density > 0.05 else 1.0
-            elif self.scenario_type == 'adaptive_speed_control':
-                return 0.7 if avg_density > 0.06 else 1.0
-            return 0.6
+            # Action par défaut si l'agent n'est pas chargé
+            print("  [WARNING] Agent RL non chargé, action par défaut (0.5).")
+            return 0.5
 
         def update(self, dt):
             """Mise à jour de l'état interne de l'agent (si nécessaire)."""
@@ -162,52 +155,40 @@ class RLPerformanceValidationTest(ValidationSection):
 
     def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=60.0):
         """Exécute une simulation réelle avec une boucle de contrôle externe."""
-        base_config_path = str(project_root / "config" / "config_base.yml")
-        
         try:
-            runner = SimulationRunner(
-                scenario_config_path=str(scenario_path),
-                base_config_path=base_config_path,
-                quiet=True
-            )
+            # La "passerelle" est l'environnement Gym qui encapsule le simulateur
+            env = ArzTrafficEnv(scenario_config_path=str(scenario_path))
         except Exception as e:
-            print(f"  [ERROR] Échec d'initialisation du SimulationRunner: {e}")
+            print(f"  [ERROR] Échec d'initialisation de l'environnement ArzTrafficEnv: {e}")
             return None, None
 
         states_history = []
         control_actions = []
-        last_control_time = 0.0
+        
+        obs = env.reset()
+        done = False
+        total_reward = 0
+        steps = 0
 
-        # Boucle de simulation step-by-step
-        while runner.t < duration:
-            # Appliquer une action de contrôle à intervalle régulier
-            if runner.t >= last_control_time + control_interval:
-                action = controller.get_action(runner.U)
-                control_actions.append(action)
-                
-                # Appliquer l'action au simulateur (placeholder)
-                # Dans une vraie implémentation, cela modifierait les paramètres du runner
-                # Par ex: runner.params.Vmax_c = action * base_vmax
-                # Ici, on simule l'effet en modifiant un paramètre
-                runner.params.Vmax_c['default'] = 25.0 * action
-                
-                last_control_time = runner.t
+        while not done and env.runner.t < duration:
+            action = controller.get_action(obs)
+            obs, reward, done, info = env.step(action)
+            
+            # Stockage des données pour l'évaluation
+            states_history.append(env.runner.U.copy())
+            control_actions.append(action)
+            total_reward += reward
+            steps += 1
 
-            # Exécuter une seule étape de simulation
-            try:
-                runner.run_step()
-                states_history.append(runner.U.copy())
-                controller.update(runner.dt)
-            except Exception as e_step:
-                print(f"  [ERROR] Erreur à l'étape de simulation t={runner.t:.2f}: {e_step}")
-                return states_history, control_actions
+        print(f"  Simulation terminée. Total steps: {steps}, Total reward: {total_reward:.2f}")
+        env.close()
 
         return states_history, control_actions
     
     def evaluate_traffic_performance(self, states_history, scenario_type):
         """Evaluate traffic performance metrics."""
         if not states_history:
-            return {'total_flow': 0, 'avg_speed': 0, 'efficiency': 0, 'delay': float('inf')}
+            return {'total_flow': 0, 'avg_speed': 0, 'efficiency': 0, 'delay': float('inf'), 'throughput': 0}
         
         flows, speeds, densities = [], [], []
         efficiency_scores = []
@@ -266,19 +247,41 @@ class RLPerformanceValidationTest(ValidationSection):
             'throughput': avg_flow * domain_length
         }
     
+    def train_rl_agent(self, scenario_type: str, total_timesteps=10000):
+        """Entraîne un agent RL pour un scénario donné et sauvegarde le modèle."""
+        print(f"\n[TRAINING] Lancement de l'entraînement pour le scénario : {scenario_type}")
+        self.models_dir.mkdir(parents=True, exist_ok=True)
+        model_path = self.models_dir / f"rl_agent_{scenario_type}.zip"
+
+        # Créer la configuration du scénario pour l'environnement d'entraînement
+        scenario_path = self._create_scenario_config(scenario_type)
+
+        try:
+            # Appel de la fonction d'entraînement du projet Code_RL
+            train_agent(
+                scenario_config_path=str(scenario_path),
+                total_timesteps=total_timesteps,
+                model_save_path=str(model_path)
+            )
+            print(f"[TRAINING] Entraînement terminé. Modèle sauvegardé dans : {model_path}")
+            return model_path
+        except Exception as e:
+            print(f"[ERROR] L'entraînement de l'agent a échoué : {e}")
+            import traceback
+            traceback.print_exc()
+            return None
+
     def run_performance_comparison(self, scenario_type):
         """Run performance comparison between baseline and RL controllers."""
         print(f"\nTesting scenario: {scenario_type}")
         
         try:
-            # Test baseline controller
             scenario_path = self._create_scenario_config(scenario_type)
+
+            # --- Évaluation du contrôleur de référence ---
             print("  Running baseline controller...")
             baseline_controller = self.BaselineController(scenario_type)
-            baseline_states, baseline_actions = self.run_control_simulation(
-                baseline_controller, scenario_path
-            )
-            
+            baseline_states, _ = self.run_control_simulation(baseline_controller, scenario_path)
             if baseline_states is None:
                 return {'success': False, 'error': 'Baseline simulation failed'}
             
@@ -286,11 +289,16 @@ class RLPerformanceValidationTest(ValidationSection):
             
             # Test RL controller
             print("  Running RL controller...")
-            rl_controller = self.RLController(scenario_type)
-            rl_states, rl_actions = self.run_control_simulation(
-                rl_controller, scenario_path
-            )
+            # --- Entraînement ou chargement de l'agent RL ---
+            model_path = self.models_dir / f"rl_agent_{scenario_type}.zip"
+            if not model_path.exists():
+                # Entraînement rapide si le modèle n'existe pas
+                model_path = self.train_rl_agent(scenario_type, total_timesteps=20000) # Timesteps pour un entraînement rapide
+                if not model_path or not model_path.exists():
+                    return {'success': False, 'error': 'RL agent training failed'}
             
+            rl_controller = self.RLController(scenario_type, model_path)
+            rl_states, _ = self.run_control_simulation(rl_controller, scenario_path)
             if rl_states is None:
                 return {'success': False, 'error': 'RL simulation failed'}
             
@@ -298,7 +306,6 @@ class RLPerformanceValidationTest(ValidationSection):
             
             # Calculate improvements
             flow_improvement = (rl_performance['total_flow'] - baseline_performance['total_flow']) / baseline_performance['total_flow'] * 100
-            speed_improvement = (rl_performance['avg_speed'] - baseline_performance['avg_speed']) / baseline_performance['avg_speed'] * 100
             efficiency_improvement = (rl_performance['efficiency'] - baseline_performance['efficiency']) / baseline_performance['efficiency'] * 100
             delay_reduction = (baseline_performance['delay'] - rl_performance['delay']) / baseline_performance['delay'] * 100
             
@@ -316,7 +323,6 @@ class RLPerformanceValidationTest(ValidationSection):
                 'rl_performance': rl_performance,
                 'improvements': {
                     'flow_improvement': flow_improvement,
-                    'speed_improvement': speed_improvement,
                     'efficiency_improvement': efficiency_improvement,
                     'delay_reduction': delay_reduction
                 },
@@ -332,6 +338,8 @@ class RLPerformanceValidationTest(ValidationSection):
             return results
             
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             print(f"  ERROR: {str(e)}")
             return {'success': False, 'error': str(e)}
     
@@ -340,6 +348,10 @@ class RLPerformanceValidationTest(ValidationSection):
         print("=== Section 7.6: RL Performance Validation ===")
         print("Testing RL agent performance vs baseline controllers...")
         all_results = {}
+
+        # Entraîner les agents nécessaires avant l'évaluation
+        for scenario in self.rl_scenarios.keys():
+            self.train_rl_agent(scenario, total_timesteps=50000) # Entraînement plus long pour de meilleurs résultats
         
         # Test all RL scenarios
         scenarios = list(self.rl_scenarios.keys())
@@ -518,6 +530,9 @@ class RLPerformanceValidationTest(ValidationSection):
 
 Cette section valide la revendication \textbf{R5}, qui postule que les agents d'apprentissage par renforcement (RL) peuvent surpasser les méthodes de contrôle traditionnelles pour la gestion du trafic.
 
+\subsubsection{Entraînement des Agents}
+Pour chaque scénario de contrôle, un agent RL distinct (basé sur l'algorithme PPO) est entraîné. L'entraînement est effectué en utilisant l'environnement Gym `ArzTrafficEnv`, qui sert de passerelle avec le simulateur ARZ. La figure~\ref{fig:rl_learning_curve_76} montre une courbe d'apprentissage typique, où la récompense cumulée augmente et se stabilise, indiquant la convergence de l'agent vers une politique de contrôle efficace.
+
 \subsubsection{Méthodologie}
 La validation est effectuée en comparant un agent RL à un contrôleur de référence (baseline) sur trois scénarios de contrôle de trafic :
 \begin{itemize}
@@ -554,16 +569,6 @@ La figure~\ref{fig:rl_improvements_76} détaille les gains de performance pour c
   \includegraphics[width=0.9\textwidth]{{{figure_path_improvements}}}
   \caption{Amélioration des performances de l'agent RL par rapport au contrôleur de référence pour chaque scénario.}
   \label{fig:rl_improvements_76}
-\end{figure}
-
-\subsubsection{Convergence de l'Apprentissage}
-La figure~\ref{fig:rl_learning_curve_76} illustre une courbe d'apprentissage typique pour un agent RL. On observe que la récompense moyenne par épisode augmente et se stabilise, indiquant que l'agent a convergé vers une politique de contrôle efficace.
-
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=0.8\textwidth]{{{figure_path_learning}}}
-  \caption{Exemple de courbe d'apprentissage montrant la convergence de la récompense de l'agent.}
-  \label{fig:rl_learning_curve_76}
 \end{figure}
 
 \subsubsection{Conclusion Section 7.6}
