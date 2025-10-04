@@ -100,7 +100,7 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
     def load_victoria_island_data(self):
         """
         Load REAL Victoria Island network data from JSON.
-        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
         Returns:
             List of segment dictionaries with real network properties
         
@@ -446,19 +446,23 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
             }
         }
     
-    def generate_calibration_figures(self, simulation_results, observed_data, output_dir):
+    def generate_calibration_figures(self, simulation_results, observed_data, metrics_dict):
         """
-        Génère les figures de calibration pour le mémoire
+        Génère les figures de calibration pour le mémoire dans self.figures_dir
         
         Args:
             simulation_results: Résultats de simulation avec times, simulated_speeds
             observed_data: DataFrame avec current_speed
-            output_dir: Répertoire de sortie pour les figures
+            metrics_dict: Dictionnaire contenant MAPE, GEH, Theil U
+        
+        Returns:
+            dict: Chemins des figures générées
         """
         import matplotlib.pyplot as plt
         from pathlib import Path
         
-        output_dir = Path(output_dir)
+        # Use standard architecture: self.figures_dir (NOT hardcoded path)
+        output_dir = self.figures_dir
         output_dir.mkdir(parents=True, exist_ok=True)
         
         simulated_speeds = simulation_results['simulated_speeds']
@@ -467,6 +471,8 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
         # Extract observed speeds
         if 'current_speed' in observed_data.columns:
             observed_speeds = observed_data['current_speed'].values
+        elif 'observed_speed' in observed_data.columns:
+            observed_speeds = observed_data['observed_speed'].values
         else:
             observed_speeds = np.random.normal(35.0, 10.0, len(observed_data))
         
@@ -531,9 +537,8 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
         print(f"[OK] Figure 3 sauvegardee: {output_dir / 'fig_calibration_scatter.png'}")
         
         # --- FIGURE 4: Metrics summary bar chart ---
-        metrics = simulation_results.get('metrics', {})
-        mape = metrics.get('mape', 0.0)
-        geh = metrics.get('geh', 0.0)
+        mape = metrics_dict.get('mape', 0.0)
+        geh = metrics_dict.get('geh', 0.0)
         
         plt.figure(figsize=(10, 6))
         metric_names = ['MAPE (%)', 'GEH']
@@ -562,9 +567,75 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
         print(f"[OK] Figure 4 sauvegardee: {output_dir / 'fig_calibration_metrics.png'}")
         
         print(f"\n[FIGURES] Toutes les figures de calibration generees dans: {output_dir}")
+        
+        return {
+            'timeseries': str(output_dir / 'fig_calibration_timeseries.png'),
+            'error_histogram': str(output_dir / 'fig_calibration_error_histogram.png'),
+            'scatter': str(output_dir / 'fig_calibration_scatter.png'),
+            'metrics_bar': str(output_dir / 'fig_calibration_metrics.png')
+        }
     
-    def generate_section_7_4_latex(self, r2_results, cross_val_results):
-        """Génère contenu LaTeX pour section 7.4 avec résultats réels"""
+    def save_calibration_data(self, simulation_results, observed_data):
+        """
+        Sauvegarde les données de calibration dans data/npz/ et data/metrics/
+        
+        Args:
+            simulation_results: Résultats de simulation
+            observed_data: Données observées
+        
+        Returns:
+            dict: Chemins des fichiers sauvegardés
+        """
+        from datetime import datetime
+        import pandas as pd
+        
+        saved_files = {}
+        
+        # 1. Sauvegarder métriques CSV dans data/metrics/
+        metrics_csv = self.metrics_dir / "calibration_metrics.csv"
+        metrics_data = []
+        
+        if 'metrics' in simulation_results:
+            metrics = simulation_results['metrics']
+            metrics_data.append({
+                'timestamp': datetime.now().isoformat(),
+                'mape': metrics.get('mape', 0.0),
+                'geh': metrics.get('geh', 0.0),
+                'theil_u': metrics.get('theil_u', 0.0),
+                'rmse': metrics.get('rmse', 0.0),
+                'simulated_mean': metrics.get('simulated_mean', 0.0),
+                'observed_mean': metrics.get('observed_mean', 0.0),
+                'n_observations': metrics.get('n_observations', 0),
+                'status': 'PASSED' if metrics.get('mape', 100) < 25 else 'FAILED'
+            })
+        
+        df_metrics = pd.DataFrame(metrics_data)
+        df_metrics.to_csv(metrics_csv, index=False)
+        print(f"[METRICS] Saved: {metrics_csv}")
+        saved_files['metrics_csv'] = str(metrics_csv)
+        
+        # 2. Sauvegarder série temporelle CSV
+        timeseries_csv = self.metrics_dir / "calibration_timeseries.csv"
+        if 'times' in simulation_results and 'simulated_speeds' in simulation_results:
+            df_ts = pd.DataFrame({
+                'time_s': simulation_results['times'],
+                'simulated_speed_kmh': simulation_results['simulated_speeds']
+            })
+            df_ts.to_csv(timeseries_csv, index=False)
+            print(f"[TIMESERIES] Saved: {timeseries_csv}")
+            saved_files['timeseries_csv'] = str(timeseries_csv)
+        
+        # 3. Sauvegarder données observées
+        observed_csv = self.metrics_dir / "observed_data.csv"
+        if isinstance(observed_data, pd.DataFrame):
+            observed_data.to_csv(observed_csv, index=False)
+            print(f"[OBSERVED] Saved: {observed_csv}")
+            saved_files['observed_csv'] = str(observed_csv)
+        
+        return saved_files
+    
+    def generate_section_7_4_latex(self, r2_results, cross_val_results, figure_paths):
+        """Génère contenu LaTeX pour section 7.4 avec résultats réels et chemins figures"""
         
         template_vars = {
             'mape_value': r2_results['metrics'].get('mape', 0.0),
@@ -580,34 +651,121 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
             'cross_val_status': cross_val_results['status']
         }
         
-        # Create simple LaTeX content with results
+        # Chemins relatifs des figures pour LaTeX
+        relative_figures = {k: Path(v).name for k, v in figure_paths.items()}
+        
+        # Create comprehensive LaTeX content with results AND figures
         latex_content = f"""
-\\subsection{{Calibration Victoria Island}}
+% Section 7.4 - Calibration Victoria Island
+% Auto-généré par test_section_7_4_calibration.py
+
+\\subsection{{Calibration avec Données Réelles Victoria Island}}
+\\label{{subsec:calibration_victoria_island}}
+
+Cette section présente les résultats de calibration du jumeau numérique ARZ étendu 
+avec les données de trafic réelles collectées sur le corridor de Victoria Island à Lagos.
+
+\\subsubsection{{Métriques de Calibration}}
+
+Le tableau~\\ref{{tab:calibration_metrics_74}} présente les métriques de performance 
+obtenues après calibration automatique avec {template_vars['n_observations']} observations TomTom.
 
 \\begin{{table}}[h]
 \\centering
-\\caption{{Métriques de calibration - Section 7.4}}
+\\caption{{Métriques de calibration - Section 7.4 Victoria Island}}
+\\label{{tab:calibration_metrics_74}}
 \\begin{{tabular}}{{|l|c|c|c|}}
 \\hline
-\\textbf{{Métrique}} & \\textbf{{Valeur}} & \\textbf{{Seuil}} & \\textbf{{Status}} \\\\
+\\textbf{{Métrique}} & \\textbf{{Valeur}} & \\textbf{{Seuil}} & \\textbf{{Statut}} \\\\
 \\hline
-MAPE & {template_vars['mape_value']:.2f}\\% & < 25\\% & {template_vars['r2_status']} \\\\
-GEH & {template_vars['geh_value']:.2f} & < 8.0 & {template_vars['r2_status']} \\\\
-Theil U & {template_vars['theil_u_value']:.3f} & < 0.5 & {template_vars['r2_status']} \\\\
+MAPE (\\%) & {template_vars['mape_value']:.2f} & < 25.0 & {'\\textcolor{{green}}{{PASS}}' if template_vars['mape_value'] < 25 else '\\textcolor{{red}}{{FAIL}}'} \\\\
+GEH & {template_vars['geh_value']:.2f} & < 8.0 & {'\\textcolor{{green}}{{PASS}}' if template_vars['geh_value'] < 8 else '\\textcolor{{red}}{{FAIL}}'} \\\\
+Theil U & {template_vars['theil_u_value']:.3f} & < 0.5 & {'\\textcolor{{green}}{{PASS}}' if template_vars['theil_u_value'] < 0.5 else '\\textcolor{{red}}{{FAIL}}'} \\\\
 \\hline
 \\end{{tabular}}
 \\end{{table}}
 
-\\paragraph{{Résultats calibration}}
-Vitesse simulée: {template_vars['simulated_mean']:.1f} km/h \\\\
-Vitesse observée: {template_vars['observed_mean']:.1f} km/h \\\\
-Nombre d'observations: {template_vars['n_observations']} \\\\
+\\paragraph{{Résultats de calibration}}
+\\begin{{itemize}}
+  \\item Vitesse simulée moyenne: {template_vars['simulated_mean']:.1f} km/h
+  \\item Vitesse observée moyenne: {template_vars['observed_mean']:.1f} km/h
+  \\item Écart absolu: {abs(template_vars['simulated_mean'] - template_vars['observed_mean']):.1f} km/h ({abs(template_vars['simulated_mean'] - template_vars['observed_mean']) / template_vars['observed_mean'] * 100:.1f}\\%)
+  \\item Nombre d'observations: {template_vars['n_observations']}
+  \\item Source: Données TomTom Traffic API (15min aggregation)
+\\end{{itemize}}
 
-\\paragraph{{Validation croisée}}
-MAPE moyen: {template_vars['cross_val_mape_mean']:.2f}\\% ± {template_vars['cross_val_mape_std']:.2f}\\% \\\\
-Nombre de runs: {template_vars['cross_val_n_runs']} \\\\
-Status: {template_vars['cross_val_status']}
+\\subsubsection{{Visualisations de Calibration}}
+
+La figure~\\ref{{fig:calibration_timeseries_74}} présente l'évolution temporelle de la vitesse 
+simulée comparée à la vitesse observée moyenne et son écart-type.
+
+\\begin{{figure}}[htbp]
+  \\centering
+  \\includegraphics[width=\\textwidth]{{{relative_figures['timeseries']}}}
+  \\caption{{Série temporelle de calibration: vitesse simulée vs observée sur Victoria Island.}}
+  \\label{{fig:calibration_timeseries_74}}
+\\end{{figure}}
+
+La distribution des erreurs (figure~\\ref{{fig:calibration_error_histogram_74}}) montre 
+la qualité de l'ajustement du modèle aux données réelles.
+
+\\begin{{figure}}[htbp]
+  \\centering
+  \\includegraphics[width=0.8\\textwidth]{{{relative_figures['error_histogram']}}}
+  \\caption{{Distribution des erreurs de vitesse (simulé - observé).}}
+  \\label{{fig:calibration_error_histogram_74}}
+\\end{{figure}}
+
+Le nuage de points (figure~\\ref{{fig:calibration_scatter_74}}) illustre la corrélation 
+entre vitesses simulées et observées.
+
+\\begin{{figure}}[htbp]
+  \\centering
+  \\includegraphics[width=0.8\\textwidth]{{{relative_figures['scatter']}}}
+  \\caption{{Scatter plot: vitesse simulée vs observée.}}
+  \\label{{fig:calibration_scatter_74}}
+\\end{{figure}}
+
+\\subsubsection{{Validation Croisée et Robustesse}}
+
+La validation croisée (figure~\\ref{{fig:calibration_metrics_74}}) a été effectuée 
+avec {template_vars['cross_val_n_runs']} exécutions indépendantes.
+
+\\begin{{figure}}[htbp]
+  \\centering
+  \\includegraphics[width=0.8\\textwidth]{{{relative_figures['metrics_bar']}}}
+  \\caption{{Métriques de calibration: MAPE et GEH avec seuils d'acceptation.}}
+  \\label{{fig:calibration_metrics_74}}
+\\end{{figure}}
+
+\\paragraph{{Statistiques de validation croisée}}
+\\begin{{itemize}}
+  \\item MAPE moyen: {template_vars['cross_val_mape_mean']:.2f}\\% $\\pm$ {template_vars['cross_val_mape_std']:.2f}\\%
+  \\item Stabilité: {'Excellente' if template_vars['cross_val_mape_std'] < 5 else ('Bonne' if template_vars['cross_val_mape_std'] < 10 else 'Modérée')}
+  \\item Nombre de runs: {template_vars['cross_val_n_runs']}
+  \\item Statut global: \\textbf{{{template_vars['cross_val_status']}}}
+\\end{{itemize}}
+
+\\subsubsection{{Conclusion Section 7.4}}
+
+{'La calibration avec données réelles Victoria Island est validée avec succès. ' +
+'Les métriques respectent les seuils d acceptation (MAPE < 25\\%, GEH < 8.0). ' +
+'Le jumeau numérique ARZ étendu est apte à reproduire les conditions de trafic réelles ' +
+'du corridor urbain de Lagos avec une précision acceptable pour l optimisation.' 
+if template_vars['r2_status'] == 'PASSED' else
+'La calibration nécessite des ajustements supplémentaires. ' +
+'Certaines métriques dépassent les seuils d acceptation.'}
+
+\\textbf{{Revendication R2}}: {'VALIDÉE' if template_vars['r2_status'] == 'PASSED' else 'NON VALIDÉE'}
+
 """
+        
+        # Sauvegarder dans self.latex_dir (architecture standard)
+        latex_output_path = self.latex_dir / "section_7_4_content.tex"
+        with open(latex_output_path, 'w', encoding='utf-8') as f:
+            f.write(latex_content)
+        
+        print(f"[LATEX] Generated: {latex_output_path}")
         
         return latex_content
 
@@ -632,15 +790,25 @@ def main():
         print(f"  Vitesse simulée: {metrics.get('simulated_mean', 0.0):.1f} km/h")
         print(f"  Vitesse observée: {metrics.get('observed_mean', 0.0):.1f} km/h")
     
-    # 📊 Générer les figures de calibration AVANT cross-validation
+    # 📊 Générer les figures de calibration DANS self.figures_dir (architecture standard)
+    figure_paths = {}
     if r2_results.get('simulation_results'):
         print("\n[FIGURES] Génération des figures de calibration...")
-        figures_dir = Path(__file__).parent.parent / "figures" / "section_7_4"
         speed_data = validator.load_historical_speed_data()
-        validator.generate_calibration_figures(
+        figure_paths = validator.generate_calibration_figures(
             r2_results['simulation_results'], 
-            speed_data, 
-            figures_dir
+            speed_data,
+            r2_results['metrics']  # Pass metrics dict for Figure 4
+        )
+    
+    # 💾 Sauvegarder données calibration dans data/metrics/
+    if r2_results.get('simulation_results'):
+        print("\n[DATA] Sauvegarde données de calibration...")
+        # Ajouter métriques dans simulation_results pour save_calibration_data
+        r2_results['simulation_results']['metrics'] = r2_results['metrics']
+        saved_files = validator.save_calibration_data(
+            r2_results['simulation_results'],
+            speed_data
         )
     
     # Test cross-validation robustness
@@ -654,22 +822,42 @@ def main():
         print(f"  GEH moyen: {cv_metrics.get('geh_mean', 0.0):.2f} ± {cv_metrics.get('geh_std', 0.0):.2f}")
         print(f"  Nombre de runs: {cv_metrics.get('n_runs', 0)}")
     
-    # Generate LaTeX content
+    # Generate LaTeX content DANS self.latex_dir (architecture standard)
     print("\n[LATEX] Génération contenu section 7.4...")
-    latex_content = validator.generate_section_7_4_latex(r2_results, cross_val_results)
+    latex_content = validator.generate_section_7_4_latex(
+        r2_results, 
+        cross_val_results, 
+        figure_paths
+    )
     
-    # Save results
-    results_dir = Path(__file__).parent.parent / "results"
-    results_dir.mkdir(exist_ok=True)
-    
-    with open(results_dir / "section_7_4_calibration_results.json", 'w') as f:
+    # Save results JSON DANS self.output_dir (architecture standard)
+    results_json = validator.output_dir / "section_7_4_calibration_results.json"
+    with open(results_json, 'w') as f:
         json.dump({
             'r2_calibration': r2_results,
-            'cross_validation': cross_val_results
+            'cross_validation': cross_val_results,
+            'figure_paths': figure_paths
         }, f, indent=2, default=str)
+    print(f"[RESULTS] Saved: {results_json}")
     
-    with open(results_dir / "section_7_4_content.tex", 'w') as f:
-        f.write(latex_content)
+    # 📝 Session summary JSON (comme section 7.3)
+    test_status = {
+        'tests_run': {
+            'r2_calibration': 1,
+            'cross_validation': 1
+        },
+        'status': 'completed',
+        'r2_status': r2_results['status'],
+        'cross_val_status': cross_val_results['status'],
+        'metrics': {
+            'mape': r2_results['metrics'].get('mape', 0.0),
+            'geh': r2_results['metrics'].get('geh', 0.0),
+            'theil_u': r2_results['metrics'].get('theil_u', 0.0)
+        }
+    }
+    validator.save_session_summary(additional_info=test_status)
+    
+    print(f"\n[OK] Section 7.4 complete : {validator.output_dir}")
     
     # Final validation status
     r2_success = r2_results['status'] == 'PASSED'
@@ -680,6 +868,10 @@ def main():
         return 0
     else:
         print(f"\n[ECHEC] VALIDATION R2 : ECHOUEE")
+        if not r2_success:
+            print(f"  - R2 calibration: {r2_results['status']}")
+        if not cv_success:
+            print(f"  - Cross-validation: {cross_val_results['status']}")
         return 1
 
 if __name__ == "__main__":

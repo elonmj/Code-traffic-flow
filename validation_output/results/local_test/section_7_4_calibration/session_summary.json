@@ -1,0 +1,24 @@
+{
+  "section": "section_7_4_calibration",
+  "timestamp": "2025-10-04T15:37:25.408727",
+  "artifacts": {
+    "figures": 4,
+    "npz_files": 0,
+    "scenarios": 0,
+    "latex_files": 1,
+    "csv_files": 3,
+    "json_files": 0
+  },
+  "tests_run": {
+    "r2_calibration": 1,
+    "cross_validation": 1
+  },
+  "status": "completed",
+  "r2_status": "PASSED",
+  "cross_val_status": "PASSED",
+  "metrics": {
+    "mape": 18.305246999551326,
+    "geh": 0.9951744887153592,
+    "theil_u": 0.422402690614587
+  }
+}

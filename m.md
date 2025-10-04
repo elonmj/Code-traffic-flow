@@ -1,1 +1,0 @@
-python validation_ch7/scripts/validation_cli.py --section section_7_3_analytical --commit-message

@@ -47,3 +47,21 @@
 2025-10-04 08:20:26,104 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-04 08:20:29,238 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-04 08:20:31,980 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-74calibration-tmqk
+2025-10-04 13:11:31,851 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-04 13:11:31,976 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO -    M validation_ch7/figures/section_7_4/fig_calibration_error_histogram.png (Modified (unstaged))
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO -    M validation_ch7/figures/section_7_4/fig_calibration_scatter.png (Modified (unstaged))
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO -    M validation_ch7/figures/section_7_4/fig_calibration_timeseries.png (Modified (unstaged))
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO -    M validation_ch7/results/section_7_4_calibration_results.json (Modified (unstaged))
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO -    M validation_ch7/results/section_7_4_content.tex (Modified (unstaged))
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/test_section_7_4_calibration.py (Modified (unstaged))
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO -   ?? scenarios/scenario_calibration_victoria_island.yml (Untracked)
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-74calibration-tmqk/ (Untracked)
+2025-10-04 13:11:32,045 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-04 13:11:32,157 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-04 13:11:32,366 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-04 13:11:32,366 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-04 13:11:36,939 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-04 13:11:39,742 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-74calibration-voup

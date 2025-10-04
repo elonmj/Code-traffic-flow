@@ -11,13 +11,13 @@ Ce chapitre constitue l'aboutissement logique de notre démarche de recherche. A
 
 Notre approche de validation suit une progression méthodique du simple au complexe :
 \begin{enumerate}
-    \item \textbf{Validation physique fondamentale} : Vérification que le modèle ARZ étendu reproduit correctement les phénomènes physiques attendus sur des segments isolés.
-    \item \textbf{Validation des couplages} : Test de la cohérence aux jonctions et intersections, particulièrement pour les carrefours à feux.
-    \item \textbf{Validation numérique} : Confirmation de la précision et de la stabilité de la méthode de résolution.
-    \item \textbf{Validation du jumeau numérique} : Calibration et confrontation avec les données réelles du corridor de Victoria Island.
-    \item \textbf{Validation de l'environnement RL} : Vérification de la cohérence du MDP et des métriques de performance.
-    \item \textbf{Validation de l'apprentissage} : Entraînement des agents et comparaison avec les méthodes de référence.
-    \item \textbf{Tests de scénarios et robustesse} : Évaluation dans des conditions dégradées et des situations extrêmes.
+  \item \textbf{Validation physique fondamentale} : Vérification que le modèle ARZ étendu reproduit correctement les phénomènes physiques attendus sur des segments isolés.
+  \item \textbf{Validation des couplages} : Test de la cohérence aux jonctions et intersections, particulièrement pour les carrefours à feux.
+  \item \textbf{Validation numérique} : Confirmation de la précision et de la stabilité de la méthode de résolution.
+  \item \textbf{Validation du jumeau numérique} : Calibration et confrontation avec les données réelles du corridor de Victoria Island.
+  \item \textbf{Validation de l'environnement RL} : Vérification de la cohérence du MDP et des métriques de performance.
+  \item \textbf{Validation de l'apprentissage} : Entraînement des agents et comparaison avec les méthodes de référence.
+  \item \textbf{Tests de scénarios et robustesse} : Évaluation dans des conditions dégradées et des situations extrêmes.
 \end{enumerate}
 
 \subsection{Hypothèses et Revendications Clés}
@@ -26,12 +26,12 @@ Notre approche de validation suit une progression méthodique du simple au compl
 Nos travaux reposent sur six revendications principales (R1-R6) que ce chapitre se propose de valider :
 
 \begin{itemize}
-    \item \textbf{R1} : Le modèle ARZ étendu multi-classes capture fidèlement les spécificités comportementales du trafic ouest-africain (gap-filling, interweaving, creeping des motos).
-    \item \textbf{R2} : La prise en compte de la qualité d'infrastructure R(x) améliore significativement la précision du modèle.
-    \item \textbf{R3} : La stratégie numérique FVM + WENO garantit une résolution stable et précise du système hyperbolique couplé.
-    \item \textbf{R4} : Le jumeau numérique du corridor de Victoria Island reproduit les conditions de trafic réelles avec une précision acceptable pour l'optimisation.
-    \item \textbf{R5} : L'agent d'apprentissage par renforcement surpasse les méthodes de contrôle traditionnelles (plans fixes, contrôle actuated) sur les métriques opérationnelles clés.
-    \item \textbf{R6} : La méthodologie de transposition régionale permet d'adapter les observations béninoises au contexte de Lagos avec succès.
+  \item \textbf{R1} : Le modèle ARZ étendu multi-classes capture fidèlement les spécificités comportementales du trafic ouest-africain (gap-filling, interweaving, creeping des motos).
+  \item \textbf{R2} : La prise en compte de la qualité d'infrastructure R(x) améliore significativement la précision du modèle.
+  \item \textbf{R3} : La stratégie numérique FVM + WENO garantit une résolution stable et précise du système hyperbolique couplé.
+  \item \textbf{R4} : Le jumeau numérique du corridor de Victoria Island reproduit les conditions de trafic réelles avec une précision acceptable pour l'optimisation.
+  \item \textbf{R5} : L'agent d'apprentissage par renforcement surpasse les méthodes de contrôle traditionnelles (plans fixes, contrôle actuated) sur les métriques opérationnelles clés.
+
 \end{itemize}
 
 % TODO: Ajouter une figure illustrant le pipeline de validation
@@ -45,10 +45,10 @@ Nos travaux reposent sur six revendications principales (R1-R6) que ce chapitre 
 Notre validation repose sur plusieurs sources de données complémentaires :
 
 \begin{itemize}
-    \item \textbf{Données statiques} : Topologie du réseau extraite d'OpenStreetMap (OSM) avec enrichissement manuel des caractéristiques d'infrastructure.
-    \item \textbf{Données dynamiques} : Vitesses de trafic et temps de parcours collectés via l'API TomTom Traffic sur 24h continues.
-    \item \textbf{Données de référence} : Comptages de trafic disponibles dans la littérature \cite{ludi2020traffic} et observations comportementales documentées \cite{gomina2013urban}.
-    \item \textbf{Données synthétiques} : Cas tests analytiques pour la validation des propriétés physiques et numériques.
+  \item \textbf{Données statiques} : Topologie du réseau extraite d'OpenStreetMap (OSM) avec enrichissement manuel des caractéristiques d'infrastructure.
+  \item \textbf{Données dynamiques} : Vitesses de trafic et temps de parcours collectés via l'API TomTom Traffic sur 24h continues.
+  \item \textbf{Données de référence} : Comptages de trafic disponibles dans la littérature \cite{ludi2020traffic} et observations comportementales documentées \cite{gomina2013urban}.
+  \item \textbf{Données synthétiques} : Cas tests analytiques pour la validation des propriétés physiques et numériques.
 \end{itemize}
 
 \subsection{Métriques de Performance}
@@ -58,53 +58,53 @@ Nous distinguons trois catégories de métriques selon le niveau de validation :
 
 \subsubsection{Métriques Physiques}
 \begin{itemize}
-    \item \textbf{Erreur absolue moyenne (MAE)} et \textbf{erreur relative moyenne (MAPE)} sur les vitesses
-    \item \textbf{Erreur quadratique moyenne (RMSE)} sur les densités
-    \item \textbf{Coefficient de Theil (U)} pour l'évaluation globale des séries temporelles
-    \item \textbf{Statistique GEH} pour les flux de trafic
-    \item \textbf{Vitesses d'onde} observées vs théoriques
+  \item \textbf{Erreur absolue moyenne (MAE)} et \textbf{erreur relative moyenne (MAPE)} sur les vitesses
+  \item \textbf{Erreur quadratique moyenne (RMSE)} sur les densités
+  \item \textbf{Coefficient de Theil (U)} pour l'évaluation globale des séries temporelles
+  \item \textbf{Statistique GEH} pour les flux de trafic
+  \item \textbf{Vitesses d'onde} observées vs théoriques
 \end{itemize}
 
 \subsubsection{Métriques Opérationnelles}
 \begin{itemize}
-    \item \textbf{Temps de parcours moyens} par segment et pour l'ensemble du corridor
-    \item \textbf{Délais moyens} aux intersections
-    \item \textbf{Longueurs de files d'attente} maximales et moyennes
-    \item \textbf{Nombre d'arrêts} par véhicule
-    \item \textbf{Débit total} du réseau (véhicules/heure)
+  \item \textbf{Temps de parcours moyens} par segment et pour l'ensemble du corridor
+  \item \textbf{Délais moyens} aux intersections
+  \item \textbf{Longueurs de files d'attente} maximales et moyennes
+  \item \textbf{Nombre d'arrêts} par véhicule
+  \item \textbf{Débit total} du réseau (véhicules/heure)
 \end{itemize}
 
 \subsubsection{Métriques d'Apprentissage par Renforcement}
 \begin{itemize}
-    \item \textbf{Récompense moyenne} et sa convergence
-    \item \textbf{Stabilité} (variance inter-exécutions)
-    \item \textbf{Robustesse} aux variations de conditions initiales
-    \item \textbf{Respect des contraintes} de sécurité (temps verts minimaux, etc.)
+  \item \textbf{Récompense moyenne} et sa convergence
+  \item \textbf{Stabilité} (variance inter-exécutions)
+  \item \textbf{Robustesse} aux variations de conditions initiales
+  \item \textbf{Respect des contraintes} de sécurité (temps verts minimaux, etc.)
 \end{itemize}
 
 \subsection{Critères d'Acceptation}
 \label{subsec:criteres_acceptation}
 
 \begin{table}[htbp]
-    \centering
-    \caption{Critères d'acceptation par niveau de validation}
-    \label{tab:criteres_acceptation}
-    \begin{tabular}{|l|l|c|}
-        \hline
-        \textbf{Niveau}               & \textbf{Métrique}                & \textbf{Seuil d'acceptation} \\
-        \hline
-        \multirow{3}{*}{Physique}     & MAPE vitesse                     & $< 15\%$                     \\
-                                      & RMSE densité normalisée          & $< 0.2$                      \\
-                                      & Vitesse d'onde (erreur relative) & $< 10\%$                     \\
-        \hline
-        \multirow{3}{*}{Opérationnel} & MAPE temps de parcours           & $< 20\%$                     \\
-                                      & GEH flux                         & $< 5$ (85\% des mesures)     \\
-                                      & Coefficient de Theil             & $< 0.3$                      \\
-        \hline
-        \multirow{2}{*}{RL}           & Amélioration vs baseline         & $> 10\%$                     \\
-                                      & Stabilité (CV récompense)        & $< 0.1$                      \\
-        \hline
-    \end{tabular}
+  \centering
+  \caption{Critères d'acceptation par niveau de validation}
+  \label{tab:criteres_acceptation}
+  \begin{tabular}{|l|l|c|}
+    \hline
+    \textbf{Niveau}               & \textbf{Métrique}                & \textbf{Seuil d'acceptation} \\
+    \hline
+    \multirow{3}{*}{Physique}     & MAPE vitesse                     & $< 15\%$                     \\
+                                  & RMSE densité normalisée          & $< 0.2$                      \\
+                                  & Vitesse d'onde (erreur relative) & $< 10\%$                     \\
+    \hline
+    \multirow{3}{*}{Opérationnel} & MAPE temps de parcours           & $< 20\%$                     \\
+                                  & GEH flux                         & $< 5$ (85\% des mesures)     \\
+                                  & Coefficient de Theil             & $< 0.3$                      \\
+    \hline
+    \multirow{2}{*}{RL}           & Amélioration vs baseline         & $> 10\%$                     \\
+                                  & Stabilité (CV récompense)        & $< 0.1$                      \\
+    \hline
+  \end{tabular}
 \end{table}
 
 % TODO: Justifier le choix des seuils par référence à la littérature
@@ -131,11 +131,11 @@ L'objectif est de vérifier que la solution simulée par notre code coïncide pa
 
 Cinq scénarios ont été choisis pour valider des phénomènes physiques distincts :
 \begin{itemize}
-    \item \textbf{Choc simple (motos)} : Simule la formation d'une onde de congestion (un "embouteillage") qui se propage vers l'amont. Ce test valide la capacité du solveur à capturer une discontinuité nette sans oscillations numériques.
-    \item \textbf{Détente (voitures)} : Représente la dissipation d'un embouteillage. Ce test valide la capture correcte des transitions continues (ondes de raréfaction).
-    \item \textbf{Apparition de vide (motos)} : Modélise deux flots de trafic s'éloignant l'un de l'autre, créant une section de route vide. C'est un test de robustesse qui vérifie que le solveur reste stable même lorsque la densité tend vers zéro.
-    \item \textbf{Discontinuité de contact} : Simule deux pelotons de densités différentes mais se déplaçant à la même vitesse. Le solveur ne doit pas "baver" ou diffuser artificiellement la frontière entre les deux.
-    \item \textbf{Interaction multi-classes} : Le test le plus critique. Il valide la bonne implémentation des termes de couplage qui gouvernent la manière dont les motos et les voitures interagissent, un pilier de la revendication R1.
+  \item \textbf{Choc simple (motos)} : Simule la formation d'une onde de congestion (un "embouteillage") qui se propage vers l'amont. Ce test valide la capacité du solveur à capturer une discontinuité nette sans oscillations numériques.
+  \item \textbf{Détente (voitures)} : Représente la dissipation d'un embouteillage. Ce test valide la capture correcte des transitions continues (ondes de raréfaction).
+  \item \textbf{Apparition de vide (motos)} : Modélise deux flots de trafic s'éloignant l'un de l'autre, créant une section de route vide. C'est un test de robustesse qui vérifie que le solveur reste stable même lorsque la densité tend vers zéro.
+  \item \textbf{Discontinuité de contact} : Simule deux pelotons de densités différentes mais se déplaçant à la même vitesse. Le solveur ne doit pas "baver" ou diffuser artificiellement la frontière entre les deux.
+  \item \textbf{Interaction multi-classes} : Le test le plus critique. Il valide la bonne implémentation des termes de couplage qui gouvernent la manière dont les motos et les voitures interagissent, un pilier de la revendication R1.
 \end{itemize}
 
 \subsubsection{Résultats et Interprétation}
@@ -143,39 +143,39 @@ Cinq scénarios ont été choisis pour valider des phénomènes physiques distin
 Le tableau~\ref{tab:riemann_validation_results} synthétise les excellents résultats obtenus.
 
 \begin{table}[htbp]
-    \centering
-    \caption{Résultats de validation sur les problèmes de Riemann}
-    \label{tab:riemann_validation_results}
-    \begin{tabular}{|l|c|c|c|}
-        \hline
-        \textbf{Cas de Test}       & \textbf{Erreur L2} & \textbf{Ordre de Convergence} & \textbf{Statut} \\
-        \hline
-        Choc simple (motos)        & 2.76e+05           & 4.80                          & \textbf{Validé} \\
-        Détente (voitures)         & 1.45e+04           & 4.73                          & \textbf{Validé} \\
-        Apparition de vide (motos) & 8.32e+04           & 4.72                          & \textbf{Validé} \\
-        Discontinuité de contact   & 1.37e+05           & 4.63                          & \textbf{Validé} \\
-        Interaction multi-classes  & 1.19e+05           & 4.79                          & \textbf{Validé} \\
-        \hline
-    \end{tabular}
-    \Description{Ce tableau présente les métriques de performance pour cinq problèmes de Riemann. Chaque test est validé, avec des ordres de convergence proches de la valeur théorique de 5.}
+  \centering
+  \caption{Résultats de validation sur les problèmes de Riemann}
+  \label{tab:riemann_validation_results}
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Cas de Test}       & \textbf{Erreur L2} & \textbf{Ordre de Convergence} & \textbf{Statut} \\
+    \hline
+    Choc simple (motos)        & 2.76e+05           & 4.80                          & \textbf{Validé} \\
+    Détente (voitures)         & 1.45e+04           & 4.73                          & \textbf{Validé} \\
+    Apparition de vide (motos) & 8.32e+04           & 4.72                          & \textbf{Validé} \\
+    Discontinuité de contact   & 1.37e+05           & 4.63                          & \textbf{Validé} \\
+    Interaction multi-classes  & 1.19e+05           & 4.79                          & \textbf{Validé} \\
+    \hline
+  \end{tabular}
+  %\Description{Ce tableau présente les métriques de performance pour cinq problèmes de Riemann. Chaque test est validé, avec des ordres de convergence proches de la valeur théorique de 5.}
 \end{table}
-
+ 
 L'\textbf{ordre de convergence} observé, avoisinant 4.75, est une mesure clé de la qualité du solveur. Il indique à quelle vitesse l'erreur diminue lorsque la grille de calcul est raffinée. Un ordre de 4.75 est extrêmement proche de la performance théorique maximale (ordre 5) du schéma WENO5, ce qui confirme sa très haute précision et la qualité de son implémentation. De plus, la conservation de la masse a été vérifiée avec une erreur relative inférieure à $10^{-5}$, confirmant l'absence de fuites numériques.
 
 Les figures~\ref{fig:riemann_choc_simple} à \ref{fig:riemann_interaction_multiclasse} illustrent la comparaison entre les profils de densité et de vitesse simulés et les solutions analytiques pour chaque cas de test. La superposition quasi parfaite des courbes confirme visuellement la qualité des résultats.
 
 \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{images/partie3/riemann_test_1_choc_simple_motos.png}
-    \caption{Problème de Riemann 1 : Choc simple pour la classe des motos. La simulation (bleu) capture avec précision la discontinuité de la solution analytique (rouge).}
-    \label{fig:riemann_choc_simple}
+  \centering
+  \includegraphics[width=\textwidth]{images/partie3/riemann_test_1_choc_simple_motos.png}
+  \caption{Problème de Riemann 1 : Choc simple pour la classe des motos. La simulation (bleu) capture avec précision la discontinuité de la solution analytique (rouge).}
+  \label{fig:riemann_choc_simple}
 \end{figure}
 
 \begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{images/partie3/riemann_test_5_multi-classes_interaction.png}
-    \caption{Problème de Riemann 5 : Interaction multi-classes. Le modèle reproduit fidèlement la dynamique complexe résultant du couplage entre les deux classes de véhicules.}
-    \label{fig:riemann_interaction_multiclasse}
+  \centering
+  \includegraphics[width=\textwidth]{images/partie3/riemann_test_5_multi-classes_interaction.png}
+  \caption{Problème de Riemann 5 : Interaction multi-classes. Le modèle reproduit fidèlement la dynamique complexe résultant du couplage entre les deux classes de véhicules.}
+  \label{fig:riemann_interaction_multiclasse}
 \end{figure}
 
 % Note: Pour la concision, seules deux des cinq figures sont incluses ici. Les autres sont disponibles en annexe.
@@ -491,7 +491,7 @@ La revendication \textbf{R3} est \textbf{partiellement validée}. La haute préc
 \label{subsec:resultats_scenarios}
 % TODO: Synthèse de la robustesse globale
 
-\textbf{Validation : [À COMPLÉTER] - Robustesse du système validée dans X% des scénarios testés.}
+\textbf{Validation : [À COMPLÉTER] - Robustesse du système validée dans X des scénarios testés.}
 
 \section{Analyses de Sensibilité et d'Incertitude}
 \label{sec:analyses_sensibilite}
@@ -538,12 +538,29 @@ La revendication \textbf{R3} est \textbf{partiellement validée}. La haute préc
 
 \subsection{Limitations Identifiées}
 \label{subsec:limitations_identifiees}
-% TODO: Limites actuelles reconnues
-% - Dépendance aux données TomTom (qualité, couverture)
-% - Modèle piétons/cyclistes simplifié
-% - Absence de coordination inter-intersections optimale
-% - Paramètres comportementaux moyennés (pas individualisés)
-% - Coût computationnel pour déploiement temps réel
+Cette étude présente plusieurs limitations méthodologiques qui doivent être reconnues et prises en compte lors de l'interprétation des résultats :
+
+\subsubsection{Approche de Calibration Déterministe}
+La calibration des paramètres comportementaux du modèle ARZ étendu repose sur une approche d'optimisation déterministe classique (minimisation de l'erreur quadratique moyenne par méthodes de gradient). Cette approche présente plusieurs limitations importantes :
+
+\begin{itemize}
+  \item \textbf{Absence de quantification de l'incertitude} : L'optimisation déterministe fournit des estimations ponctuelles des paramètres sans intervalles de confiance ni distributions de probabilité. Cela empêche d'évaluer la fiabilité des valeurs calibrées et leur sensibilité aux variations des données.
+  \item \textbf{Risque de solutions physiquement non réalistes} : Sans contraintes explicites basées sur la physique du trafic (lois de conservation, contraintes d'anisotropie ARZ), l'optimisation peut converger vers des paramètres qui minimisent l'erreur statistique mais violent les principes fondamentaux du modèle.
+  \item \textbf{Vulnérabilité au bruit de mesure} : Les données TomTom contiennent inévitablement du bruit et des incertitudes de mesure. L'approche déterministe ne modélise pas explicitement ces incertitudes, ce qui peut conduire à un surapprentissage (overfitting) sur les artefacts des données.
+  \item \textbf{Optimisation mono-objectif} : La minimisation exclusive de l'erreur de vitesse (RMSE) ne capture pas la nature multi-facette du comportement du trafic. Les performances peuvent être bonnes sur les vitesses moyennes mais médiocres sur d'autres aspects cruciaux comme la dynamique des ondes de congestion ou les transitions de régime.
+  \item \textbf{Validation limitée} : La simple séparation train/test ignore les corrélations spatio-temporelles des données de trafic et ne fournit pas de garanties de généralisation robustes.
+\end{itemize}
+
+\subsubsection{Autres Limitations Reconnues}
+\begin{itemize}
+  \item \textbf{Dépendance aux données TomTom} : La qualité et la couverture spatiale des données commerciales limitent la précision de calibration dans certaines zones.
+  \item \textbf{Modèle piétons/cyclistes simplifié} : Les modes doux sont représentés de manière rudimentaire, ce qui peut affecter la précision aux intersections.
+  \item \textbf{Absence de coordination inter-intersections optimale} : Le contrôle RL est localisé aux intersections individuelles sans optimisation de réseau globale.
+  \item \textbf{Paramètres comportementaux moyennés} : Les paramètres calibrés représentent un comportement moyen et ne capturent pas la variabilité individuelle des conducteurs.
+  \item \textbf{Coût computationnel pour déploiement temps réel} : La résolution haute-fidélité (WENO5) nécessite des ressources importantes qui peuvent limiter l'applicabilité en temps réel.
+\end{itemize}
+
+Ces limitations, bien que ne remettant pas en cause la validité globale de l'approche, définissent des axes d'amélioration prioritaires pour les travaux futurs, comme discuté au Chapitre~\ref{chap:discussion_perspectives}.
 
 \subsection{Protocoles pour Validations Futures}
 \label{subsec:protocoles_futurs}
@@ -570,21 +587,20 @@ La revendication \textbf{R3} est \textbf{partiellement validée}. La haute préc
 \label{subsec:recapitulatif_preuves}
 
 \begin{table}[htbp]
-    \centering
-    \caption{Synthèse des revendications et de leur validation}
-    \label{tab:synthese_revendications}
-    \begin{tabular}{|l|l|c|l|}
-        \hline
-        \textbf{Revendication}  & \textbf{Métriques clés}           & \textbf{Statut} & \textbf{Preuves}   \\
-        \hline
-        R1: Modèle ARZ étendu   & MAPE vitesse, Conservation        & [TBD]           & Fig. X.X, Tab. X.X \\
-        R2: Impact R(x)         & Amélioration RMSE                 & [TBD]           & Fig. X.X           \\
-        R3: Stratégie numérique & Ordre convergence, Stabilité      & [TBD]           & Tab. X.X           \\
-        R4: Jumeau numérique    & GEH, Theil U, MAPE TT             & [TBD]           & Fig. X.X-X.X       \\
-        R5: Agent RL            & Amélioration vs baselines         & [TBD]           & Tab. X.X, Fig. X.X \\
-        R6: Transposition       & Performance paramètres transposés & [TBD]           & Tab. X.X           \\
-        \hline
-    \end{tabular}
+  \centering
+  \caption{Synthèse des revendications et de leur validation}
+  \label{tab:synthese_revendications}
+  \begin{tabular}{|l|l|c|l|}
+    \hline
+    \textbf{Revendication}  & \textbf{Métriques clés}      & \textbf{Statut} & \textbf{Preuves}   \\
+    \hline
+    R1: Modèle ARZ étendu   & MAPE vitesse, Conservation   & [TBD]           & Fig. X.X, Tab. X.X \\
+    R2: Impact R(x)         & Amélioration RMSE            & [TBD]           & Fig. X.X           \\
+    R3: Stratégie numérique & Ordre convergence, Stabilité & [TBD]           & Tab. X.X           \\
+    R4: Jumeau numérique    & GEH, Theil U, MAPE TT        & [TBD]           & Fig. X.X-X.X       \\
+    R5: Agent RL            & Amélioration vs baselines    & [TBD]           & Tab. X.X, Fig. X.X \\
+    \hline
+  \end{tabular}
 \end{table}
 
 % TODO: Compléter le tableau avec les résultats réels
@@ -597,13 +613,7 @@ La revendication \textbf{R3} est \textbf{partiellement validée}. La haute préc
 % - Bénéfices attendus quantifiés
 % - Risques résiduels et leur gestion
 
-\subsection{Impact sur la Transposition Régionale}
-\label{subsec:impact_transposition_regionale}
-% TODO: Généralisation des résultats
-% - Applicabilité à d'autres villes ouest-africaines
-% - Adaptations nécessaires par contexte
-% - Méthodologie de transposition validée
-% - Limites géographiques/culturelles identifiées
+
 
 \section{Conclusion}
 \label{sec:conclusion_validation}
