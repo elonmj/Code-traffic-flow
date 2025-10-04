@@ -87,7 +87,7 @@ class RealCalibrationValidationTest(ValidationSection):  # HÉRITE DE Validation
         try:
             import torch
             if torch.cuda.is_available():
-                device = 'cuda'
+                device = 'gpu'  # ✅ FIXED: Use 'gpu' instead of 'cuda' for ARZ model
                 print(f"[DEVICE] GPU détecté: {torch.cuda.get_device_name(0)}")
             else:
                 device = 'cpu'
