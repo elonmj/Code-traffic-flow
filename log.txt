@@ -83,3 +83,7 @@
 2025-10-04 17:16:38,846 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-04 17:16:44,608 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-04 17:16:48,531 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-75digitaltwin-tydg
+2025-10-05 00:23:58,182 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-05 00:23:58,827 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-05 00:23:59,397 - validation_kaggle_manager - INFO - ✅ Git repository is clean and up to date
+2025-10-05 00:24:02,396 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-75digitaltwin-gfmh

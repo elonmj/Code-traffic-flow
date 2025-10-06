@@ -230,8 +230,8 @@ def calculate_cfl_dt(U_or_d_U_physical, grid: Grid1D, params: ModelParameters) -
             error_msg = (
                 f"CFL Check (CPU): Extremely large max_abs_lambda detected ({max_abs_lambda:.4e} m/s) "
                 f"at physical cell index {max_val_index}.\n"
-                f"  State at this cell: rho_m={problematic_rho_m:.4e}, v_m={problematic_v_m:.4e}, "
-                f"rho_c={problematic_rho_c:.4e}, v_c={problematic_v_c:.4e}\n"
+                f"  State at this cell: density_m={problematic_rho_m:.4e}, velocity_m={problematic_v_m:.4e}, "
+                f"density_c={problematic_rho_c:.4e}, velocity_c={problematic_v_c:.4e}\n"
                 f"  Eigenvalues at this cell: {problematic_eigenvalues}. Stopping simulation."
             )
             raise ValueError(error_msg)
@@ -296,12 +296,12 @@ def validate_and_correct_cfl(dt, max_abs_lambda, grid, params, tolerance=0.5):
         # Afficher seulement le 1er message, puis 1 sur 100
         if _cfl_correction_count == 1 or _cfl_correction_count % 100 == 0:
             warning_message = (
-                f"[!] CORRECTION CFL AUTOMATIQUE (#{_cfl_correction_count}):\n"
-                f"   CFL calculé: {cfl_actual:.3f} > limite {cfl_limit:.3f}\n"
-                f"   dt original: {dt:.6e} s\n"
-                f"   dt corrigé:  {dt_corrected:.6e} s\n"
-                f"   Facteur correction: {dt/dt_corrected:.1f}x\n"
-                f"   v_max détectée: {max_abs_lambda:.2f} m/s"
+                f"[WARNING] Automatic CFL correction applied (count: {_cfl_correction_count}):\n"
+                f"  Calculated CFL: {cfl_actual:.3f} > Limit: {cfl_limit:.3f}\n"
+                f"  Original dt: {dt:.6e} s\n"
+                f"  Corrected dt: {dt_corrected:.6e} s\n"
+                f"  Correction factor: {dt/dt_corrected:.1f}x\n"
+                f"  Max wave speed detected: {max_abs_lambda:.2f} m/s"
             )
     else:
         dt_corrected = dt

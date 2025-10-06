@@ -1,0 +1,4 @@
+perturbation,convergence_time_s,max_convergence_time_s,final_rmse,numerical_stable,converged,success
+density_increase,200.0,150.0,0.0012070133097199889,True,False,False
+velocity_decrease,200.0,180.0,0.0012425985294676437,True,False,False
+road_degradation,200.0,200.0,0.0012420227900138852,True,False,False

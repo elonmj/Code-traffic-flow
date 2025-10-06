@@ -75,3 +75,23 @@
 2025-10-06 11:37:53,366 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-06 11:37:58,260 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-06 11:38:01,139 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-75digitaltwin-mpct
+2025-10-06 11:53:00,234 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-06 11:53:00,331 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -   M  rz_model/numerics/__pycache__/cfl.cpython-312.pyc (Modified (staged))
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -    M arz_model/numerics/cfl.py (Modified (unstaged))
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/log.txt (Modified (unstaged))
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -   ?? chapters/partie3/images/fig_behavioral_patterns.png (Untracked)
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -   ?? chapters/partie3/images/fig_digital_twin_metrics.png (Untracked)
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -   ?? chapters/partie3/images/fig_fundamental_diagram.png (Untracked)
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -   ?? chapters/partie3/images/fig_robustness_perturbations.png (Untracked)
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -   ?? chapters/partie3/section_7_5_digital_twin_content.tex (Untracked)
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-75digitaltwin-gfmh/ (Untracked)
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO -   ?? validation_output/results/local_test/section_7_5_digital_twin/ (Untracked)
+2025-10-06 11:53:00,386 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-06 11:53:00,447 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-06 11:53:00,548 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-06 11:53:00,548 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-06 11:53:02,943 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-06 11:53:05,954 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-75digitaltwin-zimd
