@@ -50,3 +50,28 @@
 2025-10-05 00:23:40,458 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-05 00:23:52,855 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-05 00:23:56,728 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-75digitaltwin-peej
+2025-10-06 11:37:53,001 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-06 11:37:53,090 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   M  rz_model/numerics/__pycache__/cfl.cpython-312.pyc (Modified (staged))
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -    M arz_model/numerics/cfl.py (Modified (unstaged))
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/log.txt (Modified (unstaged))
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/test_section_7_6_rl_performance.py (Modified (unstaged))
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? chapters/partie3/images/fig_behavioral_patterns.png (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? chapters/partie3/images/fig_digital_twin_metrics.png (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? chapters/partie3/images/fig_fundamental_diagram.png (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? chapters/partie3/images/fig_robustness_perturbations.png (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? chapters/partie3/section_7_5_digital_twin_content.tex (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? validation_ch7/scripts/SECTION_7_5_ITERATION_ANALYSIS.md (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? validation_ch7/scripts/in_process_client.py (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? validation_ch7/scripts/mock_arz_endpoint.py (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? validation_ch7/scripts/validation_output/results/elonmj_arz-validation-75digitaltwin-peej/ (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-75digitaltwin-gfmh/ (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO -   ?? validation_output/results/local_test/section_7_5_digital_twin/ (Untracked)
+2025-10-06 11:37:53,156 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-06 11:37:53,254 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-06 11:37:53,366 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-06 11:37:53,366 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-06 11:37:58,260 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-06 11:38:01,139 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-75digitaltwin-mpct
