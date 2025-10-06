@@ -35,6 +35,7 @@ from arz_model.analysis.metrics import (
     compute_mape, compute_rmse, compute_geh, compute_theil_u,
     calculate_total_mass
 )
+from arz_model.core.physics import calculate_pressure
 
 
 class DigitalTwinValidationTest(ValidationSection):
@@ -165,23 +166,24 @@ class DigitalTwinValidationTest(ValidationSection):
                 rho_m_peak *= mult
                 rho_c_peak *= mult
             
+            # Calculate equilibrium w values for background state
+            # For simplicity, use approximate equilibrium: w ≈ V_e
+            V0_m = 22.2  # m/s
+            V0_c = 25.0  # m/s
+            w_m_bg = V0_m  # Approximate
+            w_c_bg = V0_c  # Approximate
+            
             scenario_config['initial_conditions'] = {
-                'type': 'gaussian_density_pulse',
-                'R_val': perturbation.get('road_quality', 2) if perturbation else 2,
-                'background_state': {
-                    'rho_m': rho_m_bg,
-                    'rho_c': rho_c_bg
-                },
-                'pulse': {
-                    'center': 2500.0,
-                    'width': 500.0,
-                    'amplitude_m': rho_m_peak - rho_m_bg,
-                    'amplitude_c': rho_c_peak - rho_c_bg
-                }
+                'type': 'density_hump',  # CORRECTED from 'gaussian_density_pulse'
+                'background_state': [rho_m_bg, w_m_bg, rho_c_bg, w_c_bg],  # 4-element list
+                'center': 2500.0,
+                'width': 500.0,
+                'rho_m_max': rho_m_peak,  # Peak density, not amplitude
+                'rho_c_max': rho_c_peak
             }
             scenario_config['parameters'] = {
-                'V0_m': 22.2,
-                'V0_c': 25.0,
+                'V0_m': V0_m,
+                'V0_c': V0_c,
                 'tau_m': 1.0,
                 'tau_c': 1.2,
                 'rho_max_m': 0.12,
@@ -202,23 +204,23 @@ class DigitalTwinValidationTest(ValidationSection):
                 rho_m_right *= mult
                 rho_c_right *= mult
             
+            # Calculate equilibrium w values
+            V0_m = 19.4  # m/s
+            V0_c = 22.2  # m/s
+            w_m_left = V0_m * 0.5  # Reduced speed in jam (approximate)
+            w_c_left = V0_c * 0.5
+            w_m_right = V0_m * 0.2  # Very slow in heavy jam
+            w_c_right = V0_c * 0.2
+            
             scenario_config['initial_conditions'] = {
-                'type': 'step_density',
-                'R_val': perturbation.get('road_quality', 2) if perturbation else 2,
-                'left_state': {
-                    'rho_m': rho_m_left,
-                    'rho_c': rho_c_left
-                },
-                'right_state': {
-                    'rho_m': rho_m_right,
-                    'rho_c': rho_c_right
-                },
-                'transition_x': 2500.0,
-                'transition_width': 100.0
+                'type': 'riemann',  # CORRECTED from 'step_density'
+                'U_L': [rho_m_left, w_m_left, rho_c_left, w_c_left],  # Left state
+                'U_R': [rho_m_right, w_m_right, rho_c_right, w_c_right],  # Right state
+                'split_pos': 2500.0  # Discontinuity position
             }
             scenario_config['parameters'] = {
-                'V0_m': 19.4,
-                'V0_c': 22.2,
+                'V0_m': V0_m,
+                'V0_c': V0_c,
                 'tau_m': 1.5,
                 'tau_c': 1.8,
                 'rho_max_m': 0.15,
@@ -274,11 +276,24 @@ class DigitalTwinValidationTest(ValidationSection):
                 times = sim_result['times']
                 states = sim_result['states']
                 grid = sim_result['grid']
+                params = sim_result['params']
                 
                 # Analyze final state
                 final_state = states[-1]
                 rho_m_final = final_state[0, :]  # Motorcycle density
-                v_m_final = final_state[1, :] / (rho_m_final + 1e-10)  # Motorcycle velocity
+                w_m_final = final_state[1, :]    # Motorcycle Lagrangian variable
+                rho_c_final = final_state[2, :]  # Car density
+                
+                # Calculate pressure to extract velocity: v = w - p
+                p_m_final, _ = calculate_pressure(
+                    rho_m_final, rho_c_final,
+                    params.alpha, params.rho_jam, params.epsilon,
+                    params.K_m, params.gamma_m,
+                    params.K_c, params.gamma_c
+                )
+                
+                # Extract velocity using correct ARZ formula: v = w - p
+                v_m_final = w_m_final - p_m_final
                 
                 # Calculate metrics
                 avg_rho_m = np.mean(rho_m_final)
@@ -1029,7 +1044,7 @@ Vérification de la cohérence du diagramme fondamental: la relation densité-vi
         print(f"R4 Behavioral Reproduction: {'PASSED' if test1_result['overall_success'] else 'FAILED'}")
         print(f"R6 Robustness Degraded:     {'PASSED' if test2_result['overall_success'] else 'FAILED'}")
         print(f"Cross-Scenario Validation:   {'PASSED' if test3_result['success'] else 'FAILED'}")
-        print(f"\nOVERALL STATUS: {'PASSED ✓' if overall_success else 'FAILED ✗'}")
+        print(f"\nOVERALL STATUS: {'PASSED V' if overall_success else 'FAILED X'}")
         print("="*80)
         
         return overall_success
