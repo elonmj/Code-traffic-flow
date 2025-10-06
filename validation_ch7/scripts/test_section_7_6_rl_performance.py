@@ -34,11 +34,11 @@ from arz_model.analysis.metrics import (
 code_rl_path = project_root / "Code_RL"
 sys.path.append(str(code_rl_path))
 
+# --- Intégration de l'adaptateur In-Process ---
+from validation_ch7.scripts.in_process_client import InProcessARZClient
+
 # CORRECTION: Imports basés sur l'architecture réelle de Code_RL
 from src.env.traffic_signal_env import TrafficSignalEnv
-from src.endpoint.client import create_endpoint_client, EndpointConfig
-from src.signals.controller import create_signal_controller
-from src.utils.config import load_configs
 from src.rl.train_dqn import main as train_dqn_main # Renommer pour éviter conflit
 from stable_baselines3 import DQN # CORRECTION: Le projet utilise DQN, pas PPO
 
@@ -163,20 +163,22 @@ class RLPerformanceValidationTest(ValidationSection):
 
     def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=60.0):
         """Exécute une simulation réelle avec une boucle de contrôle externe."""
-        # CORRECTION: Utiliser l'architecture de Code_RL pour créer l'environnement
+        # --- Instanciation de l'environnement avec l'adaptateur In-Process ---
         try:
-            # Charger les configurations spécifiques à Code_RL
-            configs = load_configs(str(CODE_RL_CONFIG_DIR))
-            
-            # Créer un client d'endpoint MOCK pour une validation rapide et autonome
-            endpoint_client = create_endpoint_client(EndpointConfig(protocol="mock"))
-            
-            # Créer le contrôleur de signaux
-            signal_controller = create_signal_controller(configs["signals"])
-            
-            # Créer l'environnement Gym
-            branch_ids = list(configs["network"]["branches"].keys())
-            env = TrafficSignalEnv(endpoint_client, signal_controller, configs["env"], branch_ids)
+            # 1. L'adaptateur `InProcessARZClient` encapsule le `SimulationRunner` de `arz_model`.
+            # Il se fait passer pour un client distant, rendant le test autonome mais physiquement réaliste.
+            in_process_client = InProcessARZClient(scenario_config_path=str(scenario_path))
+
+            # 2. L'environnement `TrafficSignalEnv` est instancié avec notre adaptateur.
+            # Il croit parler à un serveur, mais parle en réalité à notre simulateur local.
+            # Pour ce test, nous n'avons pas besoin des composants complexes de `Code_RL`
+            # comme le `signal_controller`, car notre adaptateur gère la simulation.
+            env = TrafficSignalEnv(endpoint_client=in_process_client, signal_controller=None, env_config={}, branch_ids=[])
+            # Remplacer les méthodes `step` et `reset` de l'environnement pour utiliser notre adaptateur directement.
+            # C'est une "injection de dépendance" au moment de l'exécution pour un contrôle total.
+            env.reset = in_process_client.reset
+            env.step = in_process_client.step
+
         except Exception as e:
             print(f"  [ERROR] Échec d'initialisation de l'environnement TrafficSignalEnv: {e}")
             return None, None
@@ -193,10 +195,7 @@ class RLPerformanceValidationTest(ValidationSection):
             action = controller.get_action(obs)
             obs, reward, done, info = env.step(action)
             
-            # Stockage des données pour l'évaluation - L'endpoint mock ne fournit pas d'état U complet.
-            # Nous allons simuler un état basé sur l'observation pour que le reste du script fonctionne.
-            # Dans une intégration complète, l'endpoint réel fournirait ces données.
-            states_history.append(env.runner.U.copy())
+            # L'historique des états est déjà géré à l'intérieur de l'adaptateur
             control_actions.append(action)
             total_reward += reward
             steps += 1
@@ -204,7 +203,9 @@ class RLPerformanceValidationTest(ValidationSection):
         print(f"  Simulation terminée. Total steps: {steps}, Total reward: {total_reward:.2f}")
         env.close()
 
-        return states_history, control_actions
+        # Récupérer l'historique des états directement depuis le mock client
+        full_state_history = in_process_client.state_history
+        return full_state_history, control_actions
     
     def evaluate_traffic_performance(self, states_history, scenario_type):
         """Evaluate traffic performance metrics."""

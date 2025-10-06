@@ -1,0 +1,166 @@
+2025-10-04 23:24:02,596 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-10-04 23:24:02,596 - INFO - Branch: main
+2025-10-04 23:24:07,964 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-10-04 23:24:07,964 - INFO - PyTorch: 2.6.0+cu124
+2025-10-04 23:24:08,012 - INFO - CUDA available: True
+2025-10-04 23:24:08,033 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-10-04 23:24:08,034 - INFO - CUDA version: 12.4
+2025-10-04 23:24:08,034 - INFO - 
+[STEP 1/4] Cloning repository from GitHub...
+2025-10-04 23:24:08,034 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-10-04 23:24:09,855 - INFO - [OK] Repository cloned successfully
+2025-10-04 23:24:09,855 - INFO - TRACKING_SUCCESS: Repository cloned
+2025-10-04 23:24:09,855 - INFO - 
+[STEP 2/4] Installing dependencies...
+2025-10-04 23:24:09,855 - INFO - Installing PyYAML...
+2025-10-04 23:24:13,632 - INFO - Installing matplotlib...
+2025-10-04 23:24:16,639 - INFO - Installing pandas...
+2025-10-04 23:24:19,650 - INFO - Installing scipy...
+2025-10-04 23:24:22,547 - INFO - Installing numpy...
+2025-10-04 23:24:25,447 - INFO - [OK] Dependencies installed
+2025-10-04 23:24:25,447 - INFO - TRACKING_SUCCESS: Dependencies ready
+2025-10-04 23:24:25,447 - INFO - 
+[STEP 3/4] Running validation tests...
+2025-10-04 23:24:25,447 - INFO - Executing Python module: validation_ch7.scripts.test_section_7_5_digital_twin...
+2025-10-04 23:24:25,447 - INFO - PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts
+2025-10-04 23:24:25,448 - INFO - ============================================================
+2025-10-04 23:29:35,103 - INFO - [TEST] [ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_5_digital_twin
+2025-10-04 23:29:35,103 - INFO - [TEST]   - Figures:   validation_output/results/local_test/section_7_5_digital_twin/figures
+2025-10-04 23:29:35,103 - INFO - [TEST]   - NPZ:       validation_output/results/local_test/section_7_5_digital_twin/data/npz
+2025-10-04 23:29:35,103 - INFO - [TEST]   - Scenarios: validation_output/results/local_test/section_7_5_digital_twin/data/scenarios
+2025-10-04 23:29:35,103 - INFO - [TEST]   - Metrics:   validation_output/results/local_test/section_7_5_digital_twin/data/metrics
+2025-10-04 23:29:35,103 - INFO - [TEST]   - LaTeX:     validation_output/results/local_test/section_7_5_digital_twin/latex
+2025-10-04 23:29:35,104 - INFO - [TEST] 
+2025-10-04 23:29:35,104 - INFO - [TEST] ================================================================================
+2025-10-04 23:29:35,104 - INFO - [TEST] SECTION 7.5 - DIGITAL TWIN VALIDATION
+2025-10-04 23:29:35,104 - INFO - [TEST] ================================================================================
+2025-10-04 23:29:35,104 - INFO - [TEST] 
+2025-10-04 23:29:35,104 - INFO - [TEST] === Test R4: Behavioral Reproduction ===
+2025-10-04 23:29:35,104 - INFO - [TEST] 
+2025-10-04 23:29:35,104 - INFO - [TEST] [SCENARIO] free_flow: Trafic fluide sans congestion
+2025-10-04 23:29:35,104 - INFO - [TEST] [SCENARIO] Created: free_flow_nominal.yml
+2025-10-04 23:29:35,104 - INFO - [TEST] [DEBUG] Found config_base.yml at: /kaggle/working/Code-traffic-flow/scenarios/config_base.yml
+2025-10-04 23:29:35,104 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 5.0
+2025-10-04 23:29:35,104 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 7.5
+2025-10-04 23:29:35,104 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 1.3888888888888888
+2025-10-04 23:29:35,105 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 2.0833333333333335
+2025-10-04 23:29:35,105 - INFO - [TEST] [!] CORRECTION CFL AUTOMATIQUE (#1):
+2025-10-04 23:29:35,105 - INFO - [TEST]    CFL calculé: 0.500 > limite 0.500
+2025-10-04 23:29:35,105 - INFO - [TEST]    dt original: 5.915963e-01 s
+2025-10-04 23:29:35,105 - INFO - [TEST]    dt corrigé:  5.915963e-01 s
+2025-10-04 23:29:35,105 - INFO - [TEST]    Facteur correction: 1.0x
+2025-10-04 23:29:35,105 - INFO - [TEST]    v_max détectée: 21.13 m/s
+2025-10-04 23:29:35,105 - INFO - [TEST]   [FAILED] ρ_m=0.0120 veh/m, v_m=1845.14 m/s, mass_error=0.000%
+2025-10-04 23:29:35,105 - INFO - [TEST] 
+2025-10-04 23:29:35,105 - INFO - [TEST] [SCENARIO] congestion: Congestion modérée avec onde de choc
+2025-10-04 23:29:35,105 - INFO - [TEST] [SCENARIO] Created: congestion_nominal.yml
+2025-10-04 23:29:35,105 - INFO - [TEST] [DEBUG] Found config_base.yml at: /kaggle/working/Code-traffic-flow/scenarios/config_base.yml
+2025-10-04 23:29:35,105 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 5.0
+2025-10-04 23:29:35,106 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 7.5
+2025-10-04 23:29:35,106 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 1.3888888888888888
+2025-10-04 23:29:35,106 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 2.0833333333333335
+2025-10-04 23:29:35,106 - INFO - [TEST] Error in real simulation: Unknown initial condition type: 'gaussian_density_pulse'
+2025-10-04 23:29:35,106 - INFO - [TEST]   [FAILED] Simulation failed for congestion
+2025-10-04 23:29:35,106 - INFO - [TEST] 
+2025-10-04 23:29:35,106 - INFO - [TEST] [SCENARIO] jam_formation: Formation et dissolution de bouchon
+2025-10-04 23:29:35,106 - INFO - [TEST] [SCENARIO] Created: jam_formation_nominal.yml
+2025-10-04 23:29:35,106 - INFO - [TEST] [DEBUG] Found config_base.yml at: /kaggle/working/Code-traffic-flow/scenarios/config_base.yml
+2025-10-04 23:29:35,106 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 5.0
+2025-10-04 23:29:35,106 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 7.5
+2025-10-04 23:29:35,106 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 1.3888888888888888
+2025-10-04 23:29:35,106 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 2.0833333333333335
+2025-10-04 23:29:35,106 - INFO - [TEST] Error in real simulation: Unknown initial condition type: 'step_density'
+2025-10-04 23:29:35,107 - INFO - [TEST]   [FAILED] Simulation failed for jam_formation
+2025-10-04 23:29:35,107 - INFO - [TEST] 
+2025-10-04 23:29:35,107 - INFO - [TEST] === Test R6: Robustness Under Degraded Conditions ===
+2025-10-04 23:29:35,107 - INFO - [TEST] 
+2025-10-04 23:29:35,107 - INFO - [TEST] [PERTURBATION] density_increase: Augmentation densité +50%
+2025-10-04 23:29:35,107 - INFO - [TEST] [SCENARIO] Created: free_flow_density_increase.yml
+2025-10-04 23:29:35,107 - INFO - [TEST] [DEBUG] Found config_base.yml at: /kaggle/working/Code-traffic-flow/scenarios/config_base.yml
+2025-10-04 23:29:35,107 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 5.0
+2025-10-04 23:29:35,107 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 7.5
+2025-10-04 23:29:35,107 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 1.3888888888888888
+2025-10-04 23:29:35,107 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 2.0833333333333335
+2025-10-04 23:29:35,107 - INFO - [TEST]   [FAILED] Conv_time=200.0s (max=150.0s), RMSE=0.0012, Stable=True
+2025-10-04 23:29:35,107 - INFO - [TEST] 
+2025-10-04 23:29:35,107 - INFO - [TEST] [PERTURBATION] velocity_decrease: Diminution vitesse -30%
+2025-10-04 23:29:35,108 - INFO - [TEST] [SCENARIO] Created: free_flow_velocity_decrease.yml
+2025-10-04 23:29:35,108 - INFO - [TEST] [DEBUG] Found config_base.yml at: /kaggle/working/Code-traffic-flow/scenarios/config_base.yml
+2025-10-04 23:29:35,108 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 5.0
+2025-10-04 23:29:35,108 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 7.5
+2025-10-04 23:29:35,108 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 1.3888888888888888
+2025-10-04 23:29:35,108 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 2.0833333333333335
+2025-10-04 23:29:35,108 - INFO - [TEST] [!] CORRECTION CFL AUTOMATIQUE (#100):
+2025-10-04 23:29:35,108 - INFO - [TEST]    CFL calculé: 0.500 > limite 0.500
+2025-10-04 23:29:35,108 - INFO - [TEST]    dt original: 5.680580e-01 s
+2025-10-04 23:29:35,108 - INFO - [TEST]    dt corrigé:  5.680580e-01 s
+2025-10-04 23:29:35,108 - INFO - [TEST]    Facteur correction: 1.0x
+2025-10-04 23:29:35,108 - INFO - [TEST]    v_max détectée: 22.00 m/s
+2025-10-04 23:29:35,108 - INFO - [TEST]   [FAILED] Conv_time=200.0s (max=180.0s), RMSE=0.0012, Stable=True
+2025-10-04 23:29:35,109 - INFO - [TEST] 
+2025-10-04 23:29:35,109 - INFO - [TEST] [PERTURBATION] road_degradation: Dégradation qualité route R=1
+2025-10-04 23:29:35,109 - INFO - [TEST] [SCENARIO] Created: free_flow_road_degradation.yml
+2025-10-04 23:29:35,109 - INFO - [TEST] [DEBUG] Found config_base.yml at: /kaggle/working/Code-traffic-flow/scenarios/config_base.yml
+2025-10-04 23:29:35,109 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 5.0
+2025-10-04 23:29:35,109 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 7.5
+2025-10-04 23:29:35,109 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 1.3888888888888888
+2025-10-04 23:29:35,109 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 2.0833333333333335
+2025-10-04 23:29:35,109 - INFO - [TEST]   [FAILED] Conv_time=200.0s (max=200.0s), RMSE=0.0012, Stable=True
+2025-10-04 23:29:35,109 - INFO - [TEST] 
+2025-10-04 23:29:35,109 - INFO - [TEST] === Test: Cross-Scenario Validation ===
+2025-10-04 23:29:35,109 - INFO - [TEST] 
+2025-10-04 23:29:35,109 - INFO - [TEST] === Generating Figures ===
+2025-10-04 23:29:35,109 - INFO - [TEST]   [OK] fig_behavioral_patterns.png
+2025-10-04 23:29:35,109 - INFO - [TEST]   [OK] fig_robustness_perturbations.png
+2025-10-04 23:29:35,110 - INFO - [TEST]   [OK] fig_fundamental_diagram.png
+2025-10-04 23:29:35,110 - INFO - [TEST]   [OK] fig_digital_twin_metrics.png
+2025-10-04 23:29:35,110 - INFO - [TEST] [FIGURES] Generated 4 figures in validation_output/results/local_test/section_7_5_digital_twin/figures
+2025-10-04 23:29:35,110 - INFO - [TEST] 
+2025-10-04 23:29:35,110 - INFO - [TEST] === Saving Data ===
+2025-10-04 23:29:35,110 - INFO - [TEST]   [OK] behavioral_metrics.csv
+2025-10-04 23:29:35,110 - INFO - [TEST]   [OK] robustness_metrics.csv
+2025-10-04 23:29:35,110 - INFO - [TEST]   [OK] summary_metrics.csv
+2025-10-04 23:29:35,110 - INFO - [TEST] 
+2025-10-04 23:29:35,110 - INFO - [TEST] === Generating LaTeX Content ===
+2025-10-04 23:29:35,110 - INFO - [TEST]   [OK] section_7_5_digital_twin_content.tex
+2025-10-04 23:29:35,110 - INFO - [TEST]   [OK] Copied to /kaggle/working/Code-traffic-flow/chapters/partie3/section_7_5_digital_twin_content.tex
+2025-10-04 23:29:35,110 - INFO - [TEST] [SUMMARY] Created: validation_output/results/local_test/section_7_5_digital_twin/session_summary.json
+2025-10-04 23:29:35,110 - INFO - [TEST] 
+2025-10-04 23:29:35,110 - INFO - [TEST] === Copying Figures to Thesis ===
+2025-10-04 23:29:35,111 - INFO - [TEST]   [OK] fig_behavioral_patterns.png -> /kaggle/working/Code-traffic-flow/chapters/partie3/images/fig_behavioral_patterns.png
+2025-10-04 23:29:35,111 - INFO - [TEST]   [OK] fig_fundamental_diagram.png -> /kaggle/working/Code-traffic-flow/chapters/partie3/images/fig_fundamental_diagram.png
+2025-10-04 23:29:35,111 - INFO - [TEST]   [OK] fig_robustness_perturbations.png -> /kaggle/working/Code-traffic-flow/chapters/partie3/images/fig_robustness_perturbations.png
+2025-10-04 23:29:35,111 - INFO - [TEST]   [OK] fig_digital_twin_metrics.png -> /kaggle/working/Code-traffic-flow/chapters/partie3/images/fig_digital_twin_metrics.png
+2025-10-04 23:29:35,111 - INFO - [TEST] 
+2025-10-04 23:29:35,111 - INFO - [TEST] ================================================================================
+2025-10-04 23:29:35,111 - INFO - [TEST] VALIDATION SUMMARY
+2025-10-04 23:29:35,111 - INFO - [TEST] ================================================================================
+2025-10-04 23:29:35,111 - INFO - [TEST] R4 Behavioral Reproduction: FAILED
+2025-10-04 23:29:35,111 - INFO - [TEST] R6 Robustness Degraded:     FAILED
+2025-10-04 23:29:35,111 - INFO - [TEST] Cross-Scenario Validation:   FAILED
+2025-10-04 23:29:35,111 - INFO - [TEST] 
+2025-10-04 23:29:35,111 - INFO - [TEST] OVERALL STATUS: FAILED ✗
+2025-10-04 23:29:35,111 - INFO - [TEST] ================================================================================
+2025-10-04 23:29:35,112 - WARNING - [STDERR] /kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_5_digital_twin.py:605: UserWarning: FixedFormatter should only be used together with FixedLocator
+2025-10-04 23:29:35,112 - WARNING - [STDERR]   ax2.set_xticklabels(pert_names, fontsize=8)
+2025-10-04 23:29:35,112 - WARNING - [WARNING] Tests returned code: 1
+2025-10-04 23:29:35,112 - INFO - 
+[STEP 4/4] Copying artifacts and cleaning up...
+2025-10-04 23:29:35,112 - INFO - [ARTIFACTS] Copying results for section_7_5_digital_twin...
+2025-10-04 23:29:35,115 - INFO - [OK] Section copied to: /kaggle/working/section_7_5_digital_twin
+2025-10-04 23:29:35,116 - INFO - [ARTIFACTS] NPZ files: 0
+2025-10-04 23:29:35,116 - INFO - [ARTIFACTS] PNG figures: 4
+2025-10-04 23:29:35,116 - INFO - [ARTIFACTS] YAML scenarios: 6
+2025-10-04 23:29:35,116 - INFO - [ARTIFACTS] TEX files: 1
+2025-10-04 23:29:35,116 - INFO - [ARTIFACTS] JSON files: 1
+2025-10-04 23:29:35,116 - INFO - [ARTIFACTS] CSV metrics: 3
+2025-10-04 23:29:35,116 - INFO - TRACKING_SUCCESS: Artifacts copied
+2025-10-04 23:29:35,116 - INFO - [SUCCESS] All artifacts organized and copied
+2025-10-04 23:29:35,117 - INFO - [CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow
+2025-10-04 23:29:35,141 - INFO - [OK] Cleanup completed - only validation results remain
+2025-10-04 23:29:35,141 - INFO - TRACKING_SUCCESS: Cleanup completed
+2025-10-04 23:29:35,142 - INFO - [OK] Session summary created: /kaggle/working/validation_results/session_summary.json
+2025-10-04 23:29:35,142 - INFO - TRACKING_SUCCESS: Session summary created
+2025-10-04 23:29:35,142 - INFO - 
+[FINAL] Validation workflow completed
+2025-10-04 23:29:35,142 - INFO - Remote logging finalized - ready for download
