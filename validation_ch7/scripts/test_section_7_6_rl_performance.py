@@ -314,14 +314,20 @@ class RLPerformanceValidationTest(ValidationSection):
     def train_rl_agent(self, scenario_type: str, total_timesteps=10000, device='gpu'):
         """Train RL agent using real ARZ simulation with direct coupling."""
         
-        # Quick test mode: drastically reduce timesteps for setup validation
+        # Quick test mode: drastically reduce timesteps AND episode duration for setup validation
         if self.quick_test:
             total_timesteps = 10  # Just 10 steps to test integration
-            print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps")
+            episode_max_time = 120.0  # 2 minutes per episode instead of 1 hour
+            n_steps = 10  # Collect only 10 steps before updating
+            print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps, {episode_max_time}s episodes")
+        else:
+            episode_max_time = 3600.0  # 1 hour for full test
+            n_steps = 2048  # Default PPO buffer size
         
         print(f"\n[TRAINING] Starting RL training for scenario: {scenario_type}")
         print(f"  Device: {device}")
         print(f"  Total timesteps: {total_timesteps}")
+        print(f"  Episode max time: {episode_max_time}s")
         
         self.models_dir.mkdir(parents=True, exist_ok=True)
         model_path = self.models_dir / f"rl_agent_{scenario_type}.zip"
@@ -334,7 +340,7 @@ class RLPerformanceValidationTest(ValidationSection):
             env = TrafficSignalEnvDirect(
                 scenario_config_path=str(scenario_path),
                 decision_interval=60.0,  # 1-minute decisions
-                episode_max_time=3600.0,  # 1-hour episodes
+                episode_max_time=episode_max_time,
                 observation_segments={'upstream': [8, 9, 10], 'downstream': [11, 12, 13]},
                 device=device,
                 quiet=True
@@ -350,8 +356,8 @@ class RLPerformanceValidationTest(ValidationSection):
                 env,
                 verbose=1,
                 learning_rate=3e-4,
-                n_steps=2048,
-                batch_size=64,
+                n_steps=n_steps,
+                batch_size=min(64, n_steps),  # Batch size can't exceed n_steps
                 n_epochs=10,
                 gamma=0.99,
                 gae_lambda=0.95,

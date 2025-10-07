@@ -234,3 +234,13 @@
 2025-10-07 15:15:32,276 - validation_kaggle_manager - INFO - 📍 Current branch: main
 2025-10-07 15:15:32,401 - validation_kaggle_manager - INFO - ✅ Git repository is clean and up to date
 2025-10-07 15:15:35,374 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-mhhd
+2025-10-07 15:27:06,269 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-07 15:27:06,467 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-07 15:27:06,587 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-07 15:27:06,589 - validation_kaggle_manager - INFO -   M  rz_model/numerics/__pycache__/boundary_conditions.cpython-312.pyc (Modified (staged))
+2025-10-07 15:27:06,589 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-07 15:27:06,683 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-07 15:27:06,944 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-07 15:27:06,944 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-07 15:27:10,353 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-07 15:27:13,566 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-acci
