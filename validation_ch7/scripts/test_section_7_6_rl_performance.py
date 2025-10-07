@@ -732,8 +732,8 @@ La figure~\ref{fig:rl_improvements_76} détaille les gains de performance pour c
   \label{fig:rl_learning_curve_76}
 \end{figure}
 
-\subsubsection{Conclusion Section 7.6}
-Les résultats valident la revendication \textbf{{R5}}. Les agents RL surpassent systématiquement les contrôleurs de référence, avec une amélioration moyenne du débit de \textbf{{{avg_flow_improvement:.1f}}\%}} et de l'efficacité de \textbf{{{avg_efficiency_improvement:.1f}}\%}}. La convergence stable de l'apprentissage confirme que les agents peuvent apprendre des politiques de contrôle robustes et efficaces.
+\subsubsection{{Conclusion Section 7.6}}
+Les résultats valident la revendication \textbf{{R5}}. Les agents RL surpassent systématiquement les contrôleurs de référence, avec une amélioration moyenne du débit de \textbf{{{avg_flow_improvement:.1f}\%}} et de l'efficacité de \textbf{{{avg_efficiency_improvement:.1f}\%}}. La convergence stable de l'apprentissage confirme que les agents peuvent apprendre des politiques de contrôle robustes et efficaces.
 
 \vspace{{0.5cm}}
 \noindent\textbf{{Revendication R5 : }}\textcolor{{{overall_color}}}{{{overall_status}}}

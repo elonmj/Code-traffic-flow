@@ -769,8 +769,11 @@ class SimulationRunner:
         
         # Extract state from appropriate array (CPU or GPU)
         if self.device == 'gpu':
-            # Copy relevant cells from GPU to CPU
-            U_obs = self.d_U[:, segment_indices].copy_to_host()
+            # CUDA arrays don't support fancy indexing - must loop
+            # Allocate output array
+            U_obs = np.zeros((4, len(segment_indices)), dtype=np.float64)
+            for i, seg_idx in enumerate(segment_indices):
+                U_obs[:, i] = self.d_U[:, seg_idx].copy_to_host()
         else:
             U_obs = self.U[:, segment_indices]
         
