@@ -1,0 +1,254 @@
+[{"stream_name":"stdout","time":0.656669013,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.656734885,"data":"ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE\n"}
+,{"stream_name":"stdout","time":0.656740505,"data":"Revendications: R5\n"}
+,{"stream_name":"stdout","time":0.656743177,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.656745824,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.656862323,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":5.837263657,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.837383947,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.888757229,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.909482831,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.90962505,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":5.909705582,"data":"\n"}
+,{"stream_name":"stdout","time":5.909718368,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.909854612,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":8.871290480999999,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":8.871357537,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":8.871482121,"data":"\n"}
+,{"stream_name":"stdout","time":8.871497875,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":8.871570194,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":12.841811019,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":15.848355988,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":18.847755084,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":21.839379441,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":24.805327642,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":24.805358073,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":24.805364111,"data":"\n"}
+,{"stream_name":"stdout","time":24.805370058,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":24.805375599,"data":"Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":24.805504448,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":24.805544251,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":52.03470625,"data":"[TEST] [ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":52.034879538,"data":"[TEST]   - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":52.03496149,"data":"[TEST]   - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz\n"}
+,{"stream_name":"stdout","time":52.035025781,"data":"[TEST]   - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios\n"}
+,{"stream_name":"stdout","time":52.035108344,"data":"[TEST]   - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics\n"}
+,{"stream_name":"stdout","time":52.035205337,"data":"[TEST]   - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex\n"}
+,{"stream_name":"stdout","time":52.035274777,"data":"[TEST] === Section 7.6: RL Performance Validation ===\n"}
+,{"stream_name":"stdout","time":52.035347891,"data":"[TEST] Testing RL agent performance vs baseline controllers...\n"}
+,{"stream_name":"stdout","time":52.035420035,"data":"[TEST] [DEVICE] Detected: GPU\n"}
+,{"stream_name":"stdout","time":52.035481859,"data":"[TEST] [GPU INFO] Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":52.035555232,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.035630289,"data":"[TEST] [PHASE 1/2] Training RL agents...\n"}
+,{"stream_name":"stdout","time":52.035701933,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.035764696,"data":"[TEST] [TRAINING] Starting RL training for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":52.035832802,"data":"[TEST]   Device: gpu\n"}
+,{"stream_name":"stdout","time":52.035908268,"data":"[TEST]   Total timesteps: 20000\n"}
+,{"stream_name":"stdout","time":52.035980484,"data":"[TEST]   [SCENARIO] Generated: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":52.036040717,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":52.036122312,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":52.036211374,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":52.036268444,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":52.036344032,"data":"[TEST] [ERROR] Training failed: 0\n"}
+,{"stream_name":"stdout","time":52.036416633,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.036485177,"data":"[TEST] [TRAINING] Starting RL training for scenario: ramp_metering\n"}
+,{"stream_name":"stdout","time":52.036556916,"data":"[TEST]   Device: gpu\n"}
+,{"stream_name":"stdout","time":52.036635869,"data":"[TEST]   Total timesteps: 20000\n"}
+,{"stream_name":"stdout","time":52.03669269,"data":"[TEST]   [SCENARIO] Generated: ramp_metering.yml\n"}
+,{"stream_name":"stdout","time":52.03676458,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":52.036829079,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":52.036907315,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":52.036960438,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":52.037033022,"data":"[TEST] [ERROR] Training failed: 0\n"}
+,{"stream_name":"stdout","time":52.037123352,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.037197441,"data":"[TEST] [TRAINING] Starting RL training for scenario: adaptive_speed_control\n"}
+,{"stream_name":"stdout","time":52.037284627,"data":"[TEST]   Device: gpu\n"}
+,{"stream_name":"stdout","time":52.037336334,"data":"[TEST]   Total timesteps: 20000\n"}
+,{"stream_name":"stdout","time":52.037403907,"data":"[TEST]   [SCENARIO] Generated: adaptive_speed_control.yml\n"}
+,{"stream_name":"stdout","time":52.037474024,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":52.037555404,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":52.0376034,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":52.037668843,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":52.037727422,"data":"[TEST] [ERROR] Training failed: 0\n"}
+,{"stream_name":"stdout","time":52.037808296,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.037856371,"data":"[TEST] [PHASE 2/2] Running performance comparisons...\n"}
+,{"stream_name":"stdout","time":52.037935489,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.038019129,"data":"[TEST] Testing scenario: traffic_light_control (device=gpu)\n"}
+,{"stream_name":"stdout","time":52.038066804,"data":"[TEST]   [SCENARIO] Generated: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":52.03815773,"data":"[TEST]   Running baseline controller...\n"}
+,{"stream_name":"stdout","time":52.038232199,"data":"[TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":52.03830146,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":52.038367949,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":52.038435269,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":52.038516711,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":52.038576637,"data":"[TEST]   [ERROR] Failed to initialize TrafficSignalEnvDirect: 0\n"}
+,{"stream_name":"stdout","time":52.038635177,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.038693578,"data":"[TEST] Testing scenario: ramp_metering (device=gpu)\n"}
+,{"stream_name":"stdout","time":52.0387762,"data":"[TEST]   [SCENARIO] Generated: ramp_metering.yml\n"}
+,{"stream_name":"stdout","time":52.038835481,"data":"[TEST]   Running baseline controller...\n"}
+,{"stream_name":"stdout","time":52.038913889,"data":"[TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":52.038970797,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":52.039051393,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":52.039114193,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":52.039184947,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":52.039274169,"data":"[TEST]   [ERROR] Failed to initialize TrafficSignalEnvDirect: 0\n"}
+,{"stream_name":"stdout","time":52.039326989,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.039401299,"data":"[TEST] Testing scenario: adaptive_speed_control (device=gpu)\n"}
+,{"stream_name":"stdout","time":52.039451471,"data":"[TEST]   [SCENARIO] Generated: adaptive_speed_control.yml\n"}
+,{"stream_name":"stdout","time":52.039521786,"data":"[TEST]   Running baseline controller...\n"}
+,{"stream_name":"stdout","time":52.039577366,"data":"[TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":52.039645029,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":52.039718248,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":52.039791467,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":52.039862529,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":52.039925734,"data":"[TEST]   [ERROR] Failed to initialize TrafficSignalEnvDirect: 0\n"}
+,{"stream_name":"stdout","time":52.03999506,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.040059246,"data":"[TEST] [FIGURES] Generating RL performance figures...\n"}
+,{"stream_name":"stdout","time":52.040148772,"data":"[TEST]   [OK] fig_rl_performance_improvements.png\n"}
+,{"stream_name":"stdout","time":52.040282777,"data":"[TEST]   [OK] fig_rl_learning_curve.png\n"}
+,{"stream_name":"stdout","time":52.040332161,"data":"[TEST] [FIGURES] Generated 2 figures in validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":52.040413975,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.040482142,"data":"[TEST] [METRICS] Saving RL performance metrics...\n"}
+,{"stream_name":"stdout","time":52.040551144,"data":"[TEST]   [OK] validation_output/results/local_test/section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv\n"}
+,{"stream_name":"stdout","time":52.040605366,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.04068682,"data":"[TEST] [LATEX] Generating content for Section 7.6...\n"}
+,{"stream_name":"stdout","time":52.040737475,"data":"[TEST]   [OK] validation_output/results/local_test/section_7_6_rl_performance/latex/section_7_6_content.tex\n"}
+,{"stream_name":"stdout","time":52.040816963,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":52.040871032,"data":"[TEST] === RL Performance Validation Summary ===\n"}
+,{"stream_name":"stdout","time":52.040948348,"data":"[TEST] Scenarios passed: 0/3 (0.0%)\n"}
+,{"stream_name":"stdout","time":52.04102557,"data":"[TEST] Average flow improvement: 0.00%\n"}
+,{"stream_name":"stdout","time":52.041066381,"data":"[TEST] Average efficiency improvement: 0.00%\n"}
+,{"stream_name":"stdout","time":52.041160057,"data":"[TEST] Average delay reduction: 0.00%\n"}
+,{"stream_name":"stdout","time":52.041244516,"data":"[TEST] Overall validation: FAILED\n"}
+,{"stream_name":"stdout","time":52.041315793,"data":"[TEST] [SUMMARY] Created: validation_output/results/local_test/section_7_6_rl_performance/session_summary.json\n"}
+,{"stream_name":"stdout","time":52.041406681,"data":"[STDERR] 2025-10-07 14:16:15.194193: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n"}
+,{"stream_name":"stdout","time":52.041482859,"data":"[STDERR] WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":52.041568691,"data":"[STDERR] E0000 00:00:1759846575.407145      46 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n"}
+,{"stream_name":"stdout","time":52.041628766,"data":"[STDERR] E0000 00:00:1759846575.462278      46 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"}
+,{"stream_name":"stdout","time":52.041711893,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":52.041765105,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 334, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":52.041834147,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":52.041907226,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.041975079,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 135, in __init__\n"}
+,{"stream_name":"stdout","time":52.04205042,"data":"[STDERR]     self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":52.042128259,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 152, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":52.042212735,"data":"[STDERR]     self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":52.04229612,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.042364737,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 46, in __init__\n"}
+,{"stream_name":"stdout","time":52.042428254,"data":"[STDERR]     self.params.load_from_yaml(base_config_path, scenario_config_path) # Load base and scenario\n"}
+,{"stream_name":"stdout","time":52.042507657,"data":"[STDERR]     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.042578784,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/core/parameters.py\", line 164, in load_from_yaml\n"}
+,{"stream_name":"stdout","time":52.042649448,"data":"[STDERR]     state[0] * VEH_KM_TO_VEH_M, # rho_m\n"}
+,{"stream_name":"stdout","time":52.04271942,"data":"[STDERR]     ~~~~~^^^\n"}
+,{"stream_name":"stdout","time":52.04278926,"data":"[STDERR] KeyError: 0\n"}
+,{"stream_name":"stdout","time":52.042854437,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":52.042926302,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 334, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":52.042998009,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":52.043076355,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.04316107,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 135, in __init__\n"}
+,{"stream_name":"stdout","time":52.043238691,"data":"[STDERR]     self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":52.043311601,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 152, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":52.043388201,"data":"[STDERR]     self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":52.043448136,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.04352623,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 46, in __init__\n"}
+,{"stream_name":"stdout","time":52.043583503,"data":"[STDERR]     self.params.load_from_yaml(base_config_path, scenario_config_path) # Load base and scenario\n"}
+,{"stream_name":"stdout","time":52.043662016,"data":"[STDERR]     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.043720363,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/core/parameters.py\", line 164, in load_from_yaml\n"}
+,{"stream_name":"stdout","time":52.04379509,"data":"[STDERR]     state[0] * VEH_KM_TO_VEH_M, # rho_m\n"}
+,{"stream_name":"stdout","time":52.043855744,"data":"[STDERR]     ~~~~~^^^\n"}
+,{"stream_name":"stdout","time":52.04393258,"data":"[STDERR] KeyError: 0\n"}
+,{"stream_name":"stdout","time":52.043995049,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":52.044069791,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 334, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":52.044149696,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":52.044213328,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.044296367,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 135, in __init__\n"}
+,{"stream_name":"stdout","time":52.044358271,"data":"[STDERR]     self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":52.044438768,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 152, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":52.044497565,"data":"[STDERR]     self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":52.044573995,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.044651792,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 46, in __init__\n"}
+,{"stream_name":"stdout","time":52.044709404,"data":"[STDERR]     self.params.load_from_yaml(base_config_path, scenario_config_path) # Load base and scenario\n"}
+,{"stream_name":"stdout","time":52.044780761,"data":"[STDERR]     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.04485036,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/core/parameters.py\", line 164, in load_from_yaml\n"}
+,{"stream_name":"stdout","time":52.044897666,"data":"[STDERR]     state[0] * VEH_KM_TO_VEH_M, # rho_m\n"}
+,{"stream_name":"stdout","time":52.044991782,"data":"[STDERR]     ~~~~~^^^\n"}
+,{"stream_name":"stdout","time":52.045064932,"data":"[STDERR] KeyError: 0\n"}
+,{"stream_name":"stdout","time":52.04514643,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":52.045237683,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 186, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":52.045297097,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":52.045365742,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.045438525,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 135, in __init__\n"}
+,{"stream_name":"stdout","time":52.045483063,"data":"[STDERR]     self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":52.045576153,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 152, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":52.04565275,"data":"[STDERR]     self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":52.045706882,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.045791913,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 46, in __init__\n"}
+,{"stream_name":"stdout","time":52.045841534,"data":"[STDERR]     self.params.load_from_yaml(base_config_path, scenario_config_path) # Load base and scenario\n"}
+,{"stream_name":"stdout","time":52.045925232,"data":"[STDERR]     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.045974282,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/core/parameters.py\", line 164, in load_from_yaml\n"}
+,{"stream_name":"stdout","time":52.046040932,"data":"[STDERR]     state[0] * VEH_KM_TO_VEH_M, # rho_m\n"}
+,{"stream_name":"stdout","time":52.046115052,"data":"[STDERR]     ~~~~~^^^\n"}
+,{"stream_name":"stdout","time":52.046208959,"data":"[STDERR] KeyError: 0\n"}
+,{"stream_name":"stdout","time":52.046261369,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":52.046338629,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 186, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":52.04640575,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":52.046466483,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.046548891,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 135, in __init__\n"}
+,{"stream_name":"stdout","time":52.046602556,"data":"[STDERR]     self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":52.046677873,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 152, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":52.04673107,"data":"[STDERR]     self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":52.046807406,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.046875174,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 46, in __init__\n"}
+,{"stream_name":"stdout","time":52.046937557,"data":"[STDERR]     self.params.load_from_yaml(base_config_path, scenario_config_path) # Load base and scenario\n"}
+,{"stream_name":"stdout","time":52.04701104,"data":"[STDERR]     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.047073598,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/core/parameters.py\", line 164, in load_from_yaml\n"}
+,{"stream_name":"stdout","time":52.047155877,"data":"[STDERR]     state[0] * VEH_KM_TO_VEH_M, # rho_m\n"}
+,{"stream_name":"stdout","time":52.047227575,"data":"[STDERR]     ~~~~~^^^\n"}
+,{"stream_name":"stdout","time":52.047302471,"data":"[STDERR] KeyError: 0\n"}
+,{"stream_name":"stdout","time":52.047370015,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":52.047431593,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 186, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":52.047503719,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":52.047566742,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.047630803,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 135, in __init__\n"}
+,{"stream_name":"stdout","time":52.047694013,"data":"[STDERR]     self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":52.047758529,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 152, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":52.047839312,"data":"[STDERR]     self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":52.047894353,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.047958499,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 46, in __init__\n"}
+,{"stream_name":"stdout","time":52.048026195,"data":"[STDERR]     self.params.load_from_yaml(base_config_path, scenario_config_path) # Load base and scenario\n"}
+,{"stream_name":"stdout","time":52.048117065,"data":"[STDERR]     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":52.048177118,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/core/parameters.py\", line 164, in load_from_yaml\n"}
+,{"stream_name":"stdout","time":52.048274366,"data":"[STDERR]     state[0] * VEH_KM_TO_VEH_M, # rho_m\n"}
+,{"stream_name":"stdout","time":52.048342309,"data":"[STDERR]     ~~~~~^^^\n"}
+,{"stream_name":"stdout","time":52.048414459,"data":"[STDERR] KeyError: 0\n"}
+,{"stream_name":"stdout","time":52.048495373,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":52.048552366,"data":"\n"}
+,{"stream_name":"stdout","time":52.0485575,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":52.048633467,"data":"[ARTIFACTS] Copying results for section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":52.050862814,"data":"[OK] Section copied to: /kaggle/working/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":52.051718073,"data":"[ARTIFACTS] NPZ files: 0\n"}
+,{"stream_name":"stdout","time":52.051840074,"data":"[ARTIFACTS] PNG figures: 2\n"}
+,{"stream_name":"stdout","time":52.05188134,"data":"[ARTIFACTS] YAML scenarios: 3\n"}
+,{"stream_name":"stdout","time":52.051972173,"data":"[ARTIFACTS] TEX files: 1\n"}
+,{"stream_name":"stdout","time":52.05206104,"data":"[ARTIFACTS] JSON files: 1\n"}
+,{"stream_name":"stdout","time":52.052120349,"data":"[ARTIFACTS] CSV metrics: 1\n"}
+,{"stream_name":"stdout","time":52.052197918,"data":"TRACKING_SUCCESS: Artifacts copied\n"}
+,{"stream_name":"stdout","time":52.052273957,"data":"[SUCCESS] All artifacts organized and copied\n"}
+,{"stream_name":"stdout","time":52.052347778,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":52.081634404,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":52.081731053,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":52.082056913,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":52.082151813,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":52.082343082,"data":"\n"}
+,{"stream_name":"stdout","time":52.082350686,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":52.082395692,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":52.082489862,"data":"\n"}
+,{"stream_name":"stdout","time":52.082496212,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":52.082500941,"data":"VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED\n"}
+,{"stream_name":"stdout","time":52.082504932,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":52.082508599,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":55.550995605,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":55.551049924,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":55.590383177,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":56.344003042,"data":"[NbConvertApp] Writing 320596 bytes to __results__.html\n"}
+]

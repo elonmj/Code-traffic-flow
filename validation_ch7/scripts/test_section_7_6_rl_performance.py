@@ -90,7 +90,7 @@ class RLPerformanceValidationTest(ValidationSection):
             'output_dt': 60.0,
             'CFL': 0.4,
             'boundary_conditions': {
-                'left': {'type': 'inflow', 'state': {'rho_m': 0.02, 'w_m': 0.5, 'rho_c': 0.03, 'w_c': 1.5}},
+                'left': {'type': 'inflow', 'state': [0.02, 0.5, 0.03, 1.5]}, # [rho_m, w_m, rho_c, w_c] in veh/km and m/s
                 'right': {'type': 'outflow'}
             },
             'road': {'quality_type': 'uniform', 'quality_value': 2}

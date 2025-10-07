@@ -430,13 +430,21 @@ def apply_boundary_conditions_gpu(d_U, grid, params):
     
     if left_type_code == 0 and 'state' in left_bc:
         inflow_L = left_bc['state']
-        inflow_L_0, inflow_L_1, inflow_L_2, inflow_L_3 = inflow_L['rho_m'], inflow_L['w_m'], inflow_L['rho_c'], inflow_L['w_c']
+        # Handle both list [rho_m, w_m, rho_c, w_c] and dict {'rho_m': ..., 'w_m': ..., 'rho_c': ..., 'w_c': ...}
+        if isinstance(inflow_L, dict):
+            inflow_L_0, inflow_L_1, inflow_L_2, inflow_L_3 = inflow_L['rho_m'], inflow_L['w_m'], inflow_L['rho_c'], inflow_L['w_c']
+        else: # list or tuple
+            inflow_L_0, inflow_L_1, inflow_L_2, inflow_L_3 = inflow_L[0], inflow_L[1], inflow_L[2], inflow_L[3]
     else:
         inflow_L_0, inflow_L_1, inflow_L_2, inflow_L_3 = 0.0, 0.0, 0.0, 0.0
     
     if right_type_code == 0 and 'state' in right_bc:
         inflow_R = right_bc['state']
-        inflow_R_0, inflow_R_1, inflow_R_2, inflow_R_3 = inflow_R['rho_m'], inflow_R['w_m'], inflow_R['rho_c'], inflow_R['w_c']
+        # Handle both list [rho_m, w_m, rho_c, w_c] and dict {'rho_m': ..., 'w_m': ..., 'rho_c': ..., 'w_c': ...}
+        if isinstance(inflow_R, dict):
+            inflow_R_0, inflow_R_1, inflow_R_2, inflow_R_3 = inflow_R['rho_m'], inflow_R['w_m'], inflow_R['rho_c'], inflow_R['w_c']
+        else: # list or tuple
+            inflow_R_0, inflow_R_1, inflow_R_2, inflow_R_3 = inflow_R[0], inflow_R[1], inflow_R[2], inflow_R[3]
     else:
         inflow_R_0, inflow_R_1, inflow_R_2, inflow_R_3 = 0.0, 0.0, 0.0, 0.0
     
