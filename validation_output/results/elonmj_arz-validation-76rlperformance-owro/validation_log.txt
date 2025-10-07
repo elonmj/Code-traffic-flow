@@ -1,0 +1,56 @@
+2025-10-07 11:51:23,408 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-10-07 11:51:23,409 - INFO - Branch: main
+2025-10-07 11:51:28,354 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-10-07 11:51:28,354 - INFO - PyTorch: 2.6.0+cu124
+2025-10-07 11:51:28,399 - INFO - CUDA available: True
+2025-10-07 11:51:28,420 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-10-07 11:51:28,420 - INFO - CUDA version: 12.4
+2025-10-07 11:51:28,420 - INFO - 
+[STEP 1/4] Cloning repository from GitHub...
+2025-10-07 11:51:28,420 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-10-07 11:51:30,402 - INFO - [OK] Repository cloned successfully
+2025-10-07 11:51:30,402 - INFO - TRACKING_SUCCESS: Repository cloned
+2025-10-07 11:51:30,402 - INFO - 
+[STEP 2/4] Installing dependencies...
+2025-10-07 11:51:30,403 - INFO - Installing PyYAML...
+2025-10-07 11:51:34,227 - INFO - Installing matplotlib...
+2025-10-07 11:51:37,239 - INFO - Installing pandas...
+2025-10-07 11:51:40,181 - INFO - Installing scipy...
+2025-10-07 11:51:43,135 - INFO - Installing numpy...
+2025-10-07 11:51:46,116 - INFO - [OK] Dependencies installed
+2025-10-07 11:51:46,117 - INFO - TRACKING_SUCCESS: Dependencies ready
+2025-10-07 11:51:46,117 - INFO - 
+[STEP 3/4] Running validation tests...
+2025-10-07 11:51:46,117 - INFO - Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...
+2025-10-07 11:51:46,117 - INFO - PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts
+2025-10-07 11:51:46,117 - INFO - ============================================================
+2025-10-07 11:52:10,989 - WARNING - [STDERR] 2025-10-07 11:51:57.224102: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2025-10-07 11:52:10,990 - WARNING - [STDERR] WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+2025-10-07 11:52:10,990 - WARNING - [STDERR] E0000 00:00:1759837917.422117      46 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2025-10-07 11:52:10,990 - WARNING - [STDERR] E0000 00:00:1759837917.476602      46 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-10-07 11:52:10,990 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 11:52:10,990 - WARNING - [STDERR]   File "<frozen runpy>", line 198, in _run_module_as_main
+2025-10-07 11:52:10,990 - WARNING - [STDERR]   File "<frozen runpy>", line 88, in _run_code
+2025-10-07 11:52:10,990 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 42, in <module>
+2025-10-07 11:52:10,990 - WARNING - [STDERR]     from src.rl.train_dqn import main as train_dqn_main # For reference
+2025-10-07 11:52:10,990 - WARNING - [STDERR]     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 11:52:10,990 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/rl/train_dqn.py", line 21, in <module>
+2025-10-07 11:52:10,990 - WARNING - [STDERR]     from endpoint.client import create_endpoint_client, EndpointConfig
+2025-10-07 11:52:10,991 - WARNING - [STDERR] ModuleNotFoundError: No module named 'endpoint'
+2025-10-07 11:52:10,991 - WARNING - [WARNING] Tests returned code: 1
+2025-10-07 11:52:10,991 - INFO - 
+[STEP 4/4] Copying artifacts and cleaning up...
+2025-10-07 11:52:10,991 - INFO - [ARTIFACTS] Copying results for section_7_6_rl_performance...
+2025-10-07 11:52:10,991 - WARNING - [WARN] Source section not found: /kaggle/working/Code-traffic-flow/validation_output/results/local_test/section_7_6_rl_performance
+2025-10-07 11:52:10,991 - WARNING - [INFO] Expected path: validation_output/results/local_test/section_7_6_rl_performance/
+2025-10-07 11:52:10,991 - WARNING - [INFO] Run test locally first to generate artifacts
+2025-10-07 11:52:10,991 - INFO - [FALLBACK] Creating empty structure...
+2025-10-07 11:52:10,991 - INFO - [SUCCESS] All artifacts organized and copied
+2025-10-07 11:52:10,992 - INFO - [CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow
+2025-10-07 11:52:11,018 - INFO - [OK] Cleanup completed - only validation results remain
+2025-10-07 11:52:11,018 - INFO - TRACKING_SUCCESS: Cleanup completed
+2025-10-07 11:52:11,019 - INFO - [OK] Session summary created: /kaggle/working/validation_results/session_summary.json
+2025-10-07 11:52:11,019 - INFO - TRACKING_SUCCESS: Session summary created
+2025-10-07 11:52:11,019 - INFO - 
+[FINAL] Validation workflow completed
+2025-10-07 11:52:11,019 - INFO - Remote logging finalized - ready for download

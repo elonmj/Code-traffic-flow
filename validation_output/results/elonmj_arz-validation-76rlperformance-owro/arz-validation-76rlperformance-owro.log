@@ -1,0 +1,70 @@
+[{"stream_name":"stdout","time":0.656781858,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.656855476,"data":"ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE\n"}
+,{"stream_name":"stdout","time":0.656861883,"data":"Revendications: R5\n"}
+,{"stream_name":"stdout","time":0.656865769,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.656871481,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.657022562,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":5.60219948,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.602411056,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.647152917,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.668114149,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.668270404,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":5.668392759,"data":"\n"}
+,{"stream_name":"stdout","time":5.668407002,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.668519858,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":7.650612719,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":7.650718498,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":7.65083019,"data":"\n"}
+,{"stream_name":"stdout","time":7.650844598,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":7.650895505,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":11.47582254,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":14.487607462,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":17.429918559,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":20.384028495,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":23.365391153,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":23.365420813,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":23.3654268,"data":"\n"}
+,{"stream_name":"stdout","time":23.365431399,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":23.365442383,"data":"Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":23.365633084,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":23.365643988,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":48.237812489,"data":"[STDERR] 2025-10-07 11:51:57.224102: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n"}
+,{"stream_name":"stdout","time":48.237983316,"data":"[STDERR] WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":48.238075593,"data":"[STDERR] E0000 00:00:1759837917.422117      46 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n"}
+,{"stream_name":"stdout","time":48.23816401,"data":"[STDERR] E0000 00:00:1759837917.476602      46 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"}
+,{"stream_name":"stdout","time":48.238230325,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":48.238330244,"data":"[STDERR]   File \"\u003cfrozen runpy\u003e\", line 198, in _run_module_as_main\n"}
+,{"stream_name":"stdout","time":48.238428637,"data":"[STDERR]   File \"\u003cfrozen runpy\u003e\", line 88, in _run_code\n"}
+,{"stream_name":"stdout","time":48.238492644,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 42, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":48.238571242,"data":"[STDERR]     from src.rl.train_dqn import main as train_dqn_main # For reference\n"}
+,{"stream_name":"stdout","time":48.238666565,"data":"[STDERR]     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":48.238725541,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/rl/train_dqn.py\", line 21, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":48.238810518,"data":"[STDERR]     from endpoint.client import create_endpoint_client, EndpointConfig\n"}
+,{"stream_name":"stdout","time":48.23887871,"data":"[STDERR] ModuleNotFoundError: No module named 'endpoint'\n"}
+,{"stream_name":"stdout","time":48.238961995,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":48.239032299,"data":"\n"}
+,{"stream_name":"stdout","time":48.239037838,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":48.239125192,"data":"[ARTIFACTS] Copying results for section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":48.239290116,"data":"[WARN] Source section not found: /kaggle/working/Code-traffic-flow/validation_output/results/local_test/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":48.239397525,"data":"[INFO] Expected path: validation_output/results/local_test/section_7_6_rl_performance/\n"}
+,{"stream_name":"stdout","time":48.239477217,"data":"[INFO] Run test locally first to generate artifacts\n"}
+,{"stream_name":"stdout","time":48.239555042,"data":"[FALLBACK] Creating empty structure...\n"}
+,{"stream_name":"stdout","time":48.239757443,"data":"[SUCCESS] All artifacts organized and copied\n"}
+,{"stream_name":"stdout","time":48.239843905,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":48.266206369,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":48.26631664,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":48.266927842,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":48.267023236,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":48.267082708,"data":"\n"}
+,{"stream_name":"stdout","time":48.267089556,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":48.267173002,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":48.26730604,"data":"\n"}
+,{"stream_name":"stdout","time":48.267317541,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":48.267321787,"data":"VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED\n"}
+,{"stream_name":"stdout","time":48.267325547,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":48.267341248,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":51.63240969,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":51.632461565,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":51.674854625,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":52.441581251,"data":"[NbConvertApp] Writing 320596 bytes to __results__.html\n"}
+]
