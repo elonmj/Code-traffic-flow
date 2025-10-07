@@ -3,9 +3,14 @@
 Script de lancement pour upload et monitoring Kaggle - Section 7.6 RL Performance
 
 Tests Revendication R5 (Performance superieure des agents RL)
+
+Usage:
+    python run_kaggle_validation_section_7_6.py           # Full test (2 hours)
+    python run_kaggle_validation_section_7_6.py --quick   # Quick test (15 min)
 """
 
 import sys
+import os
 from pathlib import Path
 
 # Ajout du chemin projet
@@ -14,9 +19,21 @@ sys.path.insert(0, str(project_root))
 
 from validation_ch7.scripts.validation_kaggle_manager import ValidationKaggleManager
 
+# Check for quick test mode
+quick_test = '--quick' in sys.argv or '--quick-test' in sys.argv
+
 print("=" * 80)
-print("LANCEMENT VALIDATION KAGGLE GPU - SECTION 7.6 RL PERFORMANCE")
-print("=" * 80)
+if quick_test:
+    print("LANCEMENT VALIDATION KAGGLE GPU - SECTION 7.6 RL (QUICK TEST)")
+    print("=" * 80)
+    print("\n[QUICK TEST MODE]")
+    print("  - Training: 10 timesteps only")
+    print("  - Duration: 10 minutes simulated time")
+    print("  - Scenarios: 1 scenario (traffic_light_control)")
+    print("  - Expected runtime: ~15 minutes on GPU")
+else:
+    print("LANCEMENT VALIDATION KAGGLE GPU - SECTION 7.6 RL PERFORMANCE")
+    print("=" * 80)
 
 # Initialiser le manager
 print("\n[1/3] Initialisation du ValidationKaggleManager...")
@@ -26,7 +43,12 @@ print(f"\n[INFO] Configuration:")
 print(f"  - Repository: {manager.repo_url}")
 print(f"  - Branch: {manager.branch}")
 print(f"  - Username: {manager.username}")
-print(f"  - Durée estimée: 30-45 minutes sur GPU (avec simulations mock)")
+if quick_test:
+    print(f"  - Mode: QUICK TEST")
+    print(f"  - Durée estimée: 15 minutes sur GPU")
+else:
+    print(f"  - Mode: FULL TEST")
+    print(f"  - Durée estimée: 30-45 minutes sur GPU")
 
 # Lancer la validation section 7.6
 print("\n[2/3] Lancement de la validation section 7.6...")
@@ -42,9 +64,17 @@ print("    - 1 CSV avec les métriques détaillées")
 print("    - Contenu LaTeX pour la section 7.6 de la thèse")
 
 try:
+    # Set environment variable for quick test mode
+    if quick_test:
+        os.environ['QUICK_TEST'] = 'true'
+    
+    timeout = 1800 if quick_test else 7200  # 30 min for quick, 2 hours for full
+    commit_msg = "Quick test: RL-ARZ integration validation (10 steps)" if quick_test else None
+    
     success, kernel_slug = manager.run_validation_section(
         section_name="section_7_6_rl_performance",
-        timeout=7200  # 2 heures max
+        timeout=timeout,
+        commit_message=commit_msg
     )
     
     if success:

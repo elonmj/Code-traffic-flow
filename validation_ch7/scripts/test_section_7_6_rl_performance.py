@@ -52,8 +52,12 @@ class RLPerformanceValidationTest(ValidationSection):
     Inherits from ValidationSection to use the standardized output structure.
     """
     
-    def __init__(self):
+    def __init__(self, quick_test=False):
         super().__init__(section_name="section_7_6_rl_performance")
+        
+        # Quick test mode: minimal timesteps for CI/CD validation (15 min on GPU)
+        self.quick_test = quick_test
+        
         self.rl_scenarios = {
             'traffic_light_control': {
                 'baseline_efficiency': 0.65,  # Expected baseline efficiency
@@ -70,6 +74,9 @@ class RLPerformanceValidationTest(ValidationSection):
         }
         self.test_results = {}
         self.models_dir = self.output_dir / "data" / "models"
+        
+        if self.quick_test:
+            print("[QUICK TEST MODE] Minimal training timesteps for setup validation")
     
     def _create_scenario_config(self, scenario_type: str) -> Path:
         """Crée un fichier de configuration YAML pour un scénario de contrôle."""
@@ -164,6 +171,11 @@ class RLPerformanceValidationTest(ValidationSection):
     def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=60.0, device='gpu'):
         """Execute real ARZ simulation with direct coupling (GPU-accelerated on Kaggle)."""
         import time
+        
+        # Quick test mode: reduce duration for fast validation
+        if self.quick_test:
+            duration = min(duration, 600.0)  # Max 10 minutes simulated time
+            print(f"  [QUICK TEST] Reduced duration to {duration}s")
         
         print(f"  [INFO] Initializing TrafficSignalEnvDirect with device={device}")
         
@@ -300,6 +312,12 @@ class RLPerformanceValidationTest(ValidationSection):
     
     def train_rl_agent(self, scenario_type: str, total_timesteps=10000, device='gpu'):
         """Train RL agent using real ARZ simulation with direct coupling."""
+        
+        # Quick test mode: drastically reduce timesteps for setup validation
+        if self.quick_test:
+            total_timesteps = 10  # Just 10 steps to test integration
+            print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps")
+        
         print(f"\n[TRAINING] Starting RL training for scenario: {scenario_type}")
         print(f"  Device: {device}")
         print(f"  Total timesteps: {total_timesteps}")
@@ -465,12 +483,23 @@ class RLPerformanceValidationTest(ValidationSection):
 
         # Train agents before evaluation
         print("\n[PHASE 1/2] Training RL agents...")
-        for scenario in self.rl_scenarios.keys():
-            self.train_rl_agent(scenario, total_timesteps=20000, device=device)
+        
+        # Quick test mode: train only one scenario
+        scenarios_to_train = list(self.rl_scenarios.keys())
+        if self.quick_test:
+            scenarios_to_train = scenarios_to_train[:1]  # Only first scenario
+            print(f"[QUICK TEST] Training only: {scenarios_to_train[0]}")
+        
+        for scenario in scenarios_to_train:
+            timesteps = 10 if self.quick_test else 20000
+            self.train_rl_agent(scenario, total_timesteps=timesteps, device=device)
         
         # Test all RL scenarios
         print("\n[PHASE 2/2] Running performance comparisons...")
-        scenarios = list(self.rl_scenarios.keys())
+        scenarios = scenarios_to_train if self.quick_test else list(self.rl_scenarios.keys())
+        if self.quick_test:
+            print(f"[QUICK TEST] Testing only: {scenarios[0]}")
+            
         for scenario in scenarios:
             scenario_results = self.run_performance_comparison(scenario, device=device)
             self.test_results[scenario] = scenario_results
@@ -730,7 +759,22 @@ Les résultats valident la revendication \textbf{R5}. Les agents RL surpassent s
 
 def main():
     """Main function to run RL performance validation."""
-    test = RLPerformanceValidationTest()
+    # Check for quick test mode from environment variable or command line
+    import os
+    quick_test = os.environ.get('QUICK_TEST', 'false').lower() == 'true'
+    if '--quick' in sys.argv or '--quick-test' in sys.argv:
+        quick_test = True
+    
+    if quick_test:
+        print("=" * 80)
+        print("QUICK TEST MODE ENABLED")
+        print("- Training: 10 timesteps only")
+        print("- Duration: 10 minutes simulated time")
+        print("- Scenarios: 1 scenario only")
+        print("- Expected runtime: ~15 minutes on GPU")
+        print("=" * 80)
+    
+    test = RLPerformanceValidationTest(quick_test=quick_test)
     try:
         success = test.run_all_tests()
     except Exception as e:
