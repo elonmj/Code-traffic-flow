@@ -1,0 +1,167 @@
+[{"stream_name":"stdout","time":0.656186764,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.656232637,"data":"ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE\n"}
+,{"stream_name":"stdout","time":0.656239754,"data":"Revendications: R5\n"}
+,{"stream_name":"stdout","time":0.656244741,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.656484204,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.656925843,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":6.009349909,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":6.00952752,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":6.062486224,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":6.08469386,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":6.084845806,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":6.084917678,"data":"\n"}
+,{"stream_name":"stdout","time":6.084926137,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":6.085103557,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":7.245065925,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":7.245172221,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":7.245286162,"data":"\n"}
+,{"stream_name":"stdout","time":7.245296916,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":7.245502844,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":11.649599932,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":14.987364336,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":18.331748322,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":21.685807613,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":25.022200324,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":25.022350732,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":25.022443175,"data":"\n"}
+,{"stream_name":"stdout","time":25.022455021,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":25.022937375,"data":"Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":25.023046608,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":25.023155019,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":54.342761806,"data":"[TEST] [ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":54.342936214,"data":"[TEST]   - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":54.343064549,"data":"[TEST]   - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz\n"}
+,{"stream_name":"stdout","time":54.343152741,"data":"[TEST]   - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios\n"}
+,{"stream_name":"stdout","time":54.343323693,"data":"[TEST]   - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics\n"}
+,{"stream_name":"stdout","time":54.343371623,"data":"[TEST]   - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex\n"}
+,{"stream_name":"stdout","time":54.343446441,"data":"[TEST] === Section 7.6: RL Performance Validation ===\n"}
+,{"stream_name":"stdout","time":54.343539449,"data":"[TEST] Testing RL agent performance vs baseline controllers...\n"}
+,{"stream_name":"stdout","time":54.343627226,"data":"[TEST] [DEVICE] Detected: GPU\n"}
+,{"stream_name":"stdout","time":54.343689744,"data":"[TEST] [GPU INFO] Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":54.343804792,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.343859199,"data":"[TEST] [PHASE 1/2] Training RL agents...\n"}
+,{"stream_name":"stdout","time":54.343941189,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.344057162,"data":"[TEST] [TRAINING] Starting RL training for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":54.344136098,"data":"[TEST]   Device: gpu\n"}
+,{"stream_name":"stdout","time":54.344260589,"data":"[TEST]   Total timesteps: 20000\n"}
+,{"stream_name":"stdout","time":54.344358991,"data":"[TEST]   [SCENARIO] Generated: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":54.34442524,"data":"[TEST] [ERROR] Training failed: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.344509006,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.344590107,"data":"[TEST] [TRAINING] Starting RL training for scenario: ramp_metering\n"}
+,{"stream_name":"stdout","time":54.344673934,"data":"[TEST]   Device: gpu\n"}
+,{"stream_name":"stdout","time":54.344771523,"data":"[TEST]   Total timesteps: 20000\n"}
+,{"stream_name":"stdout","time":54.344850465,"data":"[TEST]   [SCENARIO] Generated: ramp_metering.yml\n"}
+,{"stream_name":"stdout","time":54.344923729,"data":"[TEST] [ERROR] Training failed: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.34500553,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.345101816,"data":"[TEST] [TRAINING] Starting RL training for scenario: adaptive_speed_control\n"}
+,{"stream_name":"stdout","time":54.345220783,"data":"[TEST]   Device: gpu\n"}
+,{"stream_name":"stdout","time":54.345304411,"data":"[TEST]   Total timesteps: 20000\n"}
+,{"stream_name":"stdout","time":54.345378191,"data":"[TEST]   [SCENARIO] Generated: adaptive_speed_control.yml\n"}
+,{"stream_name":"stdout","time":54.345476545,"data":"[TEST] [ERROR] Training failed: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.345563632,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.345649381,"data":"[TEST] [PHASE 2/2] Running performance comparisons...\n"}
+,{"stream_name":"stdout","time":54.345721807,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.345815111,"data":"[TEST] Testing scenario: traffic_light_control (device=gpu)\n"}
+,{"stream_name":"stdout","time":54.345881048,"data":"[TEST]   [SCENARIO] Generated: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":54.345953188,"data":"[TEST]   Running baseline controller...\n"}
+,{"stream_name":"stdout","time":54.346041554,"data":"[TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":54.346117012,"data":"[TEST]   [ERROR] Failed to initialize TrafficSignalEnvDirect: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.346266905,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.346341868,"data":"[TEST] Testing scenario: ramp_metering (device=gpu)\n"}
+,{"stream_name":"stdout","time":54.346429392,"data":"[TEST]   [SCENARIO] Generated: ramp_metering.yml\n"}
+,{"stream_name":"stdout","time":54.346520628,"data":"[TEST]   Running baseline controller...\n"}
+,{"stream_name":"stdout","time":54.346589552,"data":"[TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":54.346668219,"data":"[TEST]   [ERROR] Failed to initialize TrafficSignalEnvDirect: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.346761498,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.346837835,"data":"[TEST] Testing scenario: adaptive_speed_control (device=gpu)\n"}
+,{"stream_name":"stdout","time":54.346907084,"data":"[TEST]   [SCENARIO] Generated: adaptive_speed_control.yml\n"}
+,{"stream_name":"stdout","time":54.346993601,"data":"[TEST]   Running baseline controller...\n"}
+,{"stream_name":"stdout","time":54.347057957,"data":"[TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":54.347160161,"data":"[TEST]   [ERROR] Failed to initialize TrafficSignalEnvDirect: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.347305678,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.347384952,"data":"[TEST] [FIGURES] Generating RL performance figures...\n"}
+,{"stream_name":"stdout","time":54.347461432,"data":"[TEST]   [OK] fig_rl_performance_improvements.png\n"}
+,{"stream_name":"stdout","time":54.347532879,"data":"[TEST]   [OK] fig_rl_learning_curve.png\n"}
+,{"stream_name":"stdout","time":54.347646274,"data":"[TEST] [FIGURES] Generated 2 figures in validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":54.347711992,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.347774542,"data":"[TEST] [METRICS] Saving RL performance metrics...\n"}
+,{"stream_name":"stdout","time":54.347865155,"data":"[TEST]   [OK] validation_output/results/local_test/section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv\n"}
+,{"stream_name":"stdout","time":54.347929709,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.348019024,"data":"[TEST] [LATEX] Generating content for Section 7.6...\n"}
+,{"stream_name":"stdout","time":54.348105714,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":54.348184174,"data":"[TEST] [CRITICAL ERROR] An unhandled exception occurred: 'Validation de la Performance des Agents RL (Section 7'\n"}
+,{"stream_name":"stdout","time":54.348333415,"data":"[STDERR] 2025-10-07 11:58:24.972958: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n"}
+,{"stream_name":"stdout","time":54.348463232,"data":"[STDERR] WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":54.348523288,"data":"[STDERR] E0000 00:00:1759838305.169593      46 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n"}
+,{"stream_name":"stdout","time":54.348620123,"data":"[STDERR] E0000 00:00:1759838305.225068      46 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"}
+,{"stream_name":"stdout","time":54.348722993,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":54.34879249,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 334, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":54.348877666,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":54.348945371,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":54.349036448,"data":"[STDERR] TypeError: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.349103094,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":54.349225829,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 334, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":54.349301508,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":54.349379549,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":54.349470702,"data":"[STDERR] TypeError: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.349534621,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":54.349618069,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 334, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":54.349692045,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":54.349774875,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":54.349846405,"data":"[STDERR] TypeError: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.349917717,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":54.34999025,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 186, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":54.350076325,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":54.350162905,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":54.350263099,"data":"[STDERR] TypeError: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.350348221,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":54.350418371,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 186, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":54.350503708,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":54.350573154,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":54.350840197,"data":"[STDERR] TypeError: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.350969058,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":54.351058649,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 186, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":54.351158773,"data":"[STDERR]     env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":54.351264857,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":54.351349314,"data":"[STDERR] TypeError: TrafficSignalEnvDirect.__init__() got an unexpected keyword argument 'segment_indices'\n"}
+,{"stream_name":"stdout","time":54.351469182,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":54.351531963,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 788, in main\n"}
+,{"stream_name":"stdout","time":54.351597784,"data":"[STDERR]     success = test.run_all_tests()\n"}
+,{"stream_name":"stdout","time":54.351684627,"data":"[STDERR]               ^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":54.351750797,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 537, in run_all_tests\n"}
+,{"stream_name":"stdout","time":54.351841149,"data":"[STDERR]     self.generate_section_7_6_latex()\n"}
+,{"stream_name":"stdout","time":54.3519151,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 762, in generate_section_7_6_latex\n"}
+,{"stream_name":"stdout","time":54.351998077,"data":"[STDERR]     latex_content = template.format(**template_vars)\n"}
+,{"stream_name":"stdout","time":54.352079708,"data":"[STDERR]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":54.35217001,"data":"[STDERR] KeyError: 'Validation de la Performance des Agents RL (Section 7'\n"}
+,{"stream_name":"stdout","time":54.352258567,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":54.352399517,"data":"\n"}
+,{"stream_name":"stdout","time":54.352406521,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":54.352470111,"data":"[ARTIFACTS] Copying results for section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":54.354843506,"data":"[OK] Section copied to: /kaggle/working/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":54.355812245,"data":"[ARTIFACTS] NPZ files: 0\n"}
+,{"stream_name":"stdout","time":54.355895654,"data":"[ARTIFACTS] PNG figures: 2\n"}
+,{"stream_name":"stdout","time":54.356002464,"data":"[ARTIFACTS] YAML scenarios: 3\n"}
+,{"stream_name":"stdout","time":54.356106783,"data":"[ARTIFACTS] TEX files: 0\n"}
+,{"stream_name":"stdout","time":54.356193347,"data":"[ARTIFACTS] JSON files: 0\n"}
+,{"stream_name":"stdout","time":54.356269381,"data":"[ARTIFACTS] CSV metrics: 1\n"}
+,{"stream_name":"stdout","time":54.356354449,"data":"TRACKING_SUCCESS: Artifacts copied\n"}
+,{"stream_name":"stdout","time":54.356462739,"data":"[SUCCESS] All artifacts organized and copied\n"}
+,{"stream_name":"stdout","time":54.356582441,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":54.388642534,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":54.388665551,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":54.389023741,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":54.389134027,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":54.38918837,"data":"\n"}
+,{"stream_name":"stdout","time":54.389198921,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":54.389311882,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":54.389429304,"data":"\n"}
+,{"stream_name":"stdout","time":54.389440018,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":54.389456845,"data":"VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED\n"}
+,{"stream_name":"stdout","time":54.389474047,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":54.389478557,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":58.276026606,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":58.276083336,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":58.319574439,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":59.164241626,"data":"[NbConvertApp] Writing 320596 bytes to __results__.html\n"}
+]
