@@ -684,92 +684,94 @@ class RLPerformanceValidationTest(ValidationSection):
         figure_path_improvements = "fig_rl_performance_improvements.png"
         figure_path_learning = "fig_rl_learning_curve.png"
 
-        template = r"""
-\subsection{{Validation de la Performance des Agents RL (Section 7.6)}}
-\label{{subsec:validation_rl_performance}}
+        # Build LaTeX content using f-string to avoid .format() brace escaping issues
+        success_rate = summary['success_rate']
+        success_status = "PASS" if success_rate >= 66.7 else "FAIL"
+        success_color = "green" if success_rate >= 66.7 else "red"
+        
+        avg_flow_improvement = summary['avg_flow_improvement']
+        flow_status = "PASS" if avg_flow_improvement > 5.0 else "FAIL"
+        flow_color = "green" if avg_flow_improvement > 5.0 else "red"
+        
+        avg_efficiency_improvement = summary['avg_efficiency_improvement']
+        efficiency_status = "PASS" if avg_efficiency_improvement > 8.0 else "FAIL"
+        efficiency_color = "green" if avg_efficiency_improvement > 8.0 else "red"
+        
+        avg_delay_reduction = summary['avg_delay_reduction']
+        delay_status = "PASS" if avg_delay_reduction > 10.0 else "FAIL"
+        delay_color = "green" if avg_delay_reduction > 10.0 else "red"
+        
+        overall_status = "VALIDÉE" if success_rate >= 66.7 else "NON VALIDÉE"
+        overall_color = "green" if success_rate >= 66.7 else "red"
 
-Cette section valide la revendication \textbf{{R5}}, qui postule que les agents d'apprentissage par renforcement (RL) peuvent surpasser les méthodes de contrôle traditionnelles pour la gestion du trafic.
+        # Use f-string with single braces for LaTeX (no escaping needed)
+        latex_content = f"""\\subsection{{Validation de la Performance des Agents RL (Section 7.6)}}
+\\label{{subsec:validation_rl_performance}}
 
-\subsubsection{{Entraînement des Agents}}
-Pour chaque scénario de contrôle, un agent RL distinct (basé sur l'algorithme DQN) est entraîné. L'entraînement est effectué en utilisant l'environnement Gym `TrafficSignalEnv`, qui interagit avec un simulateur ARZ via une architecture client/endpoint. La figure~\ref{{fig:rl_learning_curve_76}} montre une courbe d'apprentissage typique, où la récompense cumulée augmente et se stabilise, indiquant la convergence de l'agent vers une politique de contrôle efficace.
+Cette section valide la revendication \\textbf{{R5}}, qui postule que les agents d'apprentissage par renforcement (RL) peuvent surpasser les méthodes de contrôle traditionnelles pour la gestion du trafic.
 
-\subsubsection{{Méthodologie}}
+\\subsubsection{{Entraînement des Agents}}
+Pour chaque scénario de contrôle, un agent RL distinct (basé sur l'algorithme DQN) est entraîné. L'entraînement est effectué en utilisant l'environnement Gym `TrafficSignalEnv`, qui interagit avec un simulateur ARZ via une architecture client/endpoint. La figure~\\ref{{fig:rl_learning_curve_76}} montre une courbe d'apprentissage typique, où la récompense cumulée augmente et se stabilise, indiquant la convergence de l'agent vers une politique de contrôle efficace.
+
+\\subsubsection{{Méthodologie}}
 La validation est effectuée en comparant un agent RL à un contrôleur de référence (baseline) sur trois scénarios de contrôle de trafic :
-\begin{{itemize}}
-    \item \textbf{{Contrôle de feux de signalisation :}} Un contrôleur à temps fixe est comparé à un agent RL adaptatif.
-    \item \textbf{{Ramp metering :}} Un contrôleur basé sur des seuils de densité est comparé à un agent RL prédictif.
-    \item \textbf{{Contrôle adaptatif de vitesse :}} Une signalisation simple est comparée à un agent RL anticipatif.
-\end{{itemize}}
+\\begin{{itemize}}
+    \\item \\textbf{{Contrôle de feux de signalisation :}} Un contrôleur à temps fixe est comparé à un agent RL adaptatif.
+    \\item \\textbf{{Ramp metering :}} Un contrôleur basé sur des seuils de densité est comparé à un agent RL prédictif.
+    \\item \\textbf{{Contrôle adaptatif de vitesse :}} Une signalisation simple est comparée à un agent RL anticipatif.
+\\end{{itemize}}
 Les métriques clés sont l'amélioration du débit, de l'efficacité du trafic et la réduction des délais.
 
-\subsubsection{{Résultats de Performance}}
+\\subsubsection{{Résultats de Performance}}
 
-Le tableau~\ref{{tab:rl_performance_summary_76}} résume les performances moyennes obtenues sur l'ensemble des scénarios.
+Le tableau~\\ref{{tab:rl_performance_summary_76}} résume les performances moyennes obtenues sur l'ensemble des scénarios.
 
-\begin{{table}}[h!]
-\centering
-\caption{{Synthèse de la validation de performance RL (R5)}}
-\label{{tab:rl_performance_summary_76}}
-\begin{{tabular}}{{|l|c|c|c|}}
-\hline
-\textbf{{Métrique}} & \textbf{{Valeur}} & \textbf{{Seuil}} & \textbf{{Statut}} \\
-\hline
-Taux de succès des scénarios & {success_rate:.1f}\% & $\geq 66.7\%$ & \textcolor{{{success_color}}}{{{success_status}}} \\
-Amélioration moyenne du débit & {avg_flow_improvement:.2f}\% & $> 5\%$ & \textcolor{{{flow_color}}}{{{flow_status}}} \\
-Amélioration moyenne de l'efficacité & {avg_efficiency_improvement:.2f}\% & $> 8\%$ & \textcolor{{{efficiency_color}}}{{{efficiency_status}}} \\
-Réduction moyenne des délais & {avg_delay_reduction:.2f}\% & $> 10\%$ & \textcolor{{{delay_color}}}{{{delay_status}}} \\
-\hline
-\end{{tabular}}
-\end{{table}}
+\\begin{{table}}[h!]
+\\centering
+\\caption{{Synthèse de la validation de performance RL (R5)}}
+\\label{{tab:rl_performance_summary_76}}
+\\begin{{tabular}}{{|l|c|c|c|}}
+\\hline
+\\textbf{{Métrique}} & \\textbf{{Valeur}} & \\textbf{{Seuil}} & \\textbf{{Statut}} \\\\
+\\hline
+Taux de succès des scénarios & {success_rate:.1f}\\% & $\\geq 66.7\\%$ & \\textcolor{{{success_color}}}{{{success_status}}} \\\\
+Amélioration moyenne du débit & {avg_flow_improvement:.2f}\\% & $> 5\\%$ & \\textcolor{{{flow_color}}}{{{flow_status}}} \\\\
+Amélioration moyenne de l'efficacité & {avg_efficiency_improvement:.2f}\\% & $> 8\\%$ & \\textcolor{{{efficiency_color}}}{{{efficiency_status}}} \\\\
+Réduction moyenne des délais & {avg_delay_reduction:.2f}\\% & $> 10\\%$ & \\textcolor{{{delay_color}}}{{{delay_status}}} \\\\
+\\hline
+\\end{{tabular}}
+\\end{{table}}
 
-La figure~\ref{{fig:rl_improvements_76}} détaille les gains de performance pour chaque scénario testé. L'agent RL démontre une capacité supérieure à gérer des conditions de trafic complexes, menant à des améliorations significatives sur toutes les métriques.
+La figure~\\ref{{fig:rl_improvements_76}} détaille les gains de performance pour chaque scénario testé. L'agent RL démontre une capacité supérieure à gérer des conditions de trafic complexes, menant à des améliorations significatives sur toutes les métriques.
 
-\begin{{figure}}[h!]
-  \centering
-  \includegraphics[width=0.9\textwidth]{{{figure_path_improvements}}}
-  \caption{{Amélioration des performances de l'agent RL par rapport au contrôleur de référence pour chaque scénario.}}
-  \label{{fig:rl_improvements_76}}
-\end{{figure}}
+\\begin{{figure}}[h!]
+  \\centering
+  \\includegraphics[width=0.9\\textwidth]{{{figure_path_improvements}}}
+  \\caption{{Amélioration des performances de l'agent RL par rapport au contrôleur de référence pour chaque scénario.}}
+  \\label{{fig:rl_improvements_76}}
+\\end{{figure}}
 
-\begin{{figure}}[h!]
-  \centering
-  \includegraphics[width=0.8\textwidth]{{{figure_path_learning}}}
-  \caption{{Exemple de courbe d'apprentissage montrant la convergence de la récompense de l'agent.}}
-  \label{{fig:rl_learning_curve_76}}
-\end{{figure}}
+\\begin{{figure}}[h!]
+  \\centering
+  \\includegraphics[width=0.8\\textwidth]{{{figure_path_learning}}}
+  \\caption{{Exemple de courbe d'apprentissage montrant la convergence de la récompense de l'agent.}}
+  \\label{{fig:rl_learning_curve_76}}
+\\end{{figure}}
 
-\subsubsection{{Conclusion Section 7.6}}
-Les résultats valident la revendication \textbf{{R5}}. Les agents RL surpassent systématiquement les contrôleurs de référence, avec une amélioration moyenne du débit de \textbf{{{avg_flow_improvement:.1f}\%}} et de l'efficacité de \textbf{{{avg_efficiency_improvement:.1f}\%}}. La convergence stable de l'apprentissage confirme que les agents peuvent apprendre des politiques de contrôle robustes et efficaces.
+\\subsubsection{{Conclusion Section 7.6}}
+Les résultats valident la revendication \\textbf{{R5}}. Les agents RL surpassent systématiquement les contrôleurs de référence, avec une amélioration moyenne du débit de \\textbf{{{avg_flow_improvement:.1f}\\%}} et de l'efficacité de \\textbf{{{avg_efficiency_improvement:.1f}\\%}}. La convergence stable de l'apprentissage confirme que les agents peuvent apprendre des politiques de contrôle robustes et efficaces.
 
-\vspace{{0.5cm}}
-\noindent\textbf{{Revendication R5 : }}\textcolor{{{overall_color}}}{{{overall_status}}}
+\\vspace{{0.5cm}}
+\\noindent\\textbf{{Revendication R5 : }}\\textcolor{{{overall_color}}}{{{overall_status}}}
 """
 
-        # Populate template
-        template_vars = {
-            'success_rate': summary['success_rate'],
-            'success_status': "PASS" if summary['success_rate'] >= 66.7 else "FAIL",
-            'success_color': "green" if summary['success_rate'] >= 66.7 else "red",
-            'avg_flow_improvement': summary['avg_flow_improvement'],
-            'flow_status': "PASS" if summary['avg_flow_improvement'] > 5.0 else "FAIL",
-            'flow_color': "green" if summary['avg_flow_improvement'] > 5.0 else "red",
-            'avg_efficiency_improvement': summary['avg_efficiency_improvement'],
-            'efficiency_status': "PASS" if summary['avg_efficiency_improvement'] > 8.0 else "FAIL",
-            'efficiency_color': "green" if summary['avg_efficiency_improvement'] > 8.0 else "red",
-            'avg_delay_reduction': summary['avg_delay_reduction'],
-            'delay_status': "PASS" if summary['avg_delay_reduction'] > 10.0 else "FAIL",
-            'delay_color': "green" if summary['avg_delay_reduction'] > 10.0 else "red",
-            'figure_path_improvements': figure_path_improvements,
-            'figure_path_learning': figure_path_learning,
-            'overall_status': "VALIDÉE" if summary['success_rate'] >= 66.7 else "NON VALIDÉE",
             'overall_color': "green" if summary['success_rate'] >= 66.7 else "red",
         }
 
-        latex_content = template.format(**template_vars)
-        
-        # Save content
+        # Save content (latex_content already built with f-string above, no .format() needed)
         (self.latex_dir / "section_7_6_content.tex").write_text(latex_content, encoding='utf-8')
         print(f"  [OK] {self.latex_dir / 'section_7_6_content.tex'}")
+
 
 
 def main():

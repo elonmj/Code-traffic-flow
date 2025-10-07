@@ -1,0 +1,448 @@
+[{"stream_name":"stdout","time":0.629181843,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.629245631,"data":"ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE\n"}
+,{"stream_name":"stdout","time":0.629251892,"data":"Revendications: R5\n"}
+,{"stream_name":"stdout","time":0.629256409,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.629260985,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.629320124,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":5.216894496,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.217033594,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.25924004,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.280550052,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.280717618,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":5.280794105,"data":"\n"}
+,{"stream_name":"stdout","time":5.2808101579999995,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.280996225,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":7.618969953,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":7.619133712,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":7.619207674,"data":"\n"}
+,{"stream_name":"stdout","time":7.619216099,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":7.619269794,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":11.369650101,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":14.378585112,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":17.295450746,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":20.212301472,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":23.173404867,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":23.173429911,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":23.173435368,"data":"\n"}
+,{"stream_name":"stdout","time":23.173438992,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":23.173442564,"data":"Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":23.173521086,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":23.173565904,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":56.782263704,"data":"[TEST] [ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":56.782424105,"data":"[TEST]   - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":56.782523417,"data":"[TEST]   - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz\n"}
+,{"stream_name":"stdout","time":56.782639392,"data":"[TEST]   - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios\n"}
+,{"stream_name":"stdout","time":56.782727488,"data":"[TEST]   - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics\n"}
+,{"stream_name":"stdout","time":56.78280255,"data":"[TEST]   - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex\n"}
+,{"stream_name":"stdout","time":56.782989795,"data":"[TEST] === Section 7.6: RL Performance Validation ===\n"}
+,{"stream_name":"stdout","time":56.783047921,"data":"[TEST] Testing RL agent performance vs baseline controllers...\n"}
+,{"stream_name":"stdout","time":56.78314085,"data":"[TEST] [DEVICE] Detected: GPU\n"}
+,{"stream_name":"stdout","time":56.783236322,"data":"[TEST] [GPU INFO] Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":56.783315065,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.783408595,"data":"[TEST] [PHASE 1/2] Training RL agents...\n"}
+,{"stream_name":"stdout","time":56.783510325,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.783578085,"data":"[TEST] [TRAINING] Starting RL training for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":56.783660166,"data":"[TEST]   Device: gpu\n"}
+,{"stream_name":"stdout","time":56.783778524,"data":"[TEST]   Total timesteps: 20000\n"}
+,{"stream_name":"stdout","time":56.783857143,"data":"[TEST]   [SCENARIO] Generated: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":56.783977444,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.784081072,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.784156429,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.784225282,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.784292783,"data":"[TEST]   [INFO] Environment created: obs_space=(26,), action_space=2\n"}
+,{"stream_name":"stdout","time":56.784379048,"data":"[TEST]   [INFO] Initializing PPO agent...\n"}
+,{"stream_name":"stdout","time":56.784462925,"data":"[TEST] Using cuda device\n"}
+,{"stream_name":"stdout","time":56.784528503,"data":"[TEST] Wrapping the env with a `Monitor` wrapper\n"}
+,{"stream_name":"stdout","time":56.784606429,"data":"[TEST] Wrapping the env in a DummyVecEnv.\n"}
+,{"stream_name":"stdout","time":56.784685478,"data":"[TEST]   [INFO] Training for 20000 timesteps...\n"}
+,{"stream_name":"stdout","time":56.784765667,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.784855435,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.784943839,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.785012256,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.785085759,"data":"[TEST] [ERROR] Training failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.785154172,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.785221357,"data":"[TEST] [TRAINING] Starting RL training for scenario: ramp_metering\n"}
+,{"stream_name":"stdout","time":56.785293945,"data":"[TEST]   Device: gpu\n"}
+,{"stream_name":"stdout","time":56.785367175,"data":"[TEST]   Total timesteps: 20000\n"}
+,{"stream_name":"stdout","time":56.785439782,"data":"[TEST]   [SCENARIO] Generated: ramp_metering.yml\n"}
+,{"stream_name":"stdout","time":56.785512748,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.78558134,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.785654399,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.785733321,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.785845415,"data":"[TEST]   [INFO] Environment created: obs_space=(26,), action_space=2\n"}
+,{"stream_name":"stdout","time":56.785947896,"data":"[TEST]   [INFO] Initializing PPO agent...\n"}
+,{"stream_name":"stdout","time":56.786040516,"data":"[TEST] Using cuda device\n"}
+,{"stream_name":"stdout","time":56.786118625,"data":"[TEST] Wrapping the env with a `Monitor` wrapper\n"}
+,{"stream_name":"stdout","time":56.786183847,"data":"[TEST] Wrapping the env in a DummyVecEnv.\n"}
+,{"stream_name":"stdout","time":56.78624702,"data":"[TEST]   [INFO] Training for 20000 timesteps...\n"}
+,{"stream_name":"stdout","time":56.786372442,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.786416562,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.786516055,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.786600989,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.786667676,"data":"[TEST] [ERROR] Training failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.786758532,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.786850775,"data":"[TEST] [TRAINING] Starting RL training for scenario: adaptive_speed_control\n"}
+,{"stream_name":"stdout","time":56.786967393,"data":"[TEST]   Device: gpu\n"}
+,{"stream_name":"stdout","time":56.78703524,"data":"[TEST]   Total timesteps: 20000\n"}
+,{"stream_name":"stdout","time":56.787111692,"data":"[TEST]   [SCENARIO] Generated: adaptive_speed_control.yml\n"}
+,{"stream_name":"stdout","time":56.787188782,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.787252504,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.787341067,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.787439508,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.787511921,"data":"[TEST]   [INFO] Environment created: obs_space=(26,), action_space=2\n"}
+,{"stream_name":"stdout","time":56.787582186,"data":"[TEST]   [INFO] Initializing PPO agent...\n"}
+,{"stream_name":"stdout","time":56.787664899,"data":"[TEST] Using cuda device\n"}
+,{"stream_name":"stdout","time":56.787731567,"data":"[TEST] Wrapping the env with a `Monitor` wrapper\n"}
+,{"stream_name":"stdout","time":56.787817425,"data":"[TEST] Wrapping the env in a DummyVecEnv.\n"}
+,{"stream_name":"stdout","time":56.787938753,"data":"[TEST]   [INFO] Training for 20000 timesteps...\n"}
+,{"stream_name":"stdout","time":56.7880248,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.788103269,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.788191912,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.788264446,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.788347702,"data":"[TEST] [ERROR] Training failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.788403302,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.788489019,"data":"[TEST] [PHASE 2/2] Running performance comparisons...\n"}
+,{"stream_name":"stdout","time":56.788539154,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.788610911,"data":"[TEST] Testing scenario: traffic_light_control (device=gpu)\n"}
+,{"stream_name":"stdout","time":56.788687316,"data":"[TEST]   [SCENARIO] Generated: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":56.788745843,"data":"[TEST]   Running baseline controller...\n"}
+,{"stream_name":"stdout","time":56.78884026,"data":"[TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":56.788928776,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.788984469,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.789060714,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.789135998,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.789195255,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.789276244,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.789343382,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.789417394,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.789487262,"data":"[TEST]   ERROR: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.789570172,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.789633648,"data":"[TEST] Testing scenario: ramp_metering (device=gpu)\n"}
+,{"stream_name":"stdout","time":56.789716583,"data":"[TEST]   [SCENARIO] Generated: ramp_metering.yml\n"}
+,{"stream_name":"stdout","time":56.789772609,"data":"[TEST]   Running baseline controller...\n"}
+,{"stream_name":"stdout","time":56.789933377,"data":"[TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":56.790007229,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.790073388,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.790164043,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.790207583,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.790277054,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.790336935,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.790394868999996,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.7904669,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.790534175,"data":"[TEST]   ERROR: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.7906009,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.790667497,"data":"[TEST] Testing scenario: adaptive_speed_control (device=gpu)\n"}
+,{"stream_name":"stdout","time":56.790728562,"data":"[TEST]   [SCENARIO] Generated: adaptive_speed_control.yml\n"}
+,{"stream_name":"stdout","time":56.790798745000004,"data":"[TEST]   Running baseline controller...\n"}
+,{"stream_name":"stdout","time":56.790872382,"data":"[TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":56.790979992,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.791059427,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.791142514,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.791192719,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.791269089,"data":"[TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.791341328,"data":"[TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.7914194,"data":"[TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.791488032,"data":"[TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.791540363,"data":"[TEST]   ERROR: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.791626617,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.791691834,"data":"[TEST] [FIGURES] Generating RL performance figures...\n"}
+,{"stream_name":"stdout","time":56.791777605,"data":"[TEST]   [OK] fig_rl_performance_improvements.png\n"}
+,{"stream_name":"stdout","time":56.791895188,"data":"[TEST]   [OK] fig_rl_learning_curve.png\n"}
+,{"stream_name":"stdout","time":56.791982513,"data":"[TEST] [FIGURES] Generated 2 figures in validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":56.79206324,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.792117372999996,"data":"[TEST] [METRICS] Saving RL performance metrics...\n"}
+,{"stream_name":"stdout","time":56.792242805,"data":"[TEST]   [OK] validation_output/results/local_test/section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv\n"}
+,{"stream_name":"stdout","time":56.792299073,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.792378544,"data":"[TEST] [LATEX] Generating content for Section 7.6...\n"}
+,{"stream_name":"stdout","time":56.792439652,"data":"[TEST] \n"}
+,{"stream_name":"stdout","time":56.792561077,"data":"[TEST] [CRITICAL ERROR] An unhandled exception occurred: 'Validation de la Performance des Agents RL (Section 7'\n"}
+,{"stream_name":"stdout","time":56.792766991,"data":"[STDERR] 2025-10-07 12:13:33.556422: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n"}
+,{"stream_name":"stdout","time":56.792851251,"data":"[STDERR] WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":56.792958322,"data":"[STDERR] E0000 00:00:1759839213.750139      46 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n"}
+,{"stream_name":"stdout","time":56.793038115,"data":"[STDERR] E0000 00:00:1759839213.809391      46 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"}
+,{"stream_name":"stdout","time":56.793125883,"data":"[STDERR] /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":56.793203761,"data":"[STDERR]   warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":56.793292105,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":56.793369359,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 363, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":56.793441251,"data":"[STDERR]     model.learn(total_timesteps=total_timesteps)\n"}
+,{"stream_name":"stdout","time":56.793558885,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py\", line 308, in learn\n"}
+,{"stream_name":"stdout","time":56.793643823,"data":"[STDERR]     return super().learn(\n"}
+,{"stream_name":"stdout","time":56.793725307,"data":"[STDERR]            ^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.793786796,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py\", line 246, in learn\n"}
+,{"stream_name":"stdout","time":56.793886497,"data":"[STDERR]     total_timesteps, callback = self._setup_learn(\n"}
+,{"stream_name":"stdout","time":56.793966037,"data":"[STDERR]                                 ^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.794053524,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py\", line 424, in _setup_learn\n"}
+,{"stream_name":"stdout","time":56.794137377,"data":"[STDERR]     self._last_obs = self.env.reset()  # type: ignore[assignment]\n"}
+,{"stream_name":"stdout","time":56.79422317,"data":"[STDERR]                      ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.794299585,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py\", line 76, in reset\n"}
+,{"stream_name":"stdout","time":56.794390555,"data":"[STDERR]     obs, self.reset_infos[env_idx] = self.envs[env_idx].reset(seed=self._seeds[env_idx])\n"}
+,{"stream_name":"stdout","time":56.794473131,"data":"[STDERR]                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.794554791,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py\", line 83, in reset\n"}
+,{"stream_name":"stdout","time":56.794642408,"data":"[STDERR]     return self.env.reset(**kwargs)\n"}
+,{"stream_name":"stdout","time":56.794728463,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.79481034,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 187, in reset\n"}
+,{"stream_name":"stdout","time":56.794941596,"data":"[STDERR]     observation = self._build_observation()\n"}
+,{"stream_name":"stdout","time":56.795010976,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.795091562,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 274, in _build_observation\n"}
+,{"stream_name":"stdout","time":56.795171305,"data":"[STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)\n"}
+,{"stream_name":"stdout","time":56.795271619,"data":"[STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.795363546,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 773, in get_segment_observations\n"}
+,{"stream_name":"stdout","time":56.795442117,"data":"[STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()\n"}
+,{"stream_name":"stdout","time":56.795514169,"data":"[STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.795579211,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py\", line 232, in _require_cuda_context\n"}
+,{"stream_name":"stdout","time":56.79567068,"data":"[STDERR]     return fn(*args, **kws)\n"}
+,{"stream_name":"stdout","time":56.795745761,"data":"[STDERR]            ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.795854815,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 629, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.795967838,"data":"[STDERR]     return self._do_getitem(item)\n"}
+,{"stream_name":"stdout","time":56.79601541,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.796085143,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 640, in _do_getitem\n"}
+,{"stream_name":"stdout","time":56.796167601,"data":"[STDERR]     arr = self._dummy.__getitem__(item)\n"}
+,{"stream_name":"stdout","time":56.79621807,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.796302896,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.796356812,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.796435691,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.796489076,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in \u003clistcomp\u003e\n"}
+,{"stream_name":"stdout","time":56.796565876,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.796621127,"data":"[STDERR]             ^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.79669862,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 69, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.79677154,"data":"[STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]\n"}
+,{"stream_name":"stdout","time":56.796839769,"data":"[STDERR]                                     ^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.796932677,"data":"[STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.796994624,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":56.797071423,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 363, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":56.797153801,"data":"[STDERR]     model.learn(total_timesteps=total_timesteps)\n"}
+,{"stream_name":"stdout","time":56.797234055,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py\", line 308, in learn\n"}
+,{"stream_name":"stdout","time":56.797306442,"data":"[STDERR]     return super().learn(\n"}
+,{"stream_name":"stdout","time":56.797371958,"data":"[STDERR]            ^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.797454053,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py\", line 246, in learn\n"}
+,{"stream_name":"stdout","time":56.797537564,"data":"[STDERR]     total_timesteps, callback = self._setup_learn(\n"}
+,{"stream_name":"stdout","time":56.797557544,"data":"[STDERR]                                 ^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.797649145,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py\", line 424, in _setup_learn\n"}
+,{"stream_name":"stdout","time":56.797778404,"data":"[STDERR]     self._last_obs = self.env.reset()  # type: ignore[assignment]\n"}
+,{"stream_name":"stdout","time":56.797821798,"data":"[STDERR]                      ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.797908355,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py\", line 76, in reset\n"}
+,{"stream_name":"stdout","time":56.79797043,"data":"[STDERR]     obs, self.reset_infos[env_idx] = self.envs[env_idx].reset(seed=self._seeds[env_idx])\n"}
+,{"stream_name":"stdout","time":56.798049561,"data":"[STDERR]                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.798123301,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py\", line 83, in reset\n"}
+,{"stream_name":"stdout","time":56.798192309,"data":"[STDERR]     return self.env.reset(**kwargs)\n"}
+,{"stream_name":"stdout","time":56.798247852,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.798380855,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 187, in reset\n"}
+,{"stream_name":"stdout","time":56.798457128,"data":"[STDERR]     observation = self._build_observation()\n"}
+,{"stream_name":"stdout","time":56.798515273,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.798592676,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 274, in _build_observation\n"}
+,{"stream_name":"stdout","time":56.798650714,"data":"[STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)\n"}
+,{"stream_name":"stdout","time":56.798756685,"data":"[STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.798817432,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 773, in get_segment_observations\n"}
+,{"stream_name":"stdout","time":56.798915373,"data":"[STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()\n"}
+,{"stream_name":"stdout","time":56.799013794,"data":"[STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.799080679,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py\", line 232, in _require_cuda_context\n"}
+,{"stream_name":"stdout","time":56.7991773,"data":"[STDERR]     return fn(*args, **kws)\n"}
+,{"stream_name":"stdout","time":56.799273809,"data":"[STDERR]            ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.799351973,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 629, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.799423632,"data":"[STDERR]     return self._do_getitem(item)\n"}
+,{"stream_name":"stdout","time":56.799511355,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.799592423,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 640, in _do_getitem\n"}
+,{"stream_name":"stdout","time":56.799656161,"data":"[STDERR]     arr = self._dummy.__getitem__(item)\n"}
+,{"stream_name":"stdout","time":56.799751272,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.799819729,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.799954803,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.800010506,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.800085358,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in \u003clistcomp\u003e\n"}
+,{"stream_name":"stdout","time":56.800172185,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.800235132,"data":"[STDERR]             ^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.800366505,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 69, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.800407095,"data":"[STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]\n"}
+,{"stream_name":"stdout","time":56.800522819,"data":"[STDERR]                                     ^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.800578615,"data":"[STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.800665704,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":56.800770995,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 363, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":56.800842624,"data":"[STDERR]     model.learn(total_timesteps=total_timesteps)\n"}
+,{"stream_name":"stdout","time":56.800933243,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py\", line 308, in learn\n"}
+,{"stream_name":"stdout","time":56.801036543,"data":"[STDERR]     return super().learn(\n"}
+,{"stream_name":"stdout","time":56.801096333,"data":"[STDERR]            ^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.80118718,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py\", line 246, in learn\n"}
+,{"stream_name":"stdout","time":56.801260115,"data":"[STDERR]     total_timesteps, callback = self._setup_learn(\n"}
+,{"stream_name":"stdout","time":56.801334169,"data":"[STDERR]                                 ^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.801411278,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py\", line 424, in _setup_learn\n"}
+,{"stream_name":"stdout","time":56.801489944,"data":"[STDERR]     self._last_obs = self.env.reset()  # type: ignore[assignment]\n"}
+,{"stream_name":"stdout","time":56.801572801,"data":"[STDERR]                      ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.801650957,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py\", line 76, in reset\n"}
+,{"stream_name":"stdout","time":56.801741716,"data":"[STDERR]     obs, self.reset_infos[env_idx] = self.envs[env_idx].reset(seed=self._seeds[env_idx])\n"}
+,{"stream_name":"stdout","time":56.801822206,"data":"[STDERR]                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.801911904,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py\", line 83, in reset\n"}
+,{"stream_name":"stdout","time":56.802106574,"data":"[STDERR]     return self.env.reset(**kwargs)\n"}
+,{"stream_name":"stdout","time":56.802125651,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.802157444,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 187, in reset\n"}
+,{"stream_name":"stdout","time":56.802242879,"data":"[STDERR]     observation = self._build_observation()\n"}
+,{"stream_name":"stdout","time":56.802307275,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.802375277,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 274, in _build_observation\n"}
+,{"stream_name":"stdout","time":56.802456791,"data":"[STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)\n"}
+,{"stream_name":"stdout","time":56.802527198,"data":"[STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.802626946,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 773, in get_segment_observations\n"}
+,{"stream_name":"stdout","time":56.802676468,"data":"[STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()\n"}
+,{"stream_name":"stdout","time":56.802761147,"data":"[STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.802853554,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py\", line 232, in _require_cuda_context\n"}
+,{"stream_name":"stdout","time":56.802936216,"data":"[STDERR]     return fn(*args, **kws)\n"}
+,{"stream_name":"stdout","time":56.803021625,"data":"[STDERR]            ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.803081022,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 629, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.803174919,"data":"[STDERR]     return self._do_getitem(item)\n"}
+,{"stream_name":"stdout","time":56.803248179,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.803319445,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 640, in _do_getitem\n"}
+,{"stream_name":"stdout","time":56.80339975,"data":"[STDERR]     arr = self._dummy.__getitem__(item)\n"}
+,{"stream_name":"stdout","time":56.803472293,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.803553778,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.80362858,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.803710652,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.803782987,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in \u003clistcomp\u003e\n"}
+,{"stream_name":"stdout","time":56.803866857,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.803966555,"data":"[STDERR]             ^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.804044786,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 69, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.804140669,"data":"[STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]\n"}
+,{"stream_name":"stdout","time":56.804206542,"data":"[STDERR]                                     ^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.804294268,"data":"[STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.804367841,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":56.80445682,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 389, in run_performance_comparison\n"}
+,{"stream_name":"stdout","time":56.80453657,"data":"[STDERR]     baseline_states, _ = self.run_control_simulation(\n"}
+,{"stream_name":"stdout","time":56.804604145,"data":"[STDERR]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.804694528,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 204, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":56.804774408,"data":"[STDERR]     obs, info = env.reset()\n"}
+,{"stream_name":"stdout","time":56.804859453,"data":"[STDERR]                 ^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.805021019,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 187, in reset\n"}
+,{"stream_name":"stdout","time":56.805083576,"data":"[STDERR]     observation = self._build_observation()\n"}
+,{"stream_name":"stdout","time":56.805168139,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.805251482,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 274, in _build_observation\n"}
+,{"stream_name":"stdout","time":56.805326148,"data":"[STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)\n"}
+,{"stream_name":"stdout","time":56.805412348,"data":"[STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.805505241,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 773, in get_segment_observations\n"}
+,{"stream_name":"stdout","time":56.805591299,"data":"[STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()\n"}
+,{"stream_name":"stdout","time":56.805660517,"data":"[STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.805747066,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py\", line 232, in _require_cuda_context\n"}
+,{"stream_name":"stdout","time":56.805820746,"data":"[STDERR]     return fn(*args, **kws)\n"}
+,{"stream_name":"stdout","time":56.805920917,"data":"[STDERR]            ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.806007959,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 629, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.806088332,"data":"[STDERR]     return self._do_getitem(item)\n"}
+,{"stream_name":"stdout","time":56.806168081,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.806245741,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 640, in _do_getitem\n"}
+,{"stream_name":"stdout","time":56.806318343,"data":"[STDERR]     arr = self._dummy.__getitem__(item)\n"}
+,{"stream_name":"stdout","time":56.80641081,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.806480817,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.806564037,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.806641624,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.806718296,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in \u003clistcomp\u003e\n"}
+,{"stream_name":"stdout","time":56.806797849,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.80689273,"data":"[STDERR]             ^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.80697254,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 69, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.807065293,"data":"[STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]\n"}
+,{"stream_name":"stdout","time":56.807134762,"data":"[STDERR]                                     ^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.807228305,"data":"[STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.807294922,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":56.807383207,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 389, in run_performance_comparison\n"}
+,{"stream_name":"stdout","time":56.807452675,"data":"[STDERR]     baseline_states, _ = self.run_control_simulation(\n"}
+,{"stream_name":"stdout","time":56.807532552,"data":"[STDERR]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.807614185,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 204, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":56.807693341,"data":"[STDERR]     obs, info = env.reset()\n"}
+,{"stream_name":"stdout","time":56.807768057,"data":"[STDERR]                 ^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.807853193,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 187, in reset\n"}
+,{"stream_name":"stdout","time":56.807947909,"data":"[STDERR]     observation = self._build_observation()\n"}
+,{"stream_name":"stdout","time":56.808027051,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.808099364,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 274, in _build_observation\n"}
+,{"stream_name":"stdout","time":56.808187993,"data":"[STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)\n"}
+,{"stream_name":"stdout","time":56.808254409,"data":"[STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.808343453,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 773, in get_segment_observations\n"}
+,{"stream_name":"stdout","time":56.808412756,"data":"[STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()\n"}
+,{"stream_name":"stdout","time":56.80850738,"data":"[STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.808564933,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py\", line 232, in _require_cuda_context\n"}
+,{"stream_name":"stdout","time":56.808667505,"data":"[STDERR]     return fn(*args, **kws)\n"}
+,{"stream_name":"stdout","time":56.808743865,"data":"[STDERR]            ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.808852261,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 629, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.808939051,"data":"[STDERR]     return self._do_getitem(item)\n"}
+,{"stream_name":"stdout","time":56.809024921,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.8091035,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 640, in _do_getitem\n"}
+,{"stream_name":"stdout","time":56.809189014,"data":"[STDERR]     arr = self._dummy.__getitem__(item)\n"}
+,{"stream_name":"stdout","time":56.809268822,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.809338702,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.809445624,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.809495351,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.809584171,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in \u003clistcomp\u003e\n"}
+,{"stream_name":"stdout","time":56.809655266,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.809744337,"data":"[STDERR]             ^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.809814822,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 69, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.809938162,"data":"[STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]\n"}
+,{"stream_name":"stdout","time":56.810001273,"data":"[STDERR]                                     ^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.810073948,"data":"[STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.810147968,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":56.810224157,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 389, in run_performance_comparison\n"}
+,{"stream_name":"stdout","time":56.810307747,"data":"[STDERR]     baseline_states, _ = self.run_control_simulation(\n"}
+,{"stream_name":"stdout","time":56.810366712,"data":"[STDERR]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.810446912,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 204, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":56.810527221,"data":"[STDERR]     obs, info = env.reset()\n"}
+,{"stream_name":"stdout","time":56.810592609,"data":"[STDERR]                 ^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.810713334,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 187, in reset\n"}
+,{"stream_name":"stdout","time":56.810764564,"data":"[STDERR]     observation = self._build_observation()\n"}
+,{"stream_name":"stdout","time":56.810856736,"data":"[STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.810944786,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 274, in _build_observation\n"}
+,{"stream_name":"stdout","time":56.811011944,"data":"[STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)\n"}
+,{"stream_name":"stdout","time":56.811103274,"data":"[STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.811173724,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 773, in get_segment_observations\n"}
+,{"stream_name":"stdout","time":56.811263371,"data":"[STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()\n"}
+,{"stream_name":"stdout","time":56.811337081,"data":"[STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.811458592,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py\", line 232, in _require_cuda_context\n"}
+,{"stream_name":"stdout","time":56.811535554,"data":"[STDERR]     return fn(*args, **kws)\n"}
+,{"stream_name":"stdout","time":56.811625752,"data":"[STDERR]            ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.811719782,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 629, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.811802858,"data":"[STDERR]     return self._do_getitem(item)\n"}
+,{"stream_name":"stdout","time":56.811902066,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.812003623,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py\", line 640, in _do_getitem\n"}
+,{"stream_name":"stdout","time":56.81208615,"data":"[STDERR]     arr = self._dummy.__getitem__(item)\n"}
+,{"stream_name":"stdout","time":56.812170142,"data":"[STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.812263072,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.812345737,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.812428312,"data":"[STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.812529647,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 232, in \u003clistcomp\u003e\n"}
+,{"stream_name":"stdout","time":56.81263107,"data":"[STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]\n"}
+,{"stream_name":"stdout","time":56.812710226,"data":"[STDERR]             ^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.812786739,"data":"[STDERR]   File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py\", line 69, in __getitem__\n"}
+,{"stream_name":"stdout","time":56.812888808,"data":"[STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]\n"}
+,{"stream_name":"stdout","time":56.812972725,"data":"[STDERR]                                     ^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.813027176,"data":"[STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()\n"}
+,{"stream_name":"stdout","time":56.813154235,"data":"[STDERR] Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":56.813212323,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 788, in main\n"}
+,{"stream_name":"stdout","time":56.813302457,"data":"[STDERR]     success = test.run_all_tests()\n"}
+,{"stream_name":"stdout","time":56.813379584,"data":"[STDERR]               ^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.813453596,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 537, in run_all_tests\n"}
+,{"stream_name":"stdout","time":56.813539757,"data":"[STDERR]     self.generate_section_7_6_latex()\n"}
+,{"stream_name":"stdout","time":56.81361389,"data":"[STDERR]   File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 762, in generate_section_7_6_latex\n"}
+,{"stream_name":"stdout","time":56.813693739,"data":"[STDERR]     latex_content = template.format(**template_vars)\n"}
+,{"stream_name":"stdout","time":56.813775781,"data":"[STDERR]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":56.813893671,"data":"[STDERR] KeyError: 'Validation de la Performance des Agents RL (Section 7'\n"}
+,{"stream_name":"stdout","time":56.814004108,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":56.814051856,"data":"\n"}
+,{"stream_name":"stdout","time":56.814057601,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":56.814149513,"data":"[ARTIFACTS] Copying results for section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":56.81639212,"data":"[OK] Section copied to: /kaggle/working/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":56.817347317,"data":"[ARTIFACTS] NPZ files: 0\n"}
+,{"stream_name":"stdout","time":56.817407235,"data":"[ARTIFACTS] PNG figures: 2\n"}
+,{"stream_name":"stdout","time":56.817496222,"data":"[ARTIFACTS] YAML scenarios: 3\n"}
+,{"stream_name":"stdout","time":56.817568634,"data":"[ARTIFACTS] TEX files: 0\n"}
+,{"stream_name":"stdout","time":56.817675136,"data":"[ARTIFACTS] JSON files: 0\n"}
+,{"stream_name":"stdout","time":56.817741174,"data":"[ARTIFACTS] CSV metrics: 1\n"}
+,{"stream_name":"stdout","time":56.817837942,"data":"TRACKING_SUCCESS: Artifacts copied\n"}
+,{"stream_name":"stdout","time":56.817931135,"data":"[SUCCESS] All artifacts organized and copied\n"}
+,{"stream_name":"stdout","time":56.818046968,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":56.845698307,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":56.845756785,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":56.846125299,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":56.846166556,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":56.846277543,"data":"\n"}
+,{"stream_name":"stdout","time":56.846283636,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":56.846334884,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":56.846470834,"data":"\n"}
+,{"stream_name":"stdout","time":56.846476297,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":56.846480359,"data":"VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED\n"}
+,{"stream_name":"stdout","time":56.846484075,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":56.846497314,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":60.244017319,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":60.244060245,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":60.282959299,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":61.011644253,"data":"[NbConvertApp] Writing 320596 bytes to __results__.html\n"}
+]
