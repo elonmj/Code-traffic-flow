@@ -64,17 +64,19 @@ print("    - 1 CSV avec les métriques détaillées")
 print("    - Contenu LaTeX pour la section 7.6 de la thèse")
 
 try:
-    # Set environment variable for quick test mode
+    # Set environment variable for quick test mode (LOCAL execution only)
     if quick_test:
         os.environ['QUICK_TEST'] = 'true'
     
     timeout = 1800 if quick_test else 7200  # 30 min for quick, 2 hours for full
     commit_msg = "Quick test: RL-ARZ integration validation (2 steps)" if quick_test else None
     
+    # Pass quick_test flag to manager for Kaggle kernel environment
     success, kernel_slug = manager.run_validation_section(
         section_name="section_7_6_rl_performance",
         timeout=timeout,
-        commit_message=commit_msg
+        commit_message=commit_msg,
+        quick_test=quick_test  # CRITICAL: Pass to Kaggle kernel
     )
     
     if success:

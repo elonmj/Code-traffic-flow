@@ -440,6 +440,15 @@ try:
     ]
     env["PYTHONPATH"] = os.pathsep.join(pythonpath_dirs)
     
+    # CRITICAL: Propagate QUICK_TEST environment variable to kernel
+    # This ensures the test uses the correct configuration (2 timesteps vs 20000)
+    quick_test_enabled = "{section.get('quick_test', False)}"
+    if quick_test_enabled == "True":
+        env["QUICK_TEST"] = "true"
+        log_and_print("info", "[QUICK_TEST] Quick test mode enabled (2 timesteps)")
+    else:
+        log_and_print("info", "[FULL_TEST] Full test mode (20000 timesteps)")
+    
     # Execute validation tests via subprocess as a module to properly handle package imports
     # Using -m ensures Python treats code/ as a proper package
     test_module = f"validation_ch7.scripts.{section['script'].replace('.py', '')}"
@@ -600,7 +609,7 @@ print("=" * 80)
         """
         return self._build_validation_kernel_script(section)
         
-    def run_validation_section(self, section_name: str, timeout: int = 64000, commit_message: Optional[str] = None) -> tuple[bool, Optional[str]]:
+    def run_validation_section(self, section_name: str, timeout: int = 64000, commit_message: Optional[str] = None, quick_test: bool = False) -> tuple[bool, Optional[str]]:
         """
         Run specific validation section on Kaggle GPU.
         
@@ -610,18 +619,22 @@ print("=" * 80)
             section_name: Name of the validation section to run
             timeout: Timeout in seconds for kernel execution
             commit_message: Optional custom git commit message (Phase 2: CLI enhancement)
+            quick_test: If True, run in quick test mode (2 timesteps instead of 20000)
         """
         
         # Find section config
         section = None
         for s in self.validation_sections:
             if s["name"] == section_name:
-                section = s
+                section = s.copy()  # Make a copy to avoid modifying original
                 break
                 
         if not section:
             self.logger.error(f"[ERROR] Section not found: {section_name}")
             return False, None
+        
+        # Inject quick_test flag into section config
+        section['quick_test'] = quick_test
             
         print(f"[START] Running validation section: {section['name']}")
         print(f"[CONFIG] Revendications: {', '.join(section['revendications'])}")
