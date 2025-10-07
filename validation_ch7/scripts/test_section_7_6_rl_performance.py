@@ -39,7 +39,8 @@ sys.path.append(str(code_rl_path))
 from Code_RL.src.env.traffic_signal_env_direct import TrafficSignalEnvDirect
 
 # RL training utilities
-from src.rl.train_dqn import main as train_dqn_main # For reference
+# Note: We use TrafficSignalEnvDirect and stable_baselines3 directly
+# No need to import train_dqn which has dependencies on old HTTP server code
 from stable_baselines3 import DQN, PPO
 
 # Définir le chemin vers les configurations de Code_RL
