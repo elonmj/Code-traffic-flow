@@ -765,9 +765,6 @@ Les résultats valident la revendication \\textbf{{R5}}. Les agents RL surpassen
 \\noindent\\textbf{{Revendication R5 : }}\\textcolor{{{overall_color}}}{{{overall_status}}}
 """
 
-            'overall_color': "green" if summary['success_rate'] >= 66.7 else "red",
-        }
-
         # Save content (latex_content already built with f-string above, no .format() needed)
         (self.latex_dir / "section_7_6_content.tex").write_text(latex_content, encoding='utf-8')
         print(f"  [OK] {self.latex_dir / 'section_7_6_content.tex'}")

@@ -1,0 +1,66 @@
+[{"stream_name":"stdout","time":0.632323571,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.632370455,"data":"ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE\n"}
+,{"stream_name":"stdout","time":0.632376241,"data":"Revendications: R5\n"}
+,{"stream_name":"stdout","time":0.6323803,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.632491535,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.633165307,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":5.385983988,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.386033095,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.431213254,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.4535272599999995,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.453548751,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":5.453565088,"data":"\n"}
+,{"stream_name":"stdout","time":5.453569748,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.453741538,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":7.551760886,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":7.551888847,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":7.551985499,"data":"\n"}
+,{"stream_name":"stdout","time":7.551991883,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":7.552089258,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":11.403652633,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":14.386275262,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":17.325955142,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":20.220893078,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":23.158286878,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":23.158321,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":23.158327839,"data":"\n"}
+,{"stream_name":"stdout","time":23.158333467,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":23.158341979,"data":"Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":23.158457509,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":23.158500318,"data":"============================================================\n"}
+,{"stream_name":"stderr","time":23.248836674,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":23.2488754,"data":"  File \"\u003cfrozen runpy\u003e\", line 189, in _run_module_as_main\n"}
+,{"stream_name":"stderr","time":23.248881396,"data":"  File \"\u003cfrozen runpy\u003e\", line 159, in _get_module_details\n"}
+,{"stream_name":"stderr","time":23.248886216,"data":"  File \"\u003cfrozen importlib._bootstrap_external\u003e\", line 1074, in get_code\n"}
+,{"stream_name":"stderr","time":23.248891047,"data":"  File \"\u003cfrozen importlib._bootstrap_external\u003e\", line 1004, in source_to_code\n"}
+,{"stream_name":"stderr","time":23.248896409,"data":"  File \"\u003cfrozen importlib._bootstrap\u003e\", line 241, in _call_with_frames_removed\n"}
+,{"stream_name":"stderr","time":23.248915946,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 768\n"}
+,{"stream_name":"stderr","time":23.248920071,"data":"    'overall_color': \"green\" if summary['success_rate'] \u003e= 66.7 else \"red\",\n"}
+,{"stream_name":"stderr","time":23.248923936,"data":"IndentationError: unexpected indent\n"}
+,{"stream_name":"stdout","time":23.273023396,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":23.273163505,"data":"\n"}
+,{"stream_name":"stdout","time":23.273171374,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":23.273261619,"data":"[ARTIFACTS] Copying results for section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":23.273403567,"data":"[WARN] Source section not found: /kaggle/working/Code-traffic-flow/validation_output/results/local_test/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":23.273467279,"data":"[INFO] Expected path: validation_output/results/local_test/section_7_6_rl_performance/\n"}
+,{"stream_name":"stdout","time":23.273537929,"data":"[INFO] Run test locally first to generate artifacts\n"}
+,{"stream_name":"stdout","time":23.273613576,"data":"[FALLBACK] Creating empty structure...\n"}
+,{"stream_name":"stdout","time":23.273816928,"data":"[SUCCESS] All artifacts organized and copied\n"}
+,{"stream_name":"stdout","time":23.273939169,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":23.301516101,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":23.301588674,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":23.301975886,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":23.302042596,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":23.302179597,"data":"\n"}
+,{"stream_name":"stdout","time":23.302186941,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":23.302198407,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":23.30236791,"data":"\n"}
+,{"stream_name":"stdout","time":23.302376198,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":23.302380006,"data":"VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED\n"}
+,{"stream_name":"stdout","time":23.302383627,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":23.30238702,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":27.088236454,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":27.088267824,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":27.127360282,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":28.233439325,"data":"[NbConvertApp] Writing 319571 bytes to __results__.html\n"}
+]
