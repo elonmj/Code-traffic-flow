@@ -1,4 +1,0 @@
-perturbation,convergence_time_s,max_convergence_time_s,final_rmse,numerical_stable,converged,success
-density_increase,0,0,0,False,False,False
-velocity_decrease,0,0,0,False,False,False
-road_degradation,0,0,0,False,False,False
