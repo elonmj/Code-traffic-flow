@@ -1,0 +1,405 @@
+2025-10-07 14:02:28,202 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-10-07 14:02:28,202 - INFO - Branch: main
+2025-10-07 14:02:33,094 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-10-07 14:02:33,094 - INFO - PyTorch: 2.6.0+cu124
+2025-10-07 14:02:33,142 - INFO - CUDA available: True
+2025-10-07 14:02:33,163 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-10-07 14:02:33,163 - INFO - CUDA version: 12.4
+2025-10-07 14:02:33,163 - INFO - 
+[STEP 1/4] Cloning repository from GitHub...
+2025-10-07 14:02:33,163 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-10-07 14:02:35,829 - INFO - [OK] Repository cloned successfully
+2025-10-07 14:02:35,829 - INFO - TRACKING_SUCCESS: Repository cloned
+2025-10-07 14:02:35,829 - INFO - 
+[STEP 2/4] Installing dependencies...
+2025-10-07 14:02:35,829 - INFO - Installing PyYAML...
+2025-10-07 14:02:39,707 - INFO - Installing matplotlib...
+2025-10-07 14:02:42,701 - INFO - Installing pandas...
+2025-10-07 14:02:45,682 - INFO - Installing scipy...
+2025-10-07 14:02:48,650 - INFO - Installing numpy...
+2025-10-07 14:02:51,582 - INFO - [OK] Dependencies installed
+2025-10-07 14:02:51,582 - INFO - TRACKING_SUCCESS: Dependencies ready
+2025-10-07 14:02:51,582 - INFO - 
+[STEP 3/4] Running validation tests...
+2025-10-07 14:02:51,582 - INFO - Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...
+2025-10-07 14:02:51,583 - INFO - PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts
+2025-10-07 14:02:51,583 - INFO - ============================================================
+2025-10-07 14:03:27,698 - INFO - [TEST] [ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance
+2025-10-07 14:03:27,698 - INFO - [TEST]   - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures
+2025-10-07 14:03:27,699 - INFO - [TEST]   - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz
+2025-10-07 14:03:27,699 - INFO - [TEST]   - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios
+2025-10-07 14:03:27,699 - INFO - [TEST]   - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics
+2025-10-07 14:03:27,699 - INFO - [TEST]   - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex
+2025-10-07 14:03:27,699 - INFO - [TEST] === Section 7.6: RL Performance Validation ===
+2025-10-07 14:03:27,699 - INFO - [TEST] Testing RL agent performance vs baseline controllers...
+2025-10-07 14:03:27,699 - INFO - [TEST] [DEVICE] Detected: GPU
+2025-10-07 14:03:27,699 - INFO - [TEST] [GPU INFO] Tesla P100-PCIE-16GB
+2025-10-07 14:03:27,699 - INFO - [TEST] 
+2025-10-07 14:03:27,699 - INFO - [TEST] [PHASE 1/2] Training RL agents...
+2025-10-07 14:03:27,699 - INFO - [TEST] 
+2025-10-07 14:03:27,699 - INFO - [TEST] [TRAINING] Starting RL training for scenario: traffic_light_control
+2025-10-07 14:03:27,700 - INFO - [TEST]   Device: gpu
+2025-10-07 14:03:27,700 - INFO - [TEST]   Total timesteps: 20000
+2025-10-07 14:03:27,700 - INFO - [TEST]   [SCENARIO] Generated: traffic_light_control.yml
+2025-10-07 14:03:27,700 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,700 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,700 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,700 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,700 - INFO - [TEST]   [INFO] Environment created: obs_space=(26,), action_space=2
+2025-10-07 14:03:27,700 - INFO - [TEST]   [INFO] Initializing PPO agent...
+2025-10-07 14:03:27,700 - INFO - [TEST] Using cuda device
+2025-10-07 14:03:27,700 - INFO - [TEST] Wrapping the env with a `Monitor` wrapper
+2025-10-07 14:03:27,700 - INFO - [TEST] Wrapping the env in a DummyVecEnv.
+2025-10-07 14:03:27,700 - INFO - [TEST]   [INFO] Training for 20000 timesteps...
+2025-10-07 14:03:27,701 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,701 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,701 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,701 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,701 - INFO - [TEST] Logging to validation_output/results/local_test/section_7_6_rl_performance/data/models/tensorboard/PPO_1
+2025-10-07 14:03:27,701 - INFO - [TEST] [WARNING] Automatic CFL correction applied (count: 1):
+2025-10-07 14:03:27,701 - INFO - [TEST]   Calculated CFL: 0.800 > Limit: 0.500
+2025-10-07 14:03:27,701 - INFO - [TEST]   Original dt: 1.028839e+00 s
+2025-10-07 14:03:27,701 - INFO - [TEST]   Corrected dt: 6.430243e-01 s
+2025-10-07 14:03:27,701 - INFO - [TEST]   Correction factor: 1.6x
+2025-10-07 14:03:27,701 - INFO - [TEST]   Max wave speed detected: 19.44 m/s
+2025-10-07 14:03:27,701 - INFO - [TEST] [ERROR] Training failed: list indices must be integers or slices, not str
+2025-10-07 14:03:27,701 - INFO - [TEST] 
+2025-10-07 14:03:27,702 - INFO - [TEST] [TRAINING] Starting RL training for scenario: ramp_metering
+2025-10-07 14:03:27,702 - INFO - [TEST]   Device: gpu
+2025-10-07 14:03:27,702 - INFO - [TEST]   Total timesteps: 20000
+2025-10-07 14:03:27,702 - INFO - [TEST]   [SCENARIO] Generated: ramp_metering.yml
+2025-10-07 14:03:27,702 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,702 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,702 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,702 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,702 - INFO - [TEST]   [INFO] Environment created: obs_space=(26,), action_space=2
+2025-10-07 14:03:27,702 - INFO - [TEST]   [INFO] Initializing PPO agent...
+2025-10-07 14:03:27,702 - INFO - [TEST] Using cuda device
+2025-10-07 14:03:27,702 - INFO - [TEST] Wrapping the env with a `Monitor` wrapper
+2025-10-07 14:03:27,702 - INFO - [TEST] Wrapping the env in a DummyVecEnv.
+2025-10-07 14:03:27,702 - INFO - [TEST]   [INFO] Training for 20000 timesteps...
+2025-10-07 14:03:27,703 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,703 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,703 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,703 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,703 - INFO - [TEST] Logging to validation_output/results/local_test/section_7_6_rl_performance/data/models/tensorboard/PPO_2
+2025-10-07 14:03:27,703 - INFO - [TEST] [ERROR] Training failed: list indices must be integers or slices, not str
+2025-10-07 14:03:27,703 - INFO - [TEST] 
+2025-10-07 14:03:27,703 - INFO - [TEST] [TRAINING] Starting RL training for scenario: adaptive_speed_control
+2025-10-07 14:03:27,703 - INFO - [TEST]   Device: gpu
+2025-10-07 14:03:27,703 - INFO - [TEST]   Total timesteps: 20000
+2025-10-07 14:03:27,703 - INFO - [TEST]   [SCENARIO] Generated: adaptive_speed_control.yml
+2025-10-07 14:03:27,703 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,703 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,704 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,704 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,704 - INFO - [TEST]   [INFO] Environment created: obs_space=(26,), action_space=2
+2025-10-07 14:03:27,704 - INFO - [TEST]   [INFO] Initializing PPO agent...
+2025-10-07 14:03:27,704 - INFO - [TEST] Using cuda device
+2025-10-07 14:03:27,704 - INFO - [TEST] Wrapping the env with a `Monitor` wrapper
+2025-10-07 14:03:27,704 - INFO - [TEST] Wrapping the env in a DummyVecEnv.
+2025-10-07 14:03:27,704 - INFO - [TEST]   [INFO] Training for 20000 timesteps...
+2025-10-07 14:03:27,704 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,704 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,704 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,704 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,704 - INFO - [TEST] Logging to validation_output/results/local_test/section_7_6_rl_performance/data/models/tensorboard/PPO_3
+2025-10-07 14:03:27,705 - INFO - [TEST] [ERROR] Training failed: list indices must be integers or slices, not str
+2025-10-07 14:03:27,705 - INFO - [TEST] 
+2025-10-07 14:03:27,705 - INFO - [TEST] [PHASE 2/2] Running performance comparisons...
+2025-10-07 14:03:27,705 - INFO - [TEST] 
+2025-10-07 14:03:27,705 - INFO - [TEST] Testing scenario: traffic_light_control (device=gpu)
+2025-10-07 14:03:27,705 - INFO - [TEST]   [SCENARIO] Generated: traffic_light_control.yml
+2025-10-07 14:03:27,705 - INFO - [TEST]   Running baseline controller...
+2025-10-07 14:03:27,705 - INFO - [TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu
+2025-10-07 14:03:27,705 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,705 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,705 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,706 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,706 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,706 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,706 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,706 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,706 - INFO - [TEST]   [INFO] Starting simulation loop (max duration: 3600.0s, interval: 60.0s)
+2025-10-07 14:03:27,706 - INFO - [TEST]   ERROR: list indices must be integers or slices, not str
+2025-10-07 14:03:27,706 - INFO - [TEST] 
+2025-10-07 14:03:27,706 - INFO - [TEST] Testing scenario: ramp_metering (device=gpu)
+2025-10-07 14:03:27,706 - INFO - [TEST]   [SCENARIO] Generated: ramp_metering.yml
+2025-10-07 14:03:27,706 - INFO - [TEST]   Running baseline controller...
+2025-10-07 14:03:27,706 - INFO - [TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu
+2025-10-07 14:03:27,706 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,707 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,707 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,707 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,707 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,707 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,707 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,707 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,707 - INFO - [TEST]   [INFO] Starting simulation loop (max duration: 3600.0s, interval: 60.0s)
+2025-10-07 14:03:27,707 - INFO - [TEST]   ERROR: list indices must be integers or slices, not str
+2025-10-07 14:03:27,707 - INFO - [TEST] 
+2025-10-07 14:03:27,707 - INFO - [TEST] Testing scenario: adaptive_speed_control (device=gpu)
+2025-10-07 14:03:27,707 - INFO - [TEST]   [SCENARIO] Generated: adaptive_speed_control.yml
+2025-10-07 14:03:27,707 - INFO - [TEST]   Running baseline controller...
+2025-10-07 14:03:27,707 - INFO - [TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu
+2025-10-07 14:03:27,708 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,708 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,708 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,708 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,708 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 14:03:27,708 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 14:03:27,708 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 14:03:27,708 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 14:03:27,708 - INFO - [TEST]   [INFO] Starting simulation loop (max duration: 3600.0s, interval: 60.0s)
+2025-10-07 14:03:27,708 - INFO - [TEST]   ERROR: list indices must be integers or slices, not str
+2025-10-07 14:03:27,708 - INFO - [TEST] 
+2025-10-07 14:03:27,708 - INFO - [TEST] [FIGURES] Generating RL performance figures...
+2025-10-07 14:03:27,708 - INFO - [TEST]   [OK] fig_rl_performance_improvements.png
+2025-10-07 14:03:27,708 - INFO - [TEST]   [OK] fig_rl_learning_curve.png
+2025-10-07 14:03:27,709 - INFO - [TEST] [FIGURES] Generated 2 figures in validation_output/results/local_test/section_7_6_rl_performance/figures
+2025-10-07 14:03:27,709 - INFO - [TEST] 
+2025-10-07 14:03:27,709 - INFO - [TEST] [METRICS] Saving RL performance metrics...
+2025-10-07 14:03:27,709 - INFO - [TEST]   [OK] validation_output/results/local_test/section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv
+2025-10-07 14:03:27,709 - INFO - [TEST] 
+2025-10-07 14:03:27,709 - INFO - [TEST] [LATEX] Generating content for Section 7.6...
+2025-10-07 14:03:27,709 - INFO - [TEST] 
+2025-10-07 14:03:27,709 - INFO - [TEST] [CRITICAL ERROR] An unhandled exception occurred: 'Validation de la Performance des Agents RL (Section 7'
+2025-10-07 14:03:27,709 - WARNING - [STDERR] 2025-10-07 14:03:02.578203: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2025-10-07 14:03:27,709 - WARNING - [STDERR] WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+2025-10-07 14:03:27,709 - WARNING - [STDERR] E0000 00:00:1759845782.766700      46 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2025-10-07 14:03:27,709 - WARNING - [STDERR] E0000 00:00:1759845782.821778      46 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-10-07 14:03:27,710 - WARNING - [STDERR] /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-10-07 14:03:27,710 - WARNING - [STDERR]   warn(NumbaPerformanceWarning(msg))
+2025-10-07 14:03:27,710 - WARNING - [STDERR] /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-10-07 14:03:27,710 - WARNING - [STDERR]   warn(NumbaPerformanceWarning(msg))
+2025-10-07 14:03:27,710 - WARNING - [STDERR] /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-10-07 14:03:27,710 - WARNING - [STDERR]   warn(NumbaPerformanceWarning(msg))
+2025-10-07 14:03:27,710 - WARNING - [STDERR] /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-10-07 14:03:27,710 - WARNING - [STDERR]   warn(NumbaPerformanceWarning(msg))
+2025-10-07 14:03:27,710 - WARNING - [STDERR] /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-10-07 14:03:27,710 - WARNING - [STDERR]   warn(NumbaPerformanceWarning(msg))
+2025-10-07 14:03:27,710 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 14:03:27,710 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 363, in train_rl_agent
+2025-10-07 14:03:27,710 - WARNING - [STDERR]     model.learn(total_timesteps=total_timesteps)
+2025-10-07 14:03:27,710 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py", line 308, in learn
+2025-10-07 14:03:27,711 - WARNING - [STDERR]     return super().learn(
+2025-10-07 14:03:27,711 - WARNING - [STDERR]            ^^^^^^^^^^^^^^
+2025-10-07 14:03:27,711 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 259, in learn
+2025-10-07 14:03:27,711 - WARNING - [STDERR]     continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, n_rollout_steps=self.n_steps)
+2025-10-07 14:03:27,711 - WARNING - [STDERR]                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,711 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 178, in collect_rollouts
+2025-10-07 14:03:27,711 - WARNING - [STDERR]     new_obs, rewards, dones, infos = env.step(clipped_actions)
+2025-10-07 14:03:27,711 - WARNING - [STDERR]                                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,711 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/base_vec_env.py", line 197, in step
+2025-10-07 14:03:27,711 - WARNING - [STDERR]     return self.step_wait()
+2025-10-07 14:03:27,711 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,711 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 58, in step_wait
+2025-10-07 14:03:27,711 - WARNING - [STDERR]     obs, self.buf_rews[env_idx], terminated, truncated, self.buf_infos[env_idx] = self.envs[env_idx].step(
+2025-10-07 14:03:27,712 - WARNING - [STDERR]                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,712 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py", line 94, in step
+2025-10-07 14:03:27,712 - WARNING - [STDERR]     observation, reward, terminated, truncated, info = self.env.step(action)
+2025-10-07 14:03:27,712 - WARNING - [STDERR]                                                        ^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,712 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 226, in step
+2025-10-07 14:03:27,712 - WARNING - [STDERR]     self.runner.run(t_final=target_time, output_dt=self.decision_interval)
+2025-10-07 14:03:27,712 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 543, in run
+2025-10-07 14:03:27,712 - WARNING - [STDERR]     self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, d_R=self.d_R)
+2025-10-07 14:03:27,712 - WARNING - [STDERR]                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,712 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 414, in strang_splitting_step
+2025-10-07 14:03:27,712 - WARNING - [STDERR]     d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
+2025-10-07 14:03:27,712 - WARNING - [STDERR]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,712 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 760, in solve_hyperbolic_step_ssprk3_gpu
+2025-10-07 14:03:27,712 - WARNING - [STDERR]     integrator.integrate_step(d_U_physical, d_U_result, dt_hyp, compute_spatial_discretization_gpu_callback)
+2025-10-07 14:03:27,713 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/gpu/ssp_rk3_cuda.py", line 140, in integrate_step
+2025-10-07 14:03:27,713 - WARNING - [STDERR]     compute_flux_divergence_func(u_n_device, self.flux_div_device)
+2025-10-07 14:03:27,713 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 721, in compute_spatial_discretization_gpu_callback
+2025-10-07 14:03:27,713 - WARNING - [STDERR]     boundary_conditions.apply_boundary_conditions_gpu(d_U_extended, grid, params)
+2025-10-07 14:03:27,713 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/boundary_conditions.py", line 433, in apply_boundary_conditions_gpu
+2025-10-07 14:03:27,713 - WARNING - [STDERR]     inflow_L_0, inflow_L_1, inflow_L_2, inflow_L_3 = inflow_L['rho_m'], inflow_L['w_m'], inflow_L['rho_c'], inflow_L['w_c']
+2025-10-07 14:03:27,713 - WARNING - [STDERR]                                                      ~~~~~~~~^^^^^^^^^
+2025-10-07 14:03:27,713 - WARNING - [STDERR] TypeError: list indices must be integers or slices, not str
+2025-10-07 14:03:27,713 - WARNING - [STDERR] /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-10-07 14:03:27,713 - WARNING - [STDERR]   warn(NumbaPerformanceWarning(msg))
+2025-10-07 14:03:27,713 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 14:03:27,713 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 363, in train_rl_agent
+2025-10-07 14:03:27,713 - WARNING - [STDERR]     model.learn(total_timesteps=total_timesteps)
+2025-10-07 14:03:27,713 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py", line 308, in learn
+2025-10-07 14:03:27,714 - WARNING - [STDERR]     return super().learn(
+2025-10-07 14:03:27,714 - WARNING - [STDERR]            ^^^^^^^^^^^^^^
+2025-10-07 14:03:27,714 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 259, in learn
+2025-10-07 14:03:27,714 - WARNING - [STDERR]     continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, n_rollout_steps=self.n_steps)
+2025-10-07 14:03:27,714 - WARNING - [STDERR]                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,714 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 178, in collect_rollouts
+2025-10-07 14:03:27,714 - WARNING - [STDERR]     new_obs, rewards, dones, infos = env.step(clipped_actions)
+2025-10-07 14:03:27,714 - WARNING - [STDERR]                                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,714 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/base_vec_env.py", line 197, in step
+2025-10-07 14:03:27,714 - WARNING - [STDERR]     return self.step_wait()
+2025-10-07 14:03:27,714 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,714 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 58, in step_wait
+2025-10-07 14:03:27,714 - WARNING - [STDERR]     obs, self.buf_rews[env_idx], terminated, truncated, self.buf_infos[env_idx] = self.envs[env_idx].step(
+2025-10-07 14:03:27,714 - WARNING - [STDERR]                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,715 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py", line 94, in step
+2025-10-07 14:03:27,715 - WARNING - [STDERR]     observation, reward, terminated, truncated, info = self.env.step(action)
+2025-10-07 14:03:27,715 - WARNING - [STDERR]                                                        ^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,715 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 226, in step
+2025-10-07 14:03:27,715 - WARNING - [STDERR]     self.runner.run(t_final=target_time, output_dt=self.decision_interval)
+2025-10-07 14:03:27,715 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 543, in run
+2025-10-07 14:03:27,715 - WARNING - [STDERR]     self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, d_R=self.d_R)
+2025-10-07 14:03:27,715 - WARNING - [STDERR]                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,715 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 414, in strang_splitting_step
+2025-10-07 14:03:27,715 - WARNING - [STDERR]     d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
+2025-10-07 14:03:27,715 - WARNING - [STDERR]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,715 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 760, in solve_hyperbolic_step_ssprk3_gpu
+2025-10-07 14:03:27,715 - WARNING - [STDERR]     integrator.integrate_step(d_U_physical, d_U_result, dt_hyp, compute_spatial_discretization_gpu_callback)
+2025-10-07 14:03:27,715 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/gpu/ssp_rk3_cuda.py", line 140, in integrate_step
+2025-10-07 14:03:27,716 - WARNING - [STDERR]     compute_flux_divergence_func(u_n_device, self.flux_div_device)
+2025-10-07 14:03:27,716 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 721, in compute_spatial_discretization_gpu_callback
+2025-10-07 14:03:27,716 - WARNING - [STDERR]     boundary_conditions.apply_boundary_conditions_gpu(d_U_extended, grid, params)
+2025-10-07 14:03:27,716 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/boundary_conditions.py", line 433, in apply_boundary_conditions_gpu
+2025-10-07 14:03:27,716 - WARNING - [STDERR]     inflow_L_0, inflow_L_1, inflow_L_2, inflow_L_3 = inflow_L['rho_m'], inflow_L['w_m'], inflow_L['rho_c'], inflow_L['w_c']
+2025-10-07 14:03:27,716 - WARNING - [STDERR]                                                      ~~~~~~~~^^^^^^^^^
+2025-10-07 14:03:27,716 - WARNING - [STDERR] TypeError: list indices must be integers or slices, not str
+2025-10-07 14:03:27,716 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 14:03:27,716 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 363, in train_rl_agent
+2025-10-07 14:03:27,716 - WARNING - [STDERR]     model.learn(total_timesteps=total_timesteps)
+2025-10-07 14:03:27,716 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py", line 308, in learn
+2025-10-07 14:03:27,716 - WARNING - [STDERR]     return super().learn(
+2025-10-07 14:03:27,716 - WARNING - [STDERR]            ^^^^^^^^^^^^^^
+2025-10-07 14:03:27,717 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 259, in learn
+2025-10-07 14:03:27,717 - WARNING - [STDERR]     continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, n_rollout_steps=self.n_steps)
+2025-10-07 14:03:27,717 - WARNING - [STDERR]                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,717 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 178, in collect_rollouts
+2025-10-07 14:03:27,717 - WARNING - [STDERR]     new_obs, rewards, dones, infos = env.step(clipped_actions)
+2025-10-07 14:03:27,717 - WARNING - [STDERR]                                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,717 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/base_vec_env.py", line 197, in step
+2025-10-07 14:03:27,717 - WARNING - [STDERR]     return self.step_wait()
+2025-10-07 14:03:27,717 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,717 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 58, in step_wait
+2025-10-07 14:03:27,717 - WARNING - [STDERR]     obs, self.buf_rews[env_idx], terminated, truncated, self.buf_infos[env_idx] = self.envs[env_idx].step(
+2025-10-07 14:03:27,717 - WARNING - [STDERR]                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,717 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py", line 94, in step
+2025-10-07 14:03:27,717 - WARNING - [STDERR]     observation, reward, terminated, truncated, info = self.env.step(action)
+2025-10-07 14:03:27,717 - WARNING - [STDERR]                                                        ^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,718 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 226, in step
+2025-10-07 14:03:27,718 - WARNING - [STDERR]     self.runner.run(t_final=target_time, output_dt=self.decision_interval)
+2025-10-07 14:03:27,718 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 543, in run
+2025-10-07 14:03:27,718 - WARNING - [STDERR]     self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, d_R=self.d_R)
+2025-10-07 14:03:27,718 - WARNING - [STDERR]                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,718 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 414, in strang_splitting_step
+2025-10-07 14:03:27,718 - WARNING - [STDERR]     d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
+2025-10-07 14:03:27,718 - WARNING - [STDERR]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,718 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 760, in solve_hyperbolic_step_ssprk3_gpu
+2025-10-07 14:03:27,718 - WARNING - [STDERR]     integrator.integrate_step(d_U_physical, d_U_result, dt_hyp, compute_spatial_discretization_gpu_callback)
+2025-10-07 14:03:27,718 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/gpu/ssp_rk3_cuda.py", line 140, in integrate_step
+2025-10-07 14:03:27,718 - WARNING - [STDERR]     compute_flux_divergence_func(u_n_device, self.flux_div_device)
+2025-10-07 14:03:27,718 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 721, in compute_spatial_discretization_gpu_callback
+2025-10-07 14:03:27,719 - WARNING - [STDERR]     boundary_conditions.apply_boundary_conditions_gpu(d_U_extended, grid, params)
+2025-10-07 14:03:27,719 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/boundary_conditions.py", line 433, in apply_boundary_conditions_gpu
+2025-10-07 14:03:27,719 - WARNING - [STDERR]     inflow_L_0, inflow_L_1, inflow_L_2, inflow_L_3 = inflow_L['rho_m'], inflow_L['w_m'], inflow_L['rho_c'], inflow_L['w_c']
+2025-10-07 14:03:27,719 - WARNING - [STDERR]                                                      ~~~~~~~~^^^^^^^^^
+2025-10-07 14:03:27,719 - WARNING - [STDERR] TypeError: list indices must be integers or slices, not str
+2025-10-07 14:03:27,719 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 14:03:27,719 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 389, in run_performance_comparison
+2025-10-07 14:03:27,719 - WARNING - [STDERR]     baseline_states, _ = self.run_control_simulation(
+2025-10-07 14:03:27,719 - WARNING - [STDERR]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,719 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 219, in run_control_simulation
+2025-10-07 14:03:27,719 - WARNING - [STDERR]     obs, reward, terminated, truncated, info = env.step(action)
+2025-10-07 14:03:27,719 - WARNING - [STDERR]                                                ^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,719 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 226, in step
+2025-10-07 14:03:27,719 - WARNING - [STDERR]     self.runner.run(t_final=target_time, output_dt=self.decision_interval)
+2025-10-07 14:03:27,720 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 543, in run
+2025-10-07 14:03:27,720 - WARNING - [STDERR]     self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, d_R=self.d_R)
+2025-10-07 14:03:27,720 - WARNING - [STDERR]                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,720 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 414, in strang_splitting_step
+2025-10-07 14:03:27,720 - WARNING - [STDERR]     d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
+2025-10-07 14:03:27,720 - WARNING - [STDERR]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,720 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 760, in solve_hyperbolic_step_ssprk3_gpu
+2025-10-07 14:03:27,720 - WARNING - [STDERR]     integrator.integrate_step(d_U_physical, d_U_result, dt_hyp, compute_spatial_discretization_gpu_callback)
+2025-10-07 14:03:27,720 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/gpu/ssp_rk3_cuda.py", line 140, in integrate_step
+2025-10-07 14:03:27,720 - WARNING - [STDERR]     compute_flux_divergence_func(u_n_device, self.flux_div_device)
+2025-10-07 14:03:27,720 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 721, in compute_spatial_discretization_gpu_callback
+2025-10-07 14:03:27,720 - WARNING - [STDERR]     boundary_conditions.apply_boundary_conditions_gpu(d_U_extended, grid, params)
+2025-10-07 14:03:27,720 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/boundary_conditions.py", line 433, in apply_boundary_conditions_gpu
+2025-10-07 14:03:27,721 - WARNING - [STDERR]     inflow_L_0, inflow_L_1, inflow_L_2, inflow_L_3 = inflow_L['rho_m'], inflow_L['w_m'], inflow_L['rho_c'], inflow_L['w_c']
+2025-10-07 14:03:27,721 - WARNING - [STDERR]                                                      ~~~~~~~~^^^^^^^^^
+2025-10-07 14:03:27,721 - WARNING - [STDERR] TypeError: list indices must be integers or slices, not str
+2025-10-07 14:03:27,721 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 14:03:27,721 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 389, in run_performance_comparison
+2025-10-07 14:03:27,721 - WARNING - [STDERR]     baseline_states, _ = self.run_control_simulation(
+2025-10-07 14:03:27,721 - WARNING - [STDERR]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,721 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 219, in run_control_simulation
+2025-10-07 14:03:27,721 - WARNING - [STDERR]     obs, reward, terminated, truncated, info = env.step(action)
+2025-10-07 14:03:27,721 - WARNING - [STDERR]                                                ^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,721 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 226, in step
+2025-10-07 14:03:27,721 - WARNING - [STDERR]     self.runner.run(t_final=target_time, output_dt=self.decision_interval)
+2025-10-07 14:03:27,721 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 543, in run
+2025-10-07 14:03:27,721 - WARNING - [STDERR]     self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, d_R=self.d_R)
+2025-10-07 14:03:27,722 - WARNING - [STDERR]                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,722 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 414, in strang_splitting_step
+2025-10-07 14:03:27,722 - WARNING - [STDERR]     d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
+2025-10-07 14:03:27,722 - WARNING - [STDERR]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,722 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 760, in solve_hyperbolic_step_ssprk3_gpu
+2025-10-07 14:03:27,722 - WARNING - [STDERR]     integrator.integrate_step(d_U_physical, d_U_result, dt_hyp, compute_spatial_discretization_gpu_callback)
+2025-10-07 14:03:27,722 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/gpu/ssp_rk3_cuda.py", line 140, in integrate_step
+2025-10-07 14:03:27,722 - WARNING - [STDERR]     compute_flux_divergence_func(u_n_device, self.flux_div_device)
+2025-10-07 14:03:27,722 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 721, in compute_spatial_discretization_gpu_callback
+2025-10-07 14:03:27,722 - WARNING - [STDERR]     boundary_conditions.apply_boundary_conditions_gpu(d_U_extended, grid, params)
+2025-10-07 14:03:27,722 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/boundary_conditions.py", line 433, in apply_boundary_conditions_gpu
+2025-10-07 14:03:27,722 - WARNING - [STDERR]     inflow_L_0, inflow_L_1, inflow_L_2, inflow_L_3 = inflow_L['rho_m'], inflow_L['w_m'], inflow_L['rho_c'], inflow_L['w_c']
+2025-10-07 14:03:27,722 - WARNING - [STDERR]                                                      ~~~~~~~~^^^^^^^^^
+2025-10-07 14:03:27,722 - WARNING - [STDERR] TypeError: list indices must be integers or slices, not str
+2025-10-07 14:03:27,723 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 14:03:27,723 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 389, in run_performance_comparison
+2025-10-07 14:03:27,723 - WARNING - [STDERR]     baseline_states, _ = self.run_control_simulation(
+2025-10-07 14:03:27,723 - WARNING - [STDERR]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,723 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 219, in run_control_simulation
+2025-10-07 14:03:27,723 - WARNING - [STDERR]     obs, reward, terminated, truncated, info = env.step(action)
+2025-10-07 14:03:27,723 - WARNING - [STDERR]                                                ^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,723 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 226, in step
+2025-10-07 14:03:27,723 - WARNING - [STDERR]     self.runner.run(t_final=target_time, output_dt=self.decision_interval)
+2025-10-07 14:03:27,723 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 543, in run
+2025-10-07 14:03:27,723 - WARNING - [STDERR]     self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, d_R=self.d_R)
+2025-10-07 14:03:27,723 - WARNING - [STDERR]                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,723 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 414, in strang_splitting_step
+2025-10-07 14:03:27,723 - WARNING - [STDERR]     d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
+2025-10-07 14:03:27,723 - WARNING - [STDERR]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,724 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 760, in solve_hyperbolic_step_ssprk3_gpu
+2025-10-07 14:03:27,724 - WARNING - [STDERR]     integrator.integrate_step(d_U_physical, d_U_result, dt_hyp, compute_spatial_discretization_gpu_callback)
+2025-10-07 14:03:27,724 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/gpu/ssp_rk3_cuda.py", line 140, in integrate_step
+2025-10-07 14:03:27,724 - WARNING - [STDERR]     compute_flux_divergence_func(u_n_device, self.flux_div_device)
+2025-10-07 14:03:27,724 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/time_integration.py", line 721, in compute_spatial_discretization_gpu_callback
+2025-10-07 14:03:27,724 - WARNING - [STDERR]     boundary_conditions.apply_boundary_conditions_gpu(d_U_extended, grid, params)
+2025-10-07 14:03:27,724 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/numerics/boundary_conditions.py", line 433, in apply_boundary_conditions_gpu
+2025-10-07 14:03:27,724 - WARNING - [STDERR]     inflow_L_0, inflow_L_1, inflow_L_2, inflow_L_3 = inflow_L['rho_m'], inflow_L['w_m'], inflow_L['rho_c'], inflow_L['w_c']
+2025-10-07 14:03:27,724 - WARNING - [STDERR]                                                      ~~~~~~~~^^^^^^^^^
+2025-10-07 14:03:27,724 - WARNING - [STDERR] TypeError: list indices must be integers or slices, not str
+2025-10-07 14:03:27,724 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 14:03:27,724 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 788, in main
+2025-10-07 14:03:27,724 - WARNING - [STDERR]     success = test.run_all_tests()
+2025-10-07 14:03:27,724 - WARNING - [STDERR]               ^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,725 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 537, in run_all_tests
+2025-10-07 14:03:27,725 - WARNING - [STDERR]     self.generate_section_7_6_latex()
+2025-10-07 14:03:27,725 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 762, in generate_section_7_6_latex
+2025-10-07 14:03:27,725 - WARNING - [STDERR]     latex_content = template.format(**template_vars)
+2025-10-07 14:03:27,725 - WARNING - [STDERR]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 14:03:27,725 - WARNING - [STDERR] KeyError: 'Validation de la Performance des Agents RL (Section 7'
+2025-10-07 14:03:27,725 - WARNING - [WARNING] Tests returned code: 1
+2025-10-07 14:03:27,725 - INFO - 
+[STEP 4/4] Copying artifacts and cleaning up...
+2025-10-07 14:03:27,725 - INFO - [ARTIFACTS] Copying results for section_7_6_rl_performance...
+2025-10-07 14:03:27,728 - INFO - [OK] Section copied to: /kaggle/working/section_7_6_rl_performance
+2025-10-07 14:03:27,729 - INFO - [ARTIFACTS] NPZ files: 0
+2025-10-07 14:03:27,729 - INFO - [ARTIFACTS] PNG figures: 2
+2025-10-07 14:03:27,729 - INFO - [ARTIFACTS] YAML scenarios: 3
+2025-10-07 14:03:27,729 - INFO - [ARTIFACTS] TEX files: 0
+2025-10-07 14:03:27,729 - INFO - [ARTIFACTS] JSON files: 0
+2025-10-07 14:03:27,729 - INFO - [ARTIFACTS] CSV metrics: 1
+2025-10-07 14:03:27,729 - INFO - TRACKING_SUCCESS: Artifacts copied
+2025-10-07 14:03:27,729 - INFO - [SUCCESS] All artifacts organized and copied
+2025-10-07 14:03:27,729 - INFO - [CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow
+2025-10-07 14:03:27,759 - INFO - [OK] Cleanup completed - only validation results remain
+2025-10-07 14:03:27,759 - INFO - TRACKING_SUCCESS: Cleanup completed
+2025-10-07 14:03:27,760 - INFO - [OK] Session summary created: /kaggle/working/validation_results/session_summary.json
+2025-10-07 14:03:27,760 - INFO - TRACKING_SUCCESS: Session summary created
+2025-10-07 14:03:27,760 - INFO - 
+[FINAL] Validation workflow completed
+2025-10-07 14:03:27,760 - INFO - Remote logging finalized - ready for download

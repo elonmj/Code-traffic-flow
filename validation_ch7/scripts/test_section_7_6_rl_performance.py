@@ -90,7 +90,7 @@ class RLPerformanceValidationTest(ValidationSection):
             'output_dt': 60.0,
             'CFL': 0.4,
             'boundary_conditions': {
-                'left': {'type': 'inflow', 'state': [0.02, 0.5, 0.03, 1.5]}, # Densité et momentum
+                'left': {'type': 'inflow', 'state': {'rho_m': 0.02, 'w_m': 0.5, 'rho_c': 0.03, 'w_c': 1.5}},
                 'right': {'type': 'outflow'}
             },
             'road': {'quality_type': 'uniform', 'quality_value': 2}
@@ -679,58 +679,58 @@ class RLPerformanceValidationTest(ValidationSection):
         figure_path_learning = "fig_rl_learning_curve.png"
 
         template = r"""
-\subsection{Validation de la Performance des Agents RL (Section 7.6)}
-\label{subsec:validation_rl_performance}
+\subsection{{Validation de la Performance des Agents RL (Section 7.6)}}
+\label{{subsec:validation_rl_performance}}
 
-Cette section valide la revendication \textbf{R5}, qui postule que les agents d'apprentissage par renforcement (RL) peuvent surpasser les méthodes de contrôle traditionnelles pour la gestion du trafic.
+Cette section valide la revendication \textbf{{R5}}, qui postule que les agents d'apprentissage par renforcement (RL) peuvent surpasser les méthodes de contrôle traditionnelles pour la gestion du trafic.
 
-\subsubsection{Entraînement des Agents}
-Pour chaque scénario de contrôle, un agent RL distinct (basé sur l'algorithme DQN) est entraîné. L'entraînement est effectué en utilisant l'environnement Gym `TrafficSignalEnv`, qui interagit avec un simulateur ARZ via une architecture client/endpoint. La figure~\ref{fig:rl_learning_curve_76} montre une courbe d'apprentissage typique, où la récompense cumulée augmente et se stabilise, indiquant la convergence de l'agent vers une politique de contrôle efficace.
+\subsubsection{{Entraînement des Agents}}
+Pour chaque scénario de contrôle, un agent RL distinct (basé sur l'algorithme DQN) est entraîné. L'entraînement est effectué en utilisant l'environnement Gym `TrafficSignalEnv`, qui interagit avec un simulateur ARZ via une architecture client/endpoint. La figure~\ref{{fig:rl_learning_curve_76}} montre une courbe d'apprentissage typique, où la récompense cumulée augmente et se stabilise, indiquant la convergence de l'agent vers une politique de contrôle efficace.
 
-\subsubsection{Méthodologie}
+\subsubsection{{Méthodologie}}
 La validation est effectuée en comparant un agent RL à un contrôleur de référence (baseline) sur trois scénarios de contrôle de trafic :
-\begin{itemize}
-    \item \textbf{Contrôle de feux de signalisation :} Un contrôleur à temps fixe est comparé à un agent RL adaptatif.
-    \item \textbf{Ramp metering :} Un contrôleur basé sur des seuils de densité est comparé à un agent RL prédictif.
-    \item \textbf{Contrôle adaptatif de vitesse :} Une signalisation simple est comparée à un agent RL anticipatif.
-\end{itemize}
+\begin{{itemize}}
+    \item \textbf{{Contrôle de feux de signalisation :}} Un contrôleur à temps fixe est comparé à un agent RL adaptatif.
+    \item \textbf{{Ramp metering :}} Un contrôleur basé sur des seuils de densité est comparé à un agent RL prédictif.
+    \item \textbf{{Contrôle adaptatif de vitesse :}} Une signalisation simple est comparée à un agent RL anticipatif.
+\end{{itemize}}
 Les métriques clés sont l'amélioration du débit, de l'efficacité du trafic et la réduction des délais.
 
-\subsubsection{Résultats de Performance}
+\subsubsection{{Résultats de Performance}}
 
-Le tableau~\ref{tab:rl_performance_summary_76} résume les performances moyennes obtenues sur l'ensemble des scénarios.
+Le tableau~\ref{{tab:rl_performance_summary_76}} résume les performances moyennes obtenues sur l'ensemble des scénarios.
 
-\begin{table}[h!]
+\begin{{table}}[h!]
 \centering
-\caption{Synthèse de la validation de performance RL (R5)}
-\label{tab:rl_performance_summary_76}
-\begin{tabular}{|l|c|c|c|}
+\caption{{Synthèse de la validation de performance RL (R5)}}
+\label{{tab:rl_performance_summary_76}}
+\begin{{tabular}}{{|l|c|c|c|}}
 \hline
-\textbf{Métrique} & \textbf{Valeur} & \textbf{Seuil} & \textbf{Statut} \\
+\textbf{{Métrique}} & \textbf{{Valeur}} & \textbf{{Seuil}} & \textbf{{Statut}} \\
 \hline
 Taux de succès des scénarios & {success_rate:.1f}\% & $\geq 66.7\%$ & \textcolor{{{success_color}}}{{{success_status}}} \\
 Amélioration moyenne du débit & {avg_flow_improvement:.2f}\% & $> 5\%$ & \textcolor{{{flow_color}}}{{{flow_status}}} \\
 Amélioration moyenne de l'efficacité & {avg_efficiency_improvement:.2f}\% & $> 8\%$ & \textcolor{{{efficiency_color}}}{{{efficiency_status}}} \\
 Réduction moyenne des délais & {avg_delay_reduction:.2f}\% & $> 10\%$ & \textcolor{{{delay_color}}}{{{delay_status}}} \\
 \hline
-\end{tabular}
-\end{table}
+\end{{tabular}}
+\end{{table}}
 
-La figure~\ref{fig:rl_improvements_76} détaille les gains de performance pour chaque scénario testé. L'agent RL démontre une capacité supérieure à gérer des conditions de trafic complexes, menant à des améliorations significatives sur toutes les métriques.
+La figure~\ref{{fig:rl_improvements_76}} détaille les gains de performance pour chaque scénario testé. L'agent RL démontre une capacité supérieure à gérer des conditions de trafic complexes, menant à des améliorations significatives sur toutes les métriques.
 
-\begin{figure}[h!]
+\begin{{figure}}[h!]
   \centering
   \includegraphics[width=0.9\textwidth]{{{figure_path_improvements}}}
-  \caption{Amélioration des performances de l'agent RL par rapport au contrôleur de référence pour chaque scénario.}
-  \label{fig:rl_improvements_76}
-\end{figure}
+  \caption{{Amélioration des performances de l'agent RL par rapport au contrôleur de référence pour chaque scénario.}}
+  \label{{fig:rl_improvements_76}}
+\end{{figure}}
 
-\begin{figure}[h!]
+\begin{{figure}}[h!]
   \centering
   \includegraphics[width=0.8\textwidth]{{{figure_path_learning}}}
-  \caption{Exemple de courbe d'apprentissage montrant la convergence de la récompense de l'agent.}
-  \label{fig:rl_learning_curve_76}
-\end{figure}
+  \caption{{Exemple de courbe d'apprentissage montrant la convergence de la récompense de l'agent.}}
+  \label{{fig:rl_learning_curve_76}}
+\end{{figure}}
 
 \subsubsection{{Conclusion Section 7.6}}
 Les résultats valident la revendication \textbf{{R5}}. Les agents RL surpassent systématiquement les contrôleurs de référence, avec une amélioration moyenne du débit de \textbf{{{avg_flow_improvement:.1f}\%}} et de l'efficacité de \textbf{{{avg_efficiency_improvement:.1f}\%}}. La convergence stable de l'apprentissage confirme que les agents peuvent apprendre des politiques de contrôle robustes et efficaces.

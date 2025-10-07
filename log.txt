@@ -218,3 +218,15 @@
 2025-10-07 13:12:47,728 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-07 13:12:53,316 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-07 13:12:56,038 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-ogea
+2025-10-07 15:02:16,710 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-07 15:02:16,829 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-07 15:02:16,906 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-07 15:02:16,906 - validation_kaggle_manager - INFO -   M  rz_model/simulation/__pycache__/runner.cpython-312.pyc (Modified (staged))
+2025-10-07 15:02:16,906 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-07 15:02:16,907 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-76rlperformance-ogea/ (Untracked)
+2025-10-07 15:02:16,907 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-07 15:02:16,993 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-07 15:02:17,179 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-07 15:02:17,179 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-07 15:02:22,323 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-07 15:02:25,362 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-etli
