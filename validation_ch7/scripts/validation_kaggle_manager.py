@@ -442,40 +442,36 @@ try:
     
     # Execute validation tests via subprocess as a module to properly handle package imports
     # Using -m ensures Python treats code/ as a proper package
-    test_module = "validation_ch7.scripts.{section['script'].replace('.py', '')}"
-    log_and_print("info", f"Executing Python module: {{test_module}}...")
-    log_and_print("info", f"PYTHONPATH={{env['PYTHONPATH']}}")
+    test_module = f"validation_ch7.scripts.{section['script'].replace('.py', '')}"
+    log_and_print("info", f"Executing Python module: {test_module}...")
+    log_and_print("info", f"PYTHONPATH={env['PYTHONPATH']}")
     log_and_print("info", "=" * 60)
     
     try:
         # Run the test script as a Python module (-m flag)
+        # DO NOT use capture_output=True - it buffers all output until process ends
+        # Instead, inherit stdout/stderr to see logs in real-time
         result = subprocess.run(
-            [sys.executable, "-m", test_module],
-            capture_output=True,
+            [sys.executable, "-u", "-m", test_module],  # -u for unbuffered output
+            capture_output=False,  # CRITICAL: Don't buffer output
             text=True,
             timeout=3000,  # 50 minutes max for tests
             env=env,
             cwd=REPO_DIR
         )
         
-        # Log stdout and stderr
-        if result.stdout:
-            for line in result.stdout.splitlines():
-                log_and_print("info", f"[TEST] {{line}}")
-        if result.stderr:
-            for line in result.stderr.splitlines():
-                log_and_print("warning", f"[STDERR] {{line}}")
+        # No need to log stdout/stderr - they're already displayed in real-time
         
         if result.returncode == 0:
             log_and_print("info", "[SUCCESS] Validation tests completed successfully")
             log_and_print("info", "TRACKING_SUCCESS: Validation execution finished")
         else:
-            log_and_print("warning", f"[WARNING] Tests returned code: {{result.returncode}}")
+            log_and_print("warning", f"[WARNING] Tests returned code: {result.returncode}")
     
     except subprocess.TimeoutExpired:
         log_and_print("error", "[ERROR] Validation test timeout (50 minutes)")
     except Exception as e:
-        log_and_print("error", f"[ERROR] Validation execution failed: {{e}}")
+        log_and_print("error", f"[ERROR] Validation execution failed: {e}")
         import traceback
         log_and_print("error", traceback.format_exc())
         # Continue to artifact copy even if tests fail
