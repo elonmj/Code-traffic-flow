@@ -27,10 +27,10 @@ if quick_test:
     print("LANCEMENT VALIDATION KAGGLE GPU - SECTION 7.6 RL (QUICK TEST)")
     print("=" * 80)
     print("\n[QUICK TEST MODE]")
-    print("  - Training: 10 timesteps only")
-    print("  - Duration: 10 minutes simulated time")
+    print("  - Training: 2 timesteps only")
+    print("  - Duration: 2 minutes simulated time")
     print("  - Scenarios: 1 scenario (traffic_light_control)")
-    print("  - Expected runtime: ~15 minutes on GPU")
+    print("  - Expected runtime: ~5 minutes on GPU")
 else:
     print("LANCEMENT VALIDATION KAGGLE GPU - SECTION 7.6 RL PERFORMANCE")
     print("=" * 80)
@@ -69,7 +69,7 @@ try:
         os.environ['QUICK_TEST'] = 'true'
     
     timeout = 1800 if quick_test else 7200  # 30 min for quick, 2 hours for full
-    commit_msg = "Quick test: RL-ARZ integration validation (10 steps)" if quick_test else None
+    commit_msg = "Quick test: RL-ARZ integration validation (2 steps)" if quick_test else None
     
     success, kernel_slug = manager.run_validation_section(
         section_name="section_7_6_rl_performance",

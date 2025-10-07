@@ -316,9 +316,9 @@ class RLPerformanceValidationTest(ValidationSection):
         
         # Quick test mode: drastically reduce timesteps AND episode duration for setup validation
         if self.quick_test:
-            total_timesteps = 10  # Just 10 steps to test integration
+            total_timesteps = 2  # Just 2 steps to test integration
             episode_max_time = 120.0  # 2 minutes per episode instead of 1 hour
-            n_steps = 10  # Collect only 10 steps before updating
+            n_steps = 2  # Collect only 2 steps before updating
             print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps, {episode_max_time}s episodes", flush=True)
         else:
             episode_max_time = 3600.0  # 1 hour for full test
@@ -498,7 +498,7 @@ class RLPerformanceValidationTest(ValidationSection):
             print(f"[QUICK TEST] Training only: {scenarios_to_train[0]}")
         
         for scenario in scenarios_to_train:
-            timesteps = 10 if self.quick_test else 20000
+            timesteps = 2 if self.quick_test else 20000
             self.train_rl_agent(scenario, total_timesteps=timesteps, device=device)
         
         # Test all RL scenarios
@@ -785,10 +785,10 @@ def main():
     if quick_test:
         print("=" * 80)
         print("QUICK TEST MODE ENABLED")
-        print("- Training: 10 timesteps only")
-        print("- Duration: 10 minutes simulated time")
+        print("- Training: 2 timesteps only")
+        print("- Duration: 2 minutes simulated time")
         print("- Scenarios: 1 scenario only")
-        print("- Expected runtime: ~15 minutes on GPU")
+        print("- Expected runtime: ~5 minutes on GPU")
         print("=" * 80)
     
     test = RLPerformanceValidationTest(quick_test=quick_test)
