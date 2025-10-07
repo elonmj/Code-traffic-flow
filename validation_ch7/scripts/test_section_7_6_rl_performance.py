@@ -176,9 +176,9 @@ class RLPerformanceValidationTest(ValidationSection):
         # Quick test mode: reduce duration for fast validation
         if self.quick_test:
             duration = min(duration, 600.0)  # Max 10 minutes simulated time
-            print(f"  [QUICK TEST] Reduced duration to {duration}s")
+            print(f"  [QUICK TEST] Reduced duration to {duration}s", flush=True)
         
-        print(f"  [INFO] Initializing TrafficSignalEnvDirect with device={device}")
+        print(f"  [INFO] Initializing TrafficSignalEnvDirect with device={device}", flush=True)
         
         try:
             # Direct coupling - no mock, no HTTP server
@@ -207,7 +207,7 @@ class RLPerformanceValidationTest(ValidationSection):
         total_reward = 0
         steps = 0
 
-        print(f"  [INFO] Starting simulation loop (max duration: {duration}s, interval: {control_interval}s)")
+        print(f"  [INFO] Starting simulation loop (max duration: {duration}s, interval: {control_interval}s)", flush=True)
         
         while not (terminated or truncated) and env.runner.t < duration:
             step_start = time.perf_counter()
@@ -233,17 +233,17 @@ class RLPerformanceValidationTest(ValidationSection):
             if steps % 10 == 0:
                 avg_step_time = np.mean(step_times[-10:])
                 print(f"    Step {steps}: t={env.runner.t:.1f}s, reward={reward:.3f}, "
-                      f"avg_step_time={avg_step_time:.3f}s")
+                      f"avg_step_time={avg_step_time:.3f}s", flush=True)
 
         # Performance summary
         avg_step_time = np.mean(step_times) if step_times else 0
-        print(f"\n  [PERFORMANCE] Simulation completed:")
-        print(f"    - Total steps: {steps}")
-        print(f"    - Total reward: {total_reward:.2f}")
-        print(f"    - Avg step time: {avg_step_time:.3f}s (device={device})")
-        print(f"    - Simulated time: {env.runner.t:.1f}s")
-        print(f"    - Wallclock time: {sum(step_times):.1f}s")
-        print(f"    - Speed ratio: {env.runner.t / sum(step_times):.2f}x real-time" if sum(step_times) > 0 else "")
+        print(f"\n  [PERFORMANCE] Simulation completed:", flush=True)
+        print(f"    - Total steps: {steps}", flush=True)
+        print(f"    - Total reward: {total_reward:.2f}", flush=True)
+        print(f"    - Avg step time: {avg_step_time:.3f}s (device={device})", flush=True)
+        print(f"    - Simulated time: {env.runner.t:.1f}s", flush=True)
+        print(f"    - Wallclock time: {sum(step_times):.1f}s", flush=True)
+        print(f"    - Speed ratio: {env.runner.t / sum(step_times):.2f}x real-time" if sum(step_times) > 0 else "", flush=True)
         
         env.close()
         
@@ -319,15 +319,15 @@ class RLPerformanceValidationTest(ValidationSection):
             total_timesteps = 10  # Just 10 steps to test integration
             episode_max_time = 120.0  # 2 minutes per episode instead of 1 hour
             n_steps = 10  # Collect only 10 steps before updating
-            print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps, {episode_max_time}s episodes")
+            print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps, {episode_max_time}s episodes", flush=True)
         else:
             episode_max_time = 3600.0  # 1 hour for full test
             n_steps = 2048  # Default PPO buffer size
         
-        print(f"\n[TRAINING] Starting RL training for scenario: {scenario_type}")
-        print(f"  Device: {device}")
-        print(f"  Total timesteps: {total_timesteps}")
-        print(f"  Episode max time: {episode_max_time}s")
+        print(f"\n[TRAINING] Starting RL training for scenario: {scenario_type}", flush=True)
+        print(f"  Device: {device}", flush=True)
+        print(f"  Total timesteps: {total_timesteps}", flush=True)
+        print(f"  Episode max time: {episode_max_time}s", flush=True)
         
         self.models_dir.mkdir(parents=True, exist_ok=True)
         model_path = self.models_dir / f"rl_agent_{scenario_type}.zip"
@@ -347,10 +347,10 @@ class RLPerformanceValidationTest(ValidationSection):
             )
             
             print(f"  [INFO] Environment created: obs_space={env.observation_space.shape}, "
-                  f"action_space={env.action_space.n}")
+                  f"action_space={env.action_space.n}", flush=True)
             
             # Train PPO agent
-            print(f"  [INFO] Initializing PPO agent...")
+            print(f"  [INFO] Initializing PPO agent...", flush=True)
             model = PPO(
                 'MlpPolicy',
                 env,
@@ -365,32 +365,32 @@ class RLPerformanceValidationTest(ValidationSection):
                 tensorboard_log=str(self.models_dir / "tensorboard")
             )
             
-            print(f"  [INFO] Training for {total_timesteps} timesteps...")
+            print(f"  [INFO] Training for {total_timesteps} timesteps...", flush=True)
             model.learn(total_timesteps=total_timesteps)
             
             # Save model
             model.save(str(model_path))
-            print(f"  [SUCCESS] Model saved to {model_path}")
+            print(f"  [SUCCESS] Model saved to {model_path}", flush=True)
             
             env.close()
             
             return str(model_path)
             
         except Exception as e:
-            print(f"[ERROR] Training failed: {e}")
+            print(f"[ERROR] Training failed: {e}", flush=True)
             import traceback
             traceback.print_exc()
             return None
 
     def run_performance_comparison(self, scenario_type, device='gpu'):
         """Run performance comparison between baseline and RL controllers."""
-        print(f"\nTesting scenario: {scenario_type} (device={device})")
+        print(f"\nTesting scenario: {scenario_type} (device={device})", flush=True)
         
         try:
             scenario_path = self._create_scenario_config(scenario_type)
 
             # --- Baseline controller evaluation ---
-            print("  Running baseline controller...")
+            print("  Running baseline controller...", flush=True)
             baseline_controller = self.BaselineController(scenario_type)
             baseline_states, _ = self.run_control_simulation(
                 baseline_controller, 
@@ -403,12 +403,12 @@ class RLPerformanceValidationTest(ValidationSection):
             baseline_performance = self.evaluate_traffic_performance(baseline_states, scenario_type)
             
             # Test RL controller
-            print("  Running RL controller...")
+            print("  Running RL controller...", flush=True)
             # --- Train or load RL agent ---
             model_path = self.models_dir / f"rl_agent_{scenario_type}.zip"
             if not model_path.exists():
                 # Train if model doesn't exist
-                print(f"  [INFO] Model not found, training new agent...")
+                print(f"  [INFO] Model not found, training new agent...", flush=True)
                 trained_path = self.train_rl_agent(
                     scenario_type, 
                     total_timesteps=20000,
