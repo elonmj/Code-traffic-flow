@@ -546,6 +546,14 @@ class RLPerformanceValidationTest(ValidationSection):
         print(f"Average delay reduction: {summary_metrics['avg_delay_reduction']:.2f}%")
         print(f"Overall validation: {'PASSED' if validation_success else 'FAILED'}")
         
+        # Save session summary for Kaggle monitoring
+        self.save_session_summary({
+            'validation_success': validation_success,
+            'quick_test_mode': self.quick_test,
+            'device_used': device,
+            'summary_metrics': summary_metrics
+        })
+        
         return validation_success
     
     def generate_rl_figures(self):
