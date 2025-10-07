@@ -652,3 +652,146 @@ class SimulationRunner:
                     print(f"Error saving mass conservation data: {e}")
 
         return self.times, self.states
+
+    # ========================================================================
+    # REINFORCEMENT LEARNING EXTENSIONS
+    # ========================================================================
+
+    def set_traffic_signal_state(self, intersection_id: str, phase_id: int) -> None:
+        """
+        Sets the traffic signal state for a specific intersection.
+        
+        This method is designed for RL environment integration, allowing
+        direct control of traffic signals by updating boundary conditions.
+        
+        Args:
+            intersection_id (str): Identifier for the intersection/boundary
+                                  (e.g., 'left', 'right', 'intersection_1')
+            phase_id (int): Traffic signal phase identifier
+                           (0 = red/stop, 1 = green/free flow, etc.)
+                           
+        Raises:
+            ValueError: If intersection_id is invalid or phase_id is out of bounds
+            
+        Example:
+            >>> runner.set_traffic_signal_state('left', phase_id=1)  # Green phase
+            >>> runner.set_traffic_signal_state('right', phase_id=0)  # Red phase
+        """
+        # Validate intersection_id
+        valid_ids = ['left', 'right']
+        if intersection_id not in valid_ids:
+            raise ValueError(
+                f"Invalid intersection_id '{intersection_id}'. "
+                f"Must be one of {valid_ids}"
+            )
+        
+        # Validate phase_id (basic range check)
+        if not isinstance(phase_id, int) or phase_id < 0:
+            raise ValueError(
+                f"Invalid phase_id {phase_id}. Must be non-negative integer."
+            )
+        
+        # Map phase_id to boundary condition configuration
+        # Phase 0 = red (outflow/free BC to drain traffic)
+        # Phase 1 = green (inflow BC to allow traffic)
+        if phase_id == 0:
+            # Red phase: use outflow boundary condition
+            bc_config = {
+                'type': 'outflow',
+                'extrapolation_order': 1
+            }
+        elif phase_id == 1:
+            # Green phase: use inflow with equilibrium state
+            # Use initial_equilibrium_state if available, otherwise set to None
+            bc_config = {
+                'type': 'inflow',
+                'state': self.initial_equilibrium_state if hasattr(self, 'initial_equilibrium_state') else None
+            }
+        else:
+            # For phase_id > 1, treat as variations (yellow, etc.)
+            # Default to outflow for now
+            bc_config = {
+                'type': 'outflow',
+                'extrapolation_order': 1
+            }
+        
+        # Update current boundary condition parameters
+        if not hasattr(self, 'current_bc_params'):
+            self.current_bc_params = copy.deepcopy(self.params.boundary_conditions)
+        
+        self.current_bc_params[intersection_id] = bc_config
+        
+        if not self.quiet:
+            print(f"Traffic signal updated: {intersection_id} -> phase {phase_id} ({bc_config['type']})")
+
+    def get_segment_observations(self, segment_indices: list) -> dict:
+        """
+        Extracts traffic state observations from specified road segments.
+        
+        This method is designed for RL environment integration, providing
+        normalized traffic state variables for agent observation.
+        
+        Args:
+            segment_indices (list): List of cell indices to observe
+                                   (must be within physical cells range)
+                                   
+        Returns:
+            dict: Dictionary with keys:
+                - 'rho_m': motorcycle densities (veh/m) - ndarray shape (len(segment_indices),)
+                - 'q_m': motorcycle momenta (veh/s) - ndarray
+                - 'rho_c': car densities (veh/m) - ndarray
+                - 'q_c': car momenta (veh/s) - ndarray
+                - 'v_m': motorcycle velocities (m/s) - ndarray
+                - 'v_c': car velocities (m/s) - ndarray
+                
+        Raises:
+            ValueError: If segment_indices are out of bounds
+            
+        Example:
+            >>> obs = runner.get_segment_observations([10, 11, 12])
+            >>> print(obs['rho_m'])  # Motorcycle densities for cells 10-12
+        """
+        # Validate indices
+        if not segment_indices:
+            raise ValueError("segment_indices cannot be empty")
+        
+        segment_indices = np.array(segment_indices, dtype=int)
+        
+        # Check bounds (physical cells only)
+        physical_start = self.grid.num_ghost_cells
+        physical_end = self.grid.num_ghost_cells + self.grid.N_physical
+        
+        if np.any(segment_indices < physical_start) or np.any(segment_indices >= physical_end):
+            raise ValueError(
+                f"Segment indices {segment_indices} out of bounds. "
+                f"Must be in range [{physical_start}, {physical_end})"
+            )
+        
+        # Extract state from appropriate array (CPU or GPU)
+        if self.device == 'gpu':
+            # Copy relevant cells from GPU to CPU
+            U_obs = self.d_U[:, segment_indices].copy_to_host()
+        else:
+            U_obs = self.U[:, segment_indices]
+        
+        # Extract components (U = [rho_m, q_m, rho_c, q_c])
+        rho_m = U_obs[0, :]
+        q_m = U_obs[1, :]
+        rho_c = U_obs[2, :]
+        q_c = U_obs[3, :]
+        
+        # Calculate velocities with epsilon to avoid division by zero
+        epsilon = 1e-10
+        v_m = q_m / (rho_m + epsilon)
+        v_c = q_c / (rho_c + epsilon)
+        
+        # Return as dictionary
+        return {
+            'rho_m': rho_m,
+            'q_m': q_m,
+            'rho_c': rho_c,
+            'q_c': q_c,
+            'v_m': v_m,
+            'v_c': v_c
+        }
+

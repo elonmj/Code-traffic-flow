@@ -34,13 +34,13 @@ from arz_model.analysis.metrics import (
 code_rl_path = project_root / "Code_RL"
 sys.path.append(str(code_rl_path))
 
-# --- Intégration de l'adaptateur In-Process ---
-from validation_ch7.scripts.in_process_client import InProcessARZClient
+# --- Direct Coupling with Real ARZ Simulation ---
+# Import the new direct environment (no mock, no HTTP server needed)
+from Code_RL.src.env.traffic_signal_env_direct import TrafficSignalEnvDirect
 
-# CORRECTION: Imports basés sur l'architecture réelle de Code_RL
-from src.env.traffic_signal_env import TrafficSignalEnv
-from src.rl.train_dqn import main as train_dqn_main # Renommer pour éviter conflit
-from stable_baselines3 import DQN # CORRECTION: Le projet utilise DQN, pas PPO
+# RL training utilities
+from src.rl.train_dqn import main as train_dqn_main # For reference
+from stable_baselines3 import DQN, PPO
 
 # Définir le chemin vers les configurations de Code_RL
 CODE_RL_CONFIG_DIR = code_rl_path / "configs"
@@ -161,51 +161,80 @@ class RLPerformanceValidationTest(ValidationSection):
             """Mise à jour de l'état interne de l'agent (si nécessaire)."""
             pass
 
-    def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=60.0):
-        """Exécute une simulation réelle avec une boucle de contrôle externe."""
-        # --- Instanciation de l'environnement avec l'adaptateur In-Process ---
+    def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=60.0, device='gpu'):
+        """Execute real ARZ simulation with direct coupling (GPU-accelerated on Kaggle)."""
+        import time
+        
+        print(f"  [INFO] Initializing TrafficSignalEnvDirect with device={device}")
+        
         try:
-            # 1. L'adaptateur `InProcessARZClient` encapsule le `SimulationRunner` de `arz_model`.
-            # Il se fait passer pour un client distant, rendant le test autonome mais physiquement réaliste.
-            in_process_client = InProcessARZClient(scenario_config_path=str(scenario_path))
-
-            # 2. L'environnement `TrafficSignalEnv` est instancié avec notre adaptateur.
-            # Il croit parler à un serveur, mais parle en réalité à notre simulateur local.
-            # Pour ce test, nous n'avons pas besoin des composants complexes de `Code_RL`
-            # comme le `signal_controller`, car notre adaptateur gère la simulation.
-            env = TrafficSignalEnv(endpoint_client=in_process_client, signal_controller=None, env_config={}, branch_ids=[])
-            # Remplacer les méthodes `step` et `reset` de l'environnement pour utiliser notre adaptateur directement.
-            # C'est une "injection de dépendance" au moment de l'exécution pour un contrôle total.
-            env.reset = in_process_client.reset
-            env.step = in_process_client.step
-
+            # Direct coupling - no mock, no HTTP server
+            # SimulationRunner instantiated inside environment
+            env = TrafficSignalEnvDirect(
+                scenario_config_path=str(scenario_path),
+                decision_interval=control_interval,
+                episode_max_time=duration,
+                segment_indices=[10, 50, 100, 150, 190],  # Representative segments
+                device=device  # GPU on Kaggle, CPU locally
+            )
+            
         except Exception as e:
-            print(f"  [ERROR] Échec d'initialisation de l'environnement TrafficSignalEnv: {e}")
+            print(f"  [ERROR] Failed to initialize TrafficSignalEnvDirect: {e}")
+            import traceback
+            traceback.print_exc()
             return None, None
 
         states_history = []
         control_actions = []
+        step_times = []  # Performance tracking
         
-        obs = env.reset()
-        done = False
+        obs, info = env.reset()
+        terminated = False
+        truncated = False
         total_reward = 0
         steps = 0
 
-        while not done and env.runner.t < duration:
-            action = controller.get_action(obs)
-            obs, reward, done, info = env.step(action)
+        print(f"  [INFO] Starting simulation loop (max duration: {duration}s, interval: {control_interval}s)")
+        
+        while not (terminated or truncated) and env.runner.t < duration:
+            step_start = time.perf_counter()
             
-            # L'historique des états est déjà géré à l'intérieur de l'adaptateur
+            # Get action from controller
+            action = controller.get_action(obs)
+            
+            # Execute step - advances ARZ simulation by control_interval
+            obs, reward, terminated, truncated, info = env.step(action)
+            
+            step_elapsed = time.perf_counter() - step_start
+            step_times.append(step_elapsed)
+            
+            # Store trajectory
             control_actions.append(action)
+            # Store full state for analysis (extract from runner.U or runner.d_U)
+            current_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
+            states_history.append(current_state)
+            
             total_reward += reward
             steps += 1
+            
+            if steps % 10 == 0:
+                avg_step_time = np.mean(step_times[-10:])
+                print(f"    Step {steps}: t={env.runner.t:.1f}s, reward={reward:.3f}, "
+                      f"avg_step_time={avg_step_time:.3f}s")
 
-        print(f"  Simulation terminée. Total steps: {steps}, Total reward: {total_reward:.2f}")
+        # Performance summary
+        avg_step_time = np.mean(step_times) if step_times else 0
+        print(f"\n  [PERFORMANCE] Simulation completed:")
+        print(f"    - Total steps: {steps}")
+        print(f"    - Total reward: {total_reward:.2f}")
+        print(f"    - Avg step time: {avg_step_time:.3f}s (device={device})")
+        print(f"    - Simulated time: {env.runner.t:.1f}s")
+        print(f"    - Wallclock time: {sum(step_times):.1f}s")
+        print(f"    - Speed ratio: {env.runner.t / sum(step_times):.2f}x real-time" if sum(step_times) > 0 else "")
+        
         env.close()
-
-        # Récupérer l'historique des états directement depuis le mock client
-        full_state_history = in_process_client.state_history
-        return full_state_history, control_actions
+        
+        return states_history, control_actions
     
     def evaluate_traffic_performance(self, states_history, scenario_type):
         """Evaluate traffic performance metrics."""
@@ -269,51 +298,80 @@ class RLPerformanceValidationTest(ValidationSection):
             'throughput': avg_flow * domain_length
         }
     
-    def train_rl_agent(self, scenario_type: str, total_timesteps=10000):
-        """Entraîne un agent RL pour un scénario donné et sauvegarde le modèle."""
-        print(f"\n[TRAINING] Lancement de l'entraînement pour le scénario : {scenario_type}")
+    def train_rl_agent(self, scenario_type: str, total_timesteps=10000, device='gpu'):
+        """Train RL agent using real ARZ simulation with direct coupling."""
+        print(f"\n[TRAINING] Starting RL training for scenario: {scenario_type}")
+        print(f"  Device: {device}")
+        print(f"  Total timesteps: {total_timesteps}")
+        
         self.models_dir.mkdir(parents=True, exist_ok=True)
         model_path = self.models_dir / f"rl_agent_{scenario_type}.zip"
 
-        # Créer la configuration du scénario pour l'environnement d'entraînement
+        # Create scenario configuration
         scenario_path = self._create_scenario_config(scenario_type)
 
         try:
-            # CORRECTION: Appeler la fonction d'entraînement de train_dqn.py
-            # Nous devons passer les arguments via une simulation de ligne de commande
-            # ou en modifiant temporairement sys.argv.
-            import sys
-            original_argv = sys.argv
-            sys.argv = [
-                'train_dqn.py',
-                '--use-mock', # Utiliser le simulateur mock pour l'entraînement
-                '--timesteps', str(total_timesteps),
-                '--output-dir', str(self.models_dir.parent), # Sauvegarder dans data/
-                '--model-name', model_path.stem, # Nom du fichier sans extension
-                '--config-dir', str(CODE_RL_CONFIG_DIR)
-            ]
-            train_dqn_main()
-            sys.argv = original_argv # Restaurer les arguments originaux
+            # Create training environment with direct coupling
+            env = TrafficSignalEnvDirect(
+                scenario_config_path=str(scenario_path),
+                decision_interval=60.0,  # 1-minute decisions
+                episode_max_time=3600.0,  # 1-hour episodes
+                segment_indices=[10, 50, 100, 150, 190],
+                device=device,
+                quiet=True
+            )
             
-            print(f"[TRAINING] Entraînement terminé. Modèle sauvegardé dans : {model_path}")
-            return model_path
+            print(f"  [INFO] Environment created: obs_space={env.observation_space.shape}, "
+                  f"action_space={env.action_space.n}")
+            
+            # Train PPO agent
+            print(f"  [INFO] Initializing PPO agent...")
+            model = PPO(
+                'MlpPolicy',
+                env,
+                verbose=1,
+                learning_rate=3e-4,
+                n_steps=2048,
+                batch_size=64,
+                n_epochs=10,
+                gamma=0.99,
+                gae_lambda=0.95,
+                clip_range=0.2,
+                tensorboard_log=str(self.models_dir / "tensorboard")
+            )
+            
+            print(f"  [INFO] Training for {total_timesteps} timesteps...")
+            model.learn(total_timesteps=total_timesteps)
+            
+            # Save model
+            model.save(str(model_path))
+            print(f"  [SUCCESS] Model saved to {model_path}")
+            
+            env.close()
+            
+            return str(model_path)
+            
         except Exception as e:
-            print(f"[ERROR] L'entraînement de l'agent a échoué : {e}")
+            print(f"[ERROR] Training failed: {e}")
             import traceback
             traceback.print_exc()
             return None
 
-    def run_performance_comparison(self, scenario_type):
+    def run_performance_comparison(self, scenario_type, device='gpu'):
         """Run performance comparison between baseline and RL controllers."""
-        print(f"\nTesting scenario: {scenario_type}")
+        print(f"\nTesting scenario: {scenario_type} (device={device})")
         
         try:
             scenario_path = self._create_scenario_config(scenario_type)
 
-            # --- Évaluation du contrôleur de référence ---
+            # --- Baseline controller evaluation ---
             print("  Running baseline controller...")
             baseline_controller = self.BaselineController(scenario_type)
-            baseline_states, _ = self.run_control_simulation(baseline_controller, scenario_path)
+            baseline_states, _ = self.run_control_simulation(
+                baseline_controller, 
+                scenario_path,
+                device=device
+            )
             if baseline_states is None:
                 return {'success': False, 'error': 'Baseline simulation failed'}
             
@@ -321,16 +379,28 @@ class RLPerformanceValidationTest(ValidationSection):
             
             # Test RL controller
             print("  Running RL controller...")
-            # --- Entraînement ou chargement de l'agent RL ---
+            # --- Train or load RL agent ---
             model_path = self.models_dir / f"rl_agent_{scenario_type}.zip"
             if not model_path.exists():
-                # Entraînement si le modèle n'existe pas
-                model_path = self.train_rl_agent(scenario_type, total_timesteps=20000) # Timesteps pour un entraînement rapide
-                if not model_path or not model_path.exists():
+                # Train if model doesn't exist
+                print(f"  [INFO] Model not found, training new agent...")
+                trained_path = self.train_rl_agent(
+                    scenario_type, 
+                    total_timesteps=20000,
+                    device=device
+                )
+                if not trained_path or not Path(trained_path).exists():
                     return {'success': False, 'error': 'RL agent training failed'}
+                model_path = Path(trained_path)
+            else:
+                print(f"  [INFO] Loading existing model from {model_path}")
             
             rl_controller = self.RLController(scenario_type, model_path)
-            rl_states, _ = self.run_control_simulation(rl_controller, scenario_path)
+            rl_states, _ = self.run_control_simulation(
+                rl_controller, 
+                scenario_path,
+                device=device
+            )
             if rl_states is None:
                 return {'success': False, 'error': 'RL simulation failed'}
             
@@ -379,16 +449,30 @@ class RLPerformanceValidationTest(ValidationSection):
         """Run all RL performance validation tests and generate outputs."""
         print("=== Section 7.6: RL Performance Validation ===")
         print("Testing RL agent performance vs baseline controllers...")
+        
+        # Auto-detect device (GPU on Kaggle, CPU locally)
+        try:
+            from numba import cuda
+            device = 'gpu' if cuda.is_available() else 'cpu'
+            print(f"[DEVICE] Detected: {device.upper()}")
+            if device == 'gpu':
+                print(f"[GPU INFO] {cuda.get_current_device().name.decode()}")
+        except:
+            device = 'cpu'
+            print("[DEVICE] Detected: CPU (CUDA not available)")
+        
         all_results = {}
 
-        # Entraîner les agents nécessaires avant l'évaluation
+        # Train agents before evaluation
+        print("\n[PHASE 1/2] Training RL agents...")
         for scenario in self.rl_scenarios.keys():
-            self.train_rl_agent(scenario, total_timesteps=20000) # Entraînement rapide pour la validation
+            self.train_rl_agent(scenario, total_timesteps=20000, device=device)
         
         # Test all RL scenarios
+        print("\n[PHASE 2/2] Running performance comparisons...")
         scenarios = list(self.rl_scenarios.keys())
         for scenario in scenarios:
-            scenario_results = self.run_performance_comparison(scenario)
+            scenario_results = self.run_performance_comparison(scenario, device=device)
             self.test_results[scenario] = scenario_results
             all_results[scenario] = scenario_results
 
