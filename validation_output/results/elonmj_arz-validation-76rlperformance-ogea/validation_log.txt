@@ -1,0 +1,434 @@
+2025-10-07 12:13:00,138 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-10-07 12:13:00,138 - INFO - Branch: main
+2025-10-07 12:13:04,726 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-10-07 12:13:04,726 - INFO - PyTorch: 2.6.0+cu124
+2025-10-07 12:13:04,768 - INFO - CUDA available: True
+2025-10-07 12:13:04,789 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-10-07 12:13:04,790 - INFO - CUDA version: 12.4
+2025-10-07 12:13:04,790 - INFO - 
+[STEP 1/4] Cloning repository from GitHub...
+2025-10-07 12:13:04,790 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-10-07 12:13:07,128 - INFO - [OK] Repository cloned successfully
+2025-10-07 12:13:07,128 - INFO - TRACKING_SUCCESS: Repository cloned
+2025-10-07 12:13:07,128 - INFO - 
+[STEP 2/4] Installing dependencies...
+2025-10-07 12:13:07,128 - INFO - Installing PyYAML...
+2025-10-07 12:13:10,878 - INFO - Installing matplotlib...
+2025-10-07 12:13:13,887 - INFO - Installing pandas...
+2025-10-07 12:13:16,804 - INFO - Installing scipy...
+2025-10-07 12:13:19,720 - INFO - Installing numpy...
+2025-10-07 12:13:22,681 - INFO - [OK] Dependencies installed
+2025-10-07 12:13:22,682 - INFO - TRACKING_SUCCESS: Dependencies ready
+2025-10-07 12:13:22,682 - INFO - 
+[STEP 3/4] Running validation tests...
+2025-10-07 12:13:22,682 - INFO - Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...
+2025-10-07 12:13:22,682 - INFO - PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts
+2025-10-07 12:13:22,682 - INFO - ============================================================
+2025-10-07 12:13:56,291 - INFO - [TEST] [ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance
+2025-10-07 12:13:56,291 - INFO - [TEST]   - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures
+2025-10-07 12:13:56,291 - INFO - [TEST]   - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz
+2025-10-07 12:13:56,291 - INFO - [TEST]   - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios
+2025-10-07 12:13:56,292 - INFO - [TEST]   - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics
+2025-10-07 12:13:56,292 - INFO - [TEST]   - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex
+2025-10-07 12:13:56,292 - INFO - [TEST] === Section 7.6: RL Performance Validation ===
+2025-10-07 12:13:56,292 - INFO - [TEST] Testing RL agent performance vs baseline controllers...
+2025-10-07 12:13:56,292 - INFO - [TEST] [DEVICE] Detected: GPU
+2025-10-07 12:13:56,292 - INFO - [TEST] [GPU INFO] Tesla P100-PCIE-16GB
+2025-10-07 12:13:56,292 - INFO - [TEST] 
+2025-10-07 12:13:56,292 - INFO - [TEST] [PHASE 1/2] Training RL agents...
+2025-10-07 12:13:56,292 - INFO - [TEST] 
+2025-10-07 12:13:56,292 - INFO - [TEST] [TRAINING] Starting RL training for scenario: traffic_light_control
+2025-10-07 12:13:56,293 - INFO - [TEST]   Device: gpu
+2025-10-07 12:13:56,293 - INFO - [TEST]   Total timesteps: 20000
+2025-10-07 12:13:56,293 - INFO - [TEST]   [SCENARIO] Generated: traffic_light_control.yml
+2025-10-07 12:13:56,293 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,293 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,293 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,293 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,293 - INFO - [TEST]   [INFO] Environment created: obs_space=(26,), action_space=2
+2025-10-07 12:13:56,293 - INFO - [TEST]   [INFO] Initializing PPO agent...
+2025-10-07 12:13:56,293 - INFO - [TEST] Using cuda device
+2025-10-07 12:13:56,293 - INFO - [TEST] Wrapping the env with a `Monitor` wrapper
+2025-10-07 12:13:56,293 - INFO - [TEST] Wrapping the env in a DummyVecEnv.
+2025-10-07 12:13:56,294 - INFO - [TEST]   [INFO] Training for 20000 timesteps...
+2025-10-07 12:13:56,294 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,294 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,294 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,294 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,294 - INFO - [TEST] [ERROR] Training failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,294 - INFO - [TEST] 
+2025-10-07 12:13:56,294 - INFO - [TEST] [TRAINING] Starting RL training for scenario: ramp_metering
+2025-10-07 12:13:56,294 - INFO - [TEST]   Device: gpu
+2025-10-07 12:13:56,294 - INFO - [TEST]   Total timesteps: 20000
+2025-10-07 12:13:56,294 - INFO - [TEST]   [SCENARIO] Generated: ramp_metering.yml
+2025-10-07 12:13:56,294 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,294 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,295 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,295 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,295 - INFO - [TEST]   [INFO] Environment created: obs_space=(26,), action_space=2
+2025-10-07 12:13:56,295 - INFO - [TEST]   [INFO] Initializing PPO agent...
+2025-10-07 12:13:56,295 - INFO - [TEST] Using cuda device
+2025-10-07 12:13:56,295 - INFO - [TEST] Wrapping the env with a `Monitor` wrapper
+2025-10-07 12:13:56,295 - INFO - [TEST] Wrapping the env in a DummyVecEnv.
+2025-10-07 12:13:56,295 - INFO - [TEST]   [INFO] Training for 20000 timesteps...
+2025-10-07 12:13:56,295 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,295 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,295 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,295 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,296 - INFO - [TEST] [ERROR] Training failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,296 - INFO - [TEST] 
+2025-10-07 12:13:56,296 - INFO - [TEST] [TRAINING] Starting RL training for scenario: adaptive_speed_control
+2025-10-07 12:13:56,296 - INFO - [TEST]   Device: gpu
+2025-10-07 12:13:56,296 - INFO - [TEST]   Total timesteps: 20000
+2025-10-07 12:13:56,296 - INFO - [TEST]   [SCENARIO] Generated: adaptive_speed_control.yml
+2025-10-07 12:13:56,296 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,296 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,296 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,296 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,296 - INFO - [TEST]   [INFO] Environment created: obs_space=(26,), action_space=2
+2025-10-07 12:13:56,296 - INFO - [TEST]   [INFO] Initializing PPO agent...
+2025-10-07 12:13:56,297 - INFO - [TEST] Using cuda device
+2025-10-07 12:13:56,297 - INFO - [TEST] Wrapping the env with a `Monitor` wrapper
+2025-10-07 12:13:56,297 - INFO - [TEST] Wrapping the env in a DummyVecEnv.
+2025-10-07 12:13:56,297 - INFO - [TEST]   [INFO] Training for 20000 timesteps...
+2025-10-07 12:13:56,297 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,297 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,297 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,297 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,297 - INFO - [TEST] [ERROR] Training failed: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,297 - INFO - [TEST] 
+2025-10-07 12:13:56,297 - INFO - [TEST] [PHASE 2/2] Running performance comparisons...
+2025-10-07 12:13:56,297 - INFO - [TEST] 
+2025-10-07 12:13:56,297 - INFO - [TEST] Testing scenario: traffic_light_control (device=gpu)
+2025-10-07 12:13:56,298 - INFO - [TEST]   [SCENARIO] Generated: traffic_light_control.yml
+2025-10-07 12:13:56,298 - INFO - [TEST]   Running baseline controller...
+2025-10-07 12:13:56,298 - INFO - [TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu
+2025-10-07 12:13:56,298 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,298 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,298 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,298 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,298 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,298 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,298 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,298 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,298 - INFO - [TEST]   ERROR: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,298 - INFO - [TEST] 
+2025-10-07 12:13:56,299 - INFO - [TEST] Testing scenario: ramp_metering (device=gpu)
+2025-10-07 12:13:56,299 - INFO - [TEST]   [SCENARIO] Generated: ramp_metering.yml
+2025-10-07 12:13:56,299 - INFO - [TEST]   Running baseline controller...
+2025-10-07 12:13:56,299 - INFO - [TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu
+2025-10-07 12:13:56,299 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,299 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,299 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,299 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,299 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,299 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,299 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,299 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,299 - INFO - [TEST]   ERROR: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,299 - INFO - [TEST] 
+2025-10-07 12:13:56,300 - INFO - [TEST] Testing scenario: adaptive_speed_control (device=gpu)
+2025-10-07 12:13:56,300 - INFO - [TEST]   [SCENARIO] Generated: adaptive_speed_control.yml
+2025-10-07 12:13:56,300 - INFO - [TEST]   Running baseline controller...
+2025-10-07 12:13:56,300 - INFO - [TEST]   [INFO] Initializing TrafficSignalEnvDirect with device=gpu
+2025-10-07 12:13:56,300 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,300 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,300 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,300 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,300 - INFO - [TEST] DEBUG PARAMS: Reading K_m_kmh = 10.0
+2025-10-07 12:13:56,300 - INFO - [TEST] DEBUG PARAMS: Reading K_c_kmh = 15.0
+2025-10-07 12:13:56,300 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+2025-10-07 12:13:56,300 - INFO - [TEST] DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+2025-10-07 12:13:56,300 - INFO - [TEST]   ERROR: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,300 - INFO - [TEST] 
+2025-10-07 12:13:56,301 - INFO - [TEST] [FIGURES] Generating RL performance figures...
+2025-10-07 12:13:56,301 - INFO - [TEST]   [OK] fig_rl_performance_improvements.png
+2025-10-07 12:13:56,301 - INFO - [TEST]   [OK] fig_rl_learning_curve.png
+2025-10-07 12:13:56,301 - INFO - [TEST] [FIGURES] Generated 2 figures in validation_output/results/local_test/section_7_6_rl_performance/figures
+2025-10-07 12:13:56,301 - INFO - [TEST] 
+2025-10-07 12:13:56,301 - INFO - [TEST] [METRICS] Saving RL performance metrics...
+2025-10-07 12:13:56,301 - INFO - [TEST]   [OK] validation_output/results/local_test/section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv
+2025-10-07 12:13:56,301 - INFO - [TEST] 
+2025-10-07 12:13:56,301 - INFO - [TEST] [LATEX] Generating content for Section 7.6...
+2025-10-07 12:13:56,301 - INFO - [TEST] 
+2025-10-07 12:13:56,301 - INFO - [TEST] [CRITICAL ERROR] An unhandled exception occurred: 'Validation de la Performance des Agents RL (Section 7'
+2025-10-07 12:13:56,302 - WARNING - [STDERR] 2025-10-07 12:13:33.556422: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2025-10-07 12:13:56,302 - WARNING - [STDERR] WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+2025-10-07 12:13:56,302 - WARNING - [STDERR] E0000 00:00:1759839213.750139      46 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2025-10-07 12:13:56,302 - WARNING - [STDERR] E0000 00:00:1759839213.809391      46 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2025-10-07 12:13:56,302 - WARNING - [STDERR] /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-10-07 12:13:56,302 - WARNING - [STDERR]   warn(NumbaPerformanceWarning(msg))
+2025-10-07 12:13:56,302 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 12:13:56,302 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 363, in train_rl_agent
+2025-10-07 12:13:56,302 - WARNING - [STDERR]     model.learn(total_timesteps=total_timesteps)
+2025-10-07 12:13:56,302 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py", line 308, in learn
+2025-10-07 12:13:56,302 - WARNING - [STDERR]     return super().learn(
+2025-10-07 12:13:56,303 - WARNING - [STDERR]            ^^^^^^^^^^^^^^
+2025-10-07 12:13:56,303 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 246, in learn
+2025-10-07 12:13:56,303 - WARNING - [STDERR]     total_timesteps, callback = self._setup_learn(
+2025-10-07 12:13:56,303 - WARNING - [STDERR]                                 ^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,303 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py", line 424, in _setup_learn
+2025-10-07 12:13:56,303 - WARNING - [STDERR]     self._last_obs = self.env.reset()  # type: ignore[assignment]
+2025-10-07 12:13:56,303 - WARNING - [STDERR]                      ^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,303 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 76, in reset
+2025-10-07 12:13:56,303 - WARNING - [STDERR]     obs, self.reset_infos[env_idx] = self.envs[env_idx].reset(seed=self._seeds[env_idx])
+2025-10-07 12:13:56,303 - WARNING - [STDERR]                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,303 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py", line 83, in reset
+2025-10-07 12:13:56,304 - WARNING - [STDERR]     return self.env.reset(**kwargs)
+2025-10-07 12:13:56,304 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,304 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 187, in reset
+2025-10-07 12:13:56,304 - WARNING - [STDERR]     observation = self._build_observation()
+2025-10-07 12:13:56,304 - WARNING - [STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,304 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 274, in _build_observation
+2025-10-07 12:13:56,304 - WARNING - [STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)
+2025-10-07 12:13:56,304 - WARNING - [STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,304 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 773, in get_segment_observations
+2025-10-07 12:13:56,304 - WARNING - [STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()
+2025-10-07 12:13:56,304 - WARNING - [STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,304 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py", line 232, in _require_cuda_context
+2025-10-07 12:13:56,305 - WARNING - [STDERR]     return fn(*args, **kws)
+2025-10-07 12:13:56,305 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,305 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 629, in __getitem__
+2025-10-07 12:13:56,305 - WARNING - [STDERR]     return self._do_getitem(item)
+2025-10-07 12:13:56,305 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,305 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 640, in _do_getitem
+2025-10-07 12:13:56,305 - WARNING - [STDERR]     arr = self._dummy.__getitem__(item)
+2025-10-07 12:13:56,305 - WARNING - [STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,305 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in __getitem__
+2025-10-07 12:13:56,305 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,305 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,305 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in <listcomp>
+2025-10-07 12:13:56,305 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,305 - WARNING - [STDERR]             ^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,306 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 69, in __getitem__
+2025-10-07 12:13:56,306 - WARNING - [STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]
+2025-10-07 12:13:56,306 - WARNING - [STDERR]                                     ^^^^^^^^^^
+2025-10-07 12:13:56,306 - WARNING - [STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,306 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 12:13:56,306 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 363, in train_rl_agent
+2025-10-07 12:13:56,306 - WARNING - [STDERR]     model.learn(total_timesteps=total_timesteps)
+2025-10-07 12:13:56,306 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py", line 308, in learn
+2025-10-07 12:13:56,306 - WARNING - [STDERR]     return super().learn(
+2025-10-07 12:13:56,306 - WARNING - [STDERR]            ^^^^^^^^^^^^^^
+2025-10-07 12:13:56,306 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 246, in learn
+2025-10-07 12:13:56,306 - WARNING - [STDERR]     total_timesteps, callback = self._setup_learn(
+2025-10-07 12:13:56,306 - WARNING - [STDERR]                                 ^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,307 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py", line 424, in _setup_learn
+2025-10-07 12:13:56,307 - WARNING - [STDERR]     self._last_obs = self.env.reset()  # type: ignore[assignment]
+2025-10-07 12:13:56,307 - WARNING - [STDERR]                      ^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,307 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 76, in reset
+2025-10-07 12:13:56,307 - WARNING - [STDERR]     obs, self.reset_infos[env_idx] = self.envs[env_idx].reset(seed=self._seeds[env_idx])
+2025-10-07 12:13:56,307 - WARNING - [STDERR]                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,307 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py", line 83, in reset
+2025-10-07 12:13:56,307 - WARNING - [STDERR]     return self.env.reset(**kwargs)
+2025-10-07 12:13:56,307 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,307 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 187, in reset
+2025-10-07 12:13:56,307 - WARNING - [STDERR]     observation = self._build_observation()
+2025-10-07 12:13:56,307 - WARNING - [STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,307 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 274, in _build_observation
+2025-10-07 12:13:56,308 - WARNING - [STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)
+2025-10-07 12:13:56,308 - WARNING - [STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,308 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 773, in get_segment_observations
+2025-10-07 12:13:56,308 - WARNING - [STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()
+2025-10-07 12:13:56,308 - WARNING - [STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,308 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py", line 232, in _require_cuda_context
+2025-10-07 12:13:56,308 - WARNING - [STDERR]     return fn(*args, **kws)
+2025-10-07 12:13:56,308 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,308 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 629, in __getitem__
+2025-10-07 12:13:56,308 - WARNING - [STDERR]     return self._do_getitem(item)
+2025-10-07 12:13:56,308 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,308 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 640, in _do_getitem
+2025-10-07 12:13:56,309 - WARNING - [STDERR]     arr = self._dummy.__getitem__(item)
+2025-10-07 12:13:56,309 - WARNING - [STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,309 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in __getitem__
+2025-10-07 12:13:56,309 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,309 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,309 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in <listcomp>
+2025-10-07 12:13:56,309 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,309 - WARNING - [STDERR]             ^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,309 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 69, in __getitem__
+2025-10-07 12:13:56,309 - WARNING - [STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]
+2025-10-07 12:13:56,309 - WARNING - [STDERR]                                     ^^^^^^^^^^
+2025-10-07 12:13:56,309 - WARNING - [STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,310 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 12:13:56,310 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 363, in train_rl_agent
+2025-10-07 12:13:56,310 - WARNING - [STDERR]     model.learn(total_timesteps=total_timesteps)
+2025-10-07 12:13:56,310 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py", line 308, in learn
+2025-10-07 12:13:56,310 - WARNING - [STDERR]     return super().learn(
+2025-10-07 12:13:56,310 - WARNING - [STDERR]            ^^^^^^^^^^^^^^
+2025-10-07 12:13:56,310 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 246, in learn
+2025-10-07 12:13:56,310 - WARNING - [STDERR]     total_timesteps, callback = self._setup_learn(
+2025-10-07 12:13:56,310 - WARNING - [STDERR]                                 ^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,310 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py", line 424, in _setup_learn
+2025-10-07 12:13:56,310 - WARNING - [STDERR]     self._last_obs = self.env.reset()  # type: ignore[assignment]
+2025-10-07 12:13:56,310 - WARNING - [STDERR]                      ^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,311 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 76, in reset
+2025-10-07 12:13:56,311 - WARNING - [STDERR]     obs, self.reset_infos[env_idx] = self.envs[env_idx].reset(seed=self._seeds[env_idx])
+2025-10-07 12:13:56,311 - WARNING - [STDERR]                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,311 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py", line 83, in reset
+2025-10-07 12:13:56,311 - WARNING - [STDERR]     return self.env.reset(**kwargs)
+2025-10-07 12:13:56,311 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,311 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 187, in reset
+2025-10-07 12:13:56,311 - WARNING - [STDERR]     observation = self._build_observation()
+2025-10-07 12:13:56,311 - WARNING - [STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,311 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 274, in _build_observation
+2025-10-07 12:13:56,311 - WARNING - [STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)
+2025-10-07 12:13:56,311 - WARNING - [STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,311 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 773, in get_segment_observations
+2025-10-07 12:13:56,312 - WARNING - [STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()
+2025-10-07 12:13:56,312 - WARNING - [STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,312 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py", line 232, in _require_cuda_context
+2025-10-07 12:13:56,312 - WARNING - [STDERR]     return fn(*args, **kws)
+2025-10-07 12:13:56,312 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,312 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 629, in __getitem__
+2025-10-07 12:13:56,312 - WARNING - [STDERR]     return self._do_getitem(item)
+2025-10-07 12:13:56,312 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,312 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 640, in _do_getitem
+2025-10-07 12:13:56,312 - WARNING - [STDERR]     arr = self._dummy.__getitem__(item)
+2025-10-07 12:13:56,312 - WARNING - [STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,312 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in __getitem__
+2025-10-07 12:13:56,312 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,313 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,313 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in <listcomp>
+2025-10-07 12:13:56,313 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,313 - WARNING - [STDERR]             ^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,313 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 69, in __getitem__
+2025-10-07 12:13:56,313 - WARNING - [STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]
+2025-10-07 12:13:56,313 - WARNING - [STDERR]                                     ^^^^^^^^^^
+2025-10-07 12:13:56,313 - WARNING - [STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,313 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 12:13:56,313 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 389, in run_performance_comparison
+2025-10-07 12:13:56,313 - WARNING - [STDERR]     baseline_states, _ = self.run_control_simulation(
+2025-10-07 12:13:56,313 - WARNING - [STDERR]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,314 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 204, in run_control_simulation
+2025-10-07 12:13:56,314 - WARNING - [STDERR]     obs, info = env.reset()
+2025-10-07 12:13:56,314 - WARNING - [STDERR]                 ^^^^^^^^^^^
+2025-10-07 12:13:56,314 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 187, in reset
+2025-10-07 12:13:56,314 - WARNING - [STDERR]     observation = self._build_observation()
+2025-10-07 12:13:56,314 - WARNING - [STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,314 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 274, in _build_observation
+2025-10-07 12:13:56,314 - WARNING - [STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)
+2025-10-07 12:13:56,314 - WARNING - [STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,314 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 773, in get_segment_observations
+2025-10-07 12:13:56,314 - WARNING - [STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()
+2025-10-07 12:13:56,315 - WARNING - [STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,315 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py", line 232, in _require_cuda_context
+2025-10-07 12:13:56,315 - WARNING - [STDERR]     return fn(*args, **kws)
+2025-10-07 12:13:56,315 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,315 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 629, in __getitem__
+2025-10-07 12:13:56,315 - WARNING - [STDERR]     return self._do_getitem(item)
+2025-10-07 12:13:56,315 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,315 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 640, in _do_getitem
+2025-10-07 12:13:56,315 - WARNING - [STDERR]     arr = self._dummy.__getitem__(item)
+2025-10-07 12:13:56,315 - WARNING - [STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,315 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in __getitem__
+2025-10-07 12:13:56,315 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,316 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,316 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in <listcomp>
+2025-10-07 12:13:56,316 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,316 - WARNING - [STDERR]             ^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,316 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 69, in __getitem__
+2025-10-07 12:13:56,316 - WARNING - [STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]
+2025-10-07 12:13:56,316 - WARNING - [STDERR]                                     ^^^^^^^^^^
+2025-10-07 12:13:56,316 - WARNING - [STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,316 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 12:13:56,316 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 389, in run_performance_comparison
+2025-10-07 12:13:56,316 - WARNING - [STDERR]     baseline_states, _ = self.run_control_simulation(
+2025-10-07 12:13:56,316 - WARNING - [STDERR]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,316 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 204, in run_control_simulation
+2025-10-07 12:13:56,317 - WARNING - [STDERR]     obs, info = env.reset()
+2025-10-07 12:13:56,317 - WARNING - [STDERR]                 ^^^^^^^^^^^
+2025-10-07 12:13:56,317 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 187, in reset
+2025-10-07 12:13:56,317 - WARNING - [STDERR]     observation = self._build_observation()
+2025-10-07 12:13:56,317 - WARNING - [STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,317 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 274, in _build_observation
+2025-10-07 12:13:56,317 - WARNING - [STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)
+2025-10-07 12:13:56,317 - WARNING - [STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,317 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 773, in get_segment_observations
+2025-10-07 12:13:56,317 - WARNING - [STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()
+2025-10-07 12:13:56,317 - WARNING - [STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,317 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py", line 232, in _require_cuda_context
+2025-10-07 12:13:56,318 - WARNING - [STDERR]     return fn(*args, **kws)
+2025-10-07 12:13:56,318 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,318 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 629, in __getitem__
+2025-10-07 12:13:56,318 - WARNING - [STDERR]     return self._do_getitem(item)
+2025-10-07 12:13:56,318 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,318 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 640, in _do_getitem
+2025-10-07 12:13:56,318 - WARNING - [STDERR]     arr = self._dummy.__getitem__(item)
+2025-10-07 12:13:56,318 - WARNING - [STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,318 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in __getitem__
+2025-10-07 12:13:56,318 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,318 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,318 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in <listcomp>
+2025-10-07 12:13:56,319 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,319 - WARNING - [STDERR]             ^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,319 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 69, in __getitem__
+2025-10-07 12:13:56,319 - WARNING - [STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]
+2025-10-07 12:13:56,319 - WARNING - [STDERR]                                     ^^^^^^^^^^
+2025-10-07 12:13:56,319 - WARNING - [STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,319 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 12:13:56,319 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 389, in run_performance_comparison
+2025-10-07 12:13:56,319 - WARNING - [STDERR]     baseline_states, _ = self.run_control_simulation(
+2025-10-07 12:13:56,319 - WARNING - [STDERR]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,319 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 204, in run_control_simulation
+2025-10-07 12:13:56,319 - WARNING - [STDERR]     obs, info = env.reset()
+2025-10-07 12:13:56,319 - WARNING - [STDERR]                 ^^^^^^^^^^^
+2025-10-07 12:13:56,320 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 187, in reset
+2025-10-07 12:13:56,320 - WARNING - [STDERR]     observation = self._build_observation()
+2025-10-07 12:13:56,320 - WARNING - [STDERR]                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,320 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 274, in _build_observation
+2025-10-07 12:13:56,320 - WARNING - [STDERR]     raw_obs = self.runner.get_segment_observations(all_segments)
+2025-10-07 12:13:56,320 - WARNING - [STDERR]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,320 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 773, in get_segment_observations
+2025-10-07 12:13:56,320 - WARNING - [STDERR]     U_obs = self.d_U[:, segment_indices].copy_to_host()
+2025-10-07 12:13:56,320 - WARNING - [STDERR]             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,320 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devices.py", line 232, in _require_cuda_context
+2025-10-07 12:13:56,320 - WARNING - [STDERR]     return fn(*args, **kws)
+2025-10-07 12:13:56,320 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,321 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 629, in __getitem__
+2025-10-07 12:13:56,321 - WARNING - [STDERR]     return self._do_getitem(item)
+2025-10-07 12:13:56,321 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,321 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/devicearray.py", line 640, in _do_getitem
+2025-10-07 12:13:56,321 - WARNING - [STDERR]     arr = self._dummy.__getitem__(item)
+2025-10-07 12:13:56,321 - WARNING - [STDERR]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,321 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in __getitem__
+2025-10-07 12:13:56,321 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,321 - WARNING - [STDERR]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,321 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 232, in <listcomp>
+2025-10-07 12:13:56,321 - WARNING - [STDERR]     dims = [dim.__getitem__(it) for dim, it in zip(self.dims, item)]
+2025-10-07 12:13:56,322 - WARNING - [STDERR]             ^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,322 - WARNING - [STDERR]   File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/dummyarray.py", line 69, in __getitem__
+2025-10-07 12:13:56,322 - WARNING - [STDERR]     sliced = self[item:item + 1] if item != -1 else self[-1:]
+2025-10-07 12:13:56,322 - WARNING - [STDERR]                                     ^^^^^^^^^^
+2025-10-07 12:13:56,322 - WARNING - [STDERR] ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-10-07 12:13:56,322 - WARNING - [STDERR] Traceback (most recent call last):
+2025-10-07 12:13:56,322 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 788, in main
+2025-10-07 12:13:56,322 - WARNING - [STDERR]     success = test.run_all_tests()
+2025-10-07 12:13:56,322 - WARNING - [STDERR]               ^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,322 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 537, in run_all_tests
+2025-10-07 12:13:56,322 - WARNING - [STDERR]     self.generate_section_7_6_latex()
+2025-10-07 12:13:56,322 - WARNING - [STDERR]   File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 762, in generate_section_7_6_latex
+2025-10-07 12:13:56,323 - WARNING - [STDERR]     latex_content = template.format(**template_vars)
+2025-10-07 12:13:56,323 - WARNING - [STDERR]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-10-07 12:13:56,323 - WARNING - [STDERR] KeyError: 'Validation de la Performance des Agents RL (Section 7'
+2025-10-07 12:13:56,323 - WARNING - [WARNING] Tests returned code: 1
+2025-10-07 12:13:56,323 - INFO - 
+[STEP 4/4] Copying artifacts and cleaning up...
+2025-10-07 12:13:56,323 - INFO - [ARTIFACTS] Copying results for section_7_6_rl_performance...
+2025-10-07 12:13:56,325 - INFO - [OK] Section copied to: /kaggle/working/section_7_6_rl_performance
+2025-10-07 12:13:56,326 - INFO - [ARTIFACTS] NPZ files: 0
+2025-10-07 12:13:56,326 - INFO - [ARTIFACTS] PNG figures: 2
+2025-10-07 12:13:56,326 - INFO - [ARTIFACTS] YAML scenarios: 3
+2025-10-07 12:13:56,326 - INFO - [ARTIFACTS] TEX files: 0
+2025-10-07 12:13:56,327 - INFO - [ARTIFACTS] JSON files: 0
+2025-10-07 12:13:56,327 - INFO - [ARTIFACTS] CSV metrics: 1
+2025-10-07 12:13:56,327 - INFO - TRACKING_SUCCESS: Artifacts copied
+2025-10-07 12:13:56,327 - INFO - [SUCCESS] All artifacts organized and copied
+2025-10-07 12:13:56,327 - INFO - [CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow
+2025-10-07 12:13:56,354 - INFO - [OK] Cleanup completed - only validation results remain
+2025-10-07 12:13:56,355 - INFO - TRACKING_SUCCESS: Cleanup completed
+2025-10-07 12:13:56,355 - INFO - [OK] Session summary created: /kaggle/working/validation_results/session_summary.json
+2025-10-07 12:13:56,355 - INFO - TRACKING_SUCCESS: Session summary created
+2025-10-07 12:13:56,355 - INFO - 
+[FINAL] Validation workflow completed
+2025-10-07 12:13:56,355 - INFO - Remote logging finalized - ready for download
