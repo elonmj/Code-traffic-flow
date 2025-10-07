@@ -266,3 +266,12 @@
 2025-10-08 00:11:25,077 - validation_kaggle_manager - INFO - 📍 Current branch: main
 2025-10-08 00:11:25,208 - validation_kaggle_manager - INFO - ✅ Git repository is clean and up to date
 2025-10-08 00:11:28,199 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-zbms
+2025-10-08 00:32:59,511 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-08 00:32:59,628 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-08 00:32:59,729 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-08 00:32:59,729 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-08 00:32:59,729 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-76rlperformance-zbms/ (Untracked)
+2025-10-08 00:32:59,729 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-08 00:32:59,865 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-08 00:33:00,059 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-08 00:33:00,059 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
