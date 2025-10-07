@@ -443,8 +443,8 @@ try:
     # Execute validation tests via subprocess as a module to properly handle package imports
     # Using -m ensures Python treats code/ as a proper package
     test_module = f"validation_ch7.scripts.{section['script'].replace('.py', '')}"
-    log_and_print("info", f"Executing Python module: {test_module}...")
-    log_and_print("info", f"PYTHONPATH={env['PYTHONPATH']}")
+    log_and_print("info", f"Executing Python module: {{test_module}}...")
+    log_and_print("info", f"PYTHONPATH={{{{env['PYTHONPATH']}}}}")
     log_and_print("info", "=" * 60)
     
     try:
