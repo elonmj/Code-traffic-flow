@@ -187,7 +187,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 scenario_config_path=str(scenario_path),
                 decision_interval=control_interval,
                 episode_max_time=duration,
-                segment_indices=[10, 50, 100, 150, 190],  # Representative segments
+                observation_segments={'upstream': [8, 9, 10], 'downstream': [11, 12, 13]},
                 device=device  # GPU on Kaggle, CPU locally
             )
             
@@ -335,7 +335,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 scenario_config_path=str(scenario_path),
                 decision_interval=60.0,  # 1-minute decisions
                 episode_max_time=3600.0,  # 1-hour episodes
-                segment_indices=[10, 50, 100, 150, 190],
+                observation_segments={'upstream': [8, 9, 10], 'downstream': [11, 12, 13]},
                 device=device,
                 quiet=True
             )
@@ -733,10 +733,10 @@ La figure~\ref{fig:rl_improvements_76} détaille les gains de performance pour c
 \end{figure}
 
 \subsubsection{Conclusion Section 7.6}
-Les résultats valident la revendication \textbf{R5}. Les agents RL surpassent systématiquement les contrôleurs de référence, avec une amélioration moyenne du débit de \textbf{{{avg_flow_improvement:.1f}\%}} et de l'efficacité de \textbf{{{avg_efficiency_improvement:.1f}\%}}. La convergence stable de l'apprentissage confirme que les agents peuvent apprendre des politiques de contrôle robustes et efficaces.
+Les résultats valident la revendication \textbf{{R5}}. Les agents RL surpassent systématiquement les contrôleurs de référence, avec une amélioration moyenne du débit de \textbf{{{avg_flow_improvement:.1f}}\%}} et de l'efficacité de \textbf{{{avg_efficiency_improvement:.1f}}\%}}. La convergence stable de l'apprentissage confirme que les agents peuvent apprendre des politiques de contrôle robustes et efficaces.
 
-\vspace{0.5cm}
-\noindent\textbf{Revendication R5 : }\textcolor{{{overall_color}}}{{{overall_status}}}
+\vspace{{0.5cm}}
+\noindent\textbf{{Revendication R5 : }}\textcolor{{{overall_color}}}{{{overall_status}}}
 """
 
         # Populate template
