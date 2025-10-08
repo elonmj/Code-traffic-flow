@@ -27,13 +27,18 @@ if quick_test:
     print("LANCEMENT VALIDATION KAGGLE GPU - SECTION 7.6 RL (QUICK TEST)")
     print("=" * 80)
     print("\n[QUICK TEST MODE]")
-    print("  - Training: 2 timesteps only")
-    print("  - Duration: 2 minutes simulated time")
+    print("  - Training: 100 timesteps (realistic quick test)")
+    print("  - Duration: 2 minutes simulated time per episode")
     print("  - Scenarios: 1 scenario (traffic_light_control)")
-    print("  - Expected runtime: ~5 minutes on GPU")
+    print("  - Expected runtime: ~15 minutes on GPU")
 else:
     print("LANCEMENT VALIDATION KAGGLE GPU - SECTION 7.6 RL PERFORMANCE")
     print("=" * 80)
+    print("\n[FULL MODE]")
+    print("  - Training: 5000 timesteps (quality training)")
+    print("  - Duration: 1 hour simulated time per episode")
+    print("  - Scenarios: 3 scenarios")
+    print("  - Expected runtime: ~3-4 hours on GPU")
 
 # Initialiser le manager
 print("\n[1/3] Initialisation du ValidationKaggleManager...")
@@ -44,11 +49,12 @@ print(f"  - Repository: {manager.repo_url}")
 print(f"  - Branch: {manager.branch}")
 print(f"  - Username: {manager.username}")
 if quick_test:
-    print(f"  - Mode: QUICK TEST")
+    print(f"  - Mode: QUICK TEST (100 timesteps)")
     print(f"  - Durée estimée: 15 minutes sur GPU")
 else:
-    print(f"  - Mode: FULL TEST")
-    print(f"  - Durée estimée: 30-45 minutes sur GPU")
+    print(f"  - Mode: FULL TEST (5000 timesteps)")
+    print(f"  - Durée estimée: 3-4 heures sur GPU")
+    print(f"  - NOTE: Utilisez --quick pour test rapide")
 
 # Lancer la validation section 7.6
 print("\n[2/3] Lancement de la validation section 7.6...")
@@ -68,8 +74,8 @@ try:
     if quick_test:
         os.environ['QUICK_TEST'] = 'true'
     
-    timeout = 1800 if quick_test else 7200  # 30 min for quick, 2 hours for full
-    commit_msg = "Quick test: RL-ARZ integration validation (2 steps)" if quick_test else None
+    timeout = 1800 if quick_test else 14400  # 30 min for quick, 4 hours for full (5000 steps takes time)
+    commit_msg = "Quick test: RL-ARZ integration validation (100 steps)" if quick_test else "Validation 7.6: RL Performance (5000 timesteps)"
     
     # Pass quick_test flag to manager for Kaggle kernel environment
     success, kernel_slug = manager.run_validation_section(

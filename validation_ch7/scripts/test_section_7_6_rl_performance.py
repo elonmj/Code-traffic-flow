@@ -38,10 +38,13 @@ sys.path.append(str(code_rl_path))
 # Import the new direct environment (no mock, no HTTP server needed)
 from Code_RL.src.env.traffic_signal_env_direct import TrafficSignalEnvDirect
 
-# RL training utilities
-# Note: We use TrafficSignalEnvDirect and stable_baselines3 directly
-# No need to import train_dqn which has dependencies on old HTTP server code
+# RL training utilities with checkpoint support
 from stable_baselines3 import PPO
+from stable_baselines3.common.callbacks import EvalCallback
+
+# Import checkpoint callbacks for training resumption
+sys.path.append(str(code_rl_path / "src" / "rl"))
+from callbacks import RotatingCheckpointCallback, TrainingProgressCallback
 
 # Définir le chemin vers les configurations de Code_RL
 CODE_RL_CONFIG_DIR = code_rl_path / "configs"
@@ -311,26 +314,38 @@ class RLPerformanceValidationTest(ValidationSection):
             'throughput': avg_flow * domain_length
         }
     
-    def train_rl_agent(self, scenario_type: str, total_timesteps=10000, device='gpu'):
-        """Train RL agent using real ARZ simulation with direct coupling."""
+    def train_rl_agent(self, scenario_type: str, total_timesteps=5000, device='gpu'):
+        """Train RL agent using real ARZ simulation with direct coupling.
+        
+        Default: 5000 timesteps (compromise between quality and time)
+        Can be increased to 10000 if needed, but will take longer on Kaggle.
+        
+        Uses checkpoint system for training resumption and progress tracking.
+        """
         
         # Quick test mode: drastically reduce timesteps AND episode duration for setup validation
         if self.quick_test:
-            total_timesteps = 2  # Just 2 steps to test integration
+            total_timesteps = 100  # Just 100 steps to test integration (quick but realistic)
             episode_max_time = 120.0  # 2 minutes per episode instead of 1 hour
-            n_steps = 2  # Collect only 2 steps before updating
+            n_steps = 100  # Collect 100 steps before updating
+            checkpoint_freq = 50  # Save checkpoint every 50 steps
             print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps, {episode_max_time}s episodes", flush=True)
         else:
             episode_max_time = 3600.0  # 1 hour for full test
             n_steps = 2048  # Default PPO buffer size
+            checkpoint_freq = 500  # Save checkpoint every 500 steps (adaptive)
+            print(f"[FULL MODE] Training with {total_timesteps} timesteps", flush=True)
         
         print(f"\n[TRAINING] Starting RL training for scenario: {scenario_type}", flush=True)
         print(f"  Device: {device}", flush=True)
         print(f"  Total timesteps: {total_timesteps}", flush=True)
         print(f"  Episode max time: {episode_max_time}s", flush=True)
+        print(f"  Checkpoint frequency: {checkpoint_freq} steps", flush=True)
         
         self.models_dir.mkdir(parents=True, exist_ok=True)
         model_path = self.models_dir / f"rl_agent_{scenario_type}.zip"
+        checkpoint_dir = self.models_dir / "checkpoints"
+        checkpoint_dir.mkdir(exist_ok=True)
 
         # Create scenario configuration
         scenario_path = self._create_scenario_config(scenario_type)
@@ -349,28 +364,92 @@ class RLPerformanceValidationTest(ValidationSection):
             print(f"  [INFO] Environment created: obs_space={env.observation_space.shape}, "
                   f"action_space={env.action_space.n}", flush=True)
             
-            # Train PPO agent
-            print(f"  [INFO] Initializing PPO agent...", flush=True)
-            model = PPO(
-                'MlpPolicy',
-                env,
-                verbose=1,
-                learning_rate=3e-4,
-                n_steps=n_steps,
-                batch_size=min(64, n_steps),  # Batch size can't exceed n_steps
-                n_epochs=10,
-                gamma=0.99,
-                gae_lambda=0.95,
-                clip_range=0.2,
-                tensorboard_log=str(self.models_dir / "tensorboard")
+            # Check for existing checkpoint to resume
+            checkpoint_files = list(checkpoint_dir.glob(f"{scenario_type}_checkpoint_*_steps.zip"))
+            if checkpoint_files:
+                # Find latest checkpoint
+                latest_checkpoint = max(checkpoint_files, key=lambda p: int(p.stem.split('_')[-2]))
+                completed_steps = int(latest_checkpoint.stem.split('_')[-2])
+                remaining_steps = total_timesteps - completed_steps
+                
+                if remaining_steps > 0:
+                    print(f"  [RESUME] Found checkpoint at {completed_steps} steps", flush=True)
+                    print(f"  [RESUME] Loading model from {latest_checkpoint}", flush=True)
+                    model = PPO.load(str(latest_checkpoint), env=env)
+                    print(f"  [RESUME] Will train for {remaining_steps} more steps", flush=True)
+                else:
+                    print(f"  [COMPLETE] Training already completed ({completed_steps}/{total_timesteps} steps)", flush=True)
+                    env.close()
+                    return str(model_path)
+            else:
+                remaining_steps = total_timesteps
+                # Train PPO agent from scratch
+                print(f"  [INFO] Initializing PPO agent from scratch...", flush=True)
+                model = PPO(
+                    'MlpPolicy',
+                    env,
+                    verbose=1,
+                    learning_rate=3e-4,
+                    n_steps=n_steps,
+                    batch_size=min(64, n_steps),  # Batch size can't exceed n_steps
+                    n_epochs=10,
+                    gamma=0.99,
+                    gae_lambda=0.95,
+                    clip_range=0.2,
+                    tensorboard_log=str(self.models_dir / "tensorboard")
+                )
+            
+            # Setup callbacks with checkpoint system
+            callbacks = []
+            
+            # 1. Rotating checkpoints for resume capability
+            checkpoint_callback = RotatingCheckpointCallback(
+                save_freq=checkpoint_freq,
+                save_path=str(checkpoint_dir),
+                name_prefix=f"{scenario_type}_checkpoint",
+                max_checkpoints=2,  # Keep only 2 most recent
+                save_replay_buffer=False,  # PPO doesn't use replay buffer
+                save_vecnormalize=True,
+                verbose=1
+            )
+            callbacks.append(checkpoint_callback)
+            
+            # 2. Progress tracking
+            progress_callback = TrainingProgressCallback(
+                total_timesteps=remaining_steps,
+                log_freq=checkpoint_freq,
+                verbose=1
+            )
+            callbacks.append(progress_callback)
+            
+            # 3. Best model evaluation
+            best_model_dir = self.models_dir / "best_model"
+            best_model_dir.mkdir(exist_ok=True)
+            eval_callback = EvalCallback(
+                eval_env=env,
+                best_model_save_path=str(best_model_dir),
+                log_path=str(self.models_dir / "eval"),
+                eval_freq=max(checkpoint_freq, 1000),
+                n_eval_episodes=3 if self.quick_test else 5,
+                deterministic=True,
+                render=False,
+                verbose=1
+            )
+            callbacks.append(eval_callback)
+            
+            print(f"\n  [STRATEGY] Checkpoint: every {checkpoint_freq} steps, keep 2 latest + 1 best", flush=True)
+            print(f"  [INFO] Training for {remaining_steps} timesteps...", flush=True)
+            
+            model.learn(
+                total_timesteps=remaining_steps,
+                callback=callbacks,
+                progress_bar=True,
+                reset_num_timesteps=False  # Preserve step counter when resuming
             )
             
-            print(f"  [INFO] Training for {total_timesteps} timesteps...", flush=True)
-            model.learn(total_timesteps=total_timesteps)
-            
-            # Save model
+            # Save final model
             model.save(str(model_path))
-            print(f"  [SUCCESS] Model saved to {model_path}", flush=True)
+            print(f"  [SUCCESS] Final model saved to {model_path}", flush=True)
             
             env.close()
             
