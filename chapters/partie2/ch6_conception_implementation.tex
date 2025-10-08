@@ -4,11 +4,11 @@
 \section{Introduction}
 \label{sec:intro_conception_rl}
 
-Ce chapitre décrit la transformation du jumeau numérique calibré, dont la construction a été détaillée au Chapitre~\ref{chap:construction_jn}, en un environnement standardisé et exploitable pour l'entraînement d'agents d'apprentissage par renforcement (RL). L'objectif est de définir précisément le Processus de Décision Markovien (MDP) associé au contrôle des feux dans le corridor de Victoria Island, d'expliquer l'implémentation d'une interface conforme au standard Gymnasium, et de détailler la validation de l'environnement ainsi que les métriques utilisées pour l'entraînement et l'évaluation.
+Ce chapitre représente une étape fondamentale de notre travail : la transformation du jumeau numérique, un modèle de simulation physique validé, en un terrain d'expérimentation interactif pour l'intelligence artificielle. Nous allons ici forger le lien entre la théorie du contrôle et la pratique de l'ingénierie logicielle. L'objectif est de construire un environnement d'apprentissage par renforcement (RL) qui non seulement respecte les standards académiques (Gymnasium), mais qui encapsule aussi toute la complexité et la richesse de notre simulateur ARZ multi-classes.
 
-L'approche par apprentissage par renforcement est particulièrement pertinente ici, car elle permet d'apprendre des politiques de contrôle adaptatives en interaction directe avec notre simulateur ARZ étendu. Ce dernier est capable de représenter l'hétérogénéité véhicules/motos, les effets d'infrastructure et les phénomènes de \textit{creeping} et \textit{interweaving} observés dans les contextes ouest-africains. Les études récentes \parencite{reinforcement2024approach, cooperative2019traffic} montrent de forts gains du RL sur le contrôle des feux. Notre jumeau ARZ fournit l'environnement hautement non-linéaire nécessaire pour entraîner des politiques robustes.
+Le défi est de taille : comment traduire le phénomène complexe et continu du trafic de Lagos en un Processus de Décision Markovien (MDP) que peut comprendre un agent numérique ? Comment définir un état, des actions et, surtout, une fonction de récompense qui guide l'agent vers une politique de contrôle véritablement efficace ?
 
-La structure de ce chapitre suit une progression logique : nous commencerons par la formalisation mathématique du problème via le cadre MDP. Nous détaillerons ensuite son implémentation technique via l'interface Gymnasium. Enfin, nous conclurons par la présentation du protocole de validation de l'environnement, garantissant sa fiabilité pour les expérimentations qui seront menées au Chapitre~\ref{chap:entrainement_agent}.
+Ce chapitre répond à ces questions en suivant une progression logique : nous commencerons par la formalisation mathématique du problème via le cadre MDP, en justifiant chaque choix de conception. Nous détaillerons ensuite son implémentation technique via l'interface Gymnasium, garantissant la reproductibilité. Enfin, nous conclurons par la présentation du protocole de validation de l'environnement, assurant sa fiabilité pour les expérimentations cruciales qui seront menées au Chapitre~\ref{chap:entrainement_agent}.
 
 \section{Formalisation du Problème en Processus de Décision Markovien (MDP)}
 \label{sec:formalisation_mdp}
@@ -20,7 +20,7 @@ Nous allons maintenant instancier chacun de ces composants dans le contexte spé
 \label{subsec:espace_etats}
 
 \paragraph{Variables choisies et justification.}
-L'état exploite des grandeurs macroscopiques extraites du simulateur ARZ (densités $\rho$, vitesses $v$). La justification est la suivante : le modèle ARZ multi-classes capture la dynamique hors-équilibre et conserve la masse, de sorte que ces grandeurs sont physiquement pertinentes et suffisantes pour décrire l'état du trafic nécessaire au contrôle des feux.
+Pour prendre des décisions pertinentes, l'agent doit observer l'état du trafic aux abords directs de l'intersection qu'il contrôle. L'état est donc construit à partir des grandeurs macroscopiques fondamentales issues du simulateur ARZ : la densité $\rho$ (véhicules par kilomètre) et la vitesse moyenne $v$ (kilomètres par heure). Ces deux variables, conservées par le modèle ARZ, suffisent à décrire l'essentiel de la dynamique du trafic et constituent une base d'information riche et physiquement cohérente pour l'agent.
 
 \paragraph{Prise en compte de l'hétérogénéité.}
 Nous distinguons au minimum deux classes : les motocyclettes (classe $m$) et les autres véhicules (classe $c$). Pour chaque segment de route $i$ retenu dans l'observation, nous mesurons le vecteur d'état local $\{\rho_{m,i}, v_{m,i}, \rho_{c,i}, v_{c,i}\}$. Des variables auxiliaires comme la longueur de file estimée $L_i$ et la phase de feu courante (encodée en \textit{one-hot}) sont également incluses.
@@ -47,19 +47,19 @@ Ces valeurs permettent de traduire les variables physiques du simulateur ARZ en 
 \subsection{Espace d'Actions $\mathcal{A}$}
 \label{subsec:espace_actions}
 
-\paragraph{Choix et justification.} Pour cette étude, nous adoptons un espace d'actions discret et simple, favorisant la robustesse et une convergence plus rapide de l'apprentissage. Pour chaque carrefour, l'agent peut choisir parmi deux actions :
+\paragraph{Choix et justification.} La puissance du contrôle ne réside pas toujours dans la complexité des actions possibles, mais dans la pertinence de leur timing. Nous faisons le choix stratégique d'un espace d'actions minimaliste mais efficace. Pour chaque carrefour, l'agent ne dispose que de deux options :
 \begin{itemize}
-    \item $a=0$ : \textbf{Maintenir la phase actuelle}.
-    \item $a=1$ : \textbf{Passer à la phase suivante} du cycle de feux.
+    \item $a=0$ : \textbf{Maintenir la phase actuelle}, laissant le trafic s'écouler.
+    \item $a=1$ : \textbf{Passer à la phase suivante} du cycle, provoquant une permutation des droits de passage.
 \end{itemize}
-Cette approche permet à l'agent d'apprendre un \textit{timing} de décision intelligent sans complexifier l'architecture de sortie du réseau de neurones, ce qui est cohérent avec les algorithmes de type DQN que nous prévoyons d'utiliser.
+Cette simplicité est un atout. Elle concentre le défi de l'apprentissage sur la question la plus importante : \textit{quand} changer de phase ? L'agent doit apprendre un timing optimal basé sur l'état du trafic, plutôt que de se perdre dans un espace d'actions complexe. Cette approche est non seulement robuste et favorise une convergence rapide, mais elle est aussi parfaitement adaptée aux algorithmes de type Q-learning (comme DQN) que nous utiliserons.
 
-\paragraph{Intervalle de décision.} Il est crucial de distinguer le pas de temps de la simulation physique $\Delta t_{sim}$ (gouverné par la condition CFL du solveur WENO, typiquement $\leq 1s$) du pas de temps de décision de l'agent $\Delta t_{dec}$. Nous fixons ce dernier à $\Delta t_{dec}=10$ secondes. Ce choix représente un compromis entre la réactivité nécessaire en milieu urbain et la stabilité de la politique, en évitant des décisions trop fréquentes qui pourraient induire des oscillations.
+\paragraph{Intervalle de décision.} Il est crucial de distinguer le pas de temps de la simulation physique $\Delta t_{sim}$ du pas de temps de décision de l'agent $\Delta t_{dec}$. Le premier est une contrainte numérique, dictée par la condition CFL du solveur WENO pour garantir la stabilité (typiquement $\leq 1s$). Le second est un choix de conception stratégique. Nous fixons $\Delta t_{dec}=10$ secondes. Cette valeur représente un équilibre mûrement réfléchi : elle est suffisamment courte pour permettre une réaction agile aux changements de conditions de trafic, mais assez longue pour éviter des décisions "nerveuses" ou oscillatoires, laissant au trafic le temps de réagir à un changement de phase.
 
 \subsection{Fonction de Récompense $R$}
 \label{subsec:fonction_recompense}
 
-\paragraph{Objectif de l'optimisation.} La récompense est le signal qui guide l'apprentissage. Notre objectif principal est de minimiser la congestion, ce qui se traduit par la minimisation du temps d'attente total des véhicules.
+\paragraph{Objectif de l'optimisation.} La récompense est la boussole qui guide l'apprentissage de l'agent. Que cherchons-nous à optimiser ? L'objectif est de combattre la congestion. Concrètement, cela se traduit par la minimisation du temps total que les véhicules passent immobilisés ou à très faible vitesse. Cet objectif correspond directement à l'amélioration de la fluidité du trafic et à la réduction du temps de parcours des usagers, finalité ultime de tout système de contrôle de feux.
 
 \paragraph{Formulation mathématique.} À chaque pas de décision $t$, la récompense $R_t$ est calculée comme une somme pondérée de plusieurs métriques.
 Elle se décompose en trois termes principaux :
@@ -112,9 +112,9 @@ Cette approximation repose sur la définition fondamentale du flux en théorie d
 \subsection{Transitions $P$ et Facteur d'Actualisation $\gamma$}
 \label{subsec:transitions_gamma}
 
-\paragraph{Transitions.} La fonction de probabilité de transition $P(s'|s,a)$ est gérée implicitement par le jumeau numérique. L'environnement est déterministe conditionnellement à la demande de trafic en entrée, qui peut être modélisée comme un processus stochastique (par exemple, un processus de Poisson ou en utilisant des profils issus des données TomTom) pour robustifier l'entraînement.
+\paragraph{Transitions.} La fonction de probabilité de transition $P(s'|s,a)$, qui définit la dynamique du monde, n'a pas besoin d'être formulée explicitement. Elle est incarnée par le jumeau numérique lui-même. Pour l'agent, le simulateur ARZ \textit{est} l'univers. Chaque action qu'il entreprend provoque une évolution de cet univers, calculée par le simulateur. L'environnement est donc déterministe : une même action dans un même état produira toujours le même état suivant. Le caractère stochastique de l'expérience globale provient de la demande de trafic en entrée, qui peut être modélisée par des processus aléatoires (comme un processus de Poisson) ou par la relecture de profils de demande réels issus de nos données, afin de garantir la robustesse de la politique apprise.
 
-\paragraph{Facteur d'actualisation.} Nous choisissons une valeur de $\gamma = 0.99$. Cette valeur, proche de 1, incite l'agent à adopter une vision à long terme, favorisant les politiques anticipatives qui préviennent la formation de congestion plutôt que de réagir simplement à des situations déjà critiques.
+\paragraph{Facteur d'actualisation ($\gamma$).} Le facteur d'actualisation détermine l'horizon de planification de l'agent. Nous choisissons une valeur élevée, $\gamma = 0.99$. Ce n'est pas un détail technique : c'est un choix philosophique. Une valeur proche de 1 force l'agent à penser comme un urbaniste plutôt que comme un simple gestionnaire de carrefour. Il apprend que les récompenses futures sont presque aussi importantes que les récompenses immédiates. Cela l'incite à développer des stratégies anticipatives, qui préviennent la formation de la congestion en amont, plutôt que de se contenter de réagir à des files d'attente déjà formées. L'objectif est d'éviter l'engorgement systémique, pas seulement de vider une voie.
 
 \section{Implémentation de l'Interface Standardisée Gymnasium}
 \label{sec:implementation_gym}

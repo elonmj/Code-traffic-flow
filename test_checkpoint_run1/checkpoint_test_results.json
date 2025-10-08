@@ -1,0 +1,21 @@
+{
+  "evaluation": {
+    "n_episodes": 10,
+    "mean_reward": -0.007200000000000014,
+    "std_reward": 0.0,
+    "min_reward": -0.007200000000000014,
+    "max_reward": -0.007200000000000014,
+    "episode_summaries": [
+      {
+        "episode_length": 360,
+        "total_reward": -0.007200000000000001,
+        "avg_reward": -1.9999999999999998e-05,
+        "phase_switches": 90,
+        "avg_total_queue_length": 0.0,
+        "max_total_queue_length": 0.0,
+        "avg_total_throughput": 0.0,
+        "max_total_throughput": 0.0,
+        "avg_avg_speed": 0.0,
+        "max_avg_speed": 0.0,
+        "avg_phase_switches": 45.0,
+        "max_phase_switches": 
