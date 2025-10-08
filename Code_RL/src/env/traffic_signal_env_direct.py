@@ -94,13 +94,19 @@ class TrafficSignalEnvDirect(gym.Env):
         self.n_segments = len(observation_segments['upstream']) + len(observation_segments['downstream'])
         
         # Normalization parameters (from calibration)
+        # Separated by vehicle class (Chapter 6, Section 6.2.1)
         if normalization_params is None:
             normalization_params = {
-                'rho_max': 0.2,  # veh/m (from ARZ calibration)
-                'v_free': 15.0   # m/s (~54 km/h urban speed)
+                'rho_max_motorcycles': 300.0,  # veh/km (West African context)
+                'rho_max_cars': 150.0,         # veh/km
+                'v_free_motorcycles': 40.0,    # km/h (urban free flow)
+                'v_free_cars': 50.0            # km/h
             }
-        self.rho_max = normalization_params['rho_max']
-        self.v_free = normalization_params['v_free']
+        # Convert to SI units (veh/m, m/s) and store per-class values
+        self.rho_max_m = normalization_params.get('rho_max_motorcycles', 300.0) / 1000.0  # veh/m
+        self.rho_max_c = normalization_params.get('rho_max_cars', 150.0) / 1000.0         # veh/m
+        self.v_free_m = normalization_params.get('v_free_motorcycles', 40.0) / 3.6        # m/s
+        self.v_free_c = normalization_params.get('v_free_cars', 50.0) / 3.6               # m/s
         
         # Reward weights (from Chapter 6)
         if reward_weights is None:
@@ -273,11 +279,11 @@ class TrafficSignalEnvDirect(gym.Env):
         # Extract raw observations from simulator
         raw_obs = self.runner.get_segment_observations(all_segments)
         
-        # Normalize densities and velocities
-        rho_m_norm = raw_obs['rho_m'] / self.rho_max
-        v_m_norm = raw_obs['v_m'] / self.v_free
-        rho_c_norm = raw_obs['rho_c'] / self.rho_max
-        v_c_norm = raw_obs['v_c'] / self.v_free
+        # Normalize densities and velocities (class-specific, Chapter 6)
+        rho_m_norm = raw_obs['rho_m'] / self.rho_max_m
+        v_m_norm = raw_obs['v_m'] / self.v_free_m
+        rho_c_norm = raw_obs['rho_c'] / self.rho_max_c
+        v_c_norm = raw_obs['v_c'] / self.v_free_c
         
         # Clip to [0, 1] range (handle edge cases)
         rho_m_norm = np.clip(rho_m_norm, 0.0, 1.0)
@@ -318,8 +324,9 @@ class TrafficSignalEnvDirect(gym.Env):
         """
         # Extract densities from observation (already normalized, denormalize for calculation)
         # Observation format: [ρ_m, v_m, ρ_c, v_c] × n_segments + phase_onehot
-        densities_m = observation[0::4][:self.n_segments] * self.rho_max
-        densities_c = observation[2::4][:self.n_segments] * self.rho_max
+        # Denormalize using class-specific parameters (Chapter 6)
+        densities_m = observation[0::4][:self.n_segments] * self.rho_max_m
+        densities_c = observation[2::4][:self.n_segments] * self.rho_max_c
         
         # R_congestion: negative sum of densities (penalize congestion)
         # Approximation: Σ ρ_i × Δx (Δx = grid.dx from runner)
@@ -332,10 +339,10 @@ class TrafficSignalEnvDirect(gym.Env):
         R_stabilite = -self.kappa if phase_changed else 0.0
         
         # R_fluidite: reward for flow (outflow from observed segments)
-        # Approximation: use velocity as proxy for flow
+        # Approximation: use flux (ρ×v) as proxy for outflow (Chapter 6, Section 6.2.3)
         # F_out ≈ Σ (ρ × v) × Δx
-        velocities_m = observation[1::4][:self.n_segments] * self.v_free
-        velocities_c = observation[3::4][:self.n_segments] * self.v_free
+        velocities_m = observation[1::4][:self.n_segments] * self.v_free_m
+        velocities_c = observation[3::4][:self.n_segments] * self.v_free_c
         flow_m = np.sum(densities_m * velocities_m) * dx
         flow_c = np.sum(densities_c * velocities_c) * dx
         total_flow = flow_m + flow_c

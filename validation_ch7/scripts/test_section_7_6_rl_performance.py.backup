@@ -41,7 +41,7 @@ from Code_RL.src.env.traffic_signal_env_direct import TrafficSignalEnvDirect
 # RL training utilities
 # Note: We use TrafficSignalEnvDirect and stable_baselines3 directly
 # No need to import train_dqn which has dependencies on old HTTP server code
-from stable_baselines3 import PPO
+from stable_baselines3 import DQN, PPO
 
 # Définir le chemin vers les configurations de Code_RL
 CODE_RL_CONFIG_DIR = code_rl_path / "configs"
@@ -152,7 +152,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 print(f"  [WARNING] Modèle RL non trouvé: {self.model_path}. L'agent ne pourra pas agir.")
                 return None
             print(f"  [INFO] Chargement du modèle RL depuis : {self.model_path}")
-            return PPO.load(str(self.model_path))
+            return DQN.load(str(self.model_path))
 
         def get_action(self, state):
             """Prédit une action en utilisant l'agent RL."""

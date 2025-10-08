@@ -28,9 +28,21 @@ Nous distinguons au minimum deux classes : les motocyclettes (classe $m$) et les
 \paragraph{Structure finale du vecteur d'observation.}
 Soit $N_{up}$ le nombre de segments en amont et $N_{down}$ le nombre de segments en aval d'une intersection retenus pour l'observation. L'observation $o_t \in \mathcal{S}$ à l'instant $t$ est la concaténation normalisée des états locaux :
 \begin{equation}
-o_t = \mathrm{concat}\big( \underbrace{(\rho_{m,i}/\rho^{\max}, v_{m,i}/v^{free}, \rho_{c,i}/\rho^{\max}, v_{c,i}/v^{free})}_{i \in \{1, ..., N_{up}+N_{down}\}}, \underbrace{\text{phase\_onehot}}_{\text{dim } N_{phases}} \big).
+o_t = \mathrm{concat}\big( \underbrace{(\rho_{m,i}/\rho^{\max}_m, v_{m,i}/v^{free}_m, \rho_{c,i}/\rho^{\max}_c, v_{c,i}/v^{free}_c)}_{i \in \{1, ..., N_{up}+N_{down}\}}, \underbrace{\text{phase\_onehot}}_{\text{dim } N_{phases}} \big).
 \end{equation}
 La normalisation par la densité maximale $\rho^{\max}$ et la vitesse en flux libre $v^{free}$ est une pratique standard qui stabilise l'entraînement des réseaux de neurones en ramenant toutes les entrées à une échelle comparable.
+
+\paragraph{Paramètres de normalisation.}
+Pour normaliser les observations dans l'intervalle $[0, 1]$, nous utilisons des valeurs de référence adaptées au contexte ouest-africain et calibrées sur les données de Lagos. Ces paramètres sont distincts pour chaque classe de véhicules afin de refléter fidèlement leurs comportements spécifiques :
+
+\begin{itemize}
+    \item $\rho^{\max}_m = 300$ veh/km : densité de saturation pour les motocyclettes, significativement plus élevée que pour les voitures en raison de leur capacité à se faufiler et à occuper moins d'espace sur la chaussée.
+    \item $\rho^{\max}_c = 150$ veh/km : densité de saturation pour les voitures et autres véhicules.
+    \item $v^{free}_m = 40$ km/h : vitesse libre typique des motocyclettes en zone urbaine dense.
+    \item $v^{free}_c = 50$ km/h : vitesse libre typique des voitures en zone urbaine.
+\end{itemize}
+
+Ces valeurs permettent de traduire les variables physiques du simulateur ARZ en observations adimensionnelles comprises entre 0 et 1, respectant l'hétérogénéité du trafic mixte motos-voitures caractéristique de l'Afrique de l'Ouest.
 
 \subsection{Espace d'Actions $\mathcal{A}$}
 \label{subsec:espace_actions}
@@ -67,7 +79,35 @@ R_{stabilite} &= - \kappa \cdot \mathbb{I}(\text{action} = \text{changer\_phase}
 R_{fluidite} &= + \mu \cdot F_{out, t}
 \end{align}
 
-où $\alpha, \kappa, \mu$ sont des coefficients de pondération positifs, $\mathbb{I}(\cdot)$ est la fonction indicatrice, et $F_{out, t}$ est le flux total de véhicules ayant quitté l'intersection durant l'intervalle $\Delta t_{dec}$. Le choix des coefficients est déterminé empiriquement.
+où $\alpha, \kappa, \mu$ sont des coefficients de pondération positifs, $\mathbb{I}(\cdot)$ est la fonction indicatrice, et $F_{out, t}$ est le débit sortant total durant l'intervalle $\Delta t_{dec}$.
+
+\paragraph{Choix des coefficients de pondération.}
+Les coefficients de la fonction de récompense ont été déterminés empiriquement après une phase d'expérimentation préliminaire pour équilibrer les trois objectifs concurrents. Les valeurs retenues sont :
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcp{8cm}}
+\toprule
+\textbf{Coefficient} & \textbf{Valeur} & \textbf{Justification} \\
+\midrule
+$\alpha$ & 1.0 & Poids unitaire donnant la priorité principale à la réduction de congestion, objectif primordial du contrôle. \\
+$\kappa$ & 0.1 & Pénalité modérée pour limiter les changements fréquents de phase sans trop contraindre l'agent, permettant une flexibilité dans les décisions. \\
+$\mu$ & 0.5 & Récompense modérée pour le débit, encourageant la fluidité du trafic sans sacrifier l'objectif principal de réduction de congestion. \\
+\bottomrule
+\end{tabular}
+\caption{Coefficients de pondération de la fonction de récompense.}
+\label{tab:reward_weights}
+\end{table}
+
+Le ratio $\alpha : \kappa : \mu = 1 : 0.1 : 0.5$ garantit que la réduction de congestion reste l'objectif principal ($\alpha$ dominant), tout en encourageant un contrôle stable ($\kappa$ faible) et un bon débit ($\mu$ modéré). Ces valeurs ont été validées lors des tests d'entraînement préliminaires et ont montré un bon compromis entre performance et stabilité de la politique apprise.
+
+\paragraph{Approximation du débit sortant.}
+En pratique, le débit sortant exact $F_{out,t}$ (nombre de véhicules quittant l'intersection) peut être difficile à mesurer directement dans le simulateur sans instrumentation spécifique. Nous utilisons donc une approximation physiquement justifiée basée sur le flux local :
+\begin{equation}
+F_{out, t} \approx \sum_{i \in \text{segments observés}} \left( \rho_{m,i} \cdot v_{m,i} + \rho_{c,i} \cdot v_{c,i} \right) \cdot \Delta x
+\end{equation}
+
+Cette approximation repose sur la définition fondamentale du flux en théorie du trafic : $q = \rho \times v$ (véhicules par unité de temps). En sommant les flux sur les segments observés, nous obtenons une mesure proxy du débit qui capture bien l'objectif de maximisation du nombre de véhicules en mouvement. Cette approche présente l'avantage d'encourager simultanément des densités modérées et des vitesses élevées, ce qui correspond exactement à un état de trafic fluide et optimal.
 
 \subsection{Transitions $P$ et Facteur d'Actualisation $\gamma$}
 \label{subsec:transitions_gamma}
