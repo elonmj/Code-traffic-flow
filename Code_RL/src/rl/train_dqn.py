@@ -13,10 +13,15 @@ import torch
 import torch.nn as nn
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
-from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback
+from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.logger import configure
 import json
 is_kaggle = 'KAGGLE_KERNEL_RUN_TYPE' in os.environ
+
+# Import custom callbacks with intelligent checkpoint rotation
+import sys
+sys.path.append(os.path.dirname(__file__))
+from callbacks import RotatingCheckpointCallback, TrainingProgressCallback
 
 from endpoint.client import create_endpoint_client, EndpointConfig
 from signals.controller import create_signal_controller
@@ -101,6 +106,48 @@ def create_environment(configs: dict, use_mock: bool = False) -> TrafficSignalEn
     return env
 
 
+def find_latest_checkpoint(checkpoint_dir: str, name_prefix: str) -> tuple[str, int]:
+    """
+    Find the latest checkpoint file in the directory.
+    
+    Returns:
+        tuple: (checkpoint_path, num_timesteps) or (None, 0) if no checkpoint found
+    """
+    if not os.path.exists(checkpoint_dir):
+        return None, 0
+    
+    # List all checkpoint files
+    checkpoint_files = [f for f in os.listdir(checkpoint_dir) if f.startswith(name_prefix) and f.endswith('.zip')]
+    
+    if not checkpoint_files:
+        return None, 0
+    
+    # Extract timestep numbers from filenames
+    # Format: {name_prefix}_{timesteps}_steps.zip
+    checkpoints_with_steps = []
+    for fname in checkpoint_files:
+        try:
+            # Extract number between last underscore and "_steps.zip"
+            parts = fname.replace('.zip', '').split('_')
+            # Find "steps" index and get the number before it
+            if 'steps' in parts:
+                steps_idx = parts.index('steps')
+                if steps_idx > 0:
+                    num_steps = int(parts[steps_idx - 1])
+                    checkpoints_with_steps.append((fname, num_steps))
+        except (ValueError, IndexError):
+            continue
+    
+    if not checkpoints_with_steps:
+        return None, 0
+    
+    # Get checkpoint with most timesteps
+    latest_checkpoint = max(checkpoints_with_steps, key=lambda x: x[1])
+    checkpoint_path = os.path.join(checkpoint_dir, latest_checkpoint[0])
+    
+    return checkpoint_path, latest_checkpoint[1]
+
+
 def train_dqn_agent(
     env: TrafficSignalEnv,
     total_timesteps: int = 100000,
@@ -118,71 +165,220 @@ def train_dqn_agent(
     exploration_final_eps: float = 0.05,
     seed: int = 42,
     output_dir: str = "results",
-    experiment_name: str = "dqn_baseline"
+    experiment_name: str = "dqn_baseline",
+    resume_training: bool = True,
+    checkpoint_freq: int = None,  # Will be set adaptively if None
+    max_checkpoints_to_keep: int = 2  # Keep only 2 most recent checkpoints
 ) -> DQN:
-    """Train DQN agent on traffic signal environment"""
+    """
+    Train DQN agent on traffic signal environment.
+    
+    Args:
+        resume_training: If True, automatically resume from latest checkpoint if available
+        checkpoint_freq: Frequency (in timesteps) to save checkpoints.
+                        If None, will be set adaptively:
+                        - Quick test (<5000 timesteps): every 100 steps
+                        - Small run (<20000 timesteps): every 500 steps  
+                        - Production run (>=20000 timesteps): every 1000 steps
+        max_checkpoints_to_keep: Maximum number of checkpoints to keep (default: 2)
+                                 Older checkpoints are automatically deleted to save disk space.
+                                 Recommended: 2-3 for Kaggle (20GB limit)
+    """
     
     # Setup output directory
     os.makedirs(output_dir, exist_ok=True)
+    checkpoint_dir = os.path.join(output_dir, "checkpoints")
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    
+    # Adaptive checkpoint frequency based on total_timesteps
+    if checkpoint_freq is None:
+        if total_timesteps < 5000:
+            checkpoint_freq = 100  # Quick test: save every 100 steps
+            print(f"⚙️  Quick test mode: checkpoint every {checkpoint_freq} steps")
+        elif total_timesteps < 20000:
+            checkpoint_freq = 500  # Small run: save every 500 steps
+            print(f"⚙️  Small run mode: checkpoint every {checkpoint_freq} steps")
+        else:
+            checkpoint_freq = 1000  # Production: save every 1000 steps
+            print(f"⚙️  Production mode: checkpoint every {checkpoint_freq} steps")
+    else:
+        print(f"⚙️  Manual checkpoint frequency: every {checkpoint_freq} steps")
     
     # Configure logger
     sb3_logger = configure(output_dir, ["csv", "tensorboard"])
     
-    # Create DQN model
-    model = DQN(
-        policy=create_custom_dqn_policy(),
-        env=env,
-        learning_rate=learning_rate,
-        buffer_size=buffer_size,
-        learning_starts=learning_starts,
-        batch_size=batch_size,
-        tau=tau,
-        gamma=gamma,
-        train_freq=train_freq,
-        gradient_steps=gradient_steps,
-        target_update_interval=target_update_interval,
-        exploration_fraction=exploration_fraction,
-        exploration_initial_eps=exploration_initial_eps,
-        exploration_final_eps=exploration_final_eps,
-        seed=seed,
+    # Check for existing checkpoint
+    checkpoint_path, completed_timesteps = find_latest_checkpoint(checkpoint_dir, f"{experiment_name}_checkpoint")
+    
+    if resume_training and checkpoint_path and completed_timesteps > 0:
+        print(f"🔄 RESUMING TRAINING from checkpoint: {checkpoint_path}")
+        print(f"   ✓ Already completed: {completed_timesteps:,} timesteps")
+        print(f"   ✓ Remaining: {total_timesteps - completed_timesteps:,} timesteps")
+        
+        # Load the model from checkpoint
+        model = DQN.load(
+            checkpoint_path,
+            env=env,
+            verbose=1
+        )
+        model.set_logger(sb3_logger)
+        
+        # Calculate remaining timesteps
+        remaining_timesteps = max(0, total_timesteps - completed_timesteps)
+        
+        if remaining_timesteps == 0:
+            print("✅ Training already completed!")
+            return model
+            
+    else:
+        print(f"🆕 STARTING NEW TRAINING: {total_timesteps:,} timesteps")
+        
+        # Create new DQN model
+        model = DQN(
+            policy=create_custom_dqn_policy(),
+            env=env,
+            learning_rate=learning_rate,
+            buffer_size=buffer_size,
+            learning_starts=learning_starts,
+            batch_size=batch_size,
+            tau=tau,
+            gamma=gamma,
+            train_freq=train_freq,
+            gradient_steps=gradient_steps,
+            target_update_interval=target_update_interval,
+            exploration_fraction=exploration_fraction,
+            exploration_initial_eps=exploration_initial_eps,
+            exploration_final_eps=exploration_final_eps,
+            seed=seed,
+            verbose=1
+        )
+        
+        model.set_logger(sb3_logger)
+        remaining_timesteps = total_timesteps
+        completed_timesteps = 0
+    
+    # Setup callbacks with 3-level checkpoint strategy
+    
+    # 1. BEST MODEL: Saved automatically when evaluation improves
+    #    - Used for final deployment and thesis results
+    #    - Never deleted, only updated when better performance achieved
+    best_model_dir = os.path.join(output_dir, "best_model")
+    os.makedirs(best_model_dir, exist_ok=True)
+    
+    eval_callback = EvalCallback(
+        eval_env=env,
+        best_model_save_path=best_model_dir,
+        log_path=os.path.join(output_dir, "eval"),
+        eval_freq=max(checkpoint_freq, 1000),  # Evaluate at least as often as checkpoints
+        n_eval_episodes=5 if total_timesteps < 10000 else 10,
+        deterministic=True,
+        render=False,
+        verbose=1
+    )
+    print(f"📊 Evaluation: every {eval_callback.eval_freq:,} steps, saving BEST model to {best_model_dir}")
+    
+    # 2. LATEST CHECKPOINTS: For resuming interrupted training
+    #    - Keeps only 2 most recent (rotating deletion)
+    #    - Includes replay buffer for exact resume
+    checkpoint_callback = RotatingCheckpointCallback(
+        save_freq=checkpoint_freq,
+        save_path=checkpoint_dir,
+        name_prefix=f"{experiment_name}_checkpoint",
+        max_checkpoints=max_checkpoints_to_keep,  # Automatic rotation
+        save_replay_buffer=True,  # CRITICAL: Needed for proper DQN resume
+        save_vecnormalize=True,
+        verbose=1
+    )
+    print(f"💾 Checkpoints: every {checkpoint_freq:,} steps, keeping {max_checkpoints_to_keep} most recent in {checkpoint_dir}")
+    
+    # 3. PROGRESS TRACKING: For monitoring on Kaggle
+    progress_callback = TrainingProgressCallback(
+        total_timesteps=remaining_timesteps,
+        log_freq=checkpoint_freq,  # Log at same frequency as checkpoints
         verbose=1
     )
     
-    model.set_logger(sb3_logger)
+    callbacks = [eval_callback, checkpoint_callback, progress_callback]
     
-    # Setup callbacks
-    eval_callback = EvalCallback(
-        eval_env=env,
-        best_model_save_path=os.path.join(output_dir, "best_model"),
-        log_path=os.path.join(output_dir, "eval"),
-        eval_freq=5000,
-        deterministic=True,
-        render=False
-    )
+    print(f"\n{'='*70}")
+    print(f"🚀 TRAINING STRATEGY:")
+    print(f"   - Resume from: {'Latest checkpoint' if checkpoint_path else 'Scratch (new training)'}")
+    print(f"   - Total timesteps: {total_timesteps:,}")
+    print(f"   - Remaining timesteps: {remaining_timesteps:,}")
+    print(f"   - Checkpoint strategy: Keep {max_checkpoints_to_keep} latest + 1 best")
+    print(f"   - Checkpoint freq: {checkpoint_freq:,} steps")
+    print(f"   - Evaluation freq: {eval_callback.eval_freq:,} steps")
+    print(f"{'='*70}\n")
     
-    checkpoint_callback = CheckpointCallback(
-        save_freq=10000,
-        save_path=os.path.join(output_dir, "checkpoints"),
-        name_prefix=f"{experiment_name}_checkpoint"
-    )
-    
-    callbacks = [eval_callback, checkpoint_callback]
-    
-    print(f"Starting training: {total_timesteps} timesteps")
     start_time = time.time()
     
     # Train the model
     model.learn(
-        total_timesteps=total_timesteps,
+        total_timesteps=remaining_timesteps,
         callback=callbacks,
-        progress_bar=True
+        progress_bar=True,
+        reset_num_timesteps=False  # CRITICAL: Don't reset timestep counter when resuming
     )
     
     training_time = time.time() - start_time
-    print(f"Training completed in {training_time:.1f} seconds")
+    print(f"✅ Training completed in {training_time:.1f} seconds ({training_time/60:.1f} minutes)")
     
     # Save final model
-    model.save(os.path.join(output_dir, f"{experiment_name}_final"))
+    final_model_path = os.path.join(output_dir, f"{experiment_name}_final")
+    model.save(final_model_path)
+    print(f"💾 Final model saved: {final_model_path}.zip")
+    
+    # Save training metadata with checkpoint strategy explanation
+    metadata = {
+        "total_timesteps": total_timesteps,
+        "completed_timesteps": completed_timesteps + remaining_timesteps,
+        "training_time_seconds": training_time,
+        "resumed_from_checkpoint": checkpoint_path is not None,
+        "latest_checkpoint_path": checkpoint_path,
+        "final_model_path": final_model_path + ".zip",
+        "best_model_path": os.path.join(output_dir, "best_model", "best_model.zip"),
+        "checkpoint_strategy": {
+            "description": "3-level checkpoint system",
+            "levels": {
+                "latest": {
+                    "purpose": "Resume interrupted training",
+                    "count": max_checkpoints_to_keep,
+                    "frequency_steps": checkpoint_freq,
+                    "location": checkpoint_dir,
+                    "includes_replay_buffer": True
+                },
+                "best": {
+                    "purpose": "Final evaluation and deployment",
+                    "count": 1,
+                    "selection_criterion": "Highest mean evaluation reward",
+                    "location": os.path.join(output_dir, "best_model"),
+                    "note": "Never deleted, only updated on improvement"
+                },
+                "final": {
+                    "purpose": "State at training completion",
+                    "location": final_model_path + ".zip",
+                    "note": "May not be the best model if performance degraded"
+                }
+            },
+            "recommendation": "Use 'best_model.zip' for thesis results and deployment"
+        }
+    }
+    
+    metadata_path = os.path.join(output_dir, f"{experiment_name}_training_metadata.json")
+    with open(metadata_path, 'w') as f:
+        json.dump(metadata, f, indent=2)
+    
+    print(f"\n{'='*70}")
+    print(f"📁 CHECKPOINT SUMMARY:")
+    print(f"   Latest checkpoint: {os.path.join(checkpoint_dir, '...')}")
+    print(f"   Best model: {metadata['best_model_path']}")
+    print(f"   Final model: {metadata['final_model_path']}")
+    print(f"   Metadata: {metadata_path}")
+    print(f"\n   ⚠️  IMPORTANT:")
+    print(f"   - For RESUME: Use latest checkpoint automatically detected")
+    print(f"   - For THESIS RESULTS: Use best_model.zip")
+    print(f"   - For DEPLOYMENT: Use best_model.zip")
+    print(f"{'='*70}\n")
     
     return model
 
