@@ -1,0 +1,292 @@
+[{"stream_name":"stdout","time":0.631634422,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.631690004,"data":"ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE\n"}
+,{"stream_name":"stdout","time":0.631695533,"data":"Revendications: R5\n"}
+,{"stream_name":"stdout","time":0.631699737,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.631704216,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.63171788,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":5.517172056,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.51732854,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.563239955,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.583563708,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.58358241,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":5.583647442,"data":"\n"}
+,{"stream_name":"stdout","time":5.583671725,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.583806781,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":6.850066332,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":6.850092741,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":6.850099242,"data":"\n"}
+,{"stream_name":"stdout","time":6.85010204,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":6.850104723,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":10.632688155,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":13.633237142,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":16.547293991,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":19.447685619,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":22.396707884,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":22.396911513,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":22.3969223,"data":"\n"}
+,{"stream_name":"stdout","time":22.396928102,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":22.397238111,"data":"[QUICK_TEST] Quick test mode enabled (2 timesteps)\n"}
+,{"stream_name":"stdout","time":22.397374126,"data":"Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":22.397443365,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":22.397513127,"data":"============================================================\n"}
+,{"stream_name":"stderr","time":33.009116867,"data":"2025-10-07 23:33:59.047138: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n"}
+,{"stream_name":"stderr","time":33.195051869,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stderr","time":33.195097114,"data":"E0000 00:00:1759880039.233076      46 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n"}
+,{"stream_name":"stderr","time":33.248104685,"data":"E0000 00:00:1759880039.286235      46 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"}
+,{"stream_name":"stdout","time":44.316960244,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":44.316989628,"data":"QUICK TEST MODE ENABLED\n"}
+,{"stream_name":"stdout","time":44.316995305,"data":"- Training: 2 timesteps only\n"}
+,{"stream_name":"stdout","time":44.316999842,"data":"- Duration: 2 minutes simulated time\n"}
+,{"stream_name":"stdout","time":44.317003506,"data":"- Scenarios: 1 scenario only\n"}
+,{"stream_name":"stdout","time":44.317007108,"data":"- Expected runtime: ~5 minutes on GPU\n"}
+,{"stream_name":"stdout","time":44.317010803,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":44.317171653,"data":"[ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":44.317191841,"data":"  - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":44.317196282,"data":"  - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz\n"}
+,{"stream_name":"stdout","time":44.317200198,"data":"  - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios\n"}
+,{"stream_name":"stdout","time":44.317205892,"data":"  - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics\n"}
+,{"stream_name":"stdout","time":44.317210334,"data":"  - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex\n"}
+,{"stream_name":"stdout","time":44.317214369,"data":"[QUICK TEST MODE] Minimal training timesteps for setup validation\n"}
+,{"stream_name":"stdout","time":44.317218227,"data":"=== Section 7.6: RL Performance Validation ===\n"}
+,{"stream_name":"stdout","time":44.317222607,"data":"Testing RL agent performance vs baseline controllers...\n"}
+,{"stream_name":"stdout","time":44.432895245,"data":"[DEVICE] Detected: GPU\n"}
+,{"stream_name":"stdout","time":44.52724336,"data":"[GPU INFO] Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":44.527273688,"data":"\n"}
+,{"stream_name":"stdout","time":44.527277521,"data":"[PHASE 1/2] Training RL agents...\n"}
+,{"stream_name":"stdout","time":44.527280453,"data":"[QUICK TEST] Training only: traffic_light_control\n"}
+,{"stream_name":"stdout","time":44.527283002,"data":"[QUICK TEST MODE] Training reduced to 2 timesteps, 120.0s episodes\n"}
+,{"stream_name":"stdout","time":44.52728575,"data":"\n"}
+,{"stream_name":"stdout","time":44.527288943,"data":"[TRAINING] Starting RL training for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":44.527292858,"data":"  Device: gpu\n"}
+,{"stream_name":"stdout","time":44.527298042,"data":"  Total timesteps: 2\n"}
+,{"stream_name":"stdout","time":44.527302215,"data":"  Episode max time: 120.0s\n"}
+,{"stream_name":"stdout","time":44.529545593,"data":"  [SCENARIO] Generated: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":44.536891665,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":44.536915575,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":44.536918857,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":44.536921537,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stderr","time":46.413487136,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":46.413531807,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":47.195598507,"data":"  [INFO] Environment created: obs_space=(26,), action_space=2\n"}
+,{"stream_name":"stdout","time":47.195647276,"data":"  [INFO] Initializing PPO agent...\n"}
+,{"stream_name":"stdout","time":47.196296011,"data":"Using cuda device\n"}
+,{"stream_name":"stdout","time":47.196334901,"data":"Wrapping the env with a `Monitor` wrapper\n"}
+,{"stream_name":"stdout","time":47.196356193,"data":"Wrapping the env in a DummyVecEnv.\n"}
+,{"stream_name":"stdout","time":51.880528877,"data":"  [INFO] Training for 2 timesteps...\n"}
+,{"stream_name":"stdout","time":51.888288998,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":51.888313952,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":51.888320434,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":51.888325768,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":51.894995371,"data":"Logging to validation_output/results/local_test/section_7_6_rl_performance/data/models/tensorboard/PPO_3\n"}
+,{"stream_name":"stderr","time":52.49385556,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":52.493889539,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":52.837735298,"data":"[WARNING] Automatic CFL correction applied (count: 1):\n"}
+,{"stream_name":"stdout","time":52.837767273,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":52.837774466,"data":"  Original dt: 1.028839e+00 s\n"}
+,{"stream_name":"stdout","time":52.837780363,"data":"  Corrected dt: 6.430243e-01 s\n"}
+,{"stream_name":"stdout","time":52.837785811,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":52.837790775,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stderr","time":53.009105656,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":53.009133165,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":53.260552457,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":53.260585023,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":53.317131857,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":53.317157671,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":53.372739118,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":53.372785453,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":53.783451433,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":53.78357897,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":53.855110849,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":53.855137388,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":53.936759451,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":53.936786522,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":54.029672646,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":54.029701314,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":54.123971969,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":54.124002888,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":54.179970164,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":54.179996605,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":54.234096992,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":54.234120976,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":55.096503496,"data":"[WARNING] Automatic CFL correction applied (count: 100):\n"}
+,{"stream_name":"stdout","time":55.09653202,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":55.096538192,"data":"  Original dt: 1.028762e+00 s\n"}
+,{"stream_name":"stdout","time":55.096542019,"data":"  Corrected dt: 6.429766e-01 s\n"}
+,{"stream_name":"stdout","time":55.096545845,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":55.096549522,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":55.89106828,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":55.891098787,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":55.891103573,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":55.891107408,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":55.907938472,"data":"---------------------------------\n"}
+,{"stream_name":"stdout","time":55.907961422,"data":"| rollout/           |          |\n"}
+,{"stream_name":"stdout","time":55.907977793,"data":"|    ep_len_mean     | 2        |\n"}
+,{"stream_name":"stdout","time":55.907981696,"data":"|    ep_rew_mean     | -0.102   |\n"}
+,{"stream_name":"stdout","time":55.907985149,"data":"| time/              |          |\n"}
+,{"stream_name":"stdout","time":55.9079887,"data":"|    fps             | 0        |\n"}
+,{"stream_name":"stdout","time":55.907991906,"data":"|    iterations      | 1        |\n"}
+,{"stream_name":"stdout","time":55.907995243,"data":"|    time_elapsed    | 4        |\n"}
+,{"stream_name":"stdout","time":55.907998656,"data":"|    total_timesteps | 2        |\n"}
+,{"stream_name":"stdout","time":55.908001837,"data":"---------------------------------\n"}
+,{"stream_name":"stdout","time":56.396917046,"data":"  [SUCCESS] Model saved to validation_output/results/local_test/section_7_6_rl_performance/data/models/rl_agent_traffic_light_control.zip\n"}
+,{"stream_name":"stdout","time":56.397560453,"data":"\n"}
+,{"stream_name":"stdout","time":56.397575997,"data":"[PHASE 2/2] Running performance comparisons...\n"}
+,{"stream_name":"stdout","time":56.39758082,"data":"[QUICK TEST] Testing only: traffic_light_control\n"}
+,{"stream_name":"stdout","time":56.397585305,"data":"\n"}
+,{"stream_name":"stdout","time":56.397589193,"data":"Testing scenario: traffic_light_control (device=gpu)\n"}
+,{"stream_name":"stdout","time":56.398906802,"data":"  [SCENARIO] Generated: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":56.398924919,"data":"  Running baseline controller...\n"}
+,{"stream_name":"stdout","time":56.398941105,"data":"  [QUICK TEST] Reduced duration to 600.0s\n"}
+,{"stream_name":"stdout","time":56.398946229,"data":"  [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":56.405365205,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.405382504,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.405386791,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.405390631,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.412556855,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":56.41257277,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":56.412577764,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":56.412591933,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":56.415004498,"data":"  [INFO] Starting simulation loop (max duration: 600.0s, interval: 60.0s)\n"}
+,{"stream_name":"stdout","time":56.511888026,"data":"[WARNING] Automatic CFL correction applied (count: 200):\n"}
+,{"stream_name":"stdout","time":56.511912692,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":56.511918094,"data":"  Original dt: 1.028787e+00 s\n"}
+,{"stream_name":"stdout","time":56.51192228,"data":"  Corrected dt: 6.429920e-01 s\n"}
+,{"stream_name":"stdout","time":56.511927014,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":56.511931182,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":57.385707263,"data":"[WARNING] Automatic CFL correction applied (count: 300):\n"}
+,{"stream_name":"stdout","time":57.385732111,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":57.385738328,"data":"  Original dt: 1.028762e+00 s\n"}
+,{"stream_name":"stdout","time":57.38574257,"data":"  Corrected dt: 6.429766e-01 s\n"}
+,{"stream_name":"stdout","time":57.385760361,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":57.385765225,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":58.273428866,"data":"[WARNING] Automatic CFL correction applied (count: 400):\n"}
+,{"stream_name":"stdout","time":58.273461083,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":58.273465358,"data":"  Original dt: 1.028762e+00 s\n"}
+,{"stream_name":"stdout","time":58.273468151,"data":"  Corrected dt: 6.429766e-01 s\n"}
+,{"stream_name":"stdout","time":58.273470686,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":58.273473175,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":59.148280484,"data":"[WARNING] Automatic CFL correction applied (count: 500):\n"}
+,{"stream_name":"stdout","time":59.148309334,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":59.14831476,"data":"  Original dt: 1.028762e+00 s\n"}
+,{"stream_name":"stdout","time":59.148318545,"data":"  Corrected dt: 6.429766e-01 s\n"}
+,{"stream_name":"stdout","time":59.148322446,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":59.148326766,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":60.025331654,"data":"[WARNING] Automatic CFL correction applied (count: 600):\n"}
+,{"stream_name":"stdout","time":60.02536095,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":60.025367462,"data":"  Original dt: 1.028762e+00 s\n"}
+,{"stream_name":"stdout","time":60.025372223,"data":"  Corrected dt: 6.429766e-01 s\n"}
+,{"stream_name":"stdout","time":60.025376489,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":60.025381191,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":60.931548135,"data":"[WARNING] Automatic CFL correction applied (count: 700):\n"}
+,{"stream_name":"stdout","time":60.931571378,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":60.931576331,"data":"  Original dt: 1.028762e+00 s\n"}
+,{"stream_name":"stdout","time":60.931580042,"data":"  Corrected dt: 6.429766e-01 s\n"}
+,{"stream_name":"stdout","time":60.931583667,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":60.931587336,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":61.81542038,"data":"[WARNING] Automatic CFL correction applied (count: 800):\n"}
+,{"stream_name":"stdout","time":61.81544566,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":61.815451557,"data":"  Original dt: 1.028762e+00 s\n"}
+,{"stream_name":"stdout","time":61.81545523,"data":"  Corrected dt: 6.429766e-01 s\n"}
+,{"stream_name":"stdout","time":61.815459634,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":61.815471725,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":62.703321693,"data":"[WARNING] Automatic CFL correction applied (count: 900):\n"}
+,{"stream_name":"stdout","time":62.70334756,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":62.703352917,"data":"  Original dt: 1.028762e+00 s\n"}
+,{"stream_name":"stdout","time":62.70335679,"data":"  Corrected dt: 6.429766e-01 s\n"}
+,{"stream_name":"stdout","time":62.703360533,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":62.703364181,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":63.58538157,"data":"[WARNING] Automatic CFL correction applied (count: 1000):\n"}
+,{"stream_name":"stdout","time":63.585421769999996,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":63.585427264,"data":"  Original dt: 1.028762e+00 s\n"}
+,{"stream_name":"stdout","time":63.585431098,"data":"  Corrected dt: 6.429766e-01 s\n"}
+,{"stream_name":"stdout","time":63.585435379,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":63.585439589,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":64.483441736,"data":"[WARNING] Automatic CFL correction applied (count: 1100):\n"}
+,{"stream_name":"stdout","time":64.483470814,"data":"  Calculated CFL: 0.800 \u003e Limit: 0.500\n"}
+,{"stream_name":"stdout","time":64.483476534,"data":"  Original dt: 1.028762e+00 s\n"}
+,{"stream_name":"stdout","time":64.483479595,"data":"  Corrected dt: 6.429766e-01 s\n"}
+,{"stream_name":"stdout","time":64.483482364,"data":"  Correction factor: 1.6x\n"}
+,{"stream_name":"stdout","time":64.48348558,"data":"  Max wave speed detected: 19.44 m/s\n"}
+,{"stream_name":"stdout","time":64.746835265,"data":"    Step 10: t=600.0s, reward=-0.051, avg_step_time=0.833s\n"}
+,{"stream_name":"stdout","time":64.746864566,"data":"\n"}
+,{"stream_name":"stdout","time":64.746869488,"data":"  [PERFORMANCE] Simulation completed:\n"}
+,{"stream_name":"stdout","time":64.746873341,"data":"    - Total steps: 10\n"}
+,{"stream_name":"stdout","time":64.746877147,"data":"    - Total reward: -0.51\n"}
+,{"stream_name":"stdout","time":64.746881218,"data":"    - Avg step time: 0.833s (device=gpu)\n"}
+,{"stream_name":"stdout","time":64.746884399,"data":"    - Simulated time: 600.0s\n"}
+,{"stream_name":"stdout","time":64.746886867,"data":"    - Wallclock time: 8.3s\n"}
+,{"stream_name":"stdout","time":64.746889374,"data":"    - Speed ratio: 72.02x real-time\n"}
+,{"stream_name":"stdout","time":64.747777188,"data":"  Running RL controller...\n"}
+,{"stream_name":"stdout","time":64.747787416,"data":"  [INFO] Loading existing model from validation_output/results/local_test/section_7_6_rl_performance/data/models/rl_agent_traffic_light_control.zip\n"}
+,{"stream_name":"stdout","time":64.747837807,"data":"  [INFO] Chargement du modèle RL depuis : validation_output/results/local_test/section_7_6_rl_performance/data/models/rl_agent_traffic_light_control.zip\n"}
+,{"stream_name":"stderr","time":64.766270525,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":64.76654196,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 423, in run_performance_comparison\n"}
+,{"stream_name":"stderr","time":64.766557374,"data":"    rl_controller = self.RLController(scenario_type, model_path)\n"}
+,{"stream_name":"stderr","time":64.766562066,"data":"                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":64.766566361,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 147, in __init__\n"}
+,{"stream_name":"stderr","time":64.766570675,"data":"    self.agent = self._load_agent()\n"}
+,{"stream_name":"stderr","time":64.766575171,"data":"                 ^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":64.766579257,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 155, in _load_agent\n"}
+,{"stream_name":"stderr","time":64.766583363,"data":"    return DQN.load(str(self.model_path))\n"}
+,{"stream_name":"stderr","time":64.766586756,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":64.766674638,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py\", line 741, in load\n"}
+,{"stream_name":"stderr","time":64.766685708,"data":"    model._setup_model()\n"}
+,{"stream_name":"stderr","time":64.766689228,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/dqn/dqn.py\", line 145, in _setup_model\n"}
+,{"stream_name":"stderr","time":64.766692911,"data":"    self._create_aliases()\n"}
+,{"stream_name":"stderr","time":64.766696066,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/dqn/dqn.py\", line 165, in _create_aliases\n"}
+,{"stream_name":"stderr","time":64.766699422,"data":"    self.q_net = self.policy.q_net\n"}
+,{"stream_name":"stderr","time":64.766702556,"data":"                 ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":64.766705728,"data":"  File \"/usr/local/lib/python3.11/dist-packages/torch/nn/modules/module.py\", line 1928, in __getattr__\n"}
+,{"stream_name":"stderr","time":64.766718641,"data":"    raise AttributeError(\n"}
+,{"stream_name":"stderr","time":64.766721941,"data":"AttributeError: 'ActorCriticPolicy' object has no attribute 'q_net'\n"}
+,{"stream_name":"stdout","time":64.766777745,"data":"  ERROR: 'ActorCriticPolicy' object has no attribute 'q_net'\n"}
+,{"stream_name":"stdout","time":64.767117174,"data":"\n"}
+,{"stream_name":"stdout","time":64.767122415,"data":"[FIGURES] Generating RL performance figures...\n"}
+,{"stream_name":"stdout","time":65.347122362,"data":"  [OK] fig_rl_performance_improvements.png\n"}
+,{"stream_name":"stdout","time":65.864888888,"data":"  [OK] fig_rl_learning_curve.png\n"}
+,{"stream_name":"stdout","time":65.864917922,"data":"[FIGURES] Generated 2 figures in validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":65.864923388,"data":"\n"}
+,{"stream_name":"stdout","time":65.864927546,"data":"[METRICS] Saving RL performance metrics...\n"}
+,{"stream_name":"stdout","time":65.871257549,"data":"  [OK] validation_output/results/local_test/section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv\n"}
+,{"stream_name":"stdout","time":65.871277536,"data":"\n"}
+,{"stream_name":"stdout","time":65.871282638,"data":"[LATEX] Generating content for Section 7.6...\n"}
+,{"stream_name":"stdout","time":65.871481231,"data":"  [OK] validation_output/results/local_test/section_7_6_rl_performance/latex/section_7_6_content.tex\n"}
+,{"stream_name":"stdout","time":65.87149004,"data":"\n"}
+,{"stream_name":"stdout","time":65.871493954,"data":"=== RL Performance Validation Summary ===\n"}
+,{"stream_name":"stdout","time":65.87149817,"data":"Scenarios passed: 0/1 (0.0%)\n"}
+,{"stream_name":"stdout","time":65.871502236,"data":"Average flow improvement: 0.00%\n"}
+,{"stream_name":"stdout","time":65.871506278,"data":"Average efficiency improvement: 0.00%\n"}
+,{"stream_name":"stdout","time":65.871510439,"data":"Average delay reduction: 0.00%\n"}
+,{"stream_name":"stdout","time":65.871514461,"data":"Overall validation: FAILED\n"}
+,{"stream_name":"stdout","time":65.872538783,"data":"[SUMMARY] Created: validation_output/results/local_test/section_7_6_rl_performance/session_summary.json\n"}
+,{"stream_name":"stdout","time":68.531262834,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":68.53129143,"data":"\n"}
+,{"stream_name":"stdout","time":68.531294822,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":68.531297605,"data":"[ARTIFACTS] Copying results for section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":68.534005622,"data":"[OK] Section copied to: /kaggle/working/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":68.534788325,"data":"[ARTIFACTS] NPZ files: 0\n"}
+,{"stream_name":"stdout","time":68.534853566,"data":"[ARTIFACTS] PNG figures: 2\n"}
+,{"stream_name":"stdout","time":68.534962209,"data":"[ARTIFACTS] YAML scenarios: 1\n"}
+,{"stream_name":"stdout","time":68.535011758,"data":"[ARTIFACTS] TEX files: 1\n"}
+,{"stream_name":"stdout","time":68.535078326,"data":"[ARTIFACTS] JSON files: 1\n"}
+,{"stream_name":"stdout","time":68.535143748,"data":"[ARTIFACTS] CSV metrics: 1\n"}
+,{"stream_name":"stdout","time":68.535226964,"data":"TRACKING_SUCCESS: Artifacts copied\n"}
+,{"stream_name":"stdout","time":68.535345791,"data":"[SUCCESS] All artifacts organized and copied\n"}
+,{"stream_name":"stdout","time":68.535398156,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":68.569710168,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":68.569733956,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":68.569984594,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":68.570070573,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":68.570152308,"data":"\n"}
+,{"stream_name":"stdout","time":68.570161363,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":68.570204438,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":68.570316518,"data":"\n"}
+,{"stream_name":"stdout","time":68.570323605,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":68.57032779,"data":"VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED\n"}
+,{"stream_name":"stdout","time":68.570331665,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":68.57033531,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":71.95755756,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":71.957593019,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":71.997292287,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":72.735497918,"data":"[NbConvertApp] Writing 320782 bytes to __results__.html\n"}
+]
