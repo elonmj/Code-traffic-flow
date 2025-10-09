@@ -305,6 +305,9 @@ class SimulationRunner:
             if U_L is None or U_R is None or split_pos is None:
                 raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
             U_init = initial_conditions.riemann_problem(self.grid, U_L, U_R, split_pos)
+            # Store U_L as equilibrium state for inflow BC (traffic signal control)
+            # This allows green phase to impose the high-density left state
+            self.initial_equilibrium_state = U_L
         elif ic_type == 'density_hump':
              bg_state = ic_config.get('background_state')
              center = ic_config.get('center')
