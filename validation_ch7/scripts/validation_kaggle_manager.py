@@ -911,42 +911,21 @@ print("=" * 80)
             with tempfile.TemporaryDirectory() as temp_dir:
                 print(f"[DOWNLOAD] Downloading kernel output for: {kernel_slug}")
                 
-                # Try to download with encoding protection
+                # Fix stdout encoding to handle emojis in Kaggle logs
+                import sys
+                import io
+                original_stdout = sys.stdout
+                
                 try:
-                    self.api.kernels_output(kernel_slug, path=temp_dir, quiet=True)
-                except UnicodeError as e:
-                    print(f"[WARNING] Unicode encoding issue during download: {e}")
-                    # Try alternative approach - direct file creation with minimal content
-                    try:
-                        print("[WORKAROUND] Creating minimal success indicator files...")
-                        
-                        # Create a basic log file
-                        with open(os.path.join(temp_dir, 'log.txt'), 'w', encoding='utf-8') as f:
-                            f.write(f"[INFO] Kernel {kernel_slug} completed successfully\n")
-                            f.write("[OK] Validation completed successfully!\n")
-                            f.write("[SUCCESS] VALIDATION SUCCESS: All tests completed successfully\n")
-                        
-                        # Create results directory and session summary
-                        results_dir = os.path.join(temp_dir, 'results')
-                        os.makedirs(results_dir, exist_ok=True)
-                        
-                        summary = {
-                            "timestamp": datetime.now().isoformat(),
-                            "status": "completed",
-                            "kernel_slug": kernel_slug,
-                            "encoding_workaround": True,
-                            "kaggle_session": True
-                        }
-                        
-                        with open(os.path.join(results_dir, 'session_summary.json'), 'w', encoding='utf-8') as f:
-                            json.dump(summary, f, indent=2)
-                        
-                        print("[INFO] Created workaround files - continuing analysis")
-                        
-                    except Exception as e2:
-                        print(f"[ERROR] Workaround creation failed: {e2}")
-                        # Continue anyway - we know the kernel completed successfully
-                        pass
+                    # Redirect stdout to UTF-8 buffer to handle emojis
+                    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+                    self.api.kernels_output(kernel_slug, path=temp_dir, quiet=False)
+                    sys.stdout = original_stdout
+                    print("[SUCCESS] Kernel output downloaded successfully")
+                except Exception as e:
+                    sys.stdout = original_stdout
+                    print(f"[ERROR] Failed to download kernel output: {e}")
+                    print("[INFO] Continuing with status verification...")
 
                 # Persist artifacts (for debugging and future reference)
                 # Structure: validation_output/results/{kernel_slug}/section_7_X_analytical/
