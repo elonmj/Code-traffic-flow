@@ -1253,7 +1253,43 @@ print("=" * 80)
         return final_report
 
 def main():
-    """Main orchestration function for ARZ-RL validation on Kaggle GPU."""
+    """Main orchestration function for ARZ-RL validation on Kaggle GPU with CLI support."""
+    import argparse
+    
+    parser = argparse.ArgumentParser(
+        description="ARZ-RL Validation Framework - Kaggle GPU Orchestration",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        '--kernel', 
+        type=str, 
+        help='Kernel slug to monitor (for troubleshooting existing kernels)'
+    )
+    parser.add_argument(
+        '--quick-test',
+        action='store_true',
+        help='Enable quick test mode (minimal timesteps for fast validation)'
+    )
+    parser.add_argument(
+        '--section',
+        type=str,
+        choices=['7.3', '7.4', '7.5', '7.6', '7.7', 'all'],
+        help='Section to run directly without interactive prompt (7.3, 7.4, 7.5, 7.6, 7.7, or all)'
+    )
+    
+    args = parser.parse_args()
+    
+    # Set quick test environment variable if flag is provided
+    if args.quick_test:
+        os.environ['QUICK_TEST'] = 'true'
+        print("[QUICK TEST MODE] Enabled - minimal timesteps for fast validation")
+    
+    # Handle kernel monitoring mode
+    if args.kernel:
+        print(f"[MONITOR] Monitoring existing kernel: {args.kernel}")
+        manager = ValidationKaggleManager()
+        success, _ = manager._enhanced_monitor_kernel(args.kernel)
+        return 0 if success else 1
     
     print("ARZ-RL Validation Framework - Kaggle GPU Orchestration")
     print("=" * 70)
@@ -1262,6 +1298,46 @@ def main():
         # Initialize validation manager
         manager = ValidationKaggleManager()
         
+        print(f"[SUCCESS] ValidationKaggleManager initialized for user: {manager.username}")
+        print(f"[CONFIG] Validation sections configured: {len(manager.validation_sections)}")
+        
+        # If section is specified via CLI, run it directly
+        if args.section:
+            # Map section numbers to names
+            section_map = {
+                '7.3': 'section_7_3_analytical',
+                '7.4': 'section_7_4_calibration', 
+                '7.5': 'section_7_5_digital_twin',
+                '7.6': 'section_7_6_rl_performance',
+                '7.7': 'section_7_7_robustness'
+            }
+            
+            if args.section == 'all':
+                print("\\n[FULL] Running complete validation (all revendications R1-R6)...")
+                print("[WARNING] This will take several hours on Kaggle GPU")
+                
+                report = manager.run_all_validation_sections()
+                
+                if report['all_validations_successful']:
+                    print("\\n[SUCCESS] All revendications validated!")
+                    return 0
+                else:
+                    print("\\n[FAILED] Some validations failed")
+                    return 1
+            else:
+                section_name = section_map[args.section]
+                print(f"\\n[AUTO-RUN] Running section {args.section}: {section_name}")
+                
+                success, kernel_slug = manager.run_validation_section(section_name)
+                
+                if success:
+                    print(f"\\n[SUCCESS] Section {section_name} completed successfully!")
+                    return 0
+                else:
+                    print(f"\\n[FAILED] Section {section_name} failed")
+                    return 1
+        
+        # Interactive mode (original behavior)
         print(f"[SUCCESS] Validation manager initialized")
         print(f"[CONFIG] Sections configured: {len(manager.validation_sections)}")
         
