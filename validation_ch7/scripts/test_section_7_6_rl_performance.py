@@ -123,17 +123,32 @@ class RLPerformanceValidationTest(ValidationSection):
         self.debug_logger.info("="*80)
     
     def _create_scenario_config(self, scenario_type: str) -> Path:
-        """Crée un fichier de configuration YAML pour un scénario de contrôle."""
+        """Crée un fichier de configuration YAML pour un scénario de contrôle.
+        
+        CRITICAL FIX: Use realistic urban traffic densities matching Section 7.4/7.5
+        - Section 7.4 Victoria Island: rho_m=60 veh/km, rho_c=80 veh/km (0.060, 0.080 veh/m)
+        - Section 7.5 Congestion: rho_m=30-50 veh/km (0.030-0.050 veh/m)
+        - Previous bug: Used 0.02/0.03 veh/m = nearly empty road → no traffic to control!
+        """
+        # Realistic urban congestion densities (veh/m in SI units)
+        # Moderate congestion: 40-50 veh/km for both classes
+        rho_m_init = 0.045  # 45 veh/km for motorcycles
+        rho_c_init = 0.050  # 50 veh/km for cars
+        
+        # Velocities matching congested traffic (m/s)
+        w_m_init = 15.0  # ~54 km/h (reduced from free-flow 27.8 m/s)
+        w_c_init = 12.0  # ~43 km/h (reduced from free-flow 25.0 m/s)
+        
         config = {
             'scenario_name': f'rl_perf_{scenario_type}',
             'N': 200,
             'xmin': 0.0,
             'xmax': 5000.0,  # Domaine de 5 km
-            't_final': 3600.0, # 1 heure de simulation
+            't_final': 600.0, # 10 minutes for quick diagnosis (was 3600s)
             'output_dt': 60.0,
             'CFL': 0.4,
             'boundary_conditions': {
-                'left': {'type': 'inflow', 'state': [0.02, 0.5, 0.03, 1.5]}, # [rho_m, w_m, rho_c, w_c] in veh/km and m/s
+                'left': {'type': 'inflow', 'state': [rho_m_init, w_m_init, rho_c_init, w_c_init]},
                 'right': {'type': 'outflow'}
             },
             'road': {'quality_type': 'uniform', 'quality_value': 2}
@@ -141,19 +156,22 @@ class RLPerformanceValidationTest(ValidationSection):
 
         if scenario_type == 'traffic_light_control':
             config['parameters'] = {'V0_m': 25.0, 'V0_c': 22.2, 'tau_m': 1.0, 'tau_c': 1.2}
-            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': 0.03, 'rho_c': 0.04, 'R_val': 2}
+            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init, 'rho_c': rho_c_init, 'R_val': 2}
             # Un carrefour à feux serait modélisé via un noeud dans une version plus avancée
         elif scenario_type == 'ramp_metering':
             config['parameters'] = {'V0_m': 27.8, 'V0_c': 25.0, 'tau_m': 0.8, 'tau_c': 1.0}
-            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': 0.02, 'rho_c': 0.03, 'R_val': 2}
+            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init * 0.8, 'rho_c': rho_c_init * 0.8, 'R_val': 2}
         elif scenario_type == 'adaptive_speed_control':
             config['parameters'] = {'V0_m': 30.6, 'V0_c': 27.8, 'tau_m': 0.6, 'tau_c': 0.8}
-            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': 0.015, 'rho_c': 0.025, 'R_val': 2}
+            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init * 0.7, 'rho_c': rho_c_init * 0.7, 'R_val': 2}
 
         scenario_path = self.scenarios_dir / f"{scenario_type}.yml"
         with open(scenario_path, 'w') as f:
             yaml.dump(config, f, default_flow_style=False)
         
+        self.debug_logger.info(f"Created scenario config: {scenario_path.name}")
+        self.debug_logger.info(f"  Initial densities: rho_m={rho_m_init:.4f} veh/m, rho_c={rho_c_init:.4f} veh/m")
+        self.debug_logger.info(f"  Initial velocities: w_m={w_m_init:.1f} m/s, w_c={w_c_init:.1f} m/s")
         print(f"  [SCENARIO] Generated: {scenario_path.name}")
         return scenario_path
 
@@ -220,17 +238,27 @@ class RLPerformanceValidationTest(ValidationSection):
             pass
 
     def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=60.0, device='gpu'):
-        """Execute real ARZ simulation with direct coupling (GPU-accelerated on Kaggle)."""
+        """Execute real ARZ simulation with direct coupling (GPU-accelerated on Kaggle).
+        
+        DIAGNOSTIC MODE: Limited to 10 steps with detailed state evolution logging.
+        """
+        # DIAGNOSTIC MODE: Force 10 steps maximum for detailed analysis
+        max_diagnostic_steps = 10
+        
         # Quick test mode: reduce duration for fast validation
         if self.quick_test:
             duration = min(duration, 600.0)  # Max 10 minutes simulated time
             print(f"  [QUICK TEST] Reduced duration to {duration}s", flush=True)
         
+        self.debug_logger.info("="*80)
+        self.debug_logger.info(f"DIAGNOSTIC MODE: MAX {max_diagnostic_steps} STEPS")
         self.debug_logger.info(f"Starting run_control_simulation:")
         self.debug_logger.info(f"  - scenario_path: {scenario_path}")
         self.debug_logger.info(f"  - duration: {duration}s")
         self.debug_logger.info(f"  - control_interval: {control_interval}s")
         self.debug_logger.info(f"  - device: {device}")
+        self.debug_logger.info(f"  - controller: {type(controller).__name__}")
+        self.debug_logger.info("="*80)
         
         print(f"  [INFO] Initializing TrafficSignalEnvDirect with device={device}", flush=True)
         
@@ -264,6 +292,12 @@ class RLPerformanceValidationTest(ValidationSection):
             self.debug_logger.info("Calling env.reset()...")
             obs, info = env.reset()
             self.debug_logger.info(f"env.reset() successful - obs shape: {obs.shape}, info: {info}")
+            
+            # Log initial state details
+            initial_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
+            self.debug_logger.info(f"INITIAL STATE shape: {initial_state.shape}, dtype: {initial_state.dtype}")
+            self.debug_logger.info(f"INITIAL STATE statistics: mean={initial_state.mean():.6e}, std={initial_state.std():.6e}, min={initial_state.min():.6e}, max={initial_state.max():.6e}")
+            
         except Exception as e:
             error_msg = f"Environment reset failed: {e}"
             self.debug_logger.error(error_msg, exc_info=True)
@@ -277,18 +311,27 @@ class RLPerformanceValidationTest(ValidationSection):
         total_reward = 0
         steps = 0
 
-        print(f"  [INFO] Starting simulation loop (max duration: {duration}s, interval: {control_interval}s)", flush=True)
-        self.debug_logger.info(f"Starting simulation loop - max duration: {duration}s")
+        print(f"  [DIAGNOSTIC] Starting simulation loop (MAX {max_diagnostic_steps} steps for diagnosis)", flush=True)
+        self.debug_logger.info(f"Starting simulation loop - max {max_diagnostic_steps} steps")
         
         try:
-            while not (terminated or truncated) and env.runner.t < duration:
+            while not (terminated or truncated) and env.runner.t < duration and steps < max_diagnostic_steps:
                 step_start = time.perf_counter()
+                
+                # Get current state BEFORE action
+                state_before = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
                 
                 # Get action from controller
                 try:
                     action = controller.get_action(obs)
                     control_actions.append(action)
-                    self.debug_logger.debug(f"Step {steps}: action={action}, t={env.runner.t:.1f}s")
+                    
+                    self.debug_logger.info("="*80)
+                    self.debug_logger.info(f"STEP {steps} START:")
+                    self.debug_logger.info(f"  Controller: {type(controller).__name__}")
+                    self.debug_logger.info(f"  Action: {action:.6f}")
+                    self.debug_logger.info(f"  Simulation time: {env.runner.t:.2f}s")
+                    
                 except Exception as e:
                     error_msg = f"Controller.get_action() failed at step {steps}: {e}"
                     self.debug_logger.error(error_msg, exc_info=True)
@@ -298,25 +341,56 @@ class RLPerformanceValidationTest(ValidationSection):
                 try:
                     obs, reward, terminated, truncated, info = env.step(action)
                     total_reward += reward
-                    steps += 1
-                    self.debug_logger.debug(f"Step {steps}: reward={reward:.2f}, terminated={terminated}, truncated={truncated}")
+                    
+                    self.debug_logger.info(f"  Reward: {reward:.6f}")
+                    self.debug_logger.info(f"  Terminated: {terminated}, Truncated: {truncated}")
+                    
                 except Exception as e:
                     error_msg = f"env.step() failed at step {steps}: {e}"
                     self.debug_logger.error(error_msg, exc_info=True)
                     raise
                 
+                # Get current state AFTER action
+                state_after = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
+                
+                # DETAILED STATE EVOLUTION ANALYSIS
+                state_diff = np.abs(state_after - state_before)
+                state_diff_mean = state_diff.mean()
+                state_diff_max = state_diff.max()
+                state_diff_std = state_diff.std()
+                
+                self.debug_logger.info(f"  STATE EVOLUTION:")
+                self.debug_logger.info(f"    Before shape: {state_before.shape}, After shape: {state_after.shape}")
+                self.debug_logger.info(f"    Diff statistics: mean={state_diff_mean:.6e}, max={state_diff_max:.6e}, std={state_diff_std:.6e}")
+                
+                # Extract sample values (assuming ARZ state format: [rho_m, w_m, rho_c, w_c] x N cells)
+                if state_after.shape[0] >= 4:
+                    # For 4-variable system with N cells, shape is (4, N)
+                    rho_m_mean = state_after[0, :].mean() if state_after.ndim > 1 else state_after[0]
+                    w_m_mean = state_after[1, :].mean() if state_after.ndim > 1 else state_after[1]
+                    rho_c_mean = state_after[2, :].mean() if state_after.ndim > 1 else state_after[2]
+                    w_c_mean = state_after[3, :].mean() if state_after.ndim > 1 else state_after[3]
+                    
+                    self.debug_logger.info(f"    Mean densities: rho_m={rho_m_mean:.6f}, rho_c={rho_c_mean:.6f}")
+                    self.debug_logger.info(f"    Mean velocities: w_m={w_m_mean:.6f}, w_c={w_c_mean:.6f}")
+                
+                # Log state hash for identity detection
+                state_hash = hash(state_after.tobytes())
+                self.debug_logger.info(f"  State hash: {state_hash}")
+                
+                self.debug_logger.info("="*80)
+                
                 step_elapsed = time.perf_counter() - step_start
                 step_times.append(step_elapsed)
+                steps += 1
                 
                 # Store trajectory
                 # Store full state for analysis (extract from runner.U or runner.d_U)
                 current_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
-                states_history.append(current_state)
+                states_history.append(current_state.copy())  # CRITICAL: .copy() to avoid reference issues
                 
-                if steps % 10 == 0:
-                    avg_step_time = np.mean(step_times[-10:])
-                    print(f"    Step {steps}: t={env.runner.t:.1f}s, reward={reward:.3f}, "
-                          f"avg_step_time={avg_step_time:.3f}s", flush=True)
+                print(f"    [STEP {steps}/{max_diagnostic_steps}] action={action:.4f}, reward={reward:.4f}, t={env.runner.t:.1f}s, state_diff={state_diff_mean:.6e}", flush=True)
+                
         except Exception as e:
             print(f"  [ERROR] Simulation loop failed at step {steps}: {e}", flush=True)
             import traceback
@@ -327,8 +401,8 @@ class RLPerformanceValidationTest(ValidationSection):
         # Performance summary
         avg_step_time = np.mean(step_times) if step_times else 0
         perf_summary = f"""
-  [PERFORMANCE] Simulation completed:
-    - Total steps: {steps}
+  [DIAGNOSTIC COMPLETED] Simulation summary:
+    - Total steps: {steps} (limited to {max_diagnostic_steps} for diagnosis)
     - Total reward: {total_reward:.2f}
     - Avg step time: {avg_step_time:.3f}s (device={device})
     - Simulated time: {env.runner.t:.1f}s
