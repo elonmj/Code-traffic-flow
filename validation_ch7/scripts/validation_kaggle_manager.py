@@ -911,25 +911,31 @@ print("=" * 80)
             with tempfile.TemporaryDirectory() as temp_dir:
                 print(f"[DOWNLOAD] Downloading kernel output for: {kernel_slug}")
                 
-                # Fix stdout encoding to handle emojis in Kaggle logs
+                # Download kernel output with encoding safety
                 import sys
                 import io
-                original_stdout = sys.stdout
+                
                 download_success = False
+                download_error = None
                 
                 try:
-                    # Redirect stdout to UTF-8 buffer to handle emojis
-                    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-                    self.api.kernels_output(kernel_slug, path=temp_dir, quiet=False)
+                    # Option 1: Suppress log output entirely (quiet=True)
+                    # This avoids encoding issues since we persist files anyway
+                    self.api.kernels_output(kernel_slug, path=temp_dir, quiet=True)
                     download_success = True
+                except UnicodeEncodeError as e:
+                    # Encoding error - try again with quiet mode
+                    download_error = f"Unicode encoding error: {str(e)}"
+                    try:
+                        self.api.kernels_output(kernel_slug, path=temp_dir, quiet=True)
+                        download_success = True
+                        download_error = None  # Success on retry
+                    except Exception as e2:
+                        download_error = f"Retry failed: {str(e2)}"
                 except Exception as e:
-                    # Store error for reporting after stdout is restored
                     download_error = str(e)
-                finally:
-                    # CRITICAL: Always restore stdout before any print/logging
-                    sys.stdout = original_stdout
                 
-                # Now safe to print (stdout restored)
+                # Report status
                 if download_success:
                     print("[SUCCESS] Kernel output downloaded successfully")
                 else:
