@@ -18,6 +18,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 import yaml
+import logging
+import traceback
+import time
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -79,8 +82,45 @@ class RLPerformanceValidationTest(ValidationSection):
         self.test_results = {}
         self.models_dir = self.output_dir / "data" / "models"
         
+        # Setup file-based logging for error diagnostics
+        self._setup_debug_logging()
+        
         if self.quick_test:
             print("[QUICK TEST MODE] Minimal training timesteps for setup validation")
+    
+    def _setup_debug_logging(self):
+        """Setup file-based logging to capture errors that aren't visible in Kaggle stdout."""
+        self.debug_log_path = self.output_dir / "debug.log"
+        
+        # Create file handler with immediate flush
+        self.debug_logger = logging.getLogger('rl_validation_debug')
+        self.debug_logger.setLevel(logging.DEBUG)
+        
+        # Remove existing handlers to avoid duplicates
+        self.debug_logger.handlers.clear()
+        
+        file_handler = logging.FileHandler(self.debug_log_path, mode='w', encoding='utf-8')
+        file_handler.setLevel(logging.DEBUG)
+        
+        formatter = logging.Formatter(
+            '%(asctime)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        file_handler.setFormatter(formatter)
+        
+        self.debug_logger.addHandler(file_handler)
+        
+        # Also add console handler for immediate visibility
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(formatter)
+        self.debug_logger.addHandler(console_handler)
+        
+        self.debug_logger.info("="*80)
+        self.debug_logger.info("DEBUG LOGGING INITIALIZED")
+        self.debug_logger.info(f"Log file: {self.debug_log_path}")
+        self.debug_logger.info(f"Quick test mode: {self.quick_test}")
+        self.debug_logger.info("="*80)
     
     def _create_scenario_config(self, scenario_type: str) -> Path:
         """Crée un fichier de configuration YAML pour un scénario de contrôle."""
@@ -174,16 +214,21 @@ class RLPerformanceValidationTest(ValidationSection):
 
     def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=60.0, device='gpu'):
         """Execute real ARZ simulation with direct coupling (GPU-accelerated on Kaggle)."""
-        import time
-        
         # Quick test mode: reduce duration for fast validation
         if self.quick_test:
             duration = min(duration, 600.0)  # Max 10 minutes simulated time
             print(f"  [QUICK TEST] Reduced duration to {duration}s", flush=True)
         
+        self.debug_logger.info(f"Starting run_control_simulation:")
+        self.debug_logger.info(f"  - scenario_path: {scenario_path}")
+        self.debug_logger.info(f"  - duration: {duration}s")
+        self.debug_logger.info(f"  - control_interval: {control_interval}s")
+        self.debug_logger.info(f"  - device: {device}")
+        
         print(f"  [INFO] Initializing TrafficSignalEnvDirect with device={device}", flush=True)
         
         try:
+            self.debug_logger.info("Creating TrafficSignalEnvDirect instance...")
             # Direct coupling - no mock, no HTTP server
             # SimulationRunner instantiated inside environment
             env = TrafficSignalEnvDirect(
@@ -193,10 +238,12 @@ class RLPerformanceValidationTest(ValidationSection):
                 observation_segments={'upstream': [8, 9, 10], 'downstream': [11, 12, 13]},
                 device=device  # GPU on Kaggle, CPU locally
             )
+            self.debug_logger.info("TrafficSignalEnvDirect created successfully")
             
         except Exception as e:
-            print(f"  [ERROR] Failed to initialize TrafficSignalEnvDirect: {e}")
-            import traceback
+            error_msg = f"Failed to initialize TrafficSignalEnvDirect: {e}"
+            self.debug_logger.error(error_msg, exc_info=True)
+            print(f"  [ERROR] {error_msg}")
             traceback.print_exc()
             return None, None
 
@@ -204,11 +251,16 @@ class RLPerformanceValidationTest(ValidationSection):
         control_actions = []
         step_times = []  # Performance tracking
         
+        print(f"  [INFO] Calling env.reset()...", flush=True)
+        
         try:
+            self.debug_logger.info("Calling env.reset()...")
             obs, info = env.reset()
+            self.debug_logger.info(f"env.reset() successful - obs shape: {obs.shape}, info: {info}")
         except Exception as e:
-            print(f"  [ERROR] Environment reset failed: {e}", flush=True)
-            import traceback
+            error_msg = f"Environment reset failed: {e}"
+            self.debug_logger.error(error_msg, exc_info=True)
+            print(f"  [ERROR] {error_msg}", flush=True)
             traceback.print_exc()
             env.close()
             return None, None
@@ -219,28 +271,40 @@ class RLPerformanceValidationTest(ValidationSection):
         steps = 0
 
         print(f"  [INFO] Starting simulation loop (max duration: {duration}s, interval: {control_interval}s)", flush=True)
+        self.debug_logger.info(f"Starting simulation loop - max duration: {duration}s")
         
         try:
             while not (terminated or truncated) and env.runner.t < duration:
                 step_start = time.perf_counter()
                 
                 # Get action from controller
-                action = controller.get_action(obs)
+                try:
+                    action = controller.get_action(obs)
+                    control_actions.append(action)
+                    self.debug_logger.debug(f"Step {steps}: action={action}, t={env.runner.t:.1f}s")
+                except Exception as e:
+                    error_msg = f"Controller.get_action() failed at step {steps}: {e}"
+                    self.debug_logger.error(error_msg, exc_info=True)
+                    raise
                 
                 # Execute step - advances ARZ simulation by control_interval
-                obs, reward, terminated, truncated, info = env.step(action)
+                try:
+                    obs, reward, terminated, truncated, info = env.step(action)
+                    total_reward += reward
+                    steps += 1
+                    self.debug_logger.debug(f"Step {steps}: reward={reward:.2f}, terminated={terminated}, truncated={truncated}")
+                except Exception as e:
+                    error_msg = f"env.step() failed at step {steps}: {e}"
+                    self.debug_logger.error(error_msg, exc_info=True)
+                    raise
                 
                 step_elapsed = time.perf_counter() - step_start
                 step_times.append(step_elapsed)
                 
                 # Store trajectory
-                control_actions.append(action)
                 # Store full state for analysis (extract from runner.U or runner.d_U)
                 current_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
                 states_history.append(current_state)
-                
-                total_reward += reward
-                steps += 1
                 
                 if steps % 10 == 0:
                     avg_step_time = np.mean(step_times[-10:])
@@ -255,13 +319,18 @@ class RLPerformanceValidationTest(ValidationSection):
 
         # Performance summary
         avg_step_time = np.mean(step_times) if step_times else 0
-        print(f"\n  [PERFORMANCE] Simulation completed:", flush=True)
-        print(f"    - Total steps: {steps}", flush=True)
-        print(f"    - Total reward: {total_reward:.2f}", flush=True)
-        print(f"    - Avg step time: {avg_step_time:.3f}s (device={device})", flush=True)
-        print(f"    - Simulated time: {env.runner.t:.1f}s", flush=True)
-        print(f"    - Wallclock time: {sum(step_times):.1f}s", flush=True)
-        print(f"    - Speed ratio: {env.runner.t / sum(step_times):.2f}x real-time" if sum(step_times) > 0 else "", flush=True)
+        perf_summary = f"""
+  [PERFORMANCE] Simulation completed:
+    - Total steps: {steps}
+    - Total reward: {total_reward:.2f}
+    - Avg step time: {avg_step_time:.3f}s (device={device})
+    - Simulated time: {env.runner.t:.1f}s
+    - Wallclock time: {sum(step_times):.1f}s
+    - Speed ratio: {env.runner.t / sum(step_times):.2f}x real-time
+"""
+        print(perf_summary, flush=True)
+        self.debug_logger.info(perf_summary)
+        self.debug_logger.info(f"Returning {len(states_history)} state snapshots")
         
         env.close()
         
@@ -350,6 +419,14 @@ class RLPerformanceValidationTest(ValidationSection):
             n_steps = 2048  # Default PPO buffer size
             checkpoint_freq = 500  # Save checkpoint every 500 steps (adaptive)
             print(f"[FULL MODE] Training with {total_timesteps} timesteps", flush=True)
+        
+        self.debug_logger.info("="*80)
+        self.debug_logger.info(f"Starting train_rl_agent for scenario: {scenario_type}")
+        self.debug_logger.info(f"  - Device: {device}")
+        self.debug_logger.info(f"  - Total timesteps: {total_timesteps}")
+        self.debug_logger.info(f"  - Episode max time: {episode_max_time}s")
+        self.debug_logger.info(f"  - Checkpoint frequency: {checkpoint_freq}")
+        self.debug_logger.info("="*80)
         
         print(f"\n[TRAINING] Starting RL training for scenario: {scenario_type}", flush=True)
         print(f"  Device: {device}", flush=True)
@@ -471,14 +548,23 @@ class RLPerformanceValidationTest(ValidationSection):
             return str(model_path)
             
         except Exception as e:
-            print(f"[ERROR] Training failed: {e}", flush=True)
-            import traceback
+            error_msg = f"Training failed for {scenario_type}: {e}"
+            self.debug_logger.error(error_msg, exc_info=True)
+            print(f"[ERROR] {error_msg}", flush=True)
             traceback.print_exc()
             return None
 
     def run_performance_comparison(self, scenario_type, device='gpu'):
         """Run performance comparison between baseline and RL controllers."""
         print(f"\nTesting scenario: {scenario_type} (device={device})", flush=True)
+        self.debug_logger.info("="*80)
+        self.debug_logger.info(f"Starting run_performance_comparison for scenario: {scenario_type}")
+        self.debug_logger.info(f"Device: {device}")
+        self.debug_logger.info("="*80)
+        self.debug_logger.info("="*80)
+        self.debug_logger.info(f"Starting run_performance_comparison for scenario: {scenario_type}")
+        self.debug_logger.info(f"Device: {device}")
+        self.debug_logger.info("="*80)
         
         try:
             scenario_path = self._create_scenario_config(scenario_type)
@@ -559,7 +645,8 @@ class RLPerformanceValidationTest(ValidationSection):
             return results
             
         except Exception as e:
-            import traceback
+            error_msg = f"Performance comparison failed for {scenario_type}: {e}"
+            self.debug_logger.error(error_msg, exc_info=True)
             traceback.print_exc()
             print(f"  ERROR: {str(e)}")
             return {'success': False, 'error': str(e)}
