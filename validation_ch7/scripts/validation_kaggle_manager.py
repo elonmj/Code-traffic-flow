@@ -412,7 +412,16 @@ try:
     # ========== STEP 2: INSTALL DEPENDENCIES ==========
     log_and_print("info", "\\n[STEP 2/4] Installing dependencies...")
     
-    dependencies = ["PyYAML", "matplotlib", "pandas", "scipy", "numpy"]
+    dependencies = [
+        "PyYAML",
+        "matplotlib",
+        "pandas",
+        "scipy",
+        "numpy",
+        "gymnasium",  # Required for RL environment (TrafficSignalEnvDirect)
+        "stable-baselines3",  # Required for PPO agent training
+        # numba is pre-installed on Kaggle GPU instances
+    ]
     
     for dep in dependencies:
         log_and_print("info", f"Installing {{dep}}...")
@@ -445,7 +454,7 @@ try:
     quick_test_enabled = "{section.get('quick_test', False)}"
     if quick_test_enabled == "True":
         env["QUICK_TEST"] = "true"
-        log_and_print("info", "[QUICK_TEST] Quick test mode enabled (2 timesteps)")
+        log_and_print("info", "[QUICK_TEST] Quick test mode enabled (100 timesteps for RL, reduced simulation time)")
     else:
         log_and_print("info", "[FULL_TEST] Full test mode (20000 timesteps)")
     
