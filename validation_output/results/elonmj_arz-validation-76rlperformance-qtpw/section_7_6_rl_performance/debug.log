@@ -1,0 +1,281 @@
+2025-10-09 22:11:34 - INFO - _setup_debug_logging:119 - ================================================================================
+2025-10-09 22:11:34 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED
+2025-10-09 22:11:34 - INFO - _setup_debug_logging:121 - Log file: validation_output/results/local_test/section_7_6_rl_performance/debug.log
+2025-10-09 22:11:34 - INFO - _setup_debug_logging:122 - Quick test mode: False
+2025-10-09 22:11:34 - INFO - _setup_debug_logging:123 - ================================================================================
+2025-10-09 22:11:34 - INFO - train_rl_agent:548 - ================================================================================
+2025-10-09 22:11:34 - INFO - train_rl_agent:549 - Starting train_rl_agent for scenario: traffic_light_control
+2025-10-09 22:11:34 - INFO - train_rl_agent:550 -   - Device: gpu
+2025-10-09 22:11:34 - INFO - train_rl_agent:551 -   - Total timesteps: 5000
+2025-10-09 22:11:34 - INFO - train_rl_agent:552 -   - Episode max time: 3600.0s
+2025-10-09 22:11:34 - INFO - train_rl_agent:553 -   - Checkpoint frequency: 500
+2025-10-09 22:11:34 - INFO - train_rl_agent:554 - ================================================================================
+2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: traffic_light_control.yml
+2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m
+2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km
+2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km
+2025-10-09 22:11:34 - ERROR - train_rl_agent:678 - Training failed for traffic_light_control: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 573, in train_rl_agent
+    env = TrafficSignalEnvDirect(
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 141, in __init__
+    self._initialize_simulator()
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 158, in _initialize_simulator
+    self.runner = SimulationRunner(
+                  ^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 97, in __init__
+    self.U = self._create_initial_state()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 306, in _create_initial_state
+    raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
+ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+2025-10-09 22:11:34 - INFO - train_rl_agent:548 - ================================================================================
+2025-10-09 22:11:34 - INFO - train_rl_agent:549 - Starting train_rl_agent for scenario: ramp_metering
+2025-10-09 22:11:34 - INFO - train_rl_agent:550 -   - Device: gpu
+2025-10-09 22:11:34 - INFO - train_rl_agent:551 -   - Total timesteps: 5000
+2025-10-09 22:11:34 - INFO - train_rl_agent:552 -   - Episode max time: 3600.0s
+2025-10-09 22:11:34 - INFO - train_rl_agent:553 -   - Checkpoint frequency: 500
+2025-10-09 22:11:34 - INFO - train_rl_agent:554 - ================================================================================
+2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: ramp_metering.yml
+2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m
+2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km
+2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km
+2025-10-09 22:11:34 - ERROR - train_rl_agent:678 - Training failed for ramp_metering: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 573, in train_rl_agent
+    env = TrafficSignalEnvDirect(
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 141, in __init__
+    self._initialize_simulator()
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 158, in _initialize_simulator
+    self.runner = SimulationRunner(
+                  ^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 97, in __init__
+    self.U = self._create_initial_state()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 306, in _create_initial_state
+    raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
+ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+2025-10-09 22:11:34 - INFO - train_rl_agent:548 - ================================================================================
+2025-10-09 22:11:34 - INFO - train_rl_agent:549 - Starting train_rl_agent for scenario: adaptive_speed_control
+2025-10-09 22:11:34 - INFO - train_rl_agent:550 -   - Device: gpu
+2025-10-09 22:11:34 - INFO - train_rl_agent:551 -   - Total timesteps: 5000
+2025-10-09 22:11:34 - INFO - train_rl_agent:552 -   - Episode max time: 3600.0s
+2025-10-09 22:11:34 - INFO - train_rl_agent:553 -   - Checkpoint frequency: 500
+2025-10-09 22:11:34 - INFO - train_rl_agent:554 - ================================================================================
+2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: adaptive_speed_control.yml
+2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m
+2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km
+2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km
+2025-10-09 22:11:34 - ERROR - train_rl_agent:678 - Training failed for adaptive_speed_control: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 573, in train_rl_agent
+    env = TrafficSignalEnvDirect(
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 141, in __init__
+    self._initialize_simulator()
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 158, in _initialize_simulator
+    self.runner = SimulationRunner(
+                  ^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 97, in __init__
+    self.U = self._create_initial_state()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 306, in _create_initial_state
+    raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
+ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+2025-10-09 22:11:34 - INFO - run_performance_comparison:686 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_performance_comparison:687 - Starting run_performance_comparison for scenario: traffic_light_control
+2025-10-09 22:11:34 - INFO - run_performance_comparison:688 - Device: gpu
+2025-10-09 22:11:34 - INFO - run_performance_comparison:689 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_performance_comparison:690 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_performance_comparison:691 - Starting run_performance_comparison for scenario: traffic_light_control
+2025-10-09 22:11:34 - INFO - run_performance_comparison:692 - Device: gpu
+2025-10-09 22:11:34 - INFO - run_performance_comparison:693 - ================================================================================
+2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: traffic_light_control.yml
+2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m
+2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km
+2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km
+2025-10-09 22:11:34 - INFO - run_control_simulation:284 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_control_simulation:285 - DIAGNOSTIC MODE: MAX 10 STEPS
+2025-10-09 22:11:34 - INFO - run_control_simulation:286 - Starting run_control_simulation:
+2025-10-09 22:11:34 - INFO - run_control_simulation:287 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+2025-10-09 22:11:34 - INFO - run_control_simulation:288 -   - duration: 3600.0s
+2025-10-09 22:11:34 - INFO - run_control_simulation:289 -   - control_interval: 60.0s
+2025-10-09 22:11:34 - INFO - run_control_simulation:290 -   - device: gpu
+2025-10-09 22:11:34 - INFO - run_control_simulation:291 -   - controller: BaselineController
+2025-10-09 22:11:34 - INFO - run_control_simulation:292 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_control_simulation:297 - Creating TrafficSignalEnvDirect instance...
+2025-10-09 22:11:34 - ERROR - run_control_simulation:315 - Failed to initialize TrafficSignalEnvDirect: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 303, in run_control_simulation
+    env = TrafficSignalEnvDirect(
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 141, in __init__
+    self._initialize_simulator()
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 158, in _initialize_simulator
+    self.runner = SimulationRunner(
+                  ^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 97, in __init__
+    self.U = self._create_initial_state()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 306, in _create_initial_state
+    raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
+ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+2025-10-09 22:11:34 - ERROR - run_performance_comparison:790 - Performance comparison failed for traffic_light_control: cannot access local variable 'traceback' where it is not associated with a value
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 303, in run_control_simulation
+    env = TrafficSignalEnvDirect(
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 141, in __init__
+    self._initialize_simulator()
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 158, in _initialize_simulator
+    self.runner = SimulationRunner(
+                  ^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 97, in __init__
+    self.U = self._create_initial_state()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 306, in _create_initial_state
+    raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
+ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 701, in run_performance_comparison
+    baseline_states, _ = self.run_control_simulation(
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 317, in run_control_simulation
+    traceback.print_exc()
+    ^^^^^^^^^
+UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value
+2025-10-09 22:11:34 - INFO - run_performance_comparison:686 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_performance_comparison:687 - Starting run_performance_comparison for scenario: ramp_metering
+2025-10-09 22:11:34 - INFO - run_performance_comparison:688 - Device: gpu
+2025-10-09 22:11:34 - INFO - run_performance_comparison:689 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_performance_comparison:690 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_performance_comparison:691 - Starting run_performance_comparison for scenario: ramp_metering
+2025-10-09 22:11:34 - INFO - run_performance_comparison:692 - Device: gpu
+2025-10-09 22:11:34 - INFO - run_performance_comparison:693 - ================================================================================
+2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: ramp_metering.yml
+2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m
+2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km
+2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km
+2025-10-09 22:11:34 - INFO - run_control_simulation:284 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_control_simulation:285 - DIAGNOSTIC MODE: MAX 10 STEPS
+2025-10-09 22:11:34 - INFO - run_control_simulation:286 - Starting run_control_simulation:
+2025-10-09 22:11:34 - INFO - run_control_simulation:287 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/ramp_metering.yml
+2025-10-09 22:11:34 - INFO - run_control_simulation:288 -   - duration: 3600.0s
+2025-10-09 22:11:34 - INFO - run_control_simulation:289 -   - control_interval: 60.0s
+2025-10-09 22:11:34 - INFO - run_control_simulation:290 -   - device: gpu
+2025-10-09 22:11:34 - INFO - run_control_simulation:291 -   - controller: BaselineController
+2025-10-09 22:11:34 - INFO - run_control_simulation:292 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_control_simulation:297 - Creating TrafficSignalEnvDirect instance...
+2025-10-09 22:11:34 - ERROR - run_control_simulation:315 - Failed to initialize TrafficSignalEnvDirect: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 303, in run_control_simulation
+    env = TrafficSignalEnvDirect(
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 141, in __init__
+    self._initialize_simulator()
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 158, in _initialize_simulator
+    self.runner = SimulationRunner(
+                  ^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 97, in __init__
+    self.U = self._create_initial_state()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 306, in _create_initial_state
+    raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
+ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+2025-10-09 22:11:34 - ERROR - run_performance_comparison:790 - Performance comparison failed for ramp_metering: cannot access local variable 'traceback' where it is not associated with a value
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 303, in run_control_simulation
+    env = TrafficSignalEnvDirect(
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 141, in __init__
+    self._initialize_simulator()
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 158, in _initialize_simulator
+    self.runner = SimulationRunner(
+                  ^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 97, in __init__
+    self.U = self._create_initial_state()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 306, in _create_initial_state
+    raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
+ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 701, in run_performance_comparison
+    baseline_states, _ = self.run_control_simulation(
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 317, in run_control_simulation
+    traceback.print_exc()
+    ^^^^^^^^^
+UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value
+2025-10-09 22:11:34 - INFO - run_performance_comparison:686 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_performance_comparison:687 - Starting run_performance_comparison for scenario: adaptive_speed_control
+2025-10-09 22:11:34 - INFO - run_performance_comparison:688 - Device: gpu
+2025-10-09 22:11:34 - INFO - run_performance_comparison:689 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_performance_comparison:690 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_performance_comparison:691 - Starting run_performance_comparison for scenario: adaptive_speed_control
+2025-10-09 22:11:34 - INFO - run_performance_comparison:692 - Device: gpu
+2025-10-09 22:11:34 - INFO - run_performance_comparison:693 - ================================================================================
+2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: adaptive_speed_control.yml
+2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m
+2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km
+2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km
+2025-10-09 22:11:34 - INFO - run_control_simulation:284 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_control_simulation:285 - DIAGNOSTIC MODE: MAX 10 STEPS
+2025-10-09 22:11:34 - INFO - run_control_simulation:286 - Starting run_control_simulation:
+2025-10-09 22:11:34 - INFO - run_control_simulation:287 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/adaptive_speed_control.yml
+2025-10-09 22:11:34 - INFO - run_control_simulation:288 -   - duration: 3600.0s
+2025-10-09 22:11:34 - INFO - run_control_simulation:289 -   - control_interval: 60.0s
+2025-10-09 22:11:34 - INFO - run_control_simulation:290 -   - device: gpu
+2025-10-09 22:11:34 - INFO - run_control_simulation:291 -   - controller: BaselineController
+2025-10-09 22:11:34 - INFO - run_control_simulation:292 - ================================================================================
+2025-10-09 22:11:34 - INFO - run_control_simulation:297 - Creating TrafficSignalEnvDirect instance...
+2025-10-09 22:11:34 - ERROR - run_control_simulation:315 - Failed to initialize TrafficSignalEnvDirect: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 303, in run_control_simulation
+    env = TrafficSignalEnvDirect(
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 141, in __init__
+    self._initialize_simulator()
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 158, in _initialize_simulator
+    self.runner = SimulationRunner(
+                  ^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 97, in __init__
+    self.U = self._create_initial_state()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 306, in _create_initial_state
+    raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
+ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+2025-10-09 22:11:34 - ERROR - run_performance_comparison:790 - Performance comparison failed for adaptive_speed_control: cannot access local variable 'traceback' where it is not associated with a value
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 303, in run_control_simulation
+    env = TrafficSignalEnvDirect(
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 141, in __init__
+    self._initialize_simulator()
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 158, in _initialize_simulator
+    self.runner = SimulationRunner(
+                  ^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 97, in __init__
+    self.U = self._create_initial_state()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 306, in _create_initial_state
+    raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
+ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 701, in run_performance_comparison
+    baseline_states, _ = self.run_control_simulation(
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 317, in run_control_simulation
+    traceback.print_exc()
+    ^^^^^^^^^
+UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value

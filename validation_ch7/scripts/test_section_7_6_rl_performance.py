@@ -170,29 +170,30 @@ class RLPerformanceValidationTest(ValidationSection):
         if scenario_type == 'traffic_light_control':
             config['parameters'] = {'V0_m': 25.0, 'V0_c': 22.2, 'tau_m': 1.0, 'tau_c': 1.2}
             # CHANGED: Use Riemann IC (shock wave) instead of uniform equilibrium
+            # Note: runner.py expects 'U_L', 'U_R', 'split_pos' (not left_state/right_state)
             config['initial_conditions'] = {
                 'type': 'riemann',
-                'left_state': [rho_m_high_si, w_m_high, rho_c_high_si, w_c_high],   # Congestion
-                'right_state': [rho_m_low_si, w_m_low, rho_c_low_si, w_c_low],      # Free flow
-                'discontinuity_position': 500.0  # Middle of 1km domain
+                'U_L': [rho_m_high_si, w_m_high, rho_c_high_si, w_c_high],   # Congestion
+                'U_R': [rho_m_low_si, w_m_low, rho_c_low_si, w_c_low],      # Free flow
+                'split_pos': 500.0  # Middle of 1km domain
             }
         elif scenario_type == 'ramp_metering':
             config['parameters'] = {'V0_m': 27.8, 'V0_c': 25.0, 'tau_m': 0.8, 'tau_c': 1.0}
             # Use Riemann IC for ramp_metering too
             config['initial_conditions'] = {
                 'type': 'riemann',
-                'left_state': [rho_m_high_si*0.8, w_m_high, rho_c_high_si*0.8, w_c_high],
-                'right_state': [rho_m_low_si*0.8, w_m_low, rho_c_low_si*0.8, w_c_low],
-                'discontinuity_position': 500.0
+                'U_L': [rho_m_high_si*0.8, w_m_high, rho_c_high_si*0.8, w_c_high],
+                'U_R': [rho_m_low_si*0.8, w_m_low, rho_c_low_si*0.8, w_c_low],
+                'split_pos': 500.0
             }
         elif scenario_type == 'adaptive_speed_control':
             config['parameters'] = {'V0_m': 30.6, 'V0_c': 27.8, 'tau_m': 0.6, 'tau_c': 0.8}
             # Use Riemann IC for adaptive_speed_control too
             config['initial_conditions'] = {
                 'type': 'riemann',
-                'left_state': [rho_m_high_si*0.7, w_m_high, rho_c_high_si*0.7, w_c_high],
-                'right_state': [rho_m_low_si*0.7, w_m_low, rho_c_low_si*0.7, w_c_low],
-                'discontinuity_position': 500.0
+                'U_L': [rho_m_high_si*0.7, w_m_high, rho_c_high_si*0.7, w_c_high],
+                'U_R': [rho_m_low_si*0.7, w_m_low, rho_c_low_si*0.7, w_c_low],
+                'split_pos': 500.0
             }
 
         scenario_path = self.scenarios_dir / f"{scenario_type}.yml"

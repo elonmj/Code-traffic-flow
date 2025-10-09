@@ -1,0 +1,577 @@
+[{"stream_name":"stdout","time":0.60518052,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.605236578,"data":"ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE\n"}
+,{"stream_name":"stdout","time":0.605253982,"data":"Revendications: R5\n"}
+,{"stream_name":"stdout","time":0.605257363,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.605262227,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.605607935,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":5.436378965,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.436539039,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.4815168960000005,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.502684577,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.502803334,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":5.502876349,"data":"\n"}
+,{"stream_name":"stdout","time":5.50288448,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.50304855,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":8.480268553,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":8.480294839,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":8.480298706,"data":"\n"}
+,{"stream_name":"stdout","time":8.480301339,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":8.480304136,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":12.338810574,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":15.278619351,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":18.206734675,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":21.164050262,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":24.149796368,"data":"Installing gymnasium...\n"}
+,{"stream_name":"stdout","time":27.059888622,"data":"Installing stable-baselines3...\n"}
+,{"stream_name":"stdout","time":118.93015265,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":118.930426212,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":118.93055292,"data":"\n"}
+,{"stream_name":"stdout","time":118.930564346,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":118.93108798,"data":"[FULL_TEST] Full test mode (20000 timesteps)\n"}
+,{"stream_name":"stdout","time":118.931246018,"data":"Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":118.931339881,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":118.931435637,"data":"============================================================\n"}
+,{"stream_name":"stderr","time":130.236281315,"data":"2025-10-09 22:11:22.957642: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n"}
+,{"stream_name":"stderr","time":130.415889534,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stderr","time":130.41593533,"data":"E0000 00:00:1760047883.137199      64 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n"}
+,{"stream_name":"stderr","time":130.472532471,"data":"E0000 00:00:1760047883.193994      64 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"}
+,{"stream_name":"stdout","time":141.651227159,"data":"[ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":141.651258881,"data":"  - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":141.651264222,"data":"  - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz\n"}
+,{"stream_name":"stdout","time":141.651268378,"data":"  - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios\n"}
+,{"stream_name":"stdout","time":141.651272229,"data":"  - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics\n"}
+,{"stream_name":"stdout","time":141.651275968,"data":"  - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex\n"}
+,{"stream_name":"stdout","time":141.651654932,"data":"2025-10-09 22:11:34 - INFO - _setup_debug_logging:119 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.65175796,"data":"2025-10-09 22:11:34 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED\n"}
+,{"stream_name":"stdout","time":141.65189204,"data":"2025-10-09 22:11:34 - INFO - _setup_debug_logging:121 - Log file: validation_output/results/local_test/section_7_6_rl_performance/debug.log\n"}
+,{"stream_name":"stdout","time":141.651951908,"data":"2025-10-09 22:11:34 - INFO - _setup_debug_logging:122 - Quick test mode: False\n"}
+,{"stream_name":"stdout","time":141.652062509,"data":"2025-10-09 22:11:34 - INFO - _setup_debug_logging:123 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.652070157,"data":"=== Section 7.6: RL Performance Validation ===\n"}
+,{"stream_name":"stdout","time":141.652074012,"data":"Testing RL agent performance vs baseline controllers...\n"}
+,{"stream_name":"stdout","time":141.765705319,"data":"[DEVICE] Detected: GPU\n"}
+,{"stream_name":"stdout","time":141.860620823,"data":"[GPU INFO] Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":141.860643827,"data":"\n"}
+,{"stream_name":"stdout","time":141.860648279,"data":"[PHASE 1/2] Training RL agents...\n"}
+,{"stream_name":"stdout","time":141.860651903,"data":"[FULL MODE] Training with 5000 timesteps\n"}
+,{"stream_name":"stdout","time":141.860766376,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:548 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.860878694,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:549 - Starting train_rl_agent for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":141.860961103,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:550 -   - Device: gpu\n"}
+,{"stream_name":"stdout","time":141.861008647,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:551 -   - Total timesteps: 5000\n"}
+,{"stream_name":"stdout","time":141.861118696,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:552 -   - Episode max time: 3600.0s\n"}
+,{"stream_name":"stdout","time":141.861179018,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:553 -   - Checkpoint frequency: 500\n"}
+,{"stream_name":"stdout","time":141.861267472,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:554 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.861301989,"data":"\n"}
+,{"stream_name":"stdout","time":141.861305949,"data":"[TRAINING] Starting RL training for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":141.861309446,"data":"  Device: gpu\n"}
+,{"stream_name":"stdout","time":141.861312695,"data":"  Total timesteps: 5000\n"}
+,{"stream_name":"stdout","time":141.861316431,"data":"  Episode max time: 3600.0s\n"}
+,{"stream_name":"stdout","time":141.861320139,"data":"  Checkpoint frequency: 500 steps\n"}
+,{"stream_name":"stdout","time":141.863313017,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":141.863352082,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m\n"}
+,{"stream_name":"stdout","time":141.86347771,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.863561218,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.863569894,"data":"  [SCENARIO] Generated: traffic_light_control.yml (1km domain, Riemann IC)\n"}
+,{"stream_name":"stdout","time":141.870942259,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":141.870958723,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":141.870963452,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":141.870967704,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":141.872372873,"data":"2025-10-09 22:11:34 - ERROR - train_rl_agent:678 - Training failed for traffic_light_control: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.872391924,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.872396288,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 573, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":141.872400452,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":141.872403991,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.872407491,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stdout","time":141.872411594,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":141.872415132,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":141.872418942,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":141.872422501,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.872425946,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stdout","time":141.872430551,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stdout","time":141.872434977,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.872439411,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stdout","time":141.872456301,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stdout","time":141.872460332,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.872463927,"data":"[ERROR] Training failed for traffic_light_control: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stderr","time":141.872847661,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":141.873013093,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 573, in train_rl_agent\n"}
+,{"stream_name":"stderr","time":141.873022313,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stderr","time":141.873026958,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.873031331,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stderr","time":141.8730361,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stderr","time":141.873040492,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stderr","time":141.873044812,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stderr","time":141.873048904,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.873052733,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stderr","time":141.87305687,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stderr","time":141.873060888,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.873065046,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stderr","time":141.873069552,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stderr","time":141.873073399,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.873068642,"data":"[FULL MODE] Training with 5000 timesteps\n"}
+,{"stream_name":"stdout","time":141.873152635,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:548 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.87327613,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:549 - Starting train_rl_agent for scenario: ramp_metering\n"}
+,{"stream_name":"stdout","time":141.873325236,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:550 -   - Device: gpu\n"}
+,{"stream_name":"stdout","time":141.873441884,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:551 -   - Total timesteps: 5000\n"}
+,{"stream_name":"stdout","time":141.873521762,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:552 -   - Episode max time: 3600.0s\n"}
+,{"stream_name":"stdout","time":141.873615103,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:553 -   - Checkpoint frequency: 500\n"}
+,{"stream_name":"stdout","time":141.87367593,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:554 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.873752963,"data":"\n"}
+,{"stream_name":"stdout","time":141.873759203,"data":"[TRAINING] Starting RL training for scenario: ramp_metering\n"}
+,{"stream_name":"stdout","time":141.873763568,"data":"  Device: gpu\n"}
+,{"stream_name":"stdout","time":141.87376771,"data":"  Total timesteps: 5000\n"}
+,{"stream_name":"stdout","time":141.873782909,"data":"  Episode max time: 3600.0s\n"}
+,{"stream_name":"stdout","time":141.873786598,"data":"  Checkpoint frequency: 500 steps\n"}
+,{"stream_name":"stdout","time":141.875188044,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: ramp_metering.yml\n"}
+,{"stream_name":"stdout","time":141.87525677,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m\n"}
+,{"stream_name":"stdout","time":141.87537303,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.875482033,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.875488682,"data":"  [SCENARIO] Generated: ramp_metering.yml (1km domain, Riemann IC)\n"}
+,{"stream_name":"stdout","time":141.882356735,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":141.882373574,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":141.882378015,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":141.882381736,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":141.883130173,"data":"2025-10-09 22:11:34 - ERROR - train_rl_agent:678 - Training failed for ramp_metering: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.883138025,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.883142213,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 573, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":141.883146752,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":141.883150794,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.883155033,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stdout","time":141.88315905299999,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":141.883163302,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":141.883167993,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":141.883172038,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.883176236,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stdout","time":141.88318053,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stdout","time":141.883184017,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.883187573,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stdout","time":141.883191425,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stdout","time":141.883197358,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.883200148,"data":"[ERROR] Training failed for ramp_metering: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stderr","time":141.883591589,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":141.883733424,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 573, in train_rl_agent\n"}
+,{"stream_name":"stderr","time":141.883740447,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stderr","time":141.883745955,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.883749617,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stderr","time":141.883755179,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stderr","time":141.88375943,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stderr","time":141.883763904,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stderr","time":141.883767896,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.883784878,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stderr","time":141.88378915,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stderr","time":141.883793147,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.883797991,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stderr","time":141.883802345,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stderr","time":141.883806952,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.883826619,"data":"[FULL MODE] Training with 5000 timesteps\n"}
+,{"stream_name":"stdout","time":141.883920192,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:548 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.883993922,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:549 - Starting train_rl_agent for scenario: adaptive_speed_control\n"}
+,{"stream_name":"stdout","time":141.884064728,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:550 -   - Device: gpu\n"}
+,{"stream_name":"stdout","time":141.884132362,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:551 -   - Total timesteps: 5000\n"}
+,{"stream_name":"stdout","time":141.884214279,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:552 -   - Episode max time: 3600.0s\n"}
+,{"stream_name":"stdout","time":141.88428362,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:553 -   - Checkpoint frequency: 500\n"}
+,{"stream_name":"stdout","time":141.884379563,"data":"2025-10-09 22:11:34 - INFO - train_rl_agent:554 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.884400953,"data":"\n"}
+,{"stream_name":"stdout","time":141.884405971,"data":"[TRAINING] Starting RL training for scenario: adaptive_speed_control\n"}
+,{"stream_name":"stdout","time":141.884410999,"data":"  Device: gpu\n"}
+,{"stream_name":"stdout","time":141.884415504,"data":"  Total timesteps: 5000\n"}
+,{"stream_name":"stdout","time":141.884433274,"data":"  Episode max time: 3600.0s\n"}
+,{"stream_name":"stdout","time":141.884437646,"data":"  Checkpoint frequency: 500 steps\n"}
+,{"stream_name":"stdout","time":141.885859945,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: adaptive_speed_control.yml\n"}
+,{"stream_name":"stdout","time":141.885926037,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m\n"}
+,{"stream_name":"stdout","time":141.886028101,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.886140426,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.886148459,"data":"  [SCENARIO] Generated: adaptive_speed_control.yml (1km domain, Riemann IC)\n"}
+,{"stream_name":"stdout","time":141.892586711,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":141.892603382,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":141.89260832,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":141.892612866,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":141.893351971,"data":"2025-10-09 22:11:34 - ERROR - train_rl_agent:678 - Training failed for adaptive_speed_control: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.893365577,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.893369995,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 573, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":141.893374357,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":141.893378048,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.893381833,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stdout","time":141.893385955,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":141.89338982,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":141.893393918,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":141.893397602,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.893401343,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stdout","time":141.893405305,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stdout","time":141.893409058,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.893412843,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stdout","time":141.893416898,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stdout","time":141.893420902,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.89342477,"data":"[ERROR] Training failed for adaptive_speed_control: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stderr","time":141.893796621,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":141.893889897,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 573, in train_rl_agent\n"}
+,{"stream_name":"stderr","time":141.893897215,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stderr","time":141.893901232,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.893904994,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stderr","time":141.893920277,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stderr","time":141.893924922,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stderr","time":141.893929504,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stderr","time":141.893933891,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.893937467,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stderr","time":141.893941123,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stderr","time":141.893944839,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.893948286,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stderr","time":141.89395244,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stderr","time":141.8939588,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.893961313,"data":"\n"}
+,{"stream_name":"stdout","time":141.893977973,"data":"[PHASE 2/2] Running performance comparisons...\n"}
+,{"stream_name":"stdout","time":141.893983329,"data":"\n"}
+,{"stream_name":"stdout","time":141.893986865,"data":"Testing scenario: traffic_light_control (device=gpu)\n"}
+,{"stream_name":"stdout","time":141.89410543,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:686 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.894121279,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:687 - Starting run_performance_comparison for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":141.894203458,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:688 - Device: gpu\n"}
+,{"stream_name":"stdout","time":141.89427552,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:689 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.89435572,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:690 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.894447469,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:691 - Starting run_performance_comparison for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":141.894511388,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:692 - Device: gpu\n"}
+,{"stream_name":"stdout","time":141.894586046,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:693 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.896006739,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":141.896082125,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m\n"}
+,{"stream_name":"stdout","time":141.896167594,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.89621559,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.896285035,"data":"  [SCENARIO] Generated: traffic_light_control.yml (1km domain, Riemann IC)\n"}
+,{"stream_name":"stdout","time":141.896292013,"data":"  Running baseline controller...\n"}
+,{"stream_name":"stdout","time":141.896363288,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:284 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.896476442,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:285 - DIAGNOSTIC MODE: MAX 10 STEPS\n"}
+,{"stream_name":"stdout","time":141.896549911,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:286 - Starting run_control_simulation:\n"}
+,{"stream_name":"stdout","time":141.896608933,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:287 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":141.8966857,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:288 -   - duration: 3600.0s\n"}
+,{"stream_name":"stdout","time":141.896767064,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:289 -   - control_interval: 60.0s\n"}
+,{"stream_name":"stdout","time":141.896847031,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:290 -   - device: gpu\n"}
+,{"stream_name":"stdout","time":141.896917905,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:291 -   - controller: BaselineController\n"}
+,{"stream_name":"stdout","time":141.897001785,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:292 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.897044672,"data":"  [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":141.897110657,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:297 - Creating TrafficSignalEnvDirect instance...\n"}
+,{"stream_name":"stdout","time":141.903534015,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":141.903552511,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":141.903557732,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":141.90356207600001,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":141.904167194,"data":"2025-10-09 22:11:34 - ERROR - run_control_simulation:315 - Failed to initialize TrafficSignalEnvDirect: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.904174641,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.904179111,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 303, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":141.904183853,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":141.904188063,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.904191746,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stdout","time":141.904195581,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":141.904199069,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":141.904204676,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":141.904207863,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.904218721,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stdout","time":141.904221504,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stdout","time":141.904223876,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.904226512,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stdout","time":141.904229423,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stdout","time":141.904232495,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.904236071,"data":"  [ERROR] Failed to initialize TrafficSignalEnvDirect: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.904987876,"data":"2025-10-09 22:11:34 - ERROR - run_performance_comparison:790 - Performance comparison failed for traffic_light_control: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stdout","time":141.905001116,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.905006823,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 303, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":141.905010452,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":141.905012825,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.905015216,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stdout","time":141.905017713,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":141.905020158,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":141.905022781,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":141.905025141,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.905027509,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stdout","time":141.905030079,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stdout","time":141.905032434,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.905034785,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stdout","time":141.905037297,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stdout","time":141.90503987,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.905042291,"data":"\n"}
+,{"stream_name":"stdout","time":141.905044594,"data":"During handling of the above exception, another exception occurred:\n"}
+,{"stream_name":"stdout","time":141.905047034,"data":"\n"}
+,{"stream_name":"stdout","time":141.905049393,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.905051804,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 701, in run_performance_comparison\n"}
+,{"stream_name":"stdout","time":141.905054684,"data":"    baseline_states, _ = self.run_control_simulation(\n"}
+,{"stream_name":"stdout","time":141.905058334,"data":"                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.905071342,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 317, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":141.905076469,"data":"    traceback.print_exc()\n"}
+,{"stream_name":"stdout","time":141.905080749,"data":"    ^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.905084846,"data":"UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stderr","time":141.905584539,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":141.905724427,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 303, in run_control_simulation\n"}
+,{"stream_name":"stderr","time":141.905736444,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stderr","time":141.905740713,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.905744429,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stderr","time":141.905748554,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stderr","time":141.905752434,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stderr","time":141.905756466,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stderr","time":141.905760244,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.905763889,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stderr","time":141.905768215,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stderr","time":141.905772393,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.90577655,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stderr","time":141.905780945,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stderr","time":141.905785425,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stderr","time":141.905789596,"data":"\n"}
+,{"stream_name":"stderr","time":141.905793712,"data":"During handling of the above exception, another exception occurred:\n"}
+,{"stream_name":"stderr","time":141.905798027,"data":"\n"}
+,{"stream_name":"stderr","time":141.905801713,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":141.905809577,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 701, in run_performance_comparison\n"}
+,{"stream_name":"stderr","time":141.905813875,"data":"    baseline_states, _ = self.run_control_simulation(\n"}
+,{"stream_name":"stderr","time":141.905817615,"data":"                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.905821059,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 317, in run_control_simulation\n"}
+,{"stream_name":"stderr","time":141.905825118,"data":"    traceback.print_exc()\n"}
+,{"stream_name":"stderr","time":141.905828919,"data":"    ^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.905834331,"data":"UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stdout","time":141.905835424,"data":"  ERROR: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stdout","time":141.905882454,"data":"\n"}
+,{"stream_name":"stdout","time":141.905891259,"data":"Testing scenario: ramp_metering (device=gpu)\n"}
+,{"stream_name":"stdout","time":141.906005716,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:686 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.906069723,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:687 - Starting run_performance_comparison for scenario: ramp_metering\n"}
+,{"stream_name":"stdout","time":141.906169927,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:688 - Device: gpu\n"}
+,{"stream_name":"stdout","time":141.906232922,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:689 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.906303283,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:690 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.906404866,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:691 - Starting run_performance_comparison for scenario: ramp_metering\n"}
+,{"stream_name":"stdout","time":141.906485501,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:692 - Device: gpu\n"}
+,{"stream_name":"stdout","time":141.906583063,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:693 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.908061183,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: ramp_metering.yml\n"}
+,{"stream_name":"stdout","time":141.908134739,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m\n"}
+,{"stream_name":"stdout","time":141.908208172,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.908309276,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.908319603,"data":"  [SCENARIO] Generated: ramp_metering.yml (1km domain, Riemann IC)\n"}
+,{"stream_name":"stdout","time":141.908324123,"data":"  Running baseline controller...\n"}
+,{"stream_name":"stdout","time":141.908492289,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:284 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.908500361,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:285 - DIAGNOSTIC MODE: MAX 10 STEPS\n"}
+,{"stream_name":"stdout","time":141.90854982,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:286 - Starting run_control_simulation:\n"}
+,{"stream_name":"stdout","time":141.908636997,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:287 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/ramp_metering.yml\n"}
+,{"stream_name":"stdout","time":141.908690482,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:288 -   - duration: 3600.0s\n"}
+,{"stream_name":"stdout","time":141.90876974,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:289 -   - control_interval: 60.0s\n"}
+,{"stream_name":"stdout","time":141.9088376,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:290 -   - device: gpu\n"}
+,{"stream_name":"stdout","time":141.908920736,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:291 -   - controller: BaselineController\n"}
+,{"stream_name":"stdout","time":141.909009793,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:292 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.909053704,"data":"  [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":141.909109318,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:297 - Creating TrafficSignalEnvDirect instance...\n"}
+,{"stream_name":"stdout","time":141.91550455,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":141.915519144,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":141.915523733,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":141.91552807,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":141.916192159,"data":"2025-10-09 22:11:34 - ERROR - run_control_simulation:315 - Failed to initialize TrafficSignalEnvDirect: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.91620001,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.916204551,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 303, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":141.916209279,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":141.916213505,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.916217233,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stdout","time":141.916221232,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":141.916224828,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":141.916230601,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":141.916243373,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.916247951,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stdout","time":141.91625238,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stdout","time":141.916256649,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.916260342,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stdout","time":141.91626416,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stdout","time":141.916267981,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.916271565,"data":"  [ERROR] Failed to initialize TrafficSignalEnvDirect: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.917252223,"data":"2025-10-09 22:11:34 - ERROR - run_performance_comparison:790 - Performance comparison failed for ramp_metering: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stdout","time":141.917265021,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.917269597,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 303, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":141.917282204,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":141.917285977,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.917291267,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stdout","time":141.917297457,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":141.917301599,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":141.917305776,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":141.917310344,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.917314378,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stdout","time":141.917318597,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stdout","time":141.917322893,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.917326462,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stdout","time":141.917348253,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stdout","time":141.917352235,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.917355914,"data":"\n"}
+,{"stream_name":"stdout","time":141.917359327,"data":"During handling of the above exception, another exception occurred:\n"}
+,{"stream_name":"stdout","time":141.917362969,"data":"\n"}
+,{"stream_name":"stdout","time":141.917366281,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.917369922,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 701, in run_performance_comparison\n"}
+,{"stream_name":"stdout","time":141.917375945,"data":"    baseline_states, _ = self.run_control_simulation(\n"}
+,{"stream_name":"stdout","time":141.917378674,"data":"                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.917381083,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 317, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":141.917383677,"data":"    traceback.print_exc()\n"}
+,{"stream_name":"stdout","time":141.917386014,"data":"    ^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.917388413,"data":"UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stderr","time":141.917841034,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":141.917988341,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 303, in run_control_simulation\n"}
+,{"stream_name":"stderr","time":141.917995483,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stderr","time":141.917999167,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.918002746,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stderr","time":141.918006719,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stderr","time":141.918010444,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stderr","time":141.918031924,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stderr","time":141.918036307,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.918040919,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stderr","time":141.918045446,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stderr","time":141.918049527,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.918053687,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stderr","time":141.918058048,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stderr","time":141.918062675,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stderr","time":141.918066988,"data":"\n"}
+,{"stream_name":"stderr","time":141.918070607,"data":"During handling of the above exception, another exception occurred:\n"}
+,{"stream_name":"stderr","time":141.918074485,"data":"\n"}
+,{"stream_name":"stderr","time":141.918081328,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":141.918085991,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 701, in run_performance_comparison\n"}
+,{"stream_name":"stderr","time":141.918090107,"data":"    baseline_states, _ = self.run_control_simulation(\n"}
+,{"stream_name":"stderr","time":141.918094182,"data":"                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.918098376,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 317, in run_control_simulation\n"}
+,{"stream_name":"stderr","time":141.91810272,"data":"    traceback.print_exc()\n"}
+,{"stream_name":"stderr","time":141.918106828,"data":"    ^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.918155678,"data":"UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stdout","time":141.9181549,"data":"  ERROR: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stdout","time":141.91817134,"data":"\n"}
+,{"stream_name":"stdout","time":141.918175425,"data":"Testing scenario: adaptive_speed_control (device=gpu)\n"}
+,{"stream_name":"stdout","time":141.918306228,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:686 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.918321823,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:687 - Starting run_performance_comparison for scenario: adaptive_speed_control\n"}
+,{"stream_name":"stdout","time":141.918475938,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:688 - Device: gpu\n"}
+,{"stream_name":"stdout","time":141.918538212,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:689 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.918611292,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:690 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.918670496,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:691 - Starting run_performance_comparison for scenario: adaptive_speed_control\n"}
+,{"stream_name":"stdout","time":141.918798385,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:692 - Device: gpu\n"}
+,{"stream_name":"stdout","time":141.918843332,"data":"2025-10-09 22:11:34 - INFO - run_performance_comparison:693 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.920288516,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:202 - Created scenario config: adaptive_speed_control.yml\n"}
+,{"stream_name":"stdout","time":141.92038254,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:203 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m\n"}
+,{"stream_name":"stdout","time":141.920503471,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:204 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.920571686,"data":"2025-10-09 22:11:34 - INFO - _create_scenario_config:205 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km\n"}
+,{"stream_name":"stdout","time":141.920581092,"data":"  [SCENARIO] Generated: adaptive_speed_control.yml (1km domain, Riemann IC)\n"}
+,{"stream_name":"stdout","time":141.920592309,"data":"  Running baseline controller...\n"}
+,{"stream_name":"stdout","time":141.920678309,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:284 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.920762477,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:285 - DIAGNOSTIC MODE: MAX 10 STEPS\n"}
+,{"stream_name":"stdout","time":141.92082878,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:286 - Starting run_control_simulation:\n"}
+,{"stream_name":"stdout","time":141.920916562,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:287 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/adaptive_speed_control.yml\n"}
+,{"stream_name":"stdout","time":141.920982515,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:288 -   - duration: 3600.0s\n"}
+,{"stream_name":"stdout","time":141.921089545,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:289 -   - control_interval: 60.0s\n"}
+,{"stream_name":"stdout","time":141.921145048,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:290 -   - device: gpu\n"}
+,{"stream_name":"stdout","time":141.921223689,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:291 -   - controller: BaselineController\n"}
+,{"stream_name":"stdout","time":141.921288683,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:292 - ================================================================================\n"}
+,{"stream_name":"stdout","time":141.921340398,"data":"  [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":141.921406073,"data":"2025-10-09 22:11:34 - INFO - run_control_simulation:297 - Creating TrafficSignalEnvDirect instance...\n"}
+,{"stream_name":"stdout","time":141.927828049,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":141.927843881,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":141.92784836,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":141.927852076,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":141.928492124,"data":"2025-10-09 22:11:34 - ERROR - run_control_simulation:315 - Failed to initialize TrafficSignalEnvDirect: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.928505282,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.928520253,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 303, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":141.92852487,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":141.928528519,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.928532323,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stdout","time":141.928536343,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":141.928540155,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":141.928544195,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":141.928547931,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.928551691,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stdout","time":141.928555734,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stdout","time":141.928559449,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.928563268,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stdout","time":141.92856749,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stdout","time":141.928571431,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.928575254,"data":"  [ERROR] Failed to initialize TrafficSignalEnvDirect: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.929294901,"data":"2025-10-09 22:11:34 - ERROR - run_performance_comparison:790 - Performance comparison failed for adaptive_speed_control: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stdout","time":141.929304579,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.929308649,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 303, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":141.929313046,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stdout","time":141.929316834,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.929320507,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stdout","time":141.929324526,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stdout","time":141.929341248,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stdout","time":141.929350726,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stdout","time":141.929354583,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.929358509,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stdout","time":141.929362386,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stdout","time":141.929366102,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.929369614,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stdout","time":141.929381124,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stdout","time":141.929385191,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stdout","time":141.929391881,"data":"\n"}
+,{"stream_name":"stdout","time":141.929395531,"data":"During handling of the above exception, another exception occurred:\n"}
+,{"stream_name":"stdout","time":141.929399397,"data":"\n"}
+,{"stream_name":"stdout","time":141.929402936,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":141.929406781,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 701, in run_performance_comparison\n"}
+,{"stream_name":"stdout","time":141.929410908,"data":"    baseline_states, _ = self.run_control_simulation(\n"}
+,{"stream_name":"stdout","time":141.929414631,"data":"                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.929418394,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 317, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":141.929422583,"data":"    traceback.print_exc()\n"}
+,{"stream_name":"stdout","time":141.929426249,"data":"    ^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":141.929429894,"data":"UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stderr","time":141.92989417,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":141.93002692,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 303, in run_control_simulation\n"}
+,{"stream_name":"stderr","time":141.930035114,"data":"    env = TrafficSignalEnvDirect(\n"}
+,{"stream_name":"stderr","time":141.930039006,"data":"          ^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.930042721,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 141, in __init__\n"}
+,{"stream_name":"stderr","time":141.930046814,"data":"    self._initialize_simulator()\n"}
+,{"stream_name":"stderr","time":141.930050263,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 158, in _initialize_simulator\n"}
+,{"stream_name":"stderr","time":141.930054119,"data":"    self.runner = SimulationRunner(\n"}
+,{"stream_name":"stderr","time":141.9300578,"data":"                  ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.930061496,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 97, in __init__\n"}
+,{"stream_name":"stderr","time":141.930065345,"data":"    self.U = self._create_initial_state()\n"}
+,{"stream_name":"stderr","time":141.930069061,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.930072751,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 306, in _create_initial_state\n"}
+,{"stream_name":"stderr","time":141.930076995,"data":"    raise ValueError(\"Riemann IC requires 'U_L', 'U_R', 'split_pos'.\")\n"}
+,{"stream_name":"stderr","time":141.930081427,"data":"ValueError: Riemann IC requires 'U_L', 'U_R', 'split_pos'.\n"}
+,{"stream_name":"stderr","time":141.930085313,"data":"\n"}
+,{"stream_name":"stderr","time":141.930089647,"data":"During handling of the above exception, another exception occurred:\n"}
+,{"stream_name":"stderr","time":141.930093508,"data":"\n"}
+,{"stream_name":"stderr","time":141.930110942,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":141.930115194,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 701, in run_performance_comparison\n"}
+,{"stream_name":"stderr","time":141.930119703,"data":"    baseline_states, _ = self.run_control_simulation(\n"}
+,{"stream_name":"stderr","time":141.930123484,"data":"                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.930127221,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 317, in run_control_simulation\n"}
+,{"stream_name":"stderr","time":141.930131414,"data":"    traceback.print_exc()\n"}
+,{"stream_name":"stderr","time":141.93013485,"data":"    ^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":141.930138425,"data":"UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stdout","time":141.930166577,"data":"  ERROR: cannot access local variable 'traceback' where it is not associated with a value\n"}
+,{"stream_name":"stdout","time":141.930187173,"data":"\n"}
+,{"stream_name":"stdout","time":141.930192819,"data":"[FIGURES] Generating RL performance figures...\n"}
+,{"stream_name":"stdout","time":142.538479338,"data":"  [OK] fig_rl_performance_improvements.png\n"}
+,{"stream_name":"stdout","time":143.044157944,"data":"  [OK] fig_rl_learning_curve.png\n"}
+,{"stream_name":"stdout","time":143.044184955,"data":"[FIGURES] Generated 2 figures in validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":143.044189663,"data":"\n"}
+,{"stream_name":"stdout","time":143.044193034,"data":"[METRICS] Saving RL performance metrics...\n"}
+,{"stream_name":"stdout","time":143.057036673,"data":"  [OK] validation_output/results/local_test/section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv\n"}
+,{"stream_name":"stdout","time":143.057057759,"data":"\n"}
+,{"stream_name":"stdout","time":143.057062045,"data":"[LATEX] Generating content for Section 7.6...\n"}
+,{"stream_name":"stdout","time":143.057215811,"data":"  [OK] validation_output/results/local_test/section_7_6_rl_performance/latex/section_7_6_content.tex\n"}
+,{"stream_name":"stdout","time":143.057224379,"data":"\n"}
+,{"stream_name":"stdout","time":143.057236394,"data":"=== RL Performance Validation Summary ===\n"}
+,{"stream_name":"stdout","time":143.05724008,"data":"Scenarios passed: 0/3 (0.0%)\n"}
+,{"stream_name":"stdout","time":143.057243809,"data":"Average flow improvement: 0.00%\n"}
+,{"stream_name":"stdout","time":143.057247255,"data":"Average efficiency improvement: 0.00%\n"}
+,{"stream_name":"stdout","time":143.057250653,"data":"Average delay reduction: 0.00%\n"}
+,{"stream_name":"stdout","time":143.05725427,"data":"Overall validation: FAILED\n"}
+,{"stream_name":"stdout","time":143.058300933,"data":"[SUMMARY] Created: validation_output/results/local_test/section_7_6_rl_performance/session_summary.json\n"}
+,{"stream_name":"stdout","time":144.807585668,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":144.807784401,"data":"\n"}
+,{"stream_name":"stdout","time":144.807793156,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":144.807867034,"data":"[ARTIFACTS] Copying results for section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":144.810971041,"data":"[OK] Section copied to: /kaggle/working/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":144.81192141,"data":"[ARTIFACTS] NPZ files: 0\n"}
+,{"stream_name":"stdout","time":144.812003887,"data":"[ARTIFACTS] PNG figures: 2\n"}
+,{"stream_name":"stdout","time":144.812113428,"data":"[ARTIFACTS] YAML scenarios: 3\n"}
+,{"stream_name":"stdout","time":144.812169165,"data":"[ARTIFACTS] TEX files: 1\n"}
+,{"stream_name":"stdout","time":144.812264185,"data":"[ARTIFACTS] JSON files: 1\n"}
+,{"stream_name":"stdout","time":144.812342391,"data":"[ARTIFACTS] CSV metrics: 1\n"}
+,{"stream_name":"stdout","time":144.812418667,"data":"TRACKING_SUCCESS: Artifacts copied\n"}
+,{"stream_name":"stdout","time":144.812509428,"data":"[SUCCESS] All artifacts organized and copied\n"}
+,{"stream_name":"stdout","time":144.812582595,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":144.867480764,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":144.867499576,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":144.867859951,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":144.867909855,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":144.867988043,"data":"\n"}
+,{"stream_name":"stdout","time":144.86800368,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":144.868080613,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":144.868200007,"data":"\n"}
+,{"stream_name":"stdout","time":144.868206746,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":144.868211322,"data":"VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED\n"}
+,{"stream_name":"stdout","time":144.868215403,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":144.868219166,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":148.202774958,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":148.202805128,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":148.245388351,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":148.971378564,"data":"[NbConvertApp] Writing 321271 bytes to __results__.html\n"}
+]

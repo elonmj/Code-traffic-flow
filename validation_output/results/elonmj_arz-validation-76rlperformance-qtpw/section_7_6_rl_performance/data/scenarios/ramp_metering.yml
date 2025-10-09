@@ -11,28 +11,28 @@ boundary_conditions:
   right:
     type: outflow
 initial_conditions:
-  U_L:
-  - 0.1
+  discontinuity_position: 500.0
+  left_state:
+  - 0.08000000000000002
   - 15.0
-  - 0.12
+  - 0.096
   - 12.0
-  U_R:
-  - 0.03
+  right_state:
+  - 0.024
   - 25.0
-  - 0.04
+  - 0.032
   - 20.0
-  split_pos: 500.0
   type: riemann
 output_dt: 60.0
 parameters:
-  V0_c: 22.2
-  V0_m: 25.0
-  tau_c: 1.2
-  tau_m: 1.0
+  V0_c: 25.0
+  V0_m: 27.8
+  tau_c: 1.0
+  tau_m: 0.8
 road:
   quality_type: uniform
   quality_value: 2
-scenario_name: rl_perf_traffic_light_control_sensitive
+scenario_name: rl_perf_ramp_metering_sensitive
 t_final: 600.0
 xmax: 1000.0
 xmin: 0.0
