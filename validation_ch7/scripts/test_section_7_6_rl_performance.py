@@ -354,6 +354,9 @@ class RLPerformanceValidationTest(ValidationSection):
         
         for idx, state in enumerate(states_history):
             self.debug_logger.debug(f"State {idx}: shape={state.shape}, dtype={state.dtype}")
+            # Log first few values to verify states are different
+            if idx == 0:
+                self.debug_logger.info(f"First state sample - rho_m[10:15]={state[0, 10:15]}, w_m[10:15]={state[1, 10:15]}")
             rho_m, w_m, rho_c, w_c = state[0, :], state[1, :], state[2, :], state[3, :]
             
             # Ignorer les cellules fantômes pour les métriques
@@ -623,6 +626,12 @@ class RLPerformanceValidationTest(ValidationSection):
                 return {'success': False, 'error': 'RL simulation failed'}
             
             rl_performance = self.evaluate_traffic_performance(rl_states, scenario_type)
+            
+            # DEBUG: Verify states are actually different
+            baseline_state_hash = hash(baseline_states[0].tobytes())
+            rl_state_hash = hash(rl_states[0].tobytes())
+            states_identical = (baseline_state_hash == rl_state_hash)
+            self.debug_logger.warning(f"States comparison - Identical: {states_identical}, baseline_hash={baseline_state_hash}, rl_hash={rl_state_hash}")
             
             # DEBUG: Log performance metrics
             self.debug_logger.info(f"Baseline performance: {baseline_performance}")
