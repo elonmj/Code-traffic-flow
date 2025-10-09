@@ -204,7 +204,15 @@ class RLPerformanceValidationTest(ValidationSection):
         control_actions = []
         step_times = []  # Performance tracking
         
-        obs, info = env.reset()
+        try:
+            obs, info = env.reset()
+        except Exception as e:
+            print(f"  [ERROR] Environment reset failed: {e}", flush=True)
+            import traceback
+            traceback.print_exc()
+            env.close()
+            return None, None
+            
         terminated = False
         truncated = False
         total_reward = 0
@@ -212,31 +220,38 @@ class RLPerformanceValidationTest(ValidationSection):
 
         print(f"  [INFO] Starting simulation loop (max duration: {duration}s, interval: {control_interval}s)", flush=True)
         
-        while not (terminated or truncated) and env.runner.t < duration:
-            step_start = time.perf_counter()
-            
-            # Get action from controller
-            action = controller.get_action(obs)
-            
-            # Execute step - advances ARZ simulation by control_interval
-            obs, reward, terminated, truncated, info = env.step(action)
-            
-            step_elapsed = time.perf_counter() - step_start
-            step_times.append(step_elapsed)
-            
-            # Store trajectory
-            control_actions.append(action)
-            # Store full state for analysis (extract from runner.U or runner.d_U)
-            current_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
-            states_history.append(current_state)
-            
-            total_reward += reward
-            steps += 1
-            
-            if steps % 10 == 0:
-                avg_step_time = np.mean(step_times[-10:])
-                print(f"    Step {steps}: t={env.runner.t:.1f}s, reward={reward:.3f}, "
-                      f"avg_step_time={avg_step_time:.3f}s", flush=True)
+        try:
+            while not (terminated or truncated) and env.runner.t < duration:
+                step_start = time.perf_counter()
+                
+                # Get action from controller
+                action = controller.get_action(obs)
+                
+                # Execute step - advances ARZ simulation by control_interval
+                obs, reward, terminated, truncated, info = env.step(action)
+                
+                step_elapsed = time.perf_counter() - step_start
+                step_times.append(step_elapsed)
+                
+                # Store trajectory
+                control_actions.append(action)
+                # Store full state for analysis (extract from runner.U or runner.d_U)
+                current_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
+                states_history.append(current_state)
+                
+                total_reward += reward
+                steps += 1
+                
+                if steps % 10 == 0:
+                    avg_step_time = np.mean(step_times[-10:])
+                    print(f"    Step {steps}: t={env.runner.t:.1f}s, reward={reward:.3f}, "
+                          f"avg_step_time={avg_step_time:.3f}s", flush=True)
+        except Exception as e:
+            print(f"  [ERROR] Simulation loop failed at step {steps}: {e}", flush=True)
+            import traceback
+            traceback.print_exc()
+            env.close()
+            return None, None
 
         # Performance summary
         avg_step_time = np.mean(step_times) if step_times else 0
