@@ -410,3 +410,5 @@
 2025-10-09 15:10:17,785 - validation_kaggle_manager - INFO - 📍 Current branch: main
 2025-10-09 15:10:17,935 - validation_kaggle_manager - INFO - ✅ Git repository is clean and up to date
 2025-10-09 15:10:21,132 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-gujh
+2025-10-09 15:20:42,064 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-09 15:20:42,189 - validation_kaggle_manager - INFO - 📍 Current branch: main
