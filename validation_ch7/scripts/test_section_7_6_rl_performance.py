@@ -488,9 +488,9 @@ class RLPerformanceValidationTest(ValidationSection):
             if not model_path.exists():
                 # Train if model doesn't exist
                 print(f"  [INFO] Model not found, training new agent...", flush=True)
+                # Use default timesteps from train_rl_agent (adapts to quick_test mode)
                 trained_path = self.train_rl_agent(
                     scenario_type, 
-                    total_timesteps=20000,
                     device=device
                 )
                 if not trained_path or not Path(trained_path).exists():
@@ -577,8 +577,8 @@ class RLPerformanceValidationTest(ValidationSection):
             print(f"[QUICK TEST] Training only: {scenarios_to_train[0]}")
         
         for scenario in scenarios_to_train:
-            timesteps = 2 if self.quick_test else 20000
-            self.train_rl_agent(scenario, total_timesteps=timesteps, device=device)
+            # Let train_rl_agent() use its default timesteps (adapts to quick_test mode)
+            self.train_rl_agent(scenario, device=device)
         
         # Test all RL scenarios
         print("\n[PHASE 2/2] Running performance comparisons...")
