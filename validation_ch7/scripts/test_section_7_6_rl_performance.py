@@ -134,9 +134,10 @@ class RLPerformanceValidationTest(ValidationSection):
         The SimulationRunner will convert them to SI units (veh/m) internally.
         """
         # Realistic urban congestion densities (veh/km - will be converted to veh/m)
-        # Moderate congestion: 40-50 veh/km for both classes
-        rho_m_init_veh_km = 45.0  # 45 veh/km for motorcycles
-        rho_c_init_veh_km = 50.0  # 50 veh/km for cars
+        # HEAVY CONGESTION: 80-100 veh/km to ensure traffic doesn't drain away
+        # Section 7.4 Victoria Island uses 60-80 veh/km for peak congestion
+        rho_m_init_veh_km = 80.0  # 80 veh/km for motorcycles (heavy congestion)
+        rho_c_init_veh_km = 100.0  # 100 veh/km for cars (jam conditions)
         
         # Boundary conditions use SI units directly (veh/m)
         rho_m_boundary_veh_m = rho_m_init_veh_km * 0.001  # Convert to veh/m for boundary
