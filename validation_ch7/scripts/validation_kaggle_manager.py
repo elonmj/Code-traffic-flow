@@ -915,16 +915,25 @@ print("=" * 80)
                 import sys
                 import io
                 original_stdout = sys.stdout
+                download_success = False
                 
                 try:
                     # Redirect stdout to UTF-8 buffer to handle emojis
                     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
                     self.api.kernels_output(kernel_slug, path=temp_dir, quiet=False)
-                    sys.stdout = original_stdout
-                    print("[SUCCESS] Kernel output downloaded successfully")
+                    download_success = True
                 except Exception as e:
+                    # Store error for reporting after stdout is restored
+                    download_error = str(e)
+                finally:
+                    # CRITICAL: Always restore stdout before any print/logging
                     sys.stdout = original_stdout
-                    print(f"[ERROR] Failed to download kernel output: {e}")
+                
+                # Now safe to print (stdout restored)
+                if download_success:
+                    print("[SUCCESS] Kernel output downloaded successfully")
+                else:
+                    print(f"[ERROR] Failed to download kernel output: {download_error}")
                     print("[INFO] Continuing with status verification...")
 
                 # Persist artifacts (for debugging and future reference)
