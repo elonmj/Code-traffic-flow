@@ -126,14 +126,21 @@ class RLPerformanceValidationTest(ValidationSection):
         """Crée un fichier de configuration YAML pour un scénario de contrôle.
         
         CRITICAL FIX: Use realistic urban traffic densities matching Section 7.4/7.5
-        - Section 7.4 Victoria Island: rho_m=60 veh/km, rho_c=80 veh/km (0.060, 0.080 veh/m)
-        - Section 7.5 Congestion: rho_m=30-50 veh/km (0.030-0.050 veh/m)
-        - Previous bug: Used 0.02/0.03 veh/m = nearly empty road → no traffic to control!
+        - Section 7.4 Victoria Island: rho_m=60 veh/km, rho_c=80 veh/km
+        - Section 7.5 Congestion: rho_m=30-50 veh/km
+        - Previous bug: Used veh/m instead of veh/km in initial_conditions!
+        
+        **IMPORTANT**: initial_conditions with type='uniform_equilibrium' expects densities in VEH/KM
+        The SimulationRunner will convert them to SI units (veh/m) internally.
         """
-        # Realistic urban congestion densities (veh/m in SI units)
+        # Realistic urban congestion densities (veh/km - will be converted to veh/m)
         # Moderate congestion: 40-50 veh/km for both classes
-        rho_m_init = 0.045  # 45 veh/km for motorcycles
-        rho_c_init = 0.050  # 50 veh/km for cars
+        rho_m_init_veh_km = 45.0  # 45 veh/km for motorcycles
+        rho_c_init_veh_km = 50.0  # 50 veh/km for cars
+        
+        # Boundary conditions use SI units directly (veh/m)
+        rho_m_boundary_veh_m = rho_m_init_veh_km * 0.001  # Convert to veh/m for boundary
+        rho_c_boundary_veh_m = rho_c_init_veh_km * 0.001
         
         # Velocities matching congested traffic (m/s)
         w_m_init = 15.0  # ~54 km/h (reduced from free-flow 27.8 m/s)
@@ -148,7 +155,7 @@ class RLPerformanceValidationTest(ValidationSection):
             'output_dt': 60.0,
             'CFL': 0.4,
             'boundary_conditions': {
-                'left': {'type': 'inflow', 'state': [rho_m_init, w_m_init, rho_c_init, w_c_init]},
+                'left': {'type': 'inflow', 'state': [rho_m_boundary_veh_m, w_m_init, rho_c_boundary_veh_m, w_c_init]},
                 'right': {'type': 'outflow'}
             },
             'road': {'quality_type': 'uniform', 'quality_value': 2}
@@ -156,21 +163,22 @@ class RLPerformanceValidationTest(ValidationSection):
 
         if scenario_type == 'traffic_light_control':
             config['parameters'] = {'V0_m': 25.0, 'V0_c': 22.2, 'tau_m': 1.0, 'tau_c': 1.2}
-            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init, 'rho_c': rho_c_init, 'R_val': 2}
-            # Un carrefour à feux serait modélisé via un noeud dans une version plus avancée
+            # CRITICAL: Use veh/km for initial_conditions (will be converted to veh/m internally)
+            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init_veh_km, 'rho_c': rho_c_init_veh_km, 'R_val': 2}
         elif scenario_type == 'ramp_metering':
             config['parameters'] = {'V0_m': 27.8, 'V0_c': 25.0, 'tau_m': 0.8, 'tau_c': 1.0}
-            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init * 0.8, 'rho_c': rho_c_init * 0.8, 'R_val': 2}
+            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init_veh_km * 0.8, 'rho_c': rho_c_init_veh_km * 0.8, 'R_val': 2}
         elif scenario_type == 'adaptive_speed_control':
             config['parameters'] = {'V0_m': 30.6, 'V0_c': 27.8, 'tau_m': 0.6, 'tau_c': 0.8}
-            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init * 0.7, 'rho_c': rho_c_init * 0.7, 'R_val': 2}
+            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init_veh_km * 0.7, 'rho_c': rho_c_init_veh_km * 0.7, 'R_val': 2}
 
         scenario_path = self.scenarios_dir / f"{scenario_type}.yml"
         with open(scenario_path, 'w') as f:
             yaml.dump(config, f, default_flow_style=False)
         
         self.debug_logger.info(f"Created scenario config: {scenario_path.name}")
-        self.debug_logger.info(f"  Initial densities: rho_m={rho_m_init:.4f} veh/m, rho_c={rho_c_init:.4f} veh/m")
+        self.debug_logger.info(f"  Initial densities (veh/km): rho_m={rho_m_init_veh_km:.1f}, rho_c={rho_c_init_veh_km:.1f}")
+        self.debug_logger.info(f"  Initial densities (veh/m): rho_m={rho_m_init_veh_km*0.001:.4f}, rho_c={rho_c_init_veh_km*0.001:.4f}")
         self.debug_logger.info(f"  Initial velocities: w_m={w_m_init:.1f} m/s, w_c={w_c_init:.1f} m/s")
         print(f"  [SCENARIO] Generated: {scenario_path.name}")
         return scenario_path
