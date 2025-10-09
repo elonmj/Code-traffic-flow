@@ -353,3 +353,5 @@
 2025-10-09 11:57:41,533 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-09 11:57:44,114 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-09 11:57:47,292 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-uyyj
+2025-10-09 12:43:42,317 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-09 12:43:42,489 - validation_kaggle_manager - INFO - 📍 Current branch: main
