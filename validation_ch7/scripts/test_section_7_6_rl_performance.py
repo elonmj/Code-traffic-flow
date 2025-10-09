@@ -348,10 +348,12 @@ class RLPerformanceValidationTest(ValidationSection):
         if not states_history:
             return {'total_flow': 0, 'avg_speed': 0, 'efficiency': 0, 'delay': float('inf'), 'throughput': 0}
         
+        self.debug_logger.info(f"Evaluating performance with {len(states_history)} state snapshots")
         flows, speeds, densities = [], [], []
         efficiency_scores = []
         
-        for state in states_history:
+        for idx, state in enumerate(states_history):
+            self.debug_logger.debug(f"State {idx}: shape={state.shape}, dtype={state.dtype}")
             rho_m, w_m, rho_c, w_c = state[0, :], state[1, :], state[2, :], state[3, :]
             
             # Ignorer les cellules fantômes pour les métriques
@@ -396,7 +398,7 @@ class RLPerformanceValidationTest(ValidationSection):
         actual_travel_time = domain_length / max(avg_speed, 1.0)
         delay = actual_travel_time - free_flow_time
         
-        return {
+        result = {
             'total_flow': avg_flow,
             'avg_speed': avg_speed,
             'avg_density': avg_density,
@@ -404,6 +406,10 @@ class RLPerformanceValidationTest(ValidationSection):
             'delay': delay,
             'throughput': avg_flow * domain_length
         }
+        
+        self.debug_logger.info(f"Calculated metrics: flow={avg_flow:.6f}, efficiency={avg_efficiency:.6f}, delay={delay:.2f}s")
+        
+        return result
     
     def train_rl_agent(self, scenario_type: str, total_timesteps=5000, device='gpu'):
         """Train RL agent using real ARZ simulation with direct coupling.
@@ -618,10 +624,19 @@ class RLPerformanceValidationTest(ValidationSection):
             
             rl_performance = self.evaluate_traffic_performance(rl_states, scenario_type)
             
+            # DEBUG: Log performance metrics
+            self.debug_logger.info(f"Baseline performance: {baseline_performance}")
+            self.debug_logger.info(f"RL performance: {rl_performance}")
+            
             # Calculate improvements
             flow_improvement = (rl_performance['total_flow'] - baseline_performance['total_flow']) / baseline_performance['total_flow'] * 100
             efficiency_improvement = (rl_performance['efficiency'] - baseline_performance['efficiency']) / baseline_performance['efficiency'] * 100
             delay_reduction = (baseline_performance['delay'] - rl_performance['delay']) / baseline_performance['delay'] * 100
+            
+            # DEBUG: Log calculated improvements
+            self.debug_logger.info(f"Flow improvement: {flow_improvement:.3f}%")
+            self.debug_logger.info(f"Efficiency improvement: {efficiency_improvement:.3f}%")
+            self.debug_logger.info(f"Delay reduction: {delay_reduction:.3f}%")
             
             # Determine success based on improvement thresholds
             success_criteria = [
