@@ -721,8 +721,15 @@ class SimulationRunner:
         
         self.current_bc_params[intersection_id] = bc_config
         
+        # SENSITIVITY FIX: Enhanced logging to verify BC updates
         if not self.quiet:
-            print(f"Traffic signal updated: {intersection_id} -> phase {phase_id} ({bc_config['type']})")
+            print(f"[BC UPDATE] {intersection_id} → phase {phase_id} ({bc_config['type']})")
+            if bc_config['type'] == 'inflow' and bc_config.get('state') is not None:
+                state = bc_config['state']
+                print(f"  └─ Inflow state: rho_m={state[0]:.4f}, w_m={state[1]:.1f}, "
+                      f"rho_c={state[2]:.4f}, w_c={state[3]:.1f}")
+            elif bc_config['type'] == 'outflow':
+                print(f"  └─ Outflow: zero-order extrapolation")
 
     def get_segment_observations(self, segment_indices: list) -> dict:
         """

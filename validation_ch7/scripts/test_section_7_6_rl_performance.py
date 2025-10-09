@@ -125,38 +125,43 @@ class RLPerformanceValidationTest(ValidationSection):
     def _create_scenario_config(self, scenario_type: str) -> Path:
         """Crée un fichier de configuration YAML pour un scénario de contrôle.
         
-        CRITICAL FIX: Use realistic urban traffic densities matching Section 7.4/7.5
-        - Section 7.4 Victoria Island: rho_m=60 veh/km, rho_c=80 veh/km
-        - Section 7.5 Congestion: rho_m=30-50 veh/km
-        - Previous bug: Used veh/m instead of veh/km in initial_conditions!
+        SENSITIVITY FIX: Configuration optimized to observe BC control effects
+        - Reduced domain: 5km → 1km (faster wave propagation)
+        - Riemann IC: Shock wave instead of equilibrium (transient dynamics)
+        - Higher densities: Strong signal for control testing
         
         **IMPORTANT**: initial_conditions with type='uniform_equilibrium' expects densities in VEH/KM
-        The SimulationRunner will convert them to SI units (veh/m) internally.
+        For Riemann IC, state arrays use SI units (veh/m, m/s) directly.
         """
-        # Realistic urban congestion densities (veh/km - will be converted to veh/m)
-        # HEAVY CONGESTION: 80-100 veh/km to ensure traffic doesn't drain away
-        # Section 7.4 Victoria Island uses 60-80 veh/km for peak congestion
-        rho_m_init_veh_km = 80.0  # 80 veh/km for motorcycles (heavy congestion)
-        rho_c_init_veh_km = 100.0  # 100 veh/km for cars (jam conditions)
+        # VERY HEAVY CONGESTION for strong control signal
+        rho_m_high_veh_km = 100.0  # High density zone (jam conditions)
+        rho_c_high_veh_km = 120.0
         
-        # Boundary conditions use SI units directly (veh/m)
-        rho_m_boundary_veh_m = rho_m_init_veh_km * 0.001  # Convert to veh/m for boundary
-        rho_c_boundary_veh_m = rho_c_init_veh_km * 0.001
+        rho_m_low_veh_km = 30.0   # Low density zone (free flow)
+        rho_c_low_veh_km = 40.0
         
-        # Velocities matching congested traffic (m/s)
-        w_m_init = 15.0  # ~54 km/h (reduced from free-flow 27.8 m/s)
-        w_c_init = 12.0  # ~43 km/h (reduced from free-flow 25.0 m/s)
+        # Convert to SI units (veh/m)
+        rho_m_high_si = rho_m_high_veh_km * 0.001
+        rho_c_high_si = rho_c_high_veh_km * 0.001
+        rho_m_low_si = rho_m_low_veh_km * 0.001
+        rho_c_low_si = rho_c_low_veh_km * 0.001
+        
+        # Velocities (m/s)
+        w_m_high = 15.0  # ~54 km/h (congested)
+        w_c_high = 12.0  # ~43 km/h
+        w_m_low = 25.0   # ~90 km/h (free flow)
+        w_c_low = 20.0   # ~72 km/h
         
         config = {
-            'scenario_name': f'rl_perf_{scenario_type}',
-            'N': 200,
+            'scenario_name': f'rl_perf_{scenario_type}_sensitive',
+            'N': 100,           # CHANGED: Reduce from 200 for faster propagation
             'xmin': 0.0,
-            'xmax': 5000.0,  # Domaine de 5 km
-            't_final': 600.0, # 10 minutes for quick diagnosis (was 3600s)
+            'xmax': 1000.0,     # CHANGED: Reduce from 5000m to 1km domain
+            't_final': 600.0,   # 10 minutes
             'output_dt': 60.0,
             'CFL': 0.4,
             'boundary_conditions': {
-                'left': {'type': 'inflow', 'state': [rho_m_boundary_veh_m, w_m_init, rho_c_boundary_veh_m, w_c_init]},
+                'left': {'type': 'inflow', 'state': [rho_m_high_si, w_m_high, rho_c_high_si, w_c_high]},
                 'right': {'type': 'outflow'}
             },
             'road': {'quality_type': 'uniform', 'quality_value': 2}
@@ -164,24 +169,41 @@ class RLPerformanceValidationTest(ValidationSection):
 
         if scenario_type == 'traffic_light_control':
             config['parameters'] = {'V0_m': 25.0, 'V0_c': 22.2, 'tau_m': 1.0, 'tau_c': 1.2}
-            # CRITICAL: Use veh/km for initial_conditions (will be converted to veh/m internally)
-            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init_veh_km, 'rho_c': rho_c_init_veh_km, 'R_val': 2}
+            # CHANGED: Use Riemann IC (shock wave) instead of uniform equilibrium
+            config['initial_conditions'] = {
+                'type': 'riemann',
+                'left_state': [rho_m_high_si, w_m_high, rho_c_high_si, w_c_high],   # Congestion
+                'right_state': [rho_m_low_si, w_m_low, rho_c_low_si, w_c_low],      # Free flow
+                'discontinuity_position': 500.0  # Middle of 1km domain
+            }
         elif scenario_type == 'ramp_metering':
             config['parameters'] = {'V0_m': 27.8, 'V0_c': 25.0, 'tau_m': 0.8, 'tau_c': 1.0}
-            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init_veh_km * 0.8, 'rho_c': rho_c_init_veh_km * 0.8, 'R_val': 2}
+            # Use Riemann IC for ramp_metering too
+            config['initial_conditions'] = {
+                'type': 'riemann',
+                'left_state': [rho_m_high_si*0.8, w_m_high, rho_c_high_si*0.8, w_c_high],
+                'right_state': [rho_m_low_si*0.8, w_m_low, rho_c_low_si*0.8, w_c_low],
+                'discontinuity_position': 500.0
+            }
         elif scenario_type == 'adaptive_speed_control':
             config['parameters'] = {'V0_m': 30.6, 'V0_c': 27.8, 'tau_m': 0.6, 'tau_c': 0.8}
-            config['initial_conditions'] = {'type': 'uniform_equilibrium', 'rho_m': rho_m_init_veh_km * 0.7, 'rho_c': rho_c_init_veh_km * 0.7, 'R_val': 2}
+            # Use Riemann IC for adaptive_speed_control too
+            config['initial_conditions'] = {
+                'type': 'riemann',
+                'left_state': [rho_m_high_si*0.7, w_m_high, rho_c_high_si*0.7, w_c_high],
+                'right_state': [rho_m_low_si*0.7, w_m_low, rho_c_low_si*0.7, w_c_low],
+                'discontinuity_position': 500.0
+            }
 
         scenario_path = self.scenarios_dir / f"{scenario_type}.yml"
         with open(scenario_path, 'w') as f:
             yaml.dump(config, f, default_flow_style=False)
         
         self.debug_logger.info(f"Created scenario config: {scenario_path.name}")
-        self.debug_logger.info(f"  Initial densities (veh/km): rho_m={rho_m_init_veh_km:.1f}, rho_c={rho_c_init_veh_km:.1f}")
-        self.debug_logger.info(f"  Initial densities (veh/m): rho_m={rho_m_init_veh_km*0.001:.4f}, rho_c={rho_c_init_veh_km*0.001:.4f}")
-        self.debug_logger.info(f"  Initial velocities: w_m={w_m_init:.1f} m/s, w_c={w_c_init:.1f} m/s")
-        print(f"  [SCENARIO] Generated: {scenario_path.name}")
+        self.debug_logger.info(f"  SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m")
+        self.debug_logger.info(f"  High density (left): rho_m={rho_m_high_veh_km:.1f} veh/km, rho_c={rho_c_high_veh_km:.1f} veh/km")
+        self.debug_logger.info(f"  Low density (right): rho_m={rho_m_low_veh_km:.1f} veh/km, rho_c={rho_c_low_veh_km:.1f} veh/km")
+        print(f"  [SCENARIO] Generated: {scenario_path.name} (1km domain, Riemann IC)")
         return scenario_path
 
     class BaselineController:
@@ -275,14 +297,18 @@ class RLPerformanceValidationTest(ValidationSection):
             self.debug_logger.info("Creating TrafficSignalEnvDirect instance...")
             # Direct coupling - no mock, no HTTP server
             # SimulationRunner instantiated inside environment
+            # SENSITIVITY FIX: Move observations closer to BC (segments 3-8 instead of 8-13)
+            # With 100 cells over 1km: cell 3 ≈ 30m, cell 8 ≈ 80m from left boundary
+            # Much closer than before (200-325m) - should capture BC effects directly
             env = TrafficSignalEnvDirect(
                 scenario_config_path=str(scenario_path),
                 decision_interval=control_interval,
                 episode_max_time=duration,
-                observation_segments={'upstream': [8, 9, 10], 'downstream': [11, 12, 13]},
+                observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
                 device=device  # GPU on Kaggle, CPU locally
             )
             self.debug_logger.info("TrafficSignalEnvDirect created successfully")
+            self.debug_logger.info("  SENSITIVITY FIX: Observation segments [3-8] ≈ 30-80m from boundary")
             
         except Exception as e:
             error_msg = f"Failed to initialize TrafficSignalEnvDirect: {e}"
@@ -543,11 +569,12 @@ class RLPerformanceValidationTest(ValidationSection):
 
         try:
             # Create training environment with direct coupling
+            # SENSITIVITY FIX: Move observations closer to BC (segments 3-8 instead of 8-13)
             env = TrafficSignalEnvDirect(
                 scenario_config_path=str(scenario_path),
                 decision_interval=60.0,  # 1-minute decisions
                 episode_max_time=episode_max_time,
-                observation_segments={'upstream': [8, 9, 10], 'downstream': [11, 12, 13]},
+                observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
                 device=device,
                 quiet=True
             )
