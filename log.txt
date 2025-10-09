@@ -313,3 +313,8 @@
 2025-10-09 10:09:15,716 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-09 10:09:20,066 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-09 10:09:24,527 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-jbnw
+2025-10-09 10:20:03,750 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-09 10:20:03,989 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-09 10:20:04,139 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-09 10:20:04,139 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-09 10:20:04,139 - validation_kaggle_manager - INFO - 📦 Adding all changes...
