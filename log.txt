@@ -376,3 +376,13 @@
 2025-10-09 12:57:11,920 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-09 12:57:15,143 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-rfqp
 2025-10-09 13:25:29,786 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-09 13:25:29,958 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-09 13:25:30,026 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-09 13:25:30,026 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-09 13:25:30,026 - validation_kaggle_manager - INFO -   ?? validation_run_metrics_debug.log (Untracked)
+2025-10-09 13:25:30,026 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-09 13:25:30,103 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-09 13:25:30,219 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-09 13:25:30,219 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-09 13:25:32,712 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-09 13:25:35,829 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-invx

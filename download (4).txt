@@ -1,0 +1,1185 @@
+0.7s 1 ================================================================================
+0.7s 2 ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE
+0.7s 3 Revendications: R5
+0.7s 4 ================================================================================
+0.7s 5 Repository: https://github.com/elonmj/Code-traffic-flow.git
+0.7s 6 Branch: main
+5.6s 7 Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+5.6s 8 PyTorch: 2.6.0+cu124
+5.7s 9 CUDA available: True
+5.7s 10 CUDA device: Tesla P100-PCIE-16GB
+5.7s 11 CUDA version: 12.4
+5.7s 12 
+5.7s 13 [STEP 1/4] Cloning repository from GitHub...
+5.7s 14 Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+8.6s 15 [OK] Repository cloned successfully
+8.6s 16 TRACKING_SUCCESS: Repository cloned
+8.6s 17 
+8.6s 18 [STEP 2/4] Installing dependencies...
+8.6s 19 Installing PyYAML...
+12.5s 20 Installing matplotlib...
+15.4s 21 Installing pandas...
+18.4s 22 Installing scipy...
+21.4s 23 Installing numpy...
+24.3s 24 Installing gymnasium...
+27.2s 25 Installing stable-baselines3...
+90.5s 26 [OK] Dependencies installed
+90.5s 27 TRACKING_SUCCESS: Dependencies ready
+90.5s 28 
+90.5s 29 [STEP 3/4] Running validation tests...
+90.5s 30 [QUICK_TEST] Quick test mode enabled (100 timesteps for RL, reduced simulation time)
+90.5s 31 Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...
+90.5s 32 PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts
+90.5s 33 ============================================================
+102.7s 34 2025-10-09 12:27:21.237451: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+102.9s 35 WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+102.9s 36 E0000 00:00:1760012841.435381      64 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+102.9s 37 E0000 00:00:1760012841.490279      64 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+114.3s 38 ================================================================================
+114.3s 39 QUICK TEST MODE ENABLED
+114.3s 40 - Training: 2 timesteps only
+114.3s 41 - Duration: 2 minutes simulated time
+114.3s 42 - Scenarios: 1 scenario only
+114.3s 43 - Expected runtime: ~5 minutes on GPU
+114.3s 44 ================================================================================
+114.3s 45 [ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance
+114.3s 46 - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures
+114.3s 47 - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz
+114.3s 48 - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios
+114.3s 49 - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics
+114.3s 50 - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex
+114.3s 51 2025-10-09 12:27:32 - INFO - _setup_debug_logging:119 - ================================================================================
+114.3s 52 2025-10-09 12:27:32 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED
+114.3s 53 2025-10-09 12:27:32 - INFO - _setup_debug_logging:121 - Log file: validation_output/results/local_test/section_7_6_rl_performance/debug.log
+114.3s 54 2025-10-09 12:27:32 - INFO - _setup_debug_logging:122 - Quick test mode: True
+114.3s 55 2025-10-09 12:27:32 - INFO - _setup_debug_logging:123 - ================================================================================
+114.3s 56 [QUICK TEST MODE] Minimal training timesteps for setup validation
+114.3s 57 === Section 7.6: RL Performance Validation ===
+114.3s 58 Testing RL agent performance vs baseline controllers...
+114.5s 59 [DEVICE] Detected: GPU
+114.5s 60 [GPU INFO] Tesla P100-PCIE-16GB
+114.5s 61 
+114.5s 62 [PHASE 1/2] Training RL agents...
+114.5s 63 [QUICK TEST] Training only: traffic_light_control
+114.5s 64 [QUICK TEST MODE] Training reduced to 100 timesteps, 120.0s episodes
+114.5s 65 2025-10-09 12:27:33 - INFO - train_rl_agent:436 - ================================================================================
+114.5s 66 2025-10-09 12:27:33 - INFO - train_rl_agent:437 - Starting train_rl_agent for scenario: traffic_light_control
+114.5s 67 2025-10-09 12:27:33 - INFO - train_rl_agent:438 -   - Device: gpu
+114.5s 68 2025-10-09 12:27:33 - INFO - train_rl_agent:439 -   - Total timesteps: 100
+114.5s 69 2025-10-09 12:27:33 - INFO - train_rl_agent:440 -   - Episode max time: 120.0s
+114.5s 70 2025-10-09 12:27:33 - INFO - train_rl_agent:441 -   - Checkpoint frequency: 50
+114.5s 71 2025-10-09 12:27:33 - INFO - train_rl_agent:442 - ================================================================================
+114.5s 72 
+114.5s 73 [TRAINING] Starting RL training for scenario: traffic_light_control
+114.5s 74 Device: gpu
+114.5s 75 Total timesteps: 100
+114.5s 76 Episode max time: 120.0s
+114.5s 77 Checkpoint frequency: 50 steps
+114.5s 78 [SCENARIO] Generated: traffic_light_control.yml
+114.6s 79 DEBUG PARAMS: Reading K_m_kmh = 10.0
+114.6s 80 DEBUG PARAMS: Reading K_c_kmh = 15.0
+114.6s 81 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+114.6s 82 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+116.4s 83 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+116.4s 84 warn(NumbaPerformanceWarning(msg))
+117.2s 85 [INFO] Environment created: obs_space=(26,), action_space=2
+117.2s 86 [INFO] Initializing PPO agent from scratch...
+117.2s 87 Using cuda device
+117.2s 88 Wrapping the env with a `Monitor` wrapper
+117.2s 89 Wrapping the env in a DummyVecEnv.
+117.2s 90 /usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py:148: UserWarning: You have specified a mini-batch size of 64, but because the `RolloutBuffer` is of size `n_steps * n_envs = 100`, after every 1 untruncated mini-batches, there will be a truncated mini-batch of size 36
+117.2s 91 We recommend using a `batch_size` that is a factor of `n_steps * n_envs`.
+117.2s 92 Info: (n_steps=100 and n_envs=1)
+117.2s 93 warnings.warn(
+122.1s 94 
+122.1s 95 [STRATEGY] Checkpoint: every 50 steps, keep 2 latest + 1 best
+122.1s 96 [INFO] Training for 100 timesteps...
+122.1s 97 DEBUG PARAMS: Reading K_m_kmh = 10.0
+122.1s 98 DEBUG PARAMS: Reading K_c_kmh = 15.0
+122.1s 99 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+122.1s 100 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+122.1s 101 Logging to validation_output/results/local_test/section_7_6_rl_performance/data/models/tensorboard/PPO_2
+122.1s 102 
+122.1s 103 🚀 Training started: 100 total timesteps
+122.7s 104 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+122.7s 105 warn(NumbaPerformanceWarning(msg))
+123.0s 106 [WARNING] Automatic CFL correction applied (count: 1):
+123.0s 107 Calculated CFL: 0.800 > Limit: 0.500
+123.0s 108 Original dt: 1.028839e+00 s
+123.0s 109 Corrected dt: 6.430243e-01 s
+123.0s 110 Correction factor: 1.6x
+123.0s 111 Max wave speed detected: 19.44 m/s
+123.2s 112 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+123.2s 113 warn(NumbaPerformanceWarning(msg))
+123.5s 114 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+123.5s 115 warn(NumbaPerformanceWarning(msg))
+123.5s 116 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+123.5s 117 warn(NumbaPerformanceWarning(msg))
+123.6s 118 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+123.6s 119 warn(NumbaPerformanceWarning(msg))
+124.0s 120 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+124.0s 121 warn(NumbaPerformanceWarning(msg))
+124.1s 122 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+124.1s 123 warn(NumbaPerformanceWarning(msg))
+124.2s 124 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+124.2s 125 warn(NumbaPerformanceWarning(msg))
+124.3s 126 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+124.3s 127 warn(NumbaPerformanceWarning(msg))
+124.4s 128 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+124.4s 129 warn(NumbaPerformanceWarning(msg))
+124.4s 130 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+124.4s 131 warn(NumbaPerformanceWarning(msg))
+124.5s 132 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+124.5s 133 warn(NumbaPerformanceWarning(msg))
+125.4s 134 [WARNING] Automatic CFL correction applied (count: 100):
+125.4s 135 Calculated CFL: 0.800 > Limit: 0.500
+125.4s 136 Original dt: 1.028762e+00 s
+125.4s 137 Corrected dt: 6.429766e-01 s
+125.4s 138 Correction factor: 1.6x
+125.4s 139 Max wave speed detected: 19.44 m/s
+126.2s 140 DEBUG PARAMS: Reading K_m_kmh = 10.0
+126.2s 141 DEBUG PARAMS: Reading K_c_kmh = 15.0
+126.2s 142 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+126.2s 143 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+126.4s 144 [WARNING] Automatic CFL correction applied (count: 200):
+126.4s 145 Calculated CFL: 0.800 > Limit: 0.500
+126.4s 146 Original dt: 1.028787e+00 s
+126.4s 147 Corrected dt: 6.429920e-01 s
+126.4s 148 Correction factor: 1.6x
+126.4s 149 Max wave speed detected: 19.44 m/s
+127.3s 150 [WARNING] Automatic CFL correction applied (count: 300):
+127.3s 151 Calculated CFL: 0.800 > Limit: 0.500
+127.3s 152 Original dt: 1.028762e+00 s
+127.3s 153 Corrected dt: 6.429766e-01 s
+127.3s 154 Correction factor: 1.6x
+127.3s 155 Max wave speed detected: 19.44 m/s
+128.0s 156 DEBUG PARAMS: Reading K_m_kmh = 10.0
+128.0s 157 DEBUG PARAMS: Reading K_c_kmh = 15.0
+128.0s 158 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+128.0s 159 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+128.2s 160 [WARNING] Automatic CFL correction applied (count: 400):
+128.2s 161 Calculated CFL: 0.800 > Limit: 0.500
+128.2s 162 Original dt: 1.028768e+00 s
+128.2s 163 Corrected dt: 6.429797e-01 s
+128.2s 164 Correction factor: 1.6x
+128.2s 165 Max wave speed detected: 19.44 m/s
+129.1s 166 [WARNING] Automatic CFL correction applied (count: 500):
+129.1s 167 Calculated CFL: 0.800 > Limit: 0.500
+129.1s 168 Original dt: 1.028762e+00 s
+129.1s 169 Corrected dt: 6.429766e-01 s
+129.1s 170 Correction factor: 1.6x
+129.1s 171 Max wave speed detected: 19.44 m/s
+129.7s 172 DEBUG PARAMS: Reading K_m_kmh = 10.0
+129.7s 173 DEBUG PARAMS: Reading K_c_kmh = 15.0
+129.7s 174 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+129.7s 175 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+130.0s 176 [WARNING] Automatic CFL correction applied (count: 600):
+130.0s 177 Calculated CFL: 0.800 > Limit: 0.500
+130.0s 178 Original dt: 1.028764e+00 s
+130.0s 179 Corrected dt: 6.429772e-01 s
+130.0s 180 Correction factor: 1.6x
+130.0s 181 Max wave speed detected: 19.44 m/s
+131.0s 182 [WARNING] Automatic CFL correction applied (count: 700):
+131.0s 183 Calculated CFL: 0.800 > Limit: 0.500
+131.0s 184 Original dt: 1.028762e+00 s
+131.0s 185 Corrected dt: 6.429766e-01 s
+131.0s 186 Correction factor: 1.6x
+131.0s 187 Max wave speed detected: 19.44 m/s
+131.5s 188 DEBUG PARAMS: Reading K_m_kmh = 10.0
+131.5s 189 DEBUG PARAMS: Reading K_c_kmh = 15.0
+131.5s 190 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+131.5s 191 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+131.9s 192 [WARNING] Automatic CFL correction applied (count: 800):
+131.9s 193 Calculated CFL: 0.800 > Limit: 0.500
+131.9s 194 Original dt: 1.028763e+00 s
+131.9s 195 Corrected dt: 6.429767e-01 s
+131.9s 196 Correction factor: 1.6x
+131.9s 197 Max wave speed detected: 19.44 m/s
+132.8s 198 [WARNING] Automatic CFL correction applied (count: 900):
+132.8s 199 Calculated CFL: 0.800 > Limit: 0.500
+132.8s 200 Original dt: 1.028762e+00 s
+132.8s 201 Corrected dt: 6.429766e-01 s
+132.8s 202 Correction factor: 1.6x
+132.8s 203 Max wave speed detected: 19.44 m/s
+133.2s 204 DEBUG PARAMS: Reading K_m_kmh = 10.0
+133.2s 205 DEBUG PARAMS: Reading K_c_kmh = 15.0
+133.2s 206 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+133.2s 207 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+133.7s 208 [WARNING] Automatic CFL correction applied (count: 1000):
+133.7s 209 Calculated CFL: 0.800 > Limit: 0.500
+133.7s 210 Original dt: 1.028763e+00 s
+133.7s 211 Corrected dt: 6.429766e-01 s
+133.7s 212 Correction factor: 1.6x
+133.7s 213 Max wave speed detected: 19.44 m/s
+134.6s 214 [WARNING] Automatic CFL correction applied (count: 1100):
+134.6s 215 Calculated CFL: 0.800 > Limit: 0.500
+134.6s 216 Original dt: 1.028762e+00 s
+134.6s 217 Corrected dt: 6.429766e-01 s
+134.6s 218 Correction factor: 1.6x
+134.6s 219 Max wave speed detected: 19.44 m/s
+134.9s 220 DEBUG PARAMS: Reading K_m_kmh = 10.0
+134.9s 221 DEBUG PARAMS: Reading K_c_kmh = 15.0
+134.9s 222 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+134.9s 223 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+135.6s 224 [WARNING] Automatic CFL correction applied (count: 1200):
+135.6s 225 Calculated CFL: 0.800 > Limit: 0.500
+135.6s 226 Original dt: 1.028762e+00 s
+135.6s 227 Corrected dt: 6.429766e-01 s
+135.6s 228 Correction factor: 1.6x
+135.6s 229 Max wave speed detected: 19.44 m/s
+136.5s 230 [WARNING] Automatic CFL correction applied (count: 1300):
+136.5s 231 Calculated CFL: 0.800 > Limit: 0.500
+136.5s 232 Original dt: 1.028762e+00 s
+136.5s 233 Corrected dt: 6.429766e-01 s
+136.5s 234 Correction factor: 1.6x
+136.5s 235 Max wave speed detected: 19.44 m/s
+136.7s 236 DEBUG PARAMS: Reading K_m_kmh = 10.0
+136.7s 237 DEBUG PARAMS: Reading K_c_kmh = 15.0
+136.7s 238 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+136.7s 239 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+137.4s 240 [WARNING] Automatic CFL correction applied (count: 1400):
+137.4s 241 Calculated CFL: 0.800 > Limit: 0.500
+137.4s 242 Original dt: 1.028762e+00 s
+137.4s 243 Corrected dt: 6.429766e-01 s
+137.4s 244 Correction factor: 1.6x
+137.4s 245 Max wave speed detected: 19.44 m/s
+138.3s 246 [WARNING] Automatic CFL correction applied (count: 1500):
+138.3s 247 Calculated CFL: 0.800 > Limit: 0.500
+138.3s 248 Original dt: 1.028762e+00 s
+138.3s 249 Corrected dt: 6.429766e-01 s
+138.3s 250 Correction factor: 1.6x
+138.3s 251 Max wave speed detected: 19.44 m/s
+138.4s 252 DEBUG PARAMS: Reading K_m_kmh = 10.0
+138.4s 253 DEBUG PARAMS: Reading K_c_kmh = 15.0
+138.4s 254 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+138.4s 255 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+139.3s 256 [WARNING] Automatic CFL correction applied (count: 1600):
+139.3s 257 Calculated CFL: 0.800 > Limit: 0.500
+139.3s 258 Original dt: 1.028762e+00 s
+139.3s 259 Corrected dt: 6.429766e-01 s
+139.3s 260 Correction factor: 1.6x
+139.3s 261 Max wave speed detected: 19.44 m/s
+140.1s 262 DEBUG PARAMS: Reading K_m_kmh = 10.0
+140.1s 263 DEBUG PARAMS: Reading K_c_kmh = 15.0
+140.1s 264 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+140.1s 265 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+140.2s 266 [WARNING] Automatic CFL correction applied (count: 1700):
+140.2s 267 Calculated CFL: 0.800 > Limit: 0.500
+140.2s 268 Original dt: 1.028804e+00 s
+140.2s 269 Corrected dt: 6.430023e-01 s
+140.2s 270 Correction factor: 1.6x
+140.2s 271 Max wave speed detected: 19.44 m/s
+141.1s 272 [WARNING] Automatic CFL correction applied (count: 1800):
+141.1s 273 Calculated CFL: 0.800 > Limit: 0.500
+141.1s 274 Original dt: 1.028762e+00 s
+141.1s 275 Corrected dt: 6.429766e-01 s
+141.1s 276 Correction factor: 1.6x
+141.1s 277 Max wave speed detected: 19.44 m/s
+141.9s 278 DEBUG PARAMS: Reading K_m_kmh = 10.0
+141.9s 279 DEBUG PARAMS: Reading K_c_kmh = 15.0
+141.9s 280 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+141.9s 281 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+142.1s 282 [WARNING] Automatic CFL correction applied (count: 1900):
+142.1s 283 Calculated CFL: 0.800 > Limit: 0.500
+142.1s 284 Original dt: 1.028771e+00 s
+142.1s 285 Corrected dt: 6.429819e-01 s
+142.1s 286 Correction factor: 1.6x
+142.1s 287 Max wave speed detected: 19.44 m/s
+143.0s 288 [WARNING] Automatic CFL correction applied (count: 2000):
+143.0s 289 Calculated CFL: 0.800 > Limit: 0.500
+143.0s 290 Original dt: 1.028762e+00 s
+143.0s 291 Corrected dt: 6.429766e-01 s
+143.0s 292 Correction factor: 1.6x
+143.0s 293 Max wave speed detected: 19.44 m/s
+143.6s 294 DEBUG PARAMS: Reading K_m_kmh = 10.0
+143.6s 295 DEBUG PARAMS: Reading K_c_kmh = 15.0
+143.6s 296 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+143.6s 297 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+143.9s 298 [WARNING] Automatic CFL correction applied (count: 2100):
+143.9s 299 Calculated CFL: 0.800 > Limit: 0.500
+143.9s 300 Original dt: 1.028764e+00 s
+143.9s 301 Corrected dt: 6.429776e-01 s
+143.9s 302 Correction factor: 1.6x
+143.9s 303 Max wave speed detected: 19.44 m/s
+144.8s 304 [WARNING] Automatic CFL correction applied (count: 2200):
+144.8s 305 Calculated CFL: 0.800 > Limit: 0.500
+144.8s 306 Original dt: 1.028762e+00 s
+144.8s 307 Corrected dt: 6.429766e-01 s
+144.8s 308 Correction factor: 1.6x
+144.8s 309 Max wave speed detected: 19.44 m/s
+145.4s 310 DEBUG PARAMS: Reading K_m_kmh = 10.0
+145.4s 311 DEBUG PARAMS: Reading K_c_kmh = 15.0
+145.4s 312 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+145.4s 313 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+145.8s 314 [WARNING] Automatic CFL correction applied (count: 2300):
+145.8s 315 Calculated CFL: 0.800 > Limit: 0.500
+145.8s 316 Original dt: 1.028763e+00 s
+145.8s 317 Corrected dt: 6.429768e-01 s
+145.8s 318 Correction factor: 1.6x
+145.8s 319 Max wave speed detected: 19.44 m/s
+146.7s 320 [WARNING] Automatic CFL correction applied (count: 2400):
+146.7s 321 Calculated CFL: 0.800 > Limit: 0.500
+146.7s 322 Original dt: 1.028762e+00 s
+146.7s 323 Corrected dt: 6.429766e-01 s
+146.7s 324 Correction factor: 1.6x
+146.7s 325 Max wave speed detected: 19.44 m/s
+147.1s 326 DEBUG PARAMS: Reading K_m_kmh = 10.0
+147.1s 327 DEBUG PARAMS: Reading K_c_kmh = 15.0
+147.1s 328 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+147.1s 329 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+147.7s 330 [WARNING] Automatic CFL correction applied (count: 2500):
+147.7s 331 Calculated CFL: 0.800 > Limit: 0.500
+147.7s 332 Original dt: 1.028763e+00 s
+147.7s 333 Corrected dt: 6.429766e-01 s
+147.7s 334 Correction factor: 1.6x
+147.7s 335 Max wave speed detected: 19.44 m/s
+148.6s 336 [WARNING] Automatic CFL correction applied (count: 2600):
+148.6s 337 Calculated CFL: 0.800 > Limit: 0.500
+148.6s 338 Original dt: 1.028762e+00 s
+148.6s 339 Corrected dt: 6.429766e-01 s
+148.6s 340 Correction factor: 1.6x
+148.6s 341 Max wave speed detected: 19.44 m/s
+148.9s 342 DEBUG PARAMS: Reading K_m_kmh = 10.0
+148.9s 343 DEBUG PARAMS: Reading K_c_kmh = 15.0
+148.9s 344 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+148.9s 345 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+149.5s 346 [WARNING] Automatic CFL correction applied (count: 2700):
+149.5s 347 Calculated CFL: 0.800 > Limit: 0.500
+149.5s 348 Original dt: 1.028762e+00 s
+149.5s 349 Corrected dt: 6.429766e-01 s
+149.5s 350 Correction factor: 1.6x
+149.5s 351 Max wave speed detected: 19.44 m/s
+150.4s 352 [WARNING] Automatic CFL correction applied (count: 2800):
+150.4s 353 Calculated CFL: 0.800 > Limit: 0.500
+150.4s 354 Original dt: 1.028762e+00 s
+150.4s 355 Corrected dt: 6.429766e-01 s
+150.4s 356 Correction factor: 1.6x
+150.4s 357 Max wave speed detected: 19.44 m/s
+150.6s 358 DEBUG PARAMS: Reading K_m_kmh = 10.0
+150.6s 359 DEBUG PARAMS: Reading K_c_kmh = 15.0
+150.6s 360 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+150.6s 361 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+151.4s 362 [WARNING] Automatic CFL correction applied (count: 2900):
+151.4s 363 Calculated CFL: 0.800 > Limit: 0.500
+151.4s 364 Original dt: 1.028762e+00 s
+151.4s 365 Corrected dt: 6.429766e-01 s
+151.4s 366 Correction factor: 1.6x
+151.4s 367 Max wave speed detected: 19.44 m/s
+152.3s 368 [WARNING] Automatic CFL correction applied (count: 3000):
+152.3s 369 Calculated CFL: 0.800 > Limit: 0.500
+152.3s 370 Original dt: 1.028762e+00 s
+152.3s 371 Corrected dt: 6.429766e-01 s
+152.3s 372 Correction factor: 1.6x
+152.3s 373 Max wave speed detected: 19.44 m/s
+152.4s 374 DEBUG PARAMS: Reading K_m_kmh = 10.0
+152.4s 375 DEBUG PARAMS: Reading K_c_kmh = 15.0
+152.4s 376 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+152.4s 377 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+153.2s 378 [WARNING] Automatic CFL correction applied (count: 3100):
+153.2s 379 Calculated CFL: 0.800 > Limit: 0.500
+153.2s 380 Original dt: 1.028762e+00 s
+153.2s 381 Corrected dt: 6.429766e-01 s
+153.2s 382 Correction factor: 1.6x
+153.2s 383 Max wave speed detected: 19.44 m/s
+154.1s 384 DEBUG PARAMS: Reading K_m_kmh = 10.0
+154.1s 385 DEBUG PARAMS: Reading K_c_kmh = 15.0
+154.1s 386 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+154.1s 387 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+154.2s 388 [WARNING] Automatic CFL correction applied (count: 3200):
+154.2s 389 Calculated CFL: 0.800 > Limit: 0.500
+154.2s 390 Original dt: 1.028827e+00 s
+154.2s 391 Corrected dt: 6.430168e-01 s
+154.2s 392 Correction factor: 1.6x
+154.2s 393 Max wave speed detected: 19.44 m/s
+155.1s 394 [WARNING] Automatic CFL correction applied (count: 3300):
+155.1s 395 Calculated CFL: 0.800 > Limit: 0.500
+155.1s 396 Original dt: 1.028762e+00 s
+155.1s 397 Corrected dt: 6.429766e-01 s
+155.1s 398 Correction factor: 1.6x
+155.1s 399 Max wave speed detected: 19.44 m/s
+155.8s 400 DEBUG PARAMS: Reading K_m_kmh = 10.0
+155.8s 401 DEBUG PARAMS: Reading K_c_kmh = 15.0
+155.8s 402 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+155.8s 403 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+156.0s 404 [WARNING] Automatic CFL correction applied (count: 3400):
+156.0s 405 Calculated CFL: 0.800 > Limit: 0.500
+156.0s 406 Original dt: 1.028777e+00 s
+156.0s 407 Corrected dt: 6.429857e-01 s
+156.0s 408 Correction factor: 1.6x
+156.0s 409 Max wave speed detected: 19.44 m/s
+156.9s 410 [WARNING] Automatic CFL correction applied (count: 3500):
+156.9s 411 Calculated CFL: 0.800 > Limit: 0.500
+156.9s 412 Original dt: 1.028762e+00 s
+156.9s 413 Corrected dt: 6.429766e-01 s
+156.9s 414 Correction factor: 1.6x
+156.9s 415 Max wave speed detected: 19.44 m/s
+157.6s 416 DEBUG PARAMS: Reading K_m_kmh = 10.0
+157.6s 417 DEBUG PARAMS: Reading K_c_kmh = 15.0
+157.6s 418 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+157.6s 419 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+157.8s 420 [WARNING] Automatic CFL correction applied (count: 3600):
+157.8s 421 Calculated CFL: 0.800 > Limit: 0.500
+157.8s 422 Original dt: 1.028765e+00 s
+157.8s 423 Corrected dt: 6.429784e-01 s
+157.8s 424 Correction factor: 1.6x
+157.8s 425 Max wave speed detected: 19.44 m/s
+158.7s 426 [WARNING] Automatic CFL correction applied (count: 3700):
+158.7s 427 Calculated CFL: 0.800 > Limit: 0.500
+158.7s 428 Original dt: 1.028762e+00 s
+158.7s 429 Corrected dt: 6.429766e-01 s
+158.7s 430 Correction factor: 1.6x
+158.7s 431 Max wave speed detected: 19.44 m/s
+159.3s 432 DEBUG PARAMS: Reading K_m_kmh = 10.0
+159.3s 433 DEBUG PARAMS: Reading K_c_kmh = 15.0
+159.3s 434 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+159.3s 435 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+159.7s 436 [WARNING] Automatic CFL correction applied (count: 3800):
+159.7s 437 Calculated CFL: 0.800 > Limit: 0.500
+159.7s 438 Original dt: 1.028763e+00 s
+159.7s 439 Corrected dt: 6.429769e-01 s
+159.7s 440 Correction factor: 1.6x
+159.7s 441 Max wave speed detected: 19.44 m/s
+160.6s 442 [WARNING] Automatic CFL correction applied (count: 3900):
+160.6s 443 Calculated CFL: 0.800 > Limit: 0.500
+160.6s 444 Original dt: 1.028762e+00 s
+160.6s 445 Corrected dt: 6.429766e-01 s
+160.6s 446 Correction factor: 1.6x
+160.6s 447 Max wave speed detected: 19.44 m/s
+161.1s 448 DEBUG PARAMS: Reading K_m_kmh = 10.0
+161.1s 449 DEBUG PARAMS: Reading K_c_kmh = 15.0
+161.1s 450 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+161.1s 451 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+161.6s 452 [WARNING] Automatic CFL correction applied (count: 4000):
+161.6s 453 Calculated CFL: 0.800 > Limit: 0.500
+161.6s 454 Original dt: 1.028763e+00 s
+161.6s 455 Corrected dt: 6.429766e-01 s
+161.6s 456 Correction factor: 1.6x
+161.6s 457 Max wave speed detected: 19.44 m/s
+162.5s 458 [WARNING] Automatic CFL correction applied (count: 4100):
+162.5s 459 Calculated CFL: 0.800 > Limit: 0.500
+162.5s 460 Original dt: 1.028762e+00 s
+162.5s 461 Corrected dt: 6.429766e-01 s
+162.5s 462 Correction factor: 1.6x
+162.5s 463 Max wave speed detected: 19.44 m/s
+162.8s 464 DEBUG PARAMS: Reading K_m_kmh = 10.0
+162.8s 465 DEBUG PARAMS: Reading K_c_kmh = 15.0
+162.8s 466 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+162.8s 467 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+163.4s 468 [WARNING] Automatic CFL correction applied (count: 4200):
+163.4s 469 Calculated CFL: 0.800 > Limit: 0.500
+163.4s 470 Original dt: 1.028763e+00 s
+163.4s 471 Corrected dt: 6.429766e-01 s
+163.4s 472 Correction factor: 1.6x
+163.4s 473 Max wave speed detected: 19.44 m/s
+164.4s 474 [WARNING] Automatic CFL correction applied (count: 4300):
+164.4s 475 Calculated CFL: 0.800 > Limit: 0.500
+164.4s 476 Original dt: 1.028762e+00 s
+164.4s 477 Corrected dt: 6.429766e-01 s
+164.4s 478 Correction factor: 1.6x
+164.4s 479 Max wave speed detected: 19.44 m/s
+164.6s 480 DEBUG PARAMS: Reading K_m_kmh = 10.0
+164.6s 481 DEBUG PARAMS: Reading K_c_kmh = 15.0
+164.6s 482 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+164.6s 483 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+165.3s 484 [WARNING] Automatic CFL correction applied (count: 4400):
+165.3s 485 Calculated CFL: 0.800 > Limit: 0.500
+165.3s 486 Original dt: 1.028762e+00 s
+165.3s 487 Corrected dt: 6.429766e-01 s
+165.3s 488 Correction factor: 1.6x
+165.3s 489 Max wave speed detected: 19.44 m/s
+166.3s 490 [WARNING] Automatic CFL correction applied (count: 4500):
+166.3s 491 Calculated CFL: 0.800 > Limit: 0.500
+166.3s 492 Original dt: 1.028762e+00 s
+166.3s 493 Corrected dt: 6.429766e-01 s
+166.3s 494 Correction factor: 1.6x
+166.3s 495 Max wave speed detected: 19.44 m/s
+166.4s 496 DEBUG PARAMS: Reading K_m_kmh = 10.0
+166.4s 497 DEBUG PARAMS: Reading K_c_kmh = 15.0
+166.4s 498 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+166.4s 499 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+167.2s 500 [WARNING] Automatic CFL correction applied (count: 4600):
+167.2s 501 Calculated CFL: 0.800 > Limit: 0.500
+167.2s 502 Original dt: 1.028762e+00 s
+167.2s 503 Corrected dt: 6.429766e-01 s
+167.2s 504 Correction factor: 1.6x
+167.2s 505 Max wave speed detected: 19.44 m/s
+168.1s 506 [WARNING] Automatic CFL correction applied (count: 4700):
+168.1s 507 Calculated CFL: 0.800 > Limit: 0.500
+168.1s 508 Original dt: 1.028762e+00 s
+168.1s 509 Corrected dt: 6.429766e-01 s
+168.1s 510 Correction factor: 1.6x
+168.1s 511 Max wave speed detected: 19.44 m/s
+168.1s 512 DEBUG PARAMS: Reading K_m_kmh = 10.0
+168.1s 513 DEBUG PARAMS: Reading K_c_kmh = 15.0
+168.1s 514 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+168.1s 515 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+168.1s 516 📊 Progress: 50/100 (50.0%) | ETA: 0.8 min | Speed: 1.1 steps/s
+169.0s 517 [WARNING] Automatic CFL correction applied (count: 4800):
+169.0s 518 Calculated CFL: 0.800 > Limit: 0.500
+169.0s 519 Original dt: 1.028762e+00 s
+169.0s 520 Corrected dt: 6.429766e-01 s
+169.0s 521 Correction factor: 1.6x
+169.0s 522 Max wave speed detected: 19.44 m/s
+169.9s 523 DEBUG PARAMS: Reading K_m_kmh = 10.0
+169.9s 524 DEBUG PARAMS: Reading K_c_kmh = 15.0
+169.9s 525 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+169.9s 526 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+170.0s 527 [WARNING] Automatic CFL correction applied (count: 4900):
+170.0s 528 Calculated CFL: 0.800 > Limit: 0.500
+170.0s 529 Original dt: 1.028787e+00 s
+170.0s 530 Corrected dt: 6.429920e-01 s
+170.0s 531 Correction factor: 1.6x
+170.0s 532 Max wave speed detected: 19.44 m/s
+170.9s 533 [WARNING] Automatic CFL correction applied (count: 5000):
+170.9s 534 Calculated CFL: 0.800 > Limit: 0.500
+170.9s 535 Original dt: 1.028762e+00 s
+170.9s 536 Corrected dt: 6.429766e-01 s
+170.9s 537 Correction factor: 1.6x
+170.9s 538 Max wave speed detected: 19.44 m/s
+171.6s 539 DEBUG PARAMS: Reading K_m_kmh = 10.0
+171.6s 540 DEBUG PARAMS: Reading K_c_kmh = 15.0
+171.6s 541 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+171.6s 542 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+171.8s 543 [WARNING] Automatic CFL correction applied (count: 5100):
+171.8s 544 Calculated CFL: 0.800 > Limit: 0.500
+171.8s 545 Original dt: 1.028768e+00 s
+171.8s 546 Corrected dt: 6.429797e-01 s
+171.8s 547 Correction factor: 1.6x
+171.8s 548 Max wave speed detected: 19.44 m/s
+172.7s 549 [WARNING] Automatic CFL correction applied (count: 5200):
+172.7s 550 Calculated CFL: 0.800 > Limit: 0.500
+172.7s 551 Original dt: 1.028762e+00 s
+172.7s 552 Corrected dt: 6.429766e-01 s
+172.7s 553 Correction factor: 1.6x
+172.7s 554 Max wave speed detected: 19.44 m/s
+173.3s 555 DEBUG PARAMS: Reading K_m_kmh = 10.0
+173.3s 556 DEBUG PARAMS: Reading K_c_kmh = 15.0
+173.3s 557 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+173.3s 558 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+173.7s 559 [WARNING] Automatic CFL correction applied (count: 5300):
+173.7s 560 Calculated CFL: 0.800 > Limit: 0.500
+173.7s 561 Original dt: 1.028764e+00 s
+173.7s 562 Corrected dt: 6.429772e-01 s
+173.7s 563 Correction factor: 1.6x
+173.7s 564 Max wave speed detected: 19.44 m/s
+174.6s 565 [WARNING] Automatic CFL correction applied (count: 5400):
+174.6s 566 Calculated CFL: 0.800 > Limit: 0.500
+174.6s 567 Original dt: 1.028762e+00 s
+174.6s 568 Corrected dt: 6.429766e-01 s
+174.6s 569 Correction factor: 1.6x
+174.6s 570 Max wave speed detected: 19.44 m/s
+175.1s 571 DEBUG PARAMS: Reading K_m_kmh = 10.0
+175.1s 572 DEBUG PARAMS: Reading K_c_kmh = 15.0
+175.1s 573 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+175.1s 574 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+175.6s 575 [WARNING] Automatic CFL correction applied (count: 5500):
+175.6s 576 Calculated CFL: 0.800 > Limit: 0.500
+175.6s 577 Original dt: 1.028763e+00 s
+175.6s 578 Corrected dt: 6.429767e-01 s
+175.6s 579 Correction factor: 1.6x
+175.6s 580 Max wave speed detected: 19.44 m/s
+176.5s 581 [WARNING] Automatic CFL correction applied (count: 5600):
+176.5s 582 Calculated CFL: 0.800 > Limit: 0.500
+176.5s 583 Original dt: 1.028762e+00 s
+176.5s 584 Corrected dt: 6.429766e-01 s
+176.5s 585 Correction factor: 1.6x
+176.5s 586 Max wave speed detected: 19.44 m/s
+176.8s 587 DEBUG PARAMS: Reading K_m_kmh = 10.0
+176.8s 588 DEBUG PARAMS: Reading K_c_kmh = 15.0
+176.8s 589 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+176.8s 590 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+177.4s 591 [WARNING] Automatic CFL correction applied (count: 5700):
+177.4s 592 Calculated CFL: 0.800 > Limit: 0.500
+177.4s 593 Original dt: 1.028763e+00 s
+177.4s 594 Corrected dt: 6.429766e-01 s
+177.4s 595 Correction factor: 1.6x
+177.4s 596 Max wave speed detected: 19.44 m/s
+178.3s 597 [WARNING] Automatic CFL correction applied (count: 5800):
+178.3s 598 Calculated CFL: 0.800 > Limit: 0.500
+178.3s 599 Original dt: 1.028762e+00 s
+178.3s 600 Corrected dt: 6.429766e-01 s
+178.3s 601 Correction factor: 1.6x
+178.3s 602 Max wave speed detected: 19.44 m/s
+178.6s 603 DEBUG PARAMS: Reading K_m_kmh = 10.0
+178.6s 604 DEBUG PARAMS: Reading K_c_kmh = 15.0
+178.6s 605 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+178.6s 606 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+179.2s 607 [WARNING] Automatic CFL correction applied (count: 5900):
+179.2s 608 Calculated CFL: 0.800 > Limit: 0.500
+179.2s 609 Original dt: 1.028762e+00 s
+179.2s 610 Corrected dt: 6.429766e-01 s
+179.2s 611 Correction factor: 1.6x
+179.2s 612 Max wave speed detected: 19.44 m/s
+180.1s 613 [WARNING] Automatic CFL correction applied (count: 6000):
+180.1s 614 Calculated CFL: 0.800 > Limit: 0.500
+180.1s 615 Original dt: 1.028762e+00 s
+180.1s 616 Corrected dt: 6.429766e-01 s
+180.1s 617 Correction factor: 1.6x
+180.1s 618 Max wave speed detected: 19.44 m/s
+180.3s 619 DEBUG PARAMS: Reading K_m_kmh = 10.0
+180.3s 620 DEBUG PARAMS: Reading K_c_kmh = 15.0
+180.3s 621 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+180.3s 622 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+181.1s 623 [WARNING] Automatic CFL correction applied (count: 6100):
+181.1s 624 Calculated CFL: 0.800 > Limit: 0.500
+181.1s 625 Original dt: 1.028762e+00 s
+181.1s 626 Corrected dt: 6.429766e-01 s
+181.1s 627 Correction factor: 1.6x
+181.1s 628 Max wave speed detected: 19.44 m/s
+182.0s 629 [WARNING] Automatic CFL correction applied (count: 6200):
+182.0s 630 Calculated CFL: 0.800 > Limit: 0.500
+182.0s 631 Original dt: 1.028762e+00 s
+182.0s 632 Corrected dt: 6.429766e-01 s
+182.0s 633 Correction factor: 1.6x
+182.0s 634 Max wave speed detected: 19.44 m/s
+182.1s 635 DEBUG PARAMS: Reading K_m_kmh = 10.0
+182.1s 636 DEBUG PARAMS: Reading K_c_kmh = 15.0
+182.1s 637 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+182.1s 638 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+182.9s 639 [WARNING] Automatic CFL correction applied (count: 6300):
+182.9s 640 Calculated CFL: 0.800 > Limit: 0.500
+182.9s 641 Original dt: 1.028762e+00 s
+182.9s 642 Corrected dt: 6.429766e-01 s
+182.9s 643 Correction factor: 1.6x
+182.9s 644 Max wave speed detected: 19.44 m/s
+183.8s 645 DEBUG PARAMS: Reading K_m_kmh = 10.0
+183.8s 646 DEBUG PARAMS: Reading K_c_kmh = 15.0
+183.8s 647 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+183.8s 648 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+183.9s 649 [WARNING] Automatic CFL correction applied (count: 6400):
+183.9s 650 Calculated CFL: 0.800 > Limit: 0.500
+183.9s 651 Original dt: 1.028804e+00 s
+183.9s 652 Corrected dt: 6.430023e-01 s
+183.9s 653 Correction factor: 1.6x
+183.9s 654 Max wave speed detected: 19.44 m/s
+184.8s 655 [WARNING] Automatic CFL correction applied (count: 6500):
+184.8s 656 Calculated CFL: 0.800 > Limit: 0.500
+184.8s 657 Original dt: 1.028762e+00 s
+184.8s 658 Corrected dt: 6.429766e-01 s
+184.8s 659 Correction factor: 1.6x
+184.8s 660 Max wave speed detected: 19.44 m/s
+185.5s 661 DEBUG PARAMS: Reading K_m_kmh = 10.0
+185.5s 662 DEBUG PARAMS: Reading K_c_kmh = 15.0
+185.5s 663 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+185.5s 664 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+185.7s 665 [WARNING] Automatic CFL correction applied (count: 6600):
+185.7s 666 Calculated CFL: 0.800 > Limit: 0.500
+185.7s 667 Original dt: 1.028771e+00 s
+185.7s 668 Corrected dt: 6.429819e-01 s
+185.7s 669 Correction factor: 1.6x
+185.7s 670 Max wave speed detected: 19.44 m/s
+186.6s 671 [WARNING] Automatic CFL correction applied (count: 6700):
+186.6s 672 Calculated CFL: 0.800 > Limit: 0.500
+186.6s 673 Original dt: 1.028762e+00 s
+186.6s 674 Corrected dt: 6.429766e-01 s
+186.6s 675 Correction factor: 1.6x
+186.6s 676 Max wave speed detected: 19.44 m/s
+187.2s 677 DEBUG PARAMS: Reading K_m_kmh = 10.0
+187.2s 678 DEBUG PARAMS: Reading K_c_kmh = 15.0
+187.2s 679 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+187.2s 680 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+187.5s 681 [WARNING] Automatic CFL correction applied (count: 6800):
+187.5s 682 Calculated CFL: 0.800 > Limit: 0.500
+187.5s 683 Original dt: 1.028764e+00 s
+187.5s 684 Corrected dt: 6.429776e-01 s
+187.5s 685 Correction factor: 1.6x
+187.5s 686 Max wave speed detected: 19.44 m/s
+188.4s 687 [WARNING] Automatic CFL correction applied (count: 6900):
+188.4s 688 Calculated CFL: 0.800 > Limit: 0.500
+188.4s 689 Original dt: 1.028762e+00 s
+188.4s 690 Corrected dt: 6.429766e-01 s
+188.4s 691 Correction factor: 1.6x
+188.4s 692 Max wave speed detected: 19.44 m/s
+188.9s 693 DEBUG PARAMS: Reading K_m_kmh = 10.0
+188.9s 694 DEBUG PARAMS: Reading K_c_kmh = 15.0
+188.9s 695 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+188.9s 696 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+189.4s 697 [WARNING] Automatic CFL correction applied (count: 7000):
+189.4s 698 Calculated CFL: 0.800 > Limit: 0.500
+189.4s 699 Original dt: 1.028763e+00 s
+189.4s 700 Corrected dt: 6.429768e-01 s
+189.4s 701 Correction factor: 1.6x
+189.4s 702 Max wave speed detected: 19.44 m/s
+190.3s 703 [WARNING] Automatic CFL correction applied (count: 7100):
+190.3s 704 Calculated CFL: 0.800 > Limit: 0.500
+190.3s 705 Original dt: 1.028762e+00 s
+190.3s 706 Corrected dt: 6.429766e-01 s
+190.3s 707 Correction factor: 1.6x
+190.3s 708 Max wave speed detected: 19.44 m/s
+190.7s 709 DEBUG PARAMS: Reading K_m_kmh = 10.0
+190.7s 710 DEBUG PARAMS: Reading K_c_kmh = 15.0
+190.7s 711 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+190.7s 712 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+191.2s 713 [WARNING] Automatic CFL correction applied (count: 7200):
+191.2s 714 Calculated CFL: 0.800 > Limit: 0.500
+191.2s 715 Original dt: 1.028763e+00 s
+191.2s 716 Corrected dt: 6.429766e-01 s
+191.2s 717 Correction factor: 1.6x
+191.2s 718 Max wave speed detected: 19.44 m/s
+192.1s 719 [WARNING] Automatic CFL correction applied (count: 7300):
+192.1s 720 Calculated CFL: 0.800 > Limit: 0.500
+192.1s 721 Original dt: 1.028762e+00 s
+192.1s 722 Corrected dt: 6.429766e-01 s
+192.1s 723 Correction factor: 1.6x
+192.1s 724 Max wave speed detected: 19.44 m/s
+192.4s 725 DEBUG PARAMS: Reading K_m_kmh = 10.0
+192.4s 726 DEBUG PARAMS: Reading K_c_kmh = 15.0
+192.4s 727 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+192.4s 728 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+193.0s 729 [WARNING] Automatic CFL correction applied (count: 7400):
+193.0s 730 Calculated CFL: 0.800 > Limit: 0.500
+193.0s 731 Original dt: 1.028762e+00 s
+193.0s 732 Corrected dt: 6.429766e-01 s
+193.0s 733 Correction factor: 1.6x
+193.0s 734 Max wave speed detected: 19.44 m/s
+193.9s 735 [WARNING] Automatic CFL correction applied (count: 7500):
+193.9s 736 Calculated CFL: 0.800 > Limit: 0.500
+193.9s 737 Original dt: 1.028762e+00 s
+193.9s 738 Corrected dt: 6.429766e-01 s
+193.9s 739 Correction factor: 1.6x
+193.9s 740 Max wave speed detected: 19.44 m/s
+194.1s 741 DEBUG PARAMS: Reading K_m_kmh = 10.0
+194.1s 742 DEBUG PARAMS: Reading K_c_kmh = 15.0
+194.1s 743 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+194.1s 744 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+194.9s 745 [WARNING] Automatic CFL correction applied (count: 7600):
+194.9s 746 Calculated CFL: 0.800 > Limit: 0.500
+194.9s 747 Original dt: 1.028762e+00 s
+194.9s 748 Corrected dt: 6.429766e-01 s
+194.9s 749 Correction factor: 1.6x
+194.9s 750 Max wave speed detected: 19.44 m/s
+195.8s 751 [WARNING] Automatic CFL correction applied (count: 7700):
+195.8s 752 Calculated CFL: 0.800 > Limit: 0.500
+195.8s 753 Original dt: 1.028762e+00 s
+195.8s 754 Corrected dt: 6.429766e-01 s
+195.8s 755 Correction factor: 1.6x
+195.8s 756 Max wave speed detected: 19.44 m/s
+195.9s 757 DEBUG PARAMS: Reading K_m_kmh = 10.0
+195.9s 758 DEBUG PARAMS: Reading K_c_kmh = 15.0
+195.9s 759 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+195.9s 760 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+196.7s 761 [WARNING] Automatic CFL correction applied (count: 7800):
+196.7s 762 Calculated CFL: 0.800 > Limit: 0.500
+196.7s 763 Original dt: 1.028762e+00 s
+196.7s 764 Corrected dt: 6.429766e-01 s
+196.7s 765 Correction factor: 1.6x
+196.7s 766 Max wave speed detected: 19.44 m/s
+197.6s 767 DEBUG PARAMS: Reading K_m_kmh = 10.0
+197.6s 768 DEBUG PARAMS: Reading K_c_kmh = 15.0
+197.6s 769 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+197.6s 770 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+197.6s 771 [WARNING] Automatic CFL correction applied (count: 7900):
+197.6s 772 Calculated CFL: 0.800 > Limit: 0.500
+197.6s 773 Original dt: 1.028827e+00 s
+197.6s 774 Corrected dt: 6.430168e-01 s
+197.6s 775 Correction factor: 1.6x
+197.6s 776 Max wave speed detected: 19.44 m/s
+198.6s 777 [WARNING] Automatic CFL correction applied (count: 8000):
+198.6s 778 Calculated CFL: 0.800 > Limit: 0.500
+198.6s 779 Original dt: 1.028762e+00 s
+198.6s 780 Corrected dt: 6.429766e-01 s
+198.6s 781 Correction factor: 1.6x
+198.6s 782 Max wave speed detected: 19.44 m/s
+199.3s 783 DEBUG PARAMS: Reading K_m_kmh = 10.0
+199.3s 784 DEBUG PARAMS: Reading K_c_kmh = 15.0
+199.3s 785 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+199.3s 786 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+199.5s 787 [WARNING] Automatic CFL correction applied (count: 8100):
+199.5s 788 Calculated CFL: 0.800 > Limit: 0.500
+199.5s 789 Original dt: 1.028777e+00 s
+199.5s 790 Corrected dt: 6.429857e-01 s
+199.5s 791 Correction factor: 1.6x
+199.5s 792 Max wave speed detected: 19.44 m/s
+200.4s 793 [WARNING] Automatic CFL correction applied (count: 8200):
+200.4s 794 Calculated CFL: 0.800 > Limit: 0.500
+200.4s 795 Original dt: 1.028762e+00 s
+200.4s 796 Corrected dt: 6.429766e-01 s
+200.4s 797 Correction factor: 1.6x
+200.4s 798 Max wave speed detected: 19.44 m/s
+201.1s 799 DEBUG PARAMS: Reading K_m_kmh = 10.0
+201.1s 800 DEBUG PARAMS: Reading K_c_kmh = 15.0
+201.1s 801 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+201.1s 802 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+201.3s 803 [WARNING] Automatic CFL correction applied (count: 8300):
+201.3s 804 Calculated CFL: 0.800 > Limit: 0.500
+201.3s 805 Original dt: 1.028765e+00 s
+201.3s 806 Corrected dt: 6.429784e-01 s
+201.3s 807 Correction factor: 1.6x
+201.3s 808 Max wave speed detected: 19.44 m/s
+202.2s 809 [WARNING] Automatic CFL correction applied (count: 8400):
+202.2s 810 Calculated CFL: 0.800 > Limit: 0.500
+202.2s 811 Original dt: 1.028762e+00 s
+202.2s 812 Corrected dt: 6.429766e-01 s
+202.2s 813 Correction factor: 1.6x
+202.2s 814 Max wave speed detected: 19.44 m/s
+202.8s 815 DEBUG PARAMS: Reading K_m_kmh = 10.0
+202.8s 816 DEBUG PARAMS: Reading K_c_kmh = 15.0
+202.8s 817 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+202.8s 818 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+203.2s 819 [WARNING] Automatic CFL correction applied (count: 8500):
+203.2s 820 Calculated CFL: 0.800 > Limit: 0.500
+203.2s 821 Original dt: 1.028763e+00 s
+203.2s 822 Corrected dt: 6.429769e-01 s
+203.2s 823 Correction factor: 1.6x
+203.2s 824 Max wave speed detected: 19.44 m/s
+204.1s 825 [WARNING] Automatic CFL correction applied (count: 8600):
+204.1s 826 Calculated CFL: 0.800 > Limit: 0.500
+204.1s 827 Original dt: 1.028762e+00 s
+204.1s 828 Corrected dt: 6.429766e-01 s
+204.1s 829 Correction factor: 1.6x
+204.1s 830 Max wave speed detected: 19.44 m/s
+204.5s 831 DEBUG PARAMS: Reading K_m_kmh = 10.0
+204.5s 832 DEBUG PARAMS: Reading K_c_kmh = 15.0
+204.5s 833 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+204.5s 834 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+205.0s 835 [WARNING] Automatic CFL correction applied (count: 8700):
+205.0s 836 Calculated CFL: 0.800 > Limit: 0.500
+205.0s 837 Original dt: 1.028763e+00 s
+205.0s 838 Corrected dt: 6.429766e-01 s
+205.0s 839 Correction factor: 1.6x
+205.0s 840 Max wave speed detected: 19.44 m/s
+205.9s 841 [WARNING] Automatic CFL correction applied (count: 8800):
+205.9s 842 Calculated CFL: 0.800 > Limit: 0.500
+205.9s 843 Original dt: 1.028762e+00 s
+205.9s 844 Corrected dt: 6.429766e-01 s
+205.9s 845 Correction factor: 1.6x
+205.9s 846 Max wave speed detected: 19.44 m/s
+206.2s 847 DEBUG PARAMS: Reading K_m_kmh = 10.0
+206.2s 848 DEBUG PARAMS: Reading K_c_kmh = 15.0
+206.2s 849 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+206.2s 850 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+206.8s 851 [WARNING] Automatic CFL correction applied (count: 8900):
+206.8s 852 Calculated CFL: 0.800 > Limit: 0.500
+206.8s 853 Original dt: 1.028763e+00 s
+206.8s 854 Corrected dt: 6.429766e-01 s
+206.8s 855 Correction factor: 1.6x
+206.8s 856 Max wave speed detected: 19.44 m/s
+207.7s 857 [WARNING] Automatic CFL correction applied (count: 9000):
+207.7s 858 Calculated CFL: 0.800 > Limit: 0.500
+207.7s 859 Original dt: 1.028762e+00 s
+207.7s 860 Corrected dt: 6.429766e-01 s
+207.7s 861 Correction factor: 1.6x
+207.7s 862 Max wave speed detected: 19.44 m/s
+207.9s 863 DEBUG PARAMS: Reading K_m_kmh = 10.0
+207.9s 864 DEBUG PARAMS: Reading K_c_kmh = 15.0
+207.9s 865 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+207.9s 866 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+208.6s 867 [WARNING] Automatic CFL correction applied (count: 9100):
+208.6s 868 Calculated CFL: 0.800 > Limit: 0.500
+208.6s 869 Original dt: 1.028762e+00 s
+208.6s 870 Corrected dt: 6.429766e-01 s
+208.6s 871 Correction factor: 1.6x
+208.6s 872 Max wave speed detected: 19.44 m/s
+209.5s 873 [WARNING] Automatic CFL correction applied (count: 9200):
+209.5s 874 Calculated CFL: 0.800 > Limit: 0.500
+209.5s 875 Original dt: 1.028762e+00 s
+209.5s 876 Corrected dt: 6.429766e-01 s
+209.5s 877 Correction factor: 1.6x
+209.5s 878 Max wave speed detected: 19.44 m/s
+209.6s 879 DEBUG PARAMS: Reading K_m_kmh = 10.0
+209.6s 880 DEBUG PARAMS: Reading K_c_kmh = 15.0
+209.6s 881 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+209.6s 882 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+210.4s 883 [WARNING] Automatic CFL correction applied (count: 9300):
+210.4s 884 Calculated CFL: 0.800 > Limit: 0.500
+210.4s 885 Original dt: 1.028762e+00 s
+210.4s 886 Corrected dt: 6.429766e-01 s
+210.4s 887 Correction factor: 1.6x
+210.4s 888 Max wave speed detected: 19.44 m/s
+211.4s 889 [WARNING] Automatic CFL correction applied (count: 9400):
+211.4s 890 Calculated CFL: 0.800 > Limit: 0.500
+211.4s 891 Original dt: 1.028762e+00 s
+211.4s 892 Corrected dt: 6.429766e-01 s
+211.4s 893 Correction factor: 1.6x
+211.4s 894 Max wave speed detected: 19.44 m/s
+211.4s 895 DEBUG PARAMS: Reading K_m_kmh = 10.0
+211.4s 896 DEBUG PARAMS: Reading K_c_kmh = 15.0
+211.4s 897 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+211.4s 898 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+211.4s 899 📊 Progress: 100/100 (100.0%) | ETA: 0.0 min | Speed: 1.1 steps/s
+211.4s 900 ---------------------------------
+211.4s 901 | rollout/           |          |
+211.4s 902 |    ep_len_mean     | 2        |
+211.4s 903 |    ep_rew_mean     | -0.0272  |
+211.4s 904 | time/              |          |
+211.4s 905 |    fps             | 1        |
+211.4s 906 |    iterations      | 1        |
+211.4s 907 |    time_elapsed    | 89       |
+211.4s 908 |    total_timesteps | 100      |
+211.4s 909 ---------------------------------
+212.0s 910 
+212.0s 911 ✅ Training completed in 1.5 minutes (89.9s)
+212.0s 912 100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100/100  [ 0:01:29 < 0:00:00 , 1 it/s ]
+212.0s 913 [SUCCESS] Final model saved to validation_output/results/local_test/section_7_6_rl_performance/data/models/rl_agent_traffic_light_control.zip
+212.0s 914 
+212.0s 915 [PHASE 2/2] Running performance comparisons...
+212.0s 916 [QUICK TEST] Testing only: traffic_light_control
+212.0s 917 
+212.0s 918 Testing scenario: traffic_light_control (device=gpu)
+212.0s 919 2025-10-09 12:29:10 - INFO - run_performance_comparison:573 - ================================================================================
+212.0s 920 2025-10-09 12:29:10 - INFO - run_performance_comparison:574 - Starting run_performance_comparison for scenario: traffic_light_control
+212.0s 921 2025-10-09 12:29:10 - INFO - run_performance_comparison:575 - Device: gpu
+212.0s 922 2025-10-09 12:29:10 - INFO - run_performance_comparison:576 - ================================================================================
+212.0s 923 2025-10-09 12:29:10 - INFO - run_performance_comparison:577 - ================================================================================
+212.0s 924 2025-10-09 12:29:10 - INFO - run_performance_comparison:578 - Starting run_performance_comparison for scenario: traffic_light_control
+212.0s 925 2025-10-09 12:29:10 - INFO - run_performance_comparison:579 - Device: gpu
+212.0s 926 2025-10-09 12:29:10 - INFO - run_performance_comparison:580 - ================================================================================
+212.0s 927 [SCENARIO] Generated: traffic_light_control.yml
+212.0s 928 Running baseline controller...
+212.0s 929 [QUICK TEST] Reduced duration to 600.0s
+212.0s 930 2025-10-09 12:29:10 - INFO - run_control_simulation:229 - Starting run_control_simulation:
+212.0s 931 2025-10-09 12:29:10 - INFO - run_control_simulation:230 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+212.0s 932 2025-10-09 12:29:10 - INFO - run_control_simulation:231 -   - duration: 600.0s
+212.0s 933 2025-10-09 12:29:10 - INFO - run_control_simulation:232 -   - control_interval: 60.0s
+212.0s 934 2025-10-09 12:29:10 - INFO - run_control_simulation:233 -   - device: gpu
+212.0s 935 [INFO] Initializing TrafficSignalEnvDirect with device=gpu
+212.0s 936 2025-10-09 12:29:10 - INFO - run_control_simulation:238 - Creating TrafficSignalEnvDirect instance...
+212.0s 937 DEBUG PARAMS: Reading K_m_kmh = 10.0
+212.0s 938 DEBUG PARAMS: Reading K_c_kmh = 15.0
+212.0s 939 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+212.0s 940 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+212.0s 941 2025-10-09 12:29:10 - INFO - run_control_simulation:248 - TrafficSignalEnvDirect created successfully
+212.0s 942 [INFO] Calling env.reset()...
+212.0s 943 2025-10-09 12:29:10 - INFO - run_control_simulation:264 - Calling env.reset()...
+212.0s 944 DEBUG PARAMS: Reading K_m_kmh = 10.0
+212.0s 945 DEBUG PARAMS: Reading K_c_kmh = 15.0
+212.0s 946 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+212.0s 947 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+212.0s 948 2025-10-09 12:29:10 - INFO - run_control_simulation:266 - env.reset() successful - obs shape: (26,), info: {'episode_step': 0, 'simulation_time': 0.0, 'current_phase': 0}
+212.0s 949 [INFO] Starting simulation loop (max duration: 600.0s, interval: 60.0s)
+212.0s 950 2025-10-09 12:29:10 - INFO - run_control_simulation:281 - Starting simulation loop - max duration: 600.0s
+212.9s 951 [WARNING] Automatic CFL correction applied (count: 9500):
+212.9s 952 Calculated CFL: 0.800 > Limit: 0.500
+212.9s 953 Original dt: 1.028762e+00 s
+212.9s 954 Corrected dt: 6.429766e-01 s
+212.9s 955 Correction factor: 1.6x
+212.9s 956 Max wave speed detected: 19.44 m/s
+213.8s 957 [WARNING] Automatic CFL correction applied (count: 9600):
+213.8s 958 Calculated CFL: 0.800 > Limit: 0.500
+213.8s 959 Original dt: 1.028762e+00 s
+213.8s 960 Corrected dt: 6.429766e-01 s
+213.8s 961 Correction factor: 1.6x
+213.8s 962 Max wave speed detected: 19.44 m/s
+214.8s 963 [WARNING] Automatic CFL correction applied (count: 9700):
+214.8s 964 Calculated CFL: 0.800 > Limit: 0.500
+214.8s 965 Original dt: 1.028762e+00 s
+214.8s 966 Corrected dt: 6.429766e-01 s
+214.8s 967 Correction factor: 1.6x
+214.8s 968 Max wave speed detected: 19.44 m/s
+215.7s 969 [WARNING] Automatic CFL correction applied (count: 9800):
+215.7s 970 Calculated CFL: 0.800 > Limit: 0.500
+215.7s 971 Original dt: 1.028762e+00 s
+215.7s 972 Corrected dt: 6.429766e-01 s
+215.7s 973 Correction factor: 1.6x
+215.7s 974 Max wave speed detected: 19.44 m/s
+216.6s 975 [WARNING] Automatic CFL correction applied (count: 9900):
+216.6s 976 Calculated CFL: 0.800 > Limit: 0.500
+216.6s 977 Original dt: 1.028762e+00 s
+216.6s 978 Corrected dt: 6.429766e-01 s
+216.6s 979 Correction factor: 1.6x
+216.6s 980 Max wave speed detected: 19.44 m/s
+217.5s 981 [WARNING] Automatic CFL correction applied (count: 10000):
+217.5s 982 Calculated CFL: 0.800 > Limit: 0.500
+217.5s 983 Original dt: 1.028762e+00 s
+217.5s 984 Corrected dt: 6.429766e-01 s
+217.5s 985 Correction factor: 1.6x
+217.5s 986 Max wave speed detected: 19.44 m/s
+218.4s 987 [WARNING] Automatic CFL correction applied (count: 10100):
+218.4s 988 Calculated CFL: 0.800 > Limit: 0.500
+218.4s 989 Original dt: 1.028762e+00 s
+218.4s 990 Corrected dt: 6.429766e-01 s
+218.4s 991 Correction factor: 1.6x
+218.4s 992 Max wave speed detected: 19.44 m/s
+219.3s 993 [WARNING] Automatic CFL correction applied (count: 10200):
+219.3s 994 Calculated CFL: 0.800 > Limit: 0.500
+219.3s 995 Original dt: 1.028762e+00 s
+219.3s 996 Corrected dt: 6.429766e-01 s
+219.3s 997 Correction factor: 1.6x
+219.3s 998 Max wave speed detected: 19.44 m/s
+220.2s 999 [WARNING] Automatic CFL correction applied (count: 10300):
+220.2s 1000 Calculated CFL: 0.800 > Limit: 0.500
+220.2s 1001 Original dt: 1.028762e+00 s
+220.2s 1002 Corrected dt: 6.429766e-01 s
+220.2s 1003 Correction factor: 1.6x
+220.2s 1004 Max wave speed detected: 19.44 m/s
+220.6s 1005 Step 10: t=600.0s, reward=-0.060, avg_step_time=0.854s
+220.6s 1006 
+220.6s 1007 [PERFORMANCE] Simulation completed:
+220.6s 1008 - Total steps: 10
+220.6s 1009 - Total reward: -0.60
+220.6s 1010 - Avg step time: 0.854s (device=gpu)
+220.6s 1011 - Simulated time: 600.0s
+220.6s 1012 - Wallclock time: 8.5s
+220.6s 1013 - Speed ratio: 70.22x real-time
+220.6s 1014 
+220.6s 1015 2025-10-09 12:29:19 - INFO - run_control_simulation:339 -
+220.6s 1016 [PERFORMANCE] Simulation completed:
+220.6s 1017 - Total steps: 10
+220.6s 1018 - Total reward: -0.60
+220.6s 1019 - Avg step time: 0.854s (device=gpu)
+220.6s 1020 - Simulated time: 600.0s
+220.6s 1021 - Wallclock time: 8.5s
+220.6s 1022 - Speed ratio: 70.22x real-time
+220.6s 1023 
+220.6s 1024 2025-10-09 12:29:19 - INFO - run_control_simulation:340 - Returning 10 state snapshots
+220.6s 1025 2025-10-09 12:29:19 - INFO - evaluate_traffic_performance:351 - Evaluating performance with 10 state snapshots
+220.6s 1026 2025-10-09 12:29:19 - INFO - evaluate_traffic_performance:410 - Calculated metrics: flow=36.103628, efficiency=5.776581, delay=-179.85s
+220.6s 1027 Running RL controller...
+220.6s 1028 [INFO] Loading existing model from validation_output/results/local_test/section_7_6_rl_performance/data/models/rl_agent_traffic_light_control.zip
+220.6s 1029 [INFO] Chargement du modèle RL depuis : validation_output/results/local_test/section_7_6_rl_performance/data/models/rl_agent_traffic_light_control.zip
+220.6s 1030 [QUICK TEST] Reduced duration to 600.0s
+220.6s 1031 2025-10-09 12:29:19 - INFO - run_control_simulation:229 - Starting run_control_simulation:
+220.6s 1032 2025-10-09 12:29:19 - INFO - run_control_simulation:230 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+220.6s 1033 2025-10-09 12:29:19 - INFO - run_control_simulation:231 -   - duration: 600.0s
+220.6s 1034 2025-10-09 12:29:19 - INFO - run_control_simulation:232 -   - control_interval: 60.0s
+220.6s 1035 2025-10-09 12:29:19 - INFO - run_control_simulation:233 -   - device: gpu
+220.6s 1036 [INFO] Initializing TrafficSignalEnvDirect with device=gpu
+220.6s 1037 2025-10-09 12:29:19 - INFO - run_control_simulation:238 - Creating TrafficSignalEnvDirect instance...
+220.6s 1038 DEBUG PARAMS: Reading K_m_kmh = 10.0
+220.6s 1039 DEBUG PARAMS: Reading K_c_kmh = 15.0
+220.6s 1040 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+220.6s 1041 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+220.6s 1042 2025-10-09 12:29:19 - INFO - run_control_simulation:248 - TrafficSignalEnvDirect created successfully
+220.6s 1043 [INFO] Calling env.reset()...
+220.6s 1044 2025-10-09 12:29:19 - INFO - run_control_simulation:264 - Calling env.reset()...
+220.6s 1045 DEBUG PARAMS: Reading K_m_kmh = 10.0
+220.6s 1046 DEBUG PARAMS: Reading K_c_kmh = 15.0
+220.6s 1047 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+220.6s 1048 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+220.6s 1049 2025-10-09 12:29:19 - INFO - run_control_simulation:266 - env.reset() successful - obs shape: (26,), info: {'episode_step': 0, 'simulation_time': 0.0, 'current_phase': 0}
+220.6s 1050 [INFO] Starting simulation loop (max duration: 600.0s, interval: 60.0s)
+220.6s 1051 2025-10-09 12:29:19 - INFO - run_control_simulation:281 - Starting simulation loop - max duration: 600.0s
+221.2s 1052 [WARNING] Automatic CFL correction applied (count: 10400):
+221.2s 1053 Calculated CFL: 0.800 > Limit: 0.500
+221.2s 1054 Original dt: 1.028763e+00 s
+221.2s 1055 Corrected dt: 6.429766e-01 s
+221.2s 1056 Correction factor: 1.6x
+221.2s 1057 Max wave speed detected: 19.44 m/s
+222.1s 1058 [WARNING] Automatic CFL correction applied (count: 10500):
+222.1s 1059 Calculated CFL: 0.800 > Limit: 0.500
+222.1s 1060 Original dt: 1.028762e+00 s
+222.1s 1061 Corrected dt: 6.429766e-01 s
+222.1s 1062 Correction factor: 1.6x
+222.1s 1063 Max wave speed detected: 19.44 m/s
+223.0s 1064 [WARNING] Automatic CFL correction applied (count: 10600):
+223.0s 1065 Calculated CFL: 0.800 > Limit: 0.500
+223.0s 1066 Original dt: 1.028762e+00 s
+223.0s 1067 Corrected dt: 6.429766e-01 s
+223.0s 1068 Correction factor: 1.6x
+223.0s 1069 Max wave speed detected: 19.44 m/s
+223.9s 1070 [WARNING] Automatic CFL correction applied (count: 10700):
+223.9s 1071 Calculated CFL: 0.800 > Limit: 0.500
+223.9s 1072 Original dt: 1.028762e+00 s
+223.9s 1073 Corrected dt: 6.429766e-01 s
+223.9s 1074 Correction factor: 1.6x
+223.9s 1075 Max wave speed detected: 19.44 m/s
+224.8s 1076 [WARNING] Automatic CFL correction applied (count: 10800):
+224.8s 1077 Calculated CFL: 0.800 > Limit: 0.500
+224.8s 1078 Original dt: 1.028762e+00 s
+224.8s 1079 Corrected dt: 6.429766e-01 s
+224.8s 1080 Correction factor: 1.6x
+224.8s 1081 Max wave speed detected: 19.44 m/s
+225.7s 1082 [WARNING] Automatic CFL correction applied (count: 10900):
+225.7s 1083 Calculated CFL: 0.800 > Limit: 0.500
+225.7s 1084 Original dt: 1.028762e+00 s
+225.7s 1085 Corrected dt: 6.429766e-01 s
+225.7s 1086 Correction factor: 1.6x
+225.7s 1087 Max wave speed detected: 19.44 m/s
+226.6s 1088 [WARNING] Automatic CFL correction applied (count: 11000):
+226.6s 1089 Calculated CFL: 0.800 > Limit: 0.500
+226.6s 1090 Original dt: 1.028762e+00 s
+226.6s 1091 Corrected dt: 6.429766e-01 s
+226.6s 1092 Correction factor: 1.6x
+226.6s 1093 Max wave speed detected: 19.44 m/s
+227.5s 1094 [WARNING] Automatic CFL correction applied (count: 11100):
+227.5s 1095 Calculated CFL: 0.800 > Limit: 0.500
+227.5s 1096 Original dt: 1.028762e+00 s
+227.5s 1097 Corrected dt: 6.429766e-01 s
+227.5s 1098 Correction factor: 1.6x
+227.5s 1099 Max wave speed detected: 19.44 m/s
+228.4s 1100 [WARNING] Automatic CFL correction applied (count: 11200):
+228.4s 1101 Calculated CFL: 0.800 > Limit: 0.500
+228.4s 1102 Original dt: 1.028762e+00 s
+228.4s 1103 Corrected dt: 6.429766e-01 s
+228.4s 1104 Correction factor: 1.6x
+228.4s 1105 Max wave speed detected: 19.44 m/s
+229.1s 1106 Step 10: t=600.0s, reward=0.040, avg_step_time=0.849s
+229.1s 1107 
+229.1s 1108 [PERFORMANCE] Simulation completed:
+229.1s 1109 - Total steps: 10
+229.1s 1110 - Total reward: 0.40
+229.1s 1111 - Avg step time: 0.849s (device=gpu)
+229.1s 1112 - Simulated time: 600.0s
+229.1s 1113 - Wallclock time: 8.5s
+229.1s 1114 - Speed ratio: 70.67x real-time
+229.1s 1115 
+229.1s 1116 2025-10-09 12:29:27 - INFO - run_control_simulation:339 -
+229.1s 1117 [PERFORMANCE] Simulation completed:
+229.1s 1118 - Total steps: 10
+229.1s 1119 - Total reward: 0.40
+229.1s 1120 - Avg step time: 0.849s (device=gpu)
+229.1s 1121 - Simulated time: 600.0s
+229.1s 1122 - Wallclock time: 8.5s
+229.1s 1123 - Speed ratio: 70.67x real-time
+229.1s 1124 
+229.1s 1125 2025-10-09 12:29:27 - INFO - run_control_simulation:340 - Returning 10 state snapshots
+229.1s 1126 2025-10-09 12:29:27 - INFO - evaluate_traffic_performance:351 - Evaluating performance with 10 state snapshots
+229.1s 1127 2025-10-09 12:29:27 - INFO - evaluate_traffic_performance:410 - Calculated metrics: flow=36.103628, efficiency=5.776581, delay=-179.85s
+229.1s 1128 2025-10-09 12:29:27 - INFO - run_performance_comparison:628 - Baseline performance: {'total_flow': 36.103628321053236, 'avg_speed': 678553.8271062116, 'avg_density': 5.369890500022292e-05, 'efficiency': 5.776580531368519, 'delay': -179.8487464957266, 'throughput': 180518.14160526617}
+229.1s 1129 2025-10-09 12:29:27 - INFO - run_performance_comparison:629 - RL performance: {'total_flow': 36.103628321053236, 'avg_speed': 678553.8271062116, 'avg_density': 5.369890500022292e-05, 'efficiency': 5.776580531368519, 'delay': -179.8487464957266, 'throughput': 180518.14160526617}
+229.1s 1130 2025-10-09 12:29:27 - INFO - run_performance_comparison:637 - Flow improvement: 0.000%
+229.1s 1131 2025-10-09 12:29:27 - INFO - run_performance_comparison:638 - Efficiency improvement: 0.000%
+229.1s 1132 2025-10-09 12:29:27 - INFO - run_performance_comparison:639 - Delay reduction: -0.000%
+229.1s 1133 Flow improvement: 0.0%
+229.1s 1134 Efficiency improvement: 0.0%
+229.1s 1135 Delay reduction: -0.0%
+229.1s 1136 Result: FAILED
+229.1s 1137 
+229.1s 1138 [FIGURES] Generating RL performance figures...
+229.7s 1139 [OK] fig_rl_performance_improvements.png
+230.7s 1140 [OK] fig_rl_learning_curve.png
+230.7s 1141 [FIGURES] Generated 2 figures in validation_output/results/local_test/section_7_6_rl_performance/figures
+230.7s 1142 
+230.7s 1143 [METRICS] Saving RL performance metrics...
+230.7s 1144 [OK] validation_output/results/local_test/section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv
+230.7s 1145 
+230.7s 1146 [LATEX] Generating content for Section 7.6...
+230.7s 1147 [OK] validation_output/results/local_test/section_7_6_rl_performance/latex/section_7_6_content.tex
+230.7s 1148 
+230.7s 1149 === RL Performance Validation Summary ===
+230.7s 1150 Scenarios passed: 0/1 (0.0%)
+230.7s 1151 Average flow improvement: 0.00%
+230.7s 1152 Average efficiency improvement: 0.00%
+230.7s 1153 Average delay reduction: 0.00%
+230.7s 1154 Overall validation: FAILED
+230.7s 1155 [SUMMARY] Created: validation_output/results/local_test/section_7_6_rl_performance/session_summary.json
+233.5s 1156 [WARNING] Tests returned code: 1
+233.5s 1157 
+233.5s 1158 [STEP 4/4] Copying artifacts and cleaning up...
+233.5s 1159 [ARTIFACTS] Copying results for section_7_6_rl_performance...
+233.5s 1160 [OK] Section copied to: /kaggle/working/section_7_6_rl_performance
+233.5s 1161 [ARTIFACTS] NPZ files: 0
+233.5s 1162 [ARTIFACTS] PNG figures: 2
+233.5s 1163 [ARTIFACTS] YAML scenarios: 1
+233.5s 1164 [ARTIFACTS] TEX files: 1
+233.5s 1165 [ARTIFACTS] JSON files: 1
+233.5s 1166 [ARTIFACTS] CSV metrics: 1
+233.5s 1167 TRACKING_SUCCESS: Artifacts copied
+233.5s 1168 [SUCCESS] All artifacts organized and copied
+233.5s 1169 [CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow
+233.5s 1170 [OK] Cleanup completed - only validation results remain
+233.5s 1171 TRACKING_SUCCESS: Cleanup completed
+233.5s 1172 [OK] Session summary created: /kaggle/working/validation_results/session_summary.json
+233.5s 1173 TRACKING_SUCCESS: Session summary created
+233.5s 1174 
+233.5s 1175 [FINAL] Validation workflow completed
+233.5s 1176 Remote logging finalized - ready for download
+233.5s 1177 
+233.5s 1178 ================================================================================
+233.5s 1179 VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED
+233.5s 1180 Output ready at: /kaggle/working/validation_results/
+233.5s 1181 ================================================================================
+237.0s 1182 /usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=["nbconvert.preprocessors.ExtractOutputPreprocessor"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.
+237.0s 1183 warn(
+237.0s 1184 [NbConvertApp] Converting notebook __script__.ipynb to html
+237.8s 1185 [NbConvertApp] Writing 321270 bytes to __results__.html

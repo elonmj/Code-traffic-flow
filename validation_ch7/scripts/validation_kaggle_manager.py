@@ -934,15 +934,20 @@ print("=" * 80)
                     download_success = True
                 except UnicodeEncodeError as e:
                     # Encoding error - try again with quiet mode
-                    download_error = f"Unicode encoding error: {str(e)}"
+                    # Don't include exception message - it may contain emojis!
+                    download_error = "Unicode encoding error during download"
                     try:
                         self.api.kernels_output(kernel_slug, path=temp_dir, quiet=True)
                         download_success = True
                         download_error = None  # Success on retry
                     except Exception as e2:
-                        download_error = f"Retry failed: {str(e2)}"
+                        # Strip non-ASCII characters from error message to avoid encoding issues
+                        error_msg = str(e2).encode('ascii', errors='ignore').decode('ascii')
+                        download_error = f"Retry failed: {error_msg}"
                 except Exception as e:
-                    download_error = str(e)
+                    # Strip non-ASCII characters from error message
+                    error_msg = str(e).encode('ascii', errors='ignore').decode('ascii')
+                    download_error = error_msg
                 
                 # Report status
                 if download_success:
