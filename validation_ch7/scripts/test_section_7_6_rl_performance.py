@@ -201,8 +201,15 @@ class RLPerformanceValidationTest(ValidationSection):
             """Prédit une action en utilisant l'agent RL."""
             if self.agent:
                 action, _ = self.agent.predict(state, deterministic=True)
-                # L'action de SB3 peut être un array, on extrait la valeur
-                return float(action[0]) if isinstance(action, np.ndarray) else float(action)
+                # Handle different action formats from SB3
+                # action can be: scalar (0-d array), 1-d array, or regular number
+                if isinstance(action, np.ndarray):
+                    if action.ndim == 0:  # 0-dimensional (scalar)
+                        return float(action.item())
+                    else:  # 1-d or higher
+                        return float(action.flat[0])  # Use flat to handle any dimension
+                else:
+                    return float(action)
             
             # Action par défaut si l'agent n'est pas chargé
             print("  [WARNING] Agent RL non chargé, action par défaut (0.5).")
