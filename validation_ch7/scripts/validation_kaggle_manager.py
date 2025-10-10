@@ -819,7 +819,7 @@ print("=" * 80)
         
         # Adaptive monitoring intervals (exponential backoff)
         base_interval = 35  # Start with 35 seconds
-        max_interval = 240  # Cap at 4"""""""""""""""""""""""""z minutes
+        max_interval = 260  # Cap at 4"""""""""""""""""""""""""z minutes
         current_interval = base_interval
         
         print(f"[MONITOR] Enhanced monitoring started for: {kernel_slug}")
@@ -924,11 +924,13 @@ print("=" * 80)
                 import sys
                 import io
                 
-                # ✅ BUG #8 FIX: Force stdout to UTF-8 to handle Unicode in logs
+                # ✅ BUG #8+#9 FIX: Force stdout to UTF-8 to handle Unicode in logs
                 # Kaggle API prints log content to stdout, which uses system encoding on Windows (cp1252)
                 # Unicode characters (→, ✅, ❌) cause UnicodeEncodeError
-                original_stdout = sys.stdout
-                sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+                # CRITICAL: Don't restore stdout in finally - it closes the wrapper and breaks subsequent prints
+                # Instead, create UTF-8 wrapper once and keep it active for rest of execution
+                if not isinstance(sys.stdout, io.TextIOWrapper) or sys.stdout.encoding != 'utf-8':
+                    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
                 
                 download_success = False
                 download_error = None
@@ -941,9 +943,7 @@ print("=" * 80)
                     # If download fails, log error but continue with file checking
                     error_msg = str(e).encode('ascii', errors='ignore').decode('ascii')
                     download_error = f"Download failed: {error_msg}"
-                finally:
-                    # Restore original stdout
-                    sys.stdout = original_stdout
+                # No finally block - keep UTF-8 stdout active
                 
                 # Report status
                 if download_success:
