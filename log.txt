@@ -615,3 +615,7 @@
 2025-10-10 16:16:48,225 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-10 16:16:51,817 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-10 16:16:56,527 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-bpsg
+2025-10-10 16:31:54,873 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 16:31:55,099 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 16:31:55,298 - validation_kaggle_manager - INFO - ✅ Git repository is clean and up to date
+2025-10-10 16:31:58,356 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-pjkq

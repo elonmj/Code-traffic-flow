@@ -86,7 +86,7 @@ class RLPerformanceValidationTest(ValidationSection):
         self._setup_debug_logging()
         
         if self.quick_test:
-            print("[QUICK TEST MODE] Minimal training timesteps for setup validation")
+            print("[QUICK TEST MODE] Minimal training timesteps for setup validation", flush=True)
     
     def _setup_debug_logging(self):
         """Setup file-based logging to capture errors that aren't visible in Kaggle stdout."""
@@ -133,24 +133,25 @@ class RLPerformanceValidationTest(ValidationSection):
         **IMPORTANT**: initial_conditions with type='uniform_equilibrium' expects densities in VEH/KM
         For Riemann IC, state arrays use SI units (veh/m, m/s) directly.
         """
-        # VERY HEAVY CONGESTION for strong control signal
-        rho_m_high_veh_km = 100.0  # High density zone (jam conditions)
-        rho_c_high_veh_km = 120.0
+        # ✅ BUG #10 FIX: Use UNIFORM CONGESTION IC instead of Riemann shock
+        # Problem: Riemann shock evacuates domain faster than BC can replenish
+        # Solution: Uniform congestion (realistic traffic jam scenario for traffic light)
         
-        rho_m_low_veh_km = 30.0   # Low density zone (free flow)
-        rho_c_low_veh_km = 40.0
+        # Uniform congestion parameters (realistic upstream traffic jam)
+        rho_m_uniform_veh_km = 80.0  # Moderate congestion
+        rho_c_uniform_veh_km = 100.0
+        w_m_uniform = 12.0  # ~43 km/h (congested but moving)
+        w_c_uniform = 10.0  # ~36 km/h
         
         # Convert to SI units (veh/m)
-        rho_m_high_si = rho_m_high_veh_km * 0.001
-        rho_c_high_si = rho_c_high_veh_km * 0.001
-        rho_m_low_si = rho_m_low_veh_km * 0.001
-        rho_c_low_si = rho_c_low_veh_km * 0.001
+        rho_m_uniform_si = rho_m_uniform_veh_km * 0.001
+        rho_c_uniform_si = rho_c_uniform_veh_km * 0.001
         
-        # Velocities (m/s)
-        w_m_high = 15.0  # ~54 km/h (congested)
-        w_c_high = 12.0  # ~43 km/h
-        w_m_low = 25.0   # ~90 km/h (free flow)
-        w_c_low = 20.0   # ~72 km/h
+        # Keep legacy BC values (for inflow boundary)
+        rho_m_high_si = rho_m_uniform_si
+        rho_c_high_si = rho_c_uniform_si
+        w_m_high = w_m_uniform
+        w_c_high = w_c_uniform
         
         config = {
             'scenario_name': f'rl_perf_{scenario_type}_sensitive',
@@ -169,13 +170,14 @@ class RLPerformanceValidationTest(ValidationSection):
 
         if scenario_type == 'traffic_light_control':
             config['parameters'] = {'V0_m': 25.0, 'V0_c': 22.2, 'tau_m': 1.0, 'tau_c': 1.2}
-            # CHANGED: Use Riemann IC (shock wave) instead of uniform equilibrium
-            # Note: runner.py expects 'U_L', 'U_R', 'split_pos' (not left_state/right_state)
+            # ✅ BUG #10 FIX: UNIFORM congestion IC (no shock wave)
+            # Realistic scenario: traffic light manages upstream congestion
             config['initial_conditions'] = {
-                'type': 'riemann',
-                'U_L': [rho_m_high_si, w_m_high, rho_c_high_si, w_c_high],   # Congestion
-                'U_R': [rho_m_low_si, w_m_low, rho_c_low_si, w_c_low],      # Free flow
-                'split_pos': 500.0  # Middle of 1km domain
+                'type': 'uniform',
+                'rho_m': rho_m_uniform_si,
+                'w_m': w_m_uniform,
+                'rho_c': rho_c_uniform_si,
+                'w_c': w_c_uniform
             }
         elif scenario_type == 'ramp_metering':
             config['parameters'] = {'V0_m': 27.8, 'V0_c': 25.0, 'tau_m': 0.8, 'tau_c': 1.0}
@@ -201,10 +203,10 @@ class RLPerformanceValidationTest(ValidationSection):
             yaml.dump(config, f, default_flow_style=False)
         
         self.debug_logger.info(f"Created scenario config: {scenario_path.name}")
-        self.debug_logger.info(f"  SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m")
-        self.debug_logger.info(f"  High density (left): rho_m={rho_m_high_veh_km:.1f} veh/km, rho_c={rho_c_high_veh_km:.1f} veh/km")
-        self.debug_logger.info(f"  Low density (right): rho_m={rho_m_low_veh_km:.1f} veh/km, rho_c={rho_c_low_veh_km:.1f} veh/km")
-        print(f"  [SCENARIO] Generated: {scenario_path.name} (1km domain, Riemann IC)")
+        self.debug_logger.info(f"  BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)")
+        self.debug_logger.info(f"  Uniform density: rho_m={rho_m_uniform_veh_km:.1f} veh/km, rho_c={rho_c_uniform_veh_km:.1f} veh/km")
+        self.debug_logger.info(f"  Uniform velocity: w_m={w_m_uniform:.1f} m/s, w_c={w_c_uniform:.1f} m/s")
+        print(f"  [SCENARIO] Generated: {scenario_path.name} (1km domain, UNIFORM congestion IC)", flush=True)
         return scenario_path
 
     class BaselineController:
