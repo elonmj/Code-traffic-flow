@@ -1,0 +1,16 @@
+2025-10-09 23:13:41 - INFO - _setup_debug_logging:119 - ================================================================================
+2025-10-09 23:13:41 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED
+2025-10-09 23:13:41 - INFO - _setup_debug_logging:121 - Log file: validation_output/results/local_test/section_7_6_rl_performance/debug.log
+2025-10-09 23:13:41 - INFO - _setup_debug_logging:122 - Quick test mode: False
+2025-10-09 23:13:41 - INFO - _setup_debug_logging:123 - ================================================================================
+2025-10-09 23:13:41 - INFO - train_rl_agent:549 - ================================================================================
+2025-10-09 23:13:41 - INFO - train_rl_agent:550 - Starting train_rl_agent for scenario: traffic_light_control
+2025-10-09 23:13:41 - INFO - train_rl_agent:551 -   - Device: gpu
+2025-10-09 23:13:41 - INFO - train_rl_agent:552 -   - Total timesteps: 5000
+2025-10-09 23:13:41 - INFO - train_rl_agent:553 -   - Episode max time: 3600.0s
+2025-10-09 23:13:41 - INFO - train_rl_agent:554 -   - Checkpoint frequency: 500
+2025-10-09 23:13:41 - INFO - train_rl_agent:555 - ================================================================================
+2025-10-09 23:13:41 - INFO - _create_scenario_config:203 - Created scenario config: traffic_light_control.yml
+2025-10-09 23:13:41 - INFO - _create_scenario_config:204 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m
+2025-10-09 23:13:41 - INFO - _create_scenario_config:205 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km
+2025-10-09 23:13:41 - INFO - _create_scenario_config:206 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km

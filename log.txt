@@ -433,3 +433,21 @@
 2025-10-09 23:44:30,999 - validation_kaggle_manager - INFO - ✅ Git repository is clean and up to date
 2025-10-09 23:44:34,127 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-osdb
 2025-10-10 00:11:21,702 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 00:11:21,960 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 00:11:22,131 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-10 00:11:22,134 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-10 00:11:22,134 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-10 00:11:22,302 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-10 00:11:22,829 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-10 00:11:22,829 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-10 00:11:28,682 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-10 00:11:32,076 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-ppca
+2025-10-10 08:55:29,844 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 08:55:30,068 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 08:55:30,288 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-10 08:55:30,288 - validation_kaggle_manager - INFO -   M  rz_model/simulation/__pycache__/runner.cpython-312.pyc (Modified (staged))
+2025-10-10 08:55:30,294 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-10 08:55:30,294 - validation_kaggle_manager - INFO -   ?? last_kernel/ (Untracked)
+2025-10-10 08:55:30,296 - validation_kaggle_manager - INFO -   ?? "results (1).zip" (Untracked)
+2025-10-10 08:55:30,296 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-76rlperformance-ppca/ (Untracked)
+2025-10-10 08:55:30,296 - validation_kaggle_manager - INFO - 📦 Adding all changes...
