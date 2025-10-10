@@ -588,7 +588,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 episode_max_time=episode_max_time,
                 observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
                 device=device,
-                quiet=True
+                quiet=False  # ENABLED: Show BC logging to verify inflow state injection
             )
             
             print(f"  [INFO] Environment created: obs_space={env.observation_space.shape}, "
