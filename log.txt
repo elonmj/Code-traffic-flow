@@ -586,3 +586,9 @@
 2025-10-10 14:17:11,083 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-10 14:17:14,847 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-10 14:17:17,895 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-liaj
+2025-10-10 15:13:53,251 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 15:13:53,753 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 15:13:53,986 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-10 15:13:53,986 - validation_kaggle_manager - INFO -   M  rz_model/simulation/__pycache__/runner.cpython-312.pyc (Modified (staged))
+2025-10-10 15:13:53,986 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-10 15:13:53,986 - validation_kaggle_manager - INFO - 📦 Adding all changes...
