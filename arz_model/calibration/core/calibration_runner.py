@@ -1000,7 +1000,7 @@ class CalibrationRunner:
             )
 
             # 4. Exécuter simulation
-            self.logger.info("▶️ Step 4: Running simulation")
+            self.logger.info(" Step 4: Running simulation")
             times, states = runner.run()
 
             # 5. Traiter résultats simulation

@@ -596,3 +596,12 @@
 2025-10-10 15:13:54,542 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
 2025-10-10 15:13:54,542 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-10 15:14:36,074 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 15:14:36,288 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 15:14:36,426 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-10 15:14:36,426 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-10 15:14:36,427 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-10 15:14:36,576 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-10 15:14:36,765 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-10 15:14:36,765 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-10 15:14:40,921 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-10 15:14:44,107 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-czlc

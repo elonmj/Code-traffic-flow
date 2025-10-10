@@ -219,15 +219,17 @@ class TrafficSignalEnvDirect(gym.Env):
         # Store previous state for reward calculation
         prev_phase = self.current_phase
         
-        # Apply action to traffic signal
-        if action == 1:
-            # Switch phase
-            self.current_phase = (self.current_phase + 1) % self.n_phases
-        # else: maintain current phase (action == 0)
+        # ✅ BUG #7 FIX: Interpret action as desired phase directly
+        # Action 0 = RED phase, Action 1 = GREEN phase
+        # This fixes semantic mismatch with BaselineController:
+        #   - BaselineController returns: 1.0 (wants GREEN) or 0.0 (wants RED)
+        #   - Previous env logic: 1 (toggle), 0 (maintain) → phase desynchronization
+        #   - New logic: Action directly specifies desired phase → perfect alignment
+        # Evidence from kernel czlc: Phase stayed GREEN when should be RED, causing drainage
+        self.current_phase = int(action)
         
-        # ✅ BUG #6 FIX: ALWAYS synchronize BC with current phase
-        # This ensures boundary conditions match controller intent regardless of action
-        # Previously only updated BC when action==1, causing desynchronization
+        # ✅ BUG #6 FIX PRESERVED: ALWAYS synchronize BC with current phase
+        # This ensures boundary conditions match controller intent
         self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
         
         # Advance simulation by decision_interval

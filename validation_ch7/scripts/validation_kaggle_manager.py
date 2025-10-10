@@ -924,30 +924,26 @@ print("=" * 80)
                 import sys
                 import io
                 
+                # ✅ BUG #8 FIX: Force stdout to UTF-8 to handle Unicode in logs
+                # Kaggle API prints log content to stdout, which uses system encoding on Windows (cp1252)
+                # Unicode characters (→, ✅, ❌) cause UnicodeEncodeError
+                original_stdout = sys.stdout
+                sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+                
                 download_success = False
                 download_error = None
                 
                 try:
-                    # Option 1: Suppress log output entirely (quiet=True)
-                    # This avoids encoding issues since we persist files anyway
-                    self.api.kernels_output(kernel_slug, path=temp_dir, quiet=True)
+                    # Download with quiet=False to get full log output (now UTF-8 safe)
+                    self.api.kernels_output(kernel_slug, path=temp_dir, quiet=False)
                     download_success = True
-                except UnicodeEncodeError as e:
-                    # Encoding error - try again with quiet mode
-                    # Don't include exception message - it may contain emojis!
-                    download_error = "Unicode encoding error during download"
-                    try:
-                        self.api.kernels_output(kernel_slug, path=temp_dir, quiet=True)
-                        download_success = True
-                        download_error = None  # Success on retry
-                    except Exception as e2:
-                        # Strip non-ASCII characters from error message to avoid encoding issues
-                        error_msg = str(e2).encode('ascii', errors='ignore').decode('ascii')
-                        download_error = f"Retry failed: {error_msg}"
                 except Exception as e:
-                    # Strip non-ASCII characters from error message
+                    # If download fails, log error but continue with file checking
                     error_msg = str(e).encode('ascii', errors='ignore').decode('ascii')
-                    download_error = error_msg
+                    download_error = f"Download failed: {error_msg}"
+                finally:
+                    # Restore original stdout
+                    sys.stdout = original_stdout
                 
                 # Report status
                 if download_success:
