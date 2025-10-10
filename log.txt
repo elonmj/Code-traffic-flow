@@ -575,3 +575,14 @@
 2025-10-10 13:01:16,710 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-10 13:02:06,063 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-10 13:02:09,437 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-sfce
+2025-10-10 14:17:10,403 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 14:17:10,564 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 14:17:10,659 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-10 14:17:10,659 - validation_kaggle_manager - INFO -   M  rz_model/simulation/__pycache__/runner.cpython-312.pyc (Modified (staged))
+2025-10-10 14:17:10,660 - validation_kaggle_manager - INFO -   ?? docs/BUG_FIX_BC_LOGGING_MISSING_IN_COMPARISON.md (Untracked)
+2025-10-10 14:17:10,660 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-10 14:17:10,792 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-10 14:17:11,083 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-10 14:17:11,083 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-10 14:17:14,847 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-10 14:17:17,895 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-liaj

@@ -223,8 +223,12 @@ class TrafficSignalEnvDirect(gym.Env):
         if action == 1:
             # Switch phase
             self.current_phase = (self.current_phase + 1) % self.n_phases
-            self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
         # else: maintain current phase (action == 0)
+        
+        # ✅ BUG #6 FIX: ALWAYS synchronize BC with current phase
+        # This ensures boundary conditions match controller intent regardless of action
+        # Previously only updated BC when action==1, causing desynchronization
+        self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
         
         # Advance simulation by decision_interval
         # This executes multiple internal simulation steps (Δt_sim << Δt_dec)
