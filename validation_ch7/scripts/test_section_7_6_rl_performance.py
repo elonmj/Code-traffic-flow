@@ -272,24 +272,25 @@ class RLPerformanceValidationTest(ValidationSection):
     def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=60.0, device='gpu'):
         """Execute real ARZ simulation with direct coupling (GPU-accelerated on Kaggle).
         
-        DIAGNOSTIC MODE: Limited to 10 steps with detailed state evolution logging.
+        Quick test mode uses normal duration to allow control strategies to have measurable impact.
         """
-        # DIAGNOSTIC MODE: Force 10 steps maximum for detailed analysis
-        max_diagnostic_steps = 10
-        
         # Quick test mode: reduce duration for fast validation
         if self.quick_test:
-            duration = min(duration, 600.0)  # Max 10 minutes simulated time
-            print(f"  [QUICK TEST] Reduced duration to {duration}s", flush=True)
+            duration = min(duration, 600.0)  # Max 10 minutes simulated time (10 control steps)
+            print(f"  [QUICK TEST] Reduced duration to {duration}s (~10 control steps)", flush=True)
+        
+        # Calculate expected number of control steps
+        max_control_steps = int(duration / control_interval) + 1
+        print(f"  [INFO] Expected control steps: {max_control_steps} (duration={duration}s, interval={control_interval}s)", flush=True)
         
         self.debug_logger.info("="*80)
-        self.debug_logger.info(f"DIAGNOSTIC MODE: MAX {max_diagnostic_steps} STEPS")
         self.debug_logger.info(f"Starting run_control_simulation:")
         self.debug_logger.info(f"  - scenario_path: {scenario_path}")
         self.debug_logger.info(f"  - duration: {duration}s")
         self.debug_logger.info(f"  - control_interval: {control_interval}s")
         self.debug_logger.info(f"  - device: {device}")
         self.debug_logger.info(f"  - controller: {type(controller).__name__}")
+        self.debug_logger.info(f"  - max_control_steps: {max_control_steps}")
         self.debug_logger.info("="*80)
         
         print(f"  [INFO] Initializing TrafficSignalEnvDirect with device={device}", flush=True)
@@ -347,11 +348,11 @@ class RLPerformanceValidationTest(ValidationSection):
         total_reward = 0
         steps = 0
 
-        print(f"  [DIAGNOSTIC] Starting simulation loop (MAX {max_diagnostic_steps} steps for diagnosis)", flush=True)
-        self.debug_logger.info(f"Starting simulation loop - max {max_diagnostic_steps} steps")
+        print(f"  [INFO] Starting simulation loop (max {max_control_steps} control steps)", flush=True)
+        self.debug_logger.info(f"Starting simulation loop - max {max_control_steps} control steps")
         
         try:
-            while not (terminated or truncated) and env.runner.t < duration and steps < max_diagnostic_steps:
+            while not (terminated or truncated) and env.runner.t < duration:
                 step_start = time.perf_counter()
                 
                 # Get current state BEFORE action
@@ -428,7 +429,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 current_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
                 states_history.append(current_state.copy())  # CRITICAL: .copy() to avoid reference issues
                 
-                print(f"    [STEP {steps}/{max_diagnostic_steps}] action={action:.4f}, reward={reward:.4f}, t={env.runner.t:.1f}s, state_diff={state_diff_mean:.6e}", flush=True)
+                print(f"    [STEP {steps}/{max_control_steps}] action={action:.4f}, reward={reward:.4f}, t={env.runner.t:.1f}s, state_diff={state_diff_mean:.6e}", flush=True)
                 
         except Exception as e:
             print(f"  [ERROR] Simulation loop failed at step {steps}: {e}", flush=True)
@@ -440,11 +441,11 @@ class RLPerformanceValidationTest(ValidationSection):
         # Performance summary
         avg_step_time = np.mean(step_times) if step_times else 0
         perf_summary = f"""
-  [DIAGNOSTIC COMPLETED] Simulation summary:
-    - Total steps: {steps} (limited to {max_diagnostic_steps} for diagnosis)
+  [SIMULATION COMPLETED] Summary:
+    - Total control steps: {steps}
     - Total reward: {total_reward:.2f}
     - Avg step time: {avg_step_time:.3f}s (device={device})
-    - Simulated time: {env.runner.t:.1f}s
+    - Simulated time: {env.runner.t:.1f}s / {duration:.1f}s
     - Wallclock time: {sum(step_times):.1f}s
     - Speed ratio: {env.runner.t / sum(step_times):.2f}x real-time
 """

@@ -466,3 +466,8 @@
 2025-10-10 09:21:38,948 - validation_kaggle_manager - INFO - 📝 Detected local changes:
 2025-10-10 09:21:38,948 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
 2025-10-10 09:21:38,948 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-10 09:21:39,157 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-10 09:21:39,507 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-10 09:21:39,507 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-10 09:21:44,286 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-10 09:21:48,754 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-ohep
