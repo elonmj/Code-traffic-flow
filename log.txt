@@ -491,3 +491,17 @@
 2025-10-10 11:18:35,328 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-10 11:18:38,543 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-10 11:18:41,648 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-pxjq
+2025-10-10 11:31:05,642 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 11:31:05,756 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 11:31:05,834 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-10 11:31:05,834 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-10 11:31:05,834 - validation_kaggle_manager - INFO -   ?? "arz-validation-76rlperformance-pxjq - Copie.log" (Untracked)
+2025-10-10 11:31:05,834 - validation_kaggle_manager - INFO -   ?? arz-validation-76rlperformance-pxjq.log (Untracked)
+2025-10-10 11:31:05,834 - validation_kaggle_manager - INFO -   ?? "download (5).txt" (Untracked)
+2025-10-10 11:31:05,834 - validation_kaggle_manager - INFO -   ?? last/ (Untracked)
+2025-10-10 11:31:05,834 - validation_kaggle_manager - INFO -   ?? "results (2).zip" (Untracked)
+2025-10-10 11:31:05,834 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-10 11:31:06,045 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-10 11:31:06,242 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-10 11:31:06,242 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-10 11:31:16,881 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
