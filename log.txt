@@ -528,3 +528,15 @@
 2025-10-10 11:46:46,079 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-10 11:46:49,600 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-10 11:46:50,740 - validation_kaggle_manager - ERROR - [CRITICAL] Kernel creation failed: 429 Client Error: Too Many Requests for url: https://www.kaggle.com/api/v1/kernels/push
+2025-10-10 11:52:39,245 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 11:52:39,378 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 11:52:39,472 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-10 11:52:39,474 - validation_kaggle_manager - INFO -   M  aggle.json (Modified (staged))
+2025-10-10 11:52:39,475 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-10 11:52:39,475 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-10 11:52:39,606 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-10 11:52:39,806 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-10 11:52:39,810 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-10 11:52:43,414 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-10 11:52:46,549 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-rcix
+2025-10-10 12:23:32,979 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
