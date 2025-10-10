@@ -458,15 +458,22 @@ class RLPerformanceValidationTest(ValidationSection):
         if not states_history:
             return {'total_flow': 0, 'avg_speed': 0, 'efficiency': 0, 'delay': float('inf'), 'throughput': 0}
         
+        # DIAGNOSTIC: Log hash of states_history to verify it's unique
+        first_state_hash = hash(states_history[0].tobytes())
+        last_state_hash = hash(states_history[-1].tobytes())
         self.debug_logger.info(f"Evaluating performance with {len(states_history)} state snapshots")
+        self.debug_logger.info(f"  HASH CHECK - first={first_state_hash}, last={last_state_hash}")
+        
         flows, speeds, densities = [], [], []
         efficiency_scores = []
         
         for idx, state in enumerate(states_history):
             self.debug_logger.debug(f"State {idx}: shape={state.shape}, dtype={state.dtype}")
-            # Log first few values to verify states are different
+            # Log first AND last state samples to verify states are different
             if idx == 0:
                 self.debug_logger.info(f"First state sample - rho_m[10:15]={state[0, 10:15]}, w_m[10:15]={state[1, 10:15]}")
+            if idx == len(states_history) - 1:
+                self.debug_logger.info(f"Last state sample - rho_m[10:15]={state[0, 10:15]}, w_m[10:15]={state[1, 10:15]}")
             rho_m, w_m, rho_c, w_c = state[0, :], state[1, :], state[2, :], state[3, :]
             
             # Ignorer les cellules fantômes pour les métriques
@@ -707,7 +714,15 @@ class RLPerformanceValidationTest(ValidationSection):
             if baseline_states is None:
                 return {'success': False, 'error': 'Baseline simulation failed'}
             
-            baseline_performance = self.evaluate_traffic_performance(baseline_states, scenario_type)
+            # CRITICAL FIX: Deep copy to prevent aliasing
+            baseline_states_copy = [state.copy() for state in baseline_states]
+            self.debug_logger.info(f"Baseline states copied: {len(baseline_states_copy)} snapshots")
+            self.debug_logger.info(f"Baseline FIRST state hash: {hash(baseline_states_copy[0].tobytes())}")
+            self.debug_logger.info(f"Baseline LAST state hash: {hash(baseline_states_copy[-1].tobytes())}")
+            self.debug_logger.info(f"Baseline first state sample: rho_m[10:15]={baseline_states_copy[0][0, 10:15]}")
+            self.debug_logger.info(f"Baseline last state sample: rho_m[10:15]={baseline_states_copy[-1][0, 10:15]}")
+            
+            baseline_performance = self.evaluate_traffic_performance(baseline_states_copy, scenario_type)
             
             # Test RL controller
             print("  Running RL controller...", flush=True)
@@ -736,13 +751,27 @@ class RLPerformanceValidationTest(ValidationSection):
             if rl_states is None:
                 return {'success': False, 'error': 'RL simulation failed'}
             
-            rl_performance = self.evaluate_traffic_performance(rl_states, scenario_type)
+            # CRITICAL FIX: Deep copy to prevent aliasing
+            rl_states_copy = [state.copy() for state in rl_states]
+            self.debug_logger.info(f"RL states copied: {len(rl_states_copy)} snapshots")
+            self.debug_logger.info(f"RL FIRST state hash: {hash(rl_states_copy[0].tobytes())}")
+            self.debug_logger.info(f"RL LAST state hash: {hash(rl_states_copy[-1].tobytes())}")
+            self.debug_logger.info(f"RL first state sample: rho_m[10:15]={rl_states_copy[0][0, 10:15]}")
+            self.debug_logger.info(f"RL last state sample: rho_m[10:15]={rl_states_copy[-1][0, 10:15]}")
             
-            # DEBUG: Verify states are actually different
-            baseline_state_hash = hash(baseline_states[0].tobytes())
-            rl_state_hash = hash(rl_states[0].tobytes())
+            rl_performance = self.evaluate_traffic_performance(rl_states_copy, scenario_type)
+            
+            # DEBUG: Verify states are actually different (using copied versions)
+            baseline_state_hash = hash(baseline_states_copy[0].tobytes())
+            rl_state_hash = hash(rl_states_copy[0].tobytes())
             states_identical = (baseline_state_hash == rl_state_hash)
             self.debug_logger.warning(f"States comparison - Identical: {states_identical}, baseline_hash={baseline_state_hash}, rl_hash={rl_state_hash}")
+            
+            # Additional verification: Compare metrics BEFORE and AFTER copying
+            if states_identical:
+                self.debug_logger.error("BUG CONFIRMED: States are identical despite different simulations!")
+                self.debug_logger.error(f"baseline_states_copy[0] sample: {baseline_states_copy[0][0, 10:15]}")
+                self.debug_logger.error(f"rl_states_copy[0] sample: {rl_states_copy[0][0, 10:15]}")
             
             # DEBUG: Log performance metrics
             self.debug_logger.info(f"Baseline performance: {baseline_performance}")
