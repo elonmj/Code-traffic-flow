@@ -302,12 +302,14 @@ class RLPerformanceValidationTest(ValidationSection):
             # SENSITIVITY FIX: Move observations closer to BC (segments 3-8 instead of 8-13)
             # With 100 cells over 1km: cell 3 ≈ 30m, cell 8 ≈ 80m from left boundary
             # Much closer than before (200-325m) - should capture BC effects directly
+            # BUG #5 FIX: Pass quiet=False to enable BC logging during comparison
             env = TrafficSignalEnvDirect(
                 scenario_config_path=str(scenario_path),
                 decision_interval=control_interval,
                 episode_max_time=duration,
                 observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
-                device=device  # GPU on Kaggle, CPU locally
+                device=device,  # GPU on Kaggle, CPU locally
+                quiet=False  # BUG #5 FIX: Enable BC logging to verify Bug #4 fix
             )
             self.debug_logger.info("TrafficSignalEnvDirect created successfully")
             self.debug_logger.info("  SENSITIVITY FIX: Observation segments [3-8] ≈ 30-80m from boundary")
