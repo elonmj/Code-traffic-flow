@@ -505,3 +505,13 @@
 2025-10-10 11:31:06,242 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
 2025-10-10 11:31:06,242 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-10 11:31:16,881 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-10 11:34:56,664 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 11:34:56,805 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 11:34:56,917 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-10 11:34:56,917 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-10 11:34:56,918 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-10 11:34:57,021 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-10 11:34:57,197 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-10 11:34:57,197 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-10 11:35:01,519 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-10 11:35:02,619 - validation_kaggle_manager - ERROR - [CRITICAL] Kernel creation failed: 429 Client Error: Too Many Requests for url: https://www.kaggle.com/api/v1/kernels/push
