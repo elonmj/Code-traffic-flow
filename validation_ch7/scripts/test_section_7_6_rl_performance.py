@@ -420,6 +420,9 @@ class RLPerformanceValidationTest(ValidationSection):
                 step_times.append(step_elapsed)
                 steps += 1
                 
+                # Update controller state (CRITICAL: needed for time-based baseline logic)
+                controller.update(control_interval)
+                
                 # Store trajectory
                 # Store full state for analysis (extract from runner.U or runner.d_U)
                 current_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
