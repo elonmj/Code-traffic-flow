@@ -540,3 +540,16 @@
 2025-10-10 11:52:43,414 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-10 11:52:46,549 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-rcix
 2025-10-10 12:23:32,979 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 12:23:34,004 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 12:23:34,366 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-10 12:23:34,367 - validation_kaggle_manager - INFO -   M  rz_model/numerics/__pycache__/boundary_conditions.cpython-312.pyc (Modified (staged))
+2025-10-10 12:23:34,367 - validation_kaggle_manager - INFO -    M kaggle.json (Modified (unstaged))
+2025-10-10 12:23:34,367 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-10 12:23:34,367 - validation_kaggle_manager - INFO -   ?? Last_last/ (Untracked)
+2025-10-10 12:23:34,367 - validation_kaggle_manager - INFO -   ?? validation_launch_122311.log (Untracked)
+2025-10-10 12:23:34,368 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-10 12:23:34,825 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-10 12:23:35,424 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-10 12:23:35,425 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-10 12:23:44,490 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-10 12:23:47,494 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-jfcy

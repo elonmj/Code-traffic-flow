@@ -695,28 +695,44 @@ class SimulationRunner:
             )
         
         # Map phase_id to boundary condition configuration
-        # Phase 0 = red (outflow/free BC to drain traffic)
-        # Phase 1 = green (inflow BC to allow traffic)
+        # BUG #4 FIX: ALWAYS use inflow at upstream boundary
+        # Traffic always arrives from upstream - phase controls inflow characteristics, not BC type
+        # Phase 0 = red (reduced velocity inflow - models queue formation)
+        # Phase 1 = green (normal inflow - free flow)
         if phase_id == 0:
-            # Red phase: use outflow boundary condition
-            bc_config = {
-                'type': 'outflow',
-                'extrapolation_order': 1
-            }
+            # Red phase: Congested inflow (traffic backs up)
+            # Reduce velocity by 50% to model queue formation upstream of signal
+            if hasattr(self, 'initial_equilibrium_state'):
+                base_state = self.initial_equilibrium_state
+                red_state = [
+                    base_state[0],           # rho_m (maintain density)
+                    base_state[1] * 0.5,     # w_m (reduce velocity 50%)
+                    base_state[2],           # rho_c (maintain density)
+                    base_state[3] * 0.5      # w_c (reduce velocity 50%)
+                ]
+                bc_config = {'type': 'inflow', 'state': red_state}
+            else:
+                bc_config = {'type': 'inflow', 'state': None}
         elif phase_id == 1:
-            # Green phase: use inflow with equilibrium state
-            # Use initial_equilibrium_state if available, otherwise set to None
+            # Green phase: Normal inflow (free flow)
             bc_config = {
                 'type': 'inflow',
                 'state': self.initial_equilibrium_state if hasattr(self, 'initial_equilibrium_state') else None
             }
         else:
-            # For phase_id > 1, treat as variations (yellow, etc.)
-            # Default to outflow for now
-            bc_config = {
-                'type': 'outflow',
-                'extrapolation_order': 1
-            }
+            # For phase_id > 1, treat as variations
+            # Default to reduced inflow (like red phase)
+            if hasattr(self, 'initial_equilibrium_state'):
+                base_state = self.initial_equilibrium_state
+                reduced_state = [
+                    base_state[0],
+                    base_state[1] * 0.5,
+                    base_state[2],
+                    base_state[3] * 0.5
+                ]
+                bc_config = {'type': 'inflow', 'state': reduced_state}
+            else:
+                bc_config = {'type': 'inflow', 'state': None}
         
         # Update current boundary condition parameters
         if not hasattr(self, 'current_bc_params'):
@@ -726,7 +742,8 @@ class SimulationRunner:
         
         # SENSITIVITY FIX: Enhanced logging to verify BC updates
         if not self.quiet:
-            print(f"[BC UPDATE] {intersection_id} → phase {phase_id} ({bc_config['type']})")
+            phase_name = "RED (reduced inflow)" if phase_id == 0 else "GREEN (normal inflow)"
+            print(f"[BC UPDATE] {intersection_id} → phase {phase_id} {phase_name}")
             if bc_config['type'] == 'inflow' and bc_config.get('state') is not None:
                 state = bc_config['state']
                 print(f"  └─ Inflow state: rho_m={state[0]:.4f}, w_m={state[1]:.1f}, "
