@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\JOSAPHAT\AppData\Roaming\Python\Python312\site-packages\kaggle\api\kaggle_api_extended.py", line 2821, in kernels_output_cli
+    (_, token) = self.kernels_output(kernel, path, force, quiet)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JOSAPHAT\AppData\Roaming\Python\Python312\site-packages\kaggle\api\kaggle_api_extended.py", line 2800, in kernels_output
+    out.write(log)
+  File "C:\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 16741-16742: character maps to <undefined>
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/data/models/checkpoints/traffic_light_control_checkpoint_100_steps.zip
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/data/models/checkpoints/traffic_light_control_checkpoint_50_steps.zip
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/data/models/rl_agent_traffic_light_control.zip
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/data/models/tensorboard/PPO_1/events.out.tfevents.1759876149.DESKTOP-VO6HLNV.21976.0
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/data/models/tensorboard/PPO_2/events.out.tfevents.1759877418.DESKTOP-VO6HLNV.6660.0
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/data/models/tensorboard/PPO_2/events.out.tfevents.1760172642.4a7775f08b2a.64.0
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/debug.log
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/figures/fig_rl_learning_curve.png
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/figures/fig_rl_performance_improvements.png
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/latex/section_7_6_content.tex
+Output file downloaded to validation_output/temp_xwvw_2\section_7_6_rl_performance/session_summary.json
+Output file downloaded to validation_output/temp_xwvw_2\validation_log.txt
+Output file downloaded to validation_output/temp_xwvw_2\validation_results/session_summary.json

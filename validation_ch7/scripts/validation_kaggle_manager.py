@@ -1241,7 +1241,7 @@ print("=" * 80)
             print("\\n[ERROR] Some validations failed. Review failed sections.")
             
         # Save comprehensive report
-        with open("comprehensive_validation_report.json", "w") as f:
+        with open("comprehensive_validation_report.json", "w", encoding="utf-8") as f:
             json.dump(final_report, f, indent=2)
             
         print(f"[SAVE] Comprehensive report saved: comprehensive_validation_report.json")

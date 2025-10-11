@@ -1,3 +1,0 @@
-[INFO] Kernel elonmj/arz-validation-75digitaltwin-peej completed successfully
-[OK] Validation completed successfully!
-[SUCCESS] VALIDATION SUCCESS: All tests completed successfully

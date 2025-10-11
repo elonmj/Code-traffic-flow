@@ -1,4 +1,0 @@
-scenario,avg_density_veh_m,avg_velocity_m_s,std_density,std_velocity,mass_conservation_error_pct,success
-free_flow,0,0,0,0,0,False
-congestion,0,0,0,0,0,False
-jam_formation,0,0,0,0,0,False
