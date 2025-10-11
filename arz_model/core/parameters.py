@@ -149,7 +149,50 @@ class ModelParameters:
         self.output_dt = simulation_config.get('output_dt_sec', config.get('output_dt'))
 
         # These are typically top-level in the scenario config or base config
-        self.initial_conditions = config.get('initial_conditions', {})
+        # Load initial conditions and perform unit conversion for state arrays
+        raw_initial_conditions = config.get('initial_conditions', {})
+        self.initial_conditions = copy.deepcopy(raw_initial_conditions)
+        
+        # BUG #17 FIX: Convert IC density values from veh/km (config) to veh/m (SI units)
+        # Similar to BC conversion below, IC state arrays must be converted
+        # uniform_state() docstring explicitly expects densities in veh/m
+        ic_type = self.initial_conditions.get('type', '').lower()
+        
+        if ic_type == 'uniform':
+            state = self.initial_conditions.get('state')
+            if state is not None and len(state) == 4:
+                # Convert from [veh/km, m/s, veh/km, m/s] to [veh/m, m/s, veh/m, m/s]
+                # Velocities are already in m/s, only densities need conversion
+                self.initial_conditions['state'] = [
+                    state[0] * VEH_KM_TO_VEH_M,  # rho_m (veh/km → veh/m)
+                    state[1],                     # w_m (already m/s)
+                    state[2] * VEH_KM_TO_VEH_M,  # rho_c (veh/km → veh/m)
+                    state[3]                      # w_c (already m/s)
+                ]
+        
+        elif ic_type == 'riemann':
+            # Convert U_L (left state)
+            U_L = self.initial_conditions.get('U_L')
+            if U_L is not None and len(U_L) == 4:
+                self.initial_conditions['U_L'] = [
+                    U_L[0] * VEH_KM_TO_VEH_M,  # rho_m
+                    U_L[1],                     # w_m
+                    U_L[2] * VEH_KM_TO_VEH_M,  # rho_c
+                    U_L[3]                      # w_c
+                ]
+            
+            # Convert U_R (right state)
+            U_R = self.initial_conditions.get('U_R')
+            if U_R is not None and len(U_R) == 4:
+                self.initial_conditions['U_R'] = [
+                    U_R[0] * VEH_KM_TO_VEH_M,
+                    U_R[1],
+                    U_R[2] * VEH_KM_TO_VEH_M,
+                    U_R[3]
+                ]
+        
+        # Note: uniform_equilibrium IC is handled in runner.py with explicit conversion
+        # density_hump and sine_wave_perturbation don't use state arrays
 
         # Load boundary conditions and perform unit conversion for inflow states
         raw_boundary_conditions = config.get('boundary_conditions', {})
