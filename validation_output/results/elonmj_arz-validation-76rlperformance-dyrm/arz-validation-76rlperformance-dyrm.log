@@ -1,0 +1,386 @@
+[{"stream_name":"stdout","time":1.026132234,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":1.026214638,"data":"ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE\n"}
+,{"stream_name":"stdout","time":1.026220135,"data":"Revendications: R5\n"}
+,{"stream_name":"stdout","time":1.026223994,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":1.026228174,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":1.026240659,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":7.689832175,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":7.689942802,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":7.7401554489999995,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":7.762832419,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":7.762859917,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":7.762983459,"data":"\n"}
+,{"stream_name":"stdout","time":7.762990543,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":7.7631288000000005,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":11.397115346,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":11.397163323000001,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":11.397170184,"data":"\n"}
+,{"stream_name":"stdout","time":11.397174572,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":11.397181112,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":15.811533065999999,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":18.767138158,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":21.738839798,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":24.643146345,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":27.523527167,"data":"Installing gymnasium...\n"}
+,{"stream_name":"stdout","time":30.441404503,"data":"Installing stable-baselines3...\n"}
+,{"stream_name":"stdout","time":103.32085665,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":103.321050701,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":103.321113366,"data":"\n"}
+,{"stream_name":"stdout","time":103.321120445,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":103.321508044,"data":"[QUICK_TEST] Quick test mode enabled (100 timesteps for RL, reduced simulation time)\n"}
+,{"stream_name":"stdout","time":103.321619628,"data":"Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":103.321702992,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":103.321778672,"data":"============================================================\n"}
+,{"stream_name":"stderr","time":116.490067554,"data":"2025-10-11 11:49:47.689263: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n"}
+,{"stream_name":"stderr","time":116.728510675,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stderr","time":116.728563854,"data":"E0000 00:00:1760183387.927683      64 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n"}
+,{"stream_name":"stderr","time":116.798810735,"data":"E0000 00:00:1760183387.998080      64 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"}
+,{"stream_name":"stdout","time":129.602831468,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":129.60286232,"data":"QUICK TEST MODE ENABLED\n"}
+,{"stream_name":"stdout","time":129.60286716,"data":"- Training: 2 timesteps only\n"}
+,{"stream_name":"stdout","time":129.602871511,"data":"- Duration: 2 minutes simulated time\n"}
+,{"stream_name":"stdout","time":129.602876671,"data":"- Scenarios: 1 scenario only\n"}
+,{"stream_name":"stdout","time":129.602880653,"data":"- Expected runtime: ~5 minutes on GPU\n"}
+,{"stream_name":"stdout","time":129.602885548,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":129.603026838,"data":"[ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":129.603035837,"data":"  - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":129.603040392,"data":"  - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz\n"}
+,{"stream_name":"stdout","time":129.603044248,"data":"  - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios\n"}
+,{"stream_name":"stdout","time":129.603048084,"data":"  - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics\n"}
+,{"stream_name":"stdout","time":129.603052495,"data":"  - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex\n"}
+,{"stream_name":"stdout","time":129.603588198,"data":"2025-10-11 11:50:00 - INFO - _setup_debug_logging:119 - ================================================================================\n"}
+,{"stream_name":"stdout","time":129.603720643,"data":"2025-10-11 11:50:00 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED\n"}
+,{"stream_name":"stdout","time":129.603829158,"data":"2025-10-11 11:50:00 - INFO - _setup_debug_logging:121 - Log file: validation_output/results/local_test/section_7_6_rl_performance/debug.log\n"}
+,{"stream_name":"stdout","time":129.603920917,"data":"2025-10-11 11:50:00 - INFO - _setup_debug_logging:122 - Quick test mode: True\n"}
+,{"stream_name":"stdout","time":129.604026246,"data":"2025-10-11 11:50:00 - INFO - _setup_debug_logging:123 - ================================================================================\n"}
+,{"stream_name":"stdout","time":129.604031906,"data":"[QUICK TEST MODE] Minimal training timesteps for setup validation\n"}
+,{"stream_name":"stdout","time":129.604035891,"data":"=== Section 7.6: RL Performance Validation ===\n"}
+,{"stream_name":"stdout","time":129.604039626,"data":"Testing RL agent performance vs baseline controllers...\n"}
+,{"stream_name":"stdout","time":129.752136442,"data":"[DEVICE] Detected: GPU\n"}
+,{"stream_name":"stdout","time":129.846727067,"data":"[GPU INFO] Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":129.846764651,"data":"\n"}
+,{"stream_name":"stdout","time":129.846768271,"data":"[PHASE 1/2] Training RL agents...\n"}
+,{"stream_name":"stdout","time":129.846771199,"data":"[QUICK TEST] Training only: traffic_light_control\n"}
+,{"stream_name":"stdout","time":129.846790967,"data":"[QUICK TEST MODE] Training reduced to 100 timesteps, 120.0s episodes\n"}
+,{"stream_name":"stdout","time":129.846919857,"data":"2025-10-11 11:50:01 - INFO - train_rl_agent:580 - ================================================================================\n"}
+,{"stream_name":"stdout","time":129.847035418,"data":"2025-10-11 11:50:01 - INFO - train_rl_agent:581 - Starting train_rl_agent for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":129.847116009,"data":"2025-10-11 11:50:01 - INFO - train_rl_agent:582 -   - Device: gpu\n"}
+,{"stream_name":"stdout","time":129.847204354,"data":"2025-10-11 11:50:01 - INFO - train_rl_agent:583 -   - Total timesteps: 100\n"}
+,{"stream_name":"stdout","time":129.84728517,"data":"2025-10-11 11:50:01 - INFO - train_rl_agent:584 -   - Episode max time: 120.0s\n"}
+,{"stream_name":"stdout","time":129.847357891,"data":"2025-10-11 11:50:01 - INFO - train_rl_agent:585 -   - Checkpoint frequency: 50\n"}
+,{"stream_name":"stdout","time":129.847456104,"data":"2025-10-11 11:50:01 - INFO - train_rl_agent:586 - ================================================================================\n"}
+,{"stream_name":"stdout","time":129.847463994,"data":"\n"}
+,{"stream_name":"stdout","time":129.847468068,"data":"[TRAINING] Starting RL training for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":129.847478535,"data":"  Device: gpu\n"}
+,{"stream_name":"stdout","time":129.847482565,"data":"  Total timesteps: 100\n"}
+,{"stream_name":"stdout","time":129.84752729,"data":"  Episode max time: 120.0s\n"}
+,{"stream_name":"stdout","time":129.847537552,"data":"  Checkpoint frequency: 50 steps\n"}
+,{"stream_name":"stdout","time":129.849355605,"data":"2025-10-11 11:50:01 - INFO - _create_scenario_config:214 - Created scenario config: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":129.849413156,"data":"2025-10-11 11:50:01 - INFO - _create_scenario_config:215 -   BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)\n"}
+,{"stream_name":"stdout","time":129.849522111,"data":"2025-10-11 11:50:01 - INFO - _create_scenario_config:216 -   BUG #14 FIX: Initial=40.0/50.0 veh/km, Inflow=120.0/150.0 veh/km\n"}
+,{"stream_name":"stdout","time":129.849632828,"data":"2025-10-11 11:50:01 - INFO - _create_scenario_config:217 -   Initial velocity: w_m=15.0 m/s, w_c=13.0 m/s\n"}
+,{"stream_name":"stdout","time":129.84970415,"data":"2025-10-11 11:50:01 - INFO - _create_scenario_config:218 -   Inflow velocity: w_m=8.0 m/s, w_c=6.0 m/s\n"}
+,{"stream_name":"stdout","time":129.849726595,"data":"  [SCENARIO] Generated: traffic_light_control.yml (Queue formation: inflow 120 veh/km \u003e initial 40 veh/km)\n"}
+,{"stream_name":"stdout","time":129.850227279,"data":"Initializing simulation from scenario: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":129.850235001,"data":"Using device: gpu\n"}
+,{"stream_name":"stdout","time":129.857541108,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":129.857559306,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":129.857564693,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":129.857569065,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":129.857605817,"data":"Parameters loaded for scenario: rl_perf_traffic_light_control_sensitive\n"}
+,{"stream_name":"stdout","time":129.857776175,"data":"Grid initialized: Grid1D(N=100, xmin=0.0, xmax=1000.0, dx=10.0000, ghost=2, N_total=104, R loaded=No)\n"}
+,{"stream_name":"stdout","time":129.857784526,"data":"  Loading road quality type: uniform\n"}
+,{"stream_name":"stdout","time":129.857807718,"data":"  Uniform road quality value: 2\n"}
+,{"stream_name":"stdout","time":129.857812808,"data":"Road quality loaded.\n"}
+,{"stream_name":"stdout","time":129.857844775,"data":"  DEBUG BUG #15: Stored traffic_signal_base_state = [0.12, 2.2222222222222223, 0.15, 1.6666666666666667]\n"}
+,{"stream_name":"stdout","time":129.857849837,"data":"Initial state created.\n"}
+,{"stream_name":"stdout","time":129.85785375,"data":"Transferring initial state and road quality to GPU...\n"}
+,{"stream_name":"stdout","time":129.861292779,"data":"GPU data transfer complete.\n"}
+,{"stream_name":"stdout","time":129.861306084,"data":"  DEBUG BC Init: Calculated initial_equilibrium_state = [40.0, 15.0, 50.0, 13.0]\n"}
+,{"stream_name":"stderr","time":129.861816365,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":129.861830781,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":131.273920101,"data":"Initial boundary conditions applied.\n"}
+,{"stream_name":"stdout","time":131.273948699,"data":"TrafficSignalEnvDirect initialized:\n"}
+,{"stream_name":"stdout","time":131.273953649,"data":"  Decision interval: 60.0s\n"}
+,{"stream_name":"stdout","time":131.273957468,"data":"  Observation segments: 6\n"}
+,{"stream_name":"stdout","time":131.273962738,"data":"  Observation space: (26,)\n"}
+,{"stream_name":"stdout","time":131.27396583,"data":"  Action space: 2\n"}
+,{"stream_name":"stdout","time":131.273968368,"data":"  Device: gpu\n"}
+,{"stream_name":"stdout","time":131.273970835,"data":"  [INFO] Environment created: obs_space=(26,), action_space=2\n"}
+,{"stream_name":"stdout","time":131.274205337,"data":"  [INFO] Initializing PPO agent from scratch...\n"}
+,{"stream_name":"stdout","time":131.275010785,"data":"Using cuda device\n"}
+,{"stream_name":"stdout","time":131.275072151,"data":"Wrapping the env with a `Monitor` wrapper\n"}
+,{"stream_name":"stdout","time":131.275077497,"data":"Wrapping the env in a DummyVecEnv.\n"}
+,{"stream_name":"stderr","time":131.275561991,"data":"/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py:148: UserWarning: You have specified a mini-batch size of 64, but because the `RolloutBuffer` is of size `n_steps * n_envs = 100`, after every 1 untruncated mini-batches, there will be a truncated mini-batch of size 36\n"}
+,{"stream_name":"stderr","time":131.275573843,"data":"We recommend using a `batch_size` that is a factor of `n_steps * n_envs`.\n"}
+,{"stream_name":"stderr","time":131.275580001,"data":"Info: (n_steps=100 and n_envs=1)\n"}
+,{"stream_name":"stderr","time":131.275582825,"data":"  warnings.warn(\n"}
+,{"stream_name":"stdout","time":136.12588911,"data":"\n"}
+,{"stream_name":"stdout","time":136.125927343,"data":"  [STRATEGY] Checkpoint: every 50 steps, keep 2 latest + 1 best\n"}
+,{"stream_name":"stdout","time":136.125934236,"data":"  [INFO] Training for 100 timesteps...\n"}
+,{"stream_name":"stdout","time":136.125939776,"data":"Initializing simulation from scenario: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":136.12594734,"data":"Using device: gpu\n"}
+,{"stream_name":"stdout","time":136.134211608,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":136.134232341,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":136.134239135,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":136.134259514,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":136.134268901,"data":"Parameters loaded for scenario: rl_perf_traffic_light_control_sensitive\n"}
+,{"stream_name":"stdout","time":136.134273667,"data":"Grid initialized: Grid1D(N=100, xmin=0.0, xmax=1000.0, dx=10.0000, ghost=2, N_total=104, R loaded=No)\n"}
+,{"stream_name":"stdout","time":136.134277658,"data":"  Loading road quality type: uniform\n"}
+,{"stream_name":"stdout","time":136.134281834,"data":"  Uniform road quality value: 2\n"}
+,{"stream_name":"stdout","time":136.134287841,"data":"Road quality loaded.\n"}
+,{"stream_name":"stdout","time":136.134291599,"data":"  DEBUG BUG #15: Stored traffic_signal_base_state = [0.12, 2.2222222222222223, 0.15, 1.6666666666666667]\n"}
+,{"stream_name":"stdout","time":136.134296495,"data":"Initial state created.\n"}
+,{"stream_name":"stdout","time":136.134300868,"data":"Transferring initial state and road quality to GPU...\n"}
+,{"stream_name":"stdout","time":136.135126695,"data":"GPU data transfer complete.\n"}
+,{"stream_name":"stdout","time":136.135136802,"data":"  DEBUG BC Init: Calculated initial_equilibrium_state = [40.0, 15.0, 50.0, 13.0]\n"}
+,{"stream_name":"stdout","time":136.136226484,"data":"Initial boundary conditions applied.\n"}
+,{"stream_name":"stdout","time":136.136589282,"data":"  DEBUG set_traffic_signal_state: Using traffic_signal_base_state = [0.12, 2.2222222222222223, 0.15, 1.6666666666666667]\n"}
+,{"stream_name":"stdout","time":136.136615914,"data":"[BC UPDATE] left à phase 0 RED (reduced inflow)\n"}
+,{"stream_name":"stdout","time":136.136621959,"data":"  └─ Inflow state: rho_m=0.1200, w_m=1.1, rho_c=0.1500, w_c=0.8\n"}
+,{"stream_name":"stdout","time":136.141984797,"data":"Logging to validation_output/results/local_test/section_7_6_rl_performance/data/models/tensorboard/PPO_2\n"}
+,{"stream_name":"stdout","time":136.14219757,"data":"\n"}
+,{"stream_name":"stdout","time":136.142206103,"data":" Training started: 100 total timesteps\n"}
+,{"stream_name":"stdout","time":136.746302696,"data":"  DEBUG set_traffic_signal_state: Using traffic_signal_base_state = [0.12, 2.2222222222222223, 0.15, 1.6666666666666667]\n"}
+,{"stream_name":"stdout","time":136.746336577,"data":"[BC UPDATE] left à phase 1 GREEN (normal inflow)\n"}
+,{"stream_name":"stdout","time":136.746342754,"data":"  └─ Inflow state: rho_m=0.1200, w_m=2.2, rho_c=0.1500, w_c=1.7\n"}
+,{"stream_name":"stdout","time":136.746346912,"data":"Running simulation until t = 60.00 s, outputting every 60.00 s\n"}
+,{"stream_name":"stderr","time":136.746891259,"data":"\n"}
+,{"stream_name":"stderr","time":136.78593458,"data":"\rRunning Simulation:   0%|          | 0.0/60.0 [00:00\u003c?, ?s/s]\u001b[A/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":136.785962946,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":137.516975696,"data":"\rRunning Simulation:   0%|          | 0.0/60.0 [00:00\u003c?, ?s/s]\n"}
+,{"stream_name":"stdout","time":137.519011975,"data":"2025-10-11 11:50:08 - ERROR - train_rl_agent:710 - Training failed for traffic_light_control: CFL Check (GPU): Extremely large max_abs_lambda detected (1.1400e+06 m/s), stopping simulation.\n"}
+,{"stream_name":"stdout","time":137.519035571,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":137.519040865,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 693, in train_rl_agent\n"}
+,{"stream_name":"stdout","time":137.51906038,"data":"    model.learn(\n"}
+,{"stream_name":"stdout","time":137.519064344,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py\", line 308, in learn\n"}
+,{"stream_name":"stdout","time":137.519068508,"data":"    return super().learn(\n"}
+,{"stream_name":"stdout","time":137.519072679,"data":"           ^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":137.519076656,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py\", line 259, in learn\n"}
+,{"stream_name":"stdout","time":137.519081344,"data":"    continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, n_rollout_steps=self.n_steps)\n"}
+,{"stream_name":"stdout","time":137.519085164,"data":"                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":137.519089935,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py\", line 178, in collect_rollouts\n"}
+,{"stream_name":"stdout","time":137.519094079,"data":"    new_obs, rewards, dones, infos = env.step(clipped_actions)\n"}
+,{"stream_name":"stdout","time":137.519097789,"data":"                                     ^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":137.519101456,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/base_vec_env.py\", line 197, in step\n"}
+,{"stream_name":"stdout","time":137.519105366,"data":"    return self.step_wait()\n"}
+,{"stream_name":"stdout","time":137.519108886,"data":"           ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":137.519112449,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py\", line 58, in step_wait\n"}
+,{"stream_name":"stdout","time":137.519118109,"data":"    obs, self.buf_rews[env_idx], terminated, truncated, self.buf_infos[env_idx] = self.envs[env_idx].step(\n"}
+,{"stream_name":"stdout","time":137.519121404,"data":"                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":137.51912403,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py\", line 94, in step\n"}
+,{"stream_name":"stdout","time":137.519126609,"data":"    observation, reward, terminated, truncated, info = self.env.step(action)\n"}
+,{"stream_name":"stdout","time":137.519129175,"data":"                                                       ^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":137.519131707,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 238, in step\n"}
+,{"stream_name":"stdout","time":137.519135059,"data":"    self.runner.run(t_final=target_time, output_dt=self.decision_interval)\n"}
+,{"stream_name":"stdout","time":137.519137577,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 522, in run\n"}
+,{"stream_name":"stdout","time":137.519140243,"data":"    dt = cfl.calculate_cfl_dt(current_U, self.grid, self.params)\n"}
+,{"stream_name":"stdout","time":137.519142734,"data":"         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":137.519145196,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/numerics/cfl.py\", line 175, in calculate_cfl_dt\n"}
+,{"stream_name":"stdout","time":137.519147771,"data":"    raise ValueError(f\"CFL Check (GPU): Extremely large max_abs_lambda detected ({max_abs_lambda:.4e} m/s), stopping simulation.\")\n"}
+,{"stream_name":"stdout","time":137.519150513,"data":"ValueError: CFL Check (GPU): Extremely large max_abs_lambda detected (1.1400e+06 m/s), stopping simulation.\n"}
+,{"stream_name":"stdout","time":137.519157338,"data":"[ERROR] Training failed for traffic_light_control: CFL Check (GPU): Extremely large max_abs_lambda detected (1.1400e+06 m/s), stopping simulation.\n"}
+,{"stream_name":"stderr","time":137.519614921,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":137.519911046,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 693, in train_rl_agent\n"}
+,{"stream_name":"stderr","time":137.519919094,"data":"    model.learn(\n"}
+,{"stream_name":"stderr","time":137.519923412,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py\", line 308, in learn\n"}
+,{"stream_name":"stderr","time":137.519928042,"data":"    return super().learn(\n"}
+,{"stream_name":"stderr","time":137.519932551,"data":"           ^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":137.519937375,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py\", line 259, in learn\n"}
+,{"stream_name":"stderr","time":137.519942327,"data":"    continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, n_rollout_steps=self.n_steps)\n"}
+,{"stream_name":"stderr","time":137.519946759,"data":"                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":137.519950884,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py\", line 178, in collect_rollouts\n"}
+,{"stream_name":"stderr","time":137.519955624,"data":"    new_obs, rewards, dones, infos = env.step(clipped_actions)\n"}
+,{"stream_name":"stderr","time":137.51996009,"data":"                                     ^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":137.519964285,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/base_vec_env.py\", line 197, in step\n"}
+,{"stream_name":"stderr","time":137.519968836,"data":"    return self.step_wait()\n"}
+,{"stream_name":"stderr","time":137.519972515,"data":"           ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":137.519976039,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py\", line 58, in step_wait\n"}
+,{"stream_name":"stderr","time":137.519979947,"data":"    obs, self.buf_rews[env_idx], terminated, truncated, self.buf_infos[env_idx] = self.envs[env_idx].step(\n"}
+,{"stream_name":"stderr","time":137.519983863,"data":"                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":137.519987684,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py\", line 94, in step\n"}
+,{"stream_name":"stderr","time":137.519991562,"data":"    observation, reward, terminated, truncated, info = self.env.step(action)\n"}
+,{"stream_name":"stderr","time":137.519995288,"data":"                                                       ^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":137.519998933,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 238, in step\n"}
+,{"stream_name":"stderr","time":137.520002824,"data":"    self.runner.run(t_final=target_time, output_dt=self.decision_interval)\n"}
+,{"stream_name":"stderr","time":137.520006519,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 522, in run\n"}
+,{"stream_name":"stderr","time":137.520010397,"data":"    dt = cfl.calculate_cfl_dt(current_U, self.grid, self.params)\n"}
+,{"stream_name":"stderr","time":137.520022556,"data":"         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":137.520025385,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/numerics/cfl.py\", line 175, in calculate_cfl_dt\n"}
+,{"stream_name":"stderr","time":137.520028022,"data":"    raise ValueError(f\"CFL Check (GPU): Extremely large max_abs_lambda detected ({max_abs_lambda:.4e} m/s), stopping simulation.\")\n"}
+,{"stream_name":"stderr","time":137.520030678,"data":"ValueError: CFL Check (GPU): Extremely large max_abs_lambda detected (1.1400e+06 m/s), stopping simulation.\n"}
+,{"stream_name":"stdout","time":137.520213322,"data":"\n"}
+,{"stream_name":"stdout","time":137.520220126,"data":"[PHASE 2/2] Running performance comparisons...\n"}
+,{"stream_name":"stdout","time":137.520224365,"data":"[QUICK TEST] Testing only: traffic_light_control\n"}
+,{"stream_name":"stdout","time":137.520228793,"data":"\n"}
+,{"stream_name":"stdout","time":137.520232652,"data":"Testing scenario: traffic_light_control (device=gpu)\n"}
+,{"stream_name":"stdout","time":137.520310752,"data":"2025-10-11 11:50:08 - INFO - run_performance_comparison:718 - ================================================================================\n"}
+,{"stream_name":"stdout","time":137.520399617,"data":"2025-10-11 11:50:08 - INFO - run_performance_comparison:719 - Starting run_performance_comparison for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":137.520474904,"data":"2025-10-11 11:50:08 - INFO - run_performance_comparison:720 - Device: gpu\n"}
+,{"stream_name":"stdout","time":137.520592007,"data":"2025-10-11 11:50:08 - INFO - run_performance_comparison:721 - ================================================================================\n"}
+,{"stream_name":"stdout","time":137.520678447,"data":"2025-10-11 11:50:08 - INFO - run_performance_comparison:722 - ================================================================================\n"}
+,{"stream_name":"stdout","time":137.520761511,"data":"2025-10-11 11:50:08 - INFO - run_performance_comparison:723 - Starting run_performance_comparison for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":137.520827985,"data":"2025-10-11 11:50:08 - INFO - run_performance_comparison:724 - Device: gpu\n"}
+,{"stream_name":"stdout","time":137.520895002,"data":"2025-10-11 11:50:08 - INFO - run_performance_comparison:725 - ================================================================================\n"}
+,{"stream_name":"stdout","time":137.522356871,"data":"2025-10-11 11:50:08 - INFO - _create_scenario_config:214 - Created scenario config: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":137.522408633,"data":"2025-10-11 11:50:08 - INFO - _create_scenario_config:215 -   BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)\n"}
+,{"stream_name":"stdout","time":137.522544838,"data":"2025-10-11 11:50:08 - INFO - _create_scenario_config:216 -   BUG #14 FIX: Initial=40.0/50.0 veh/km, Inflow=120.0/150.0 veh/km\n"}
+,{"stream_name":"stdout","time":137.522654122,"data":"2025-10-11 11:50:08 - INFO - _create_scenario_config:217 -   Initial velocity: w_m=15.0 m/s, w_c=13.0 m/s\n"}
+,{"stream_name":"stdout","time":137.522730883,"data":"2025-10-11 11:50:08 - INFO - _create_scenario_config:218 -   Inflow velocity: w_m=8.0 m/s, w_c=6.0 m/s\n"}
+,{"stream_name":"stdout","time":137.522774834,"data":"  [SCENARIO] Generated: traffic_light_control.yml (Queue formation: inflow 120 veh/km \u003e initial 40 veh/km)\n"}
+,{"stream_name":"stdout","time":137.52278347,"data":"  Running baseline controller...\n"}
+,{"stream_name":"stdout","time":137.522787248,"data":"  [QUICK TEST] Reduced duration to 600.0s (~10 control steps)\n"}
+,{"stream_name":"stdout","time":137.522800759,"data":"  [INFO] Expected control steps: 11 (duration=600.0s, interval=60.0s)\n"}
+,{"stream_name":"stdout","time":137.522863827,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:298 - ================================================================================\n"}
+,{"stream_name":"stdout","time":137.52294511,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:299 - Starting run_control_simulation:\n"}
+,{"stream_name":"stdout","time":137.523021019,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:300 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":137.523104436,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:301 -   - duration: 600.0s\n"}
+,{"stream_name":"stdout","time":137.523191461,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:302 -   - control_interval: 60.0s\n"}
+,{"stream_name":"stdout","time":137.523261986,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:303 -   - device: gpu\n"}
+,{"stream_name":"stdout","time":137.523348413,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:304 -   - controller: BaselineController\n"}
+,{"stream_name":"stdout","time":137.523421648,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:305 -   - max_control_steps: 11\n"}
+,{"stream_name":"stdout","time":137.523524816,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:306 - ================================================================================\n"}
+,{"stream_name":"stdout","time":137.523569145,"data":"  [INFO] Initializing TrafficSignalEnvDirect with device=gpu\n"}
+,{"stream_name":"stdout","time":137.523638904,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:311 - Creating TrafficSignalEnvDirect instance...\n"}
+,{"stream_name":"stdout","time":137.524049041,"data":"Initializing simulation from scenario: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":137.524055786,"data":"Using device: gpu\n"}
+,{"stream_name":"stdout","time":137.530802428,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":137.530821747,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":137.530827026,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":137.530831335,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":137.530835101,"data":"Parameters loaded for scenario: rl_perf_traffic_light_control_sensitive\n"}
+,{"stream_name":"stdout","time":137.530933921,"data":"Grid initialized: Grid1D(N=100, xmin=0.0, xmax=1000.0, dx=10.0000, ghost=2, N_total=104, R loaded=No)\n"}
+,{"stream_name":"stdout","time":137.530942096,"data":"  Loading road quality type: uniform\n"}
+,{"stream_name":"stdout","time":137.530946471,"data":"  Uniform road quality value: 2\n"}
+,{"stream_name":"stdout","time":137.530950524,"data":"Road quality loaded.\n"}
+,{"stream_name":"stdout","time":137.530954566,"data":"  DEBUG BUG #15: Stored traffic_signal_base_state = [0.12, 2.2222222222222223, 0.15, 1.6666666666666667]\n"}
+,{"stream_name":"stdout","time":137.530977588,"data":"Initial state created.\n"}
+,{"stream_name":"stdout","time":137.530984709,"data":"Transferring initial state and road quality to GPU...\n"}
+,{"stream_name":"stdout","time":137.531757067,"data":"GPU data transfer complete.\n"}
+,{"stream_name":"stdout","time":137.531768208,"data":"  DEBUG BC Init: Calculated initial_equilibrium_state = [40.0, 15.0, 50.0, 13.0]\n"}
+,{"stream_name":"stdout","time":137.532104055,"data":"Initial boundary conditions applied.\n"}
+,{"stream_name":"stdout","time":137.532120297,"data":"TrafficSignalEnvDirect initialized:\n"}
+,{"stream_name":"stdout","time":137.532124959,"data":"  Decision interval: 60.0s\n"}
+,{"stream_name":"stdout","time":137.532129392,"data":"  Observation segments: 6\n"}
+,{"stream_name":"stdout","time":137.532133367,"data":"  Observation space: (26,)\n"}
+,{"stream_name":"stdout","time":137.532137882,"data":"  Action space: 2\n"}
+,{"stream_name":"stdout","time":137.532142433,"data":"  Device: gpu\n"}
+,{"stream_name":"stdout","time":137.532287865,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:326 - TrafficSignalEnvDirect created successfully\n"}
+,{"stream_name":"stdout","time":137.532415034,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:327 -   SENSITIVITY FIX: Observation segments [3-8] ~ 30-80m from boundary\n"}
+,{"stream_name":"stdout","time":137.532422405,"data":"  [INFO] Calling env.reset()...\n"}
+,{"stream_name":"stdout","time":137.53253175,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:343 - Calling env.reset()...\n"}
+,{"stream_name":"stdout","time":137.532580556,"data":"Initializing simulation from scenario: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":137.53258585,"data":"Using device: gpu\n"}
+,{"stream_name":"stdout","time":137.53914364,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":137.539161661,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":137.539167032,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":137.539171664,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":137.53917611399999,"data":"Parameters loaded for scenario: rl_perf_traffic_light_control_sensitive\n"}
+,{"stream_name":"stdout","time":137.539194009,"data":"Grid initialized: Grid1D(N=100, xmin=0.0, xmax=1000.0, dx=10.0000, ghost=2, N_total=104, R loaded=No)\n"}
+,{"stream_name":"stdout","time":137.539205908,"data":"  Loading road quality type: uniform\n"}
+,{"stream_name":"stdout","time":137.539210383,"data":"  Uniform road quality value: 2\n"}
+,{"stream_name":"stdout","time":137.539222726,"data":"Road quality loaded.\n"}
+,{"stream_name":"stdout","time":137.539228889,"data":"  DEBUG BUG #15: Stored traffic_signal_base_state = [0.12, 2.2222222222222223, 0.15, 1.6666666666666667]\n"}
+,{"stream_name":"stdout","time":137.539280706,"data":"Initial state created.\n"}
+,{"stream_name":"stdout","time":137.539287828,"data":"Transferring initial state and road quality to GPU...\n"}
+,{"stream_name":"stdout","time":137.539942697,"data":"GPU data transfer complete.\n"}
+,{"stream_name":"stdout","time":137.539960467,"data":"  DEBUG BC Init: Calculated initial_equilibrium_state = [40.0, 15.0, 50.0, 13.0]\n"}
+,{"stream_name":"stdout","time":137.540161985,"data":"Initial boundary conditions applied.\n"}
+,{"stream_name":"stdout","time":137.540349744,"data":"  DEBUG set_traffic_signal_state: Using traffic_signal_base_state = [0.12, 2.2222222222222223, 0.15, 1.6666666666666667]\n"}
+,{"stream_name":"stdout","time":137.540359842,"data":"[BC UPDATE] left à phase 0 RED (reduced inflow)\n"}
+,{"stream_name":"stdout","time":137.540364586,"data":"  └─ Inflow state: rho_m=0.1200, w_m=1.1, rho_c=0.1500, w_c=0.8\n"}
+,{"stream_name":"stdout","time":137.542140521,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:345 - env.reset() successful - obs shape: (26,), info: {'episode_step': 0, 'simulation_time': 0.0, 'current_phase': 0}\n"}
+,{"stream_name":"stdout","time":137.542366426,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:349 - INITIAL STATE shape: (4, 104), dtype: float64\n"}
+,{"stream_name":"stdout","time":137.542670204,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:350 - INITIAL STATE statistics: mean=2.895269e+01, std=1.623802e+01, min=1.200000e-01, max=5.000000e+01\n"}
+,{"stream_name":"stdout","time":137.542683993,"data":"  [INFO] Starting simulation loop (max 11 control steps)\n"}
+,{"stream_name":"stdout","time":137.542744689,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:366 - Starting simulation loop - max 11 control steps\n"}
+,{"stream_name":"stdout","time":137.542992761,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:380 - ================================================================================\n"}
+,{"stream_name":"stdout","time":137.543026728,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:381 - STEP 0 START:\n"}
+,{"stream_name":"stdout","time":137.543169932,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:382 -   Controller: BaselineController\n"}
+,{"stream_name":"stdout","time":137.543253038,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:383 -   Action: 1.000000\n"}
+,{"stream_name":"stdout","time":137.543350821,"data":"2025-10-11 11:50:08 - INFO - run_control_simulation:384 -   Simulation time: 0.00s\n"}
+,{"stream_name":"stdout","time":137.543371538,"data":"  DEBUG set_traffic_signal_state: Using traffic_signal_base_state = [0.12, 2.2222222222222223, 0.15, 1.6666666666666667]\n"}
+,{"stream_name":"stdout","time":137.543377283,"data":"[BC UPDATE] left à phase 1 GREEN (normal inflow)\n"}
+,{"stream_name":"stdout","time":137.543403448,"data":"  └─ Inflow state: rho_m=0.1200, w_m=2.2, rho_c=0.1500, w_c=1.7\n"}
+,{"stream_name":"stdout","time":137.543438932,"data":"Running simulation until t = 60.00 s, outputting every 60.00 s\n"}
+,{"stream_name":"stderr","time":137.543697064,"data":"\n"}
+,{"stream_name":"stderr","time":137.544663255,"data":"\rRunning Simulation:   0%|          | 0.0/60.0 [00:00\u003c?, ?s/s]\u001b[A/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":137.544683708,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":137.545397134,"data":"\rRunning Simulation:   0%|          | 0.0/60.0 [00:00\u003c?, ?s/s]\n"}
+,{"stream_name":"stdout","time":137.546267681,"data":"2025-10-11 11:50:08 - ERROR - run_control_simulation:401 - env.step() failed at step 0: CFL Check (GPU): Extremely large max_abs_lambda detected (1.1400e+06 m/s), stopping simulation.\n"}
+,{"stream_name":"stdout","time":137.546280995,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":137.546285672,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 393, in run_control_simulation\n"}
+,{"stream_name":"stdout","time":137.546290279,"data":"    obs, reward, terminated, truncated, info = env.step(action)\n"}
+,{"stream_name":"stdout","time":137.546293942,"data":"                                               ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":137.546298076,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 238, in step\n"}
+,{"stream_name":"stdout","time":137.546302912,"data":"    self.runner.run(t_final=target_time, output_dt=self.decision_interval)\n"}
+,{"stream_name":"stdout","time":137.546307355,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 522, in run\n"}
+,{"stream_name":"stdout","time":137.546312058,"data":"    dt = cfl.calculate_cfl_dt(current_U, self.grid, self.params)\n"}
+,{"stream_name":"stdout","time":137.546326412,"data":"         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":137.546331865,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/numerics/cfl.py\", line 175, in calculate_cfl_dt\n"}
+,{"stream_name":"stdout","time":137.546334618,"data":"    raise ValueError(f\"CFL Check (GPU): Extremely large max_abs_lambda detected ({max_abs_lambda:.4e} m/s), stopping simulation.\")\n"}
+,{"stream_name":"stdout","time":137.546337293,"data":"ValueError: CFL Check (GPU): Extremely large max_abs_lambda detected (1.1400e+06 m/s), stopping simulation.\n"}
+,{"stream_name":"stdout","time":137.546339891,"data":"  [ERROR] Simulation loop failed at step 0: CFL Check (GPU): Extremely large max_abs_lambda detected (1.1400e+06 m/s), stopping simulation.\n"}
+,{"stream_name":"stderr","time":137.546875927,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":137.547047103,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 393, in run_control_simulation\n"}
+,{"stream_name":"stderr","time":137.547054913,"data":"    obs, reward, terminated, truncated, info = env.step(action)\n"}
+,{"stream_name":"stderr","time":137.547058805,"data":"                                               ^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":137.547062696,"data":"  File \"/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py\", line 238, in step\n"}
+,{"stream_name":"stderr","time":137.54706654,"data":"    self.runner.run(t_final=target_time, output_dt=self.decision_interval)\n"}
+,{"stream_name":"stderr","time":137.547070363,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 522, in run\n"}
+,{"stream_name":"stderr","time":137.547073858,"data":"    dt = cfl.calculate_cfl_dt(current_U, self.grid, self.params)\n"}
+,{"stream_name":"stderr","time":137.547076732,"data":"         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":137.547079171,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/numerics/cfl.py\", line 175, in calculate_cfl_dt\n"}
+,{"stream_name":"stderr","time":137.547081744,"data":"    raise ValueError(f\"CFL Check (GPU): Extremely large max_abs_lambda detected ({max_abs_lambda:.4e} m/s), stopping simulation.\")\n"}
+,{"stream_name":"stderr","time":137.547084446,"data":"ValueError: CFL Check (GPU): Extremely large max_abs_lambda detected (1.1400e+06 m/s), stopping simulation.\n"}
+,{"stream_name":"stdout","time":137.547361156,"data":"\n"}
+,{"stream_name":"stdout","time":137.547367119,"data":"[FIGURES] Generating RL performance figures...\n"}
+,{"stream_name":"stdout","time":138.14387565,"data":"  [OK] fig_rl_performance_improvements.png\n"}
+,{"stream_name":"stdout","time":138.675586578,"data":"  [OK] fig_rl_learning_curve.png\n"}
+,{"stream_name":"stdout","time":138.675621332,"data":"[FIGURES] Generated 2 figures in validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":138.675627522,"data":"\n"}
+,{"stream_name":"stdout","time":138.675631583,"data":"[METRICS] Saving RL performance metrics...\n"}
+,{"stream_name":"stdout","time":138.686951383,"data":"  [OK] validation_output/results/local_test/section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv\n"}
+,{"stream_name":"stdout","time":138.686972206,"data":"\n"}
+,{"stream_name":"stdout","time":138.686977051,"data":"[LATEX] Generating content for Section 7.6...\n"}
+,{"stream_name":"stdout","time":138.687126943,"data":"  [OK] validation_output/results/local_test/section_7_6_rl_performance/latex/section_7_6_content.tex\n"}
+,{"stream_name":"stdout","time":138.687145525,"data":"\n"}
+,{"stream_name":"stdout","time":138.687150311,"data":"=== RL Performance Validation Summary ===\n"}
+,{"stream_name":"stdout","time":138.687154909,"data":"Scenarios passed: 0/1 (0.0%)\n"}
+,{"stream_name":"stdout","time":138.687159341,"data":"Average flow improvement: 0.00%\n"}
+,{"stream_name":"stdout","time":138.687163409,"data":"Average efficiency improvement: 0.00%\n"}
+,{"stream_name":"stdout","time":138.687166923,"data":"Average delay reduction: 0.00%\n"}
+,{"stream_name":"stdout","time":138.687170503,"data":"Overall validation: FAILED\n"}
+,{"stream_name":"stdout","time":138.688140109,"data":"[SUMMARY] Created: validation_output/results/local_test/section_7_6_rl_performance/session_summary.json\n"}
+,{"stream_name":"stdout","time":139.093122608,"data":"   0%                                      0/100  [ 0:00:02 \u003c -:--:-- , ? it/s ]\n"}
+,{"stream_name":"stdout","time":141.088319639,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":141.088468304,"data":"\n"}
+,{"stream_name":"stdout","time":141.088481897,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":141.088710818,"data":"[ARTIFACTS] Copying results for section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":141.092065702,"data":"[OK] Section copied to: /kaggle/working/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":141.093058927,"data":"[ARTIFACTS] NPZ files: 0\n"}
+,{"stream_name":"stdout","time":141.093180357,"data":"[ARTIFACTS] PNG figures: 2\n"}
+,{"stream_name":"stdout","time":141.093237355,"data":"[ARTIFACTS] YAML scenarios: 1\n"}
+,{"stream_name":"stdout","time":141.093336141,"data":"[ARTIFACTS] TEX files: 1\n"}
+,{"stream_name":"stdout","time":141.093425881,"data":"[ARTIFACTS] JSON files: 1\n"}
+,{"stream_name":"stdout","time":141.093482716,"data":"[ARTIFACTS] CSV metrics: 1\n"}
+,{"stream_name":"stdout","time":141.09360349,"data":"TRACKING_SUCCESS: Artifacts copied\n"}
+,{"stream_name":"stdout","time":141.093676267,"data":"[SUCCESS] All artifacts organized and copied\n"}
+,{"stream_name":"stdout","time":141.093754195,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":141.131728288,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":141.131819718,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":141.132172684,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":141.132258653,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":141.132329044,"data":"\n"}
+,{"stream_name":"stdout","time":141.132336932,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":141.132399192,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":141.132554096,"data":"\n"}
+,{"stream_name":"stdout","time":141.132565428,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":141.132569472,"data":"VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED\n"}
+,{"stream_name":"stdout","time":141.132573168,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":141.132576936,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":144.622950898,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":144.622999871,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":144.661795619,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":145.397989797,"data":"[NbConvertApp] Writing 321268 bytes to __results__.html\n"}
+]
