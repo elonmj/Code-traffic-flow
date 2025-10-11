@@ -170,14 +170,11 @@ class RLPerformanceValidationTest(ValidationSection):
 
         if scenario_type == 'traffic_light_control':
             config['parameters'] = {'V0_m': 25.0, 'V0_c': 22.2, 'tau_m': 1.0, 'tau_c': 1.2}
-            # ✅ BUG #10 FIX: UNIFORM congestion IC (no shock wave)
-            # Realistic scenario: traffic light manages upstream congestion
+            # ✅ BUG #11 FIX: CORRECT FORMAT for 'uniform' IC type
+            # runner.py expects 'state': [rho_m, w_m, rho_c, w_c] NOT separate keys!
             config['initial_conditions'] = {
                 'type': 'uniform',
-                'rho_m': rho_m_uniform_si,
-                'w_m': w_m_uniform,
-                'rho_c': rho_c_uniform_si,
-                'w_c': w_c_uniform
+                'state': [rho_m_uniform_si, w_m_uniform, rho_c_uniform_si, w_c_uniform]
             }
         elif scenario_type == 'ramp_metering':
             config['parameters'] = {'V0_m': 27.8, 'V0_c': 25.0, 'tau_m': 0.8, 'tau_c': 1.0}

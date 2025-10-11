@@ -619,3 +619,13 @@
 2025-10-10 16:31:55,099 - validation_kaggle_manager - INFO - 📍 Current branch: main
 2025-10-10 16:31:55,298 - validation_kaggle_manager - INFO - ✅ Git repository is clean and up to date
 2025-10-10 16:31:58,356 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-pjkq
+2025-10-10 17:14:36,453 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-10 17:14:36,687 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-10 17:14:36,820 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-10 17:14:36,820 - validation_kaggle_manager - INFO -   M  rz_model/simulation/__pycache__/runner.cpython-312.pyc (Modified (staged))
+2025-10-10 17:14:36,825 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-10 17:14:36,925 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-10 17:14:37,730 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-10 17:14:37,730 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-10 17:14:43,416 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-10 17:14:46,692 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-qgzo

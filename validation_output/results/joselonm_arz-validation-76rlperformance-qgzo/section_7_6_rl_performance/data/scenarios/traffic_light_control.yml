@@ -11,12 +11,11 @@ boundary_conditions:
   right:
     type: outflow
 initial_conditions:
-  state:
-  - 0.08
-  - 12.0
-  - 0.1
-  - 10.0
+  rho_c: 0.1
+  rho_m: 0.08
   type: uniform
+  w_c: 10.0
+  w_m: 12.0
 output_dt: 60.0
 parameters:
   V0_c: 22.2

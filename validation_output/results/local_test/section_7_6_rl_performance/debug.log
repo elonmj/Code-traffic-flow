@@ -1,9 +1,9 @@
-2025-10-09 23:14:12 - INFO - _setup_debug_logging:119 - ================================================================================
-2025-10-09 23:14:12 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED
-2025-10-09 23:14:12 - INFO - _setup_debug_logging:121 - Log file: validation_output\results\local_test\section_7_6_rl_performance\debug.log
-2025-10-09 23:14:12 - INFO - _setup_debug_logging:122 - Quick test mode: True
-2025-10-09 23:14:12 - INFO - _setup_debug_logging:123 - ================================================================================
-2025-10-09 23:14:12 - INFO - _create_scenario_config:203 - Created scenario config: traffic_light_control.yml
-2025-10-09 23:14:12 - INFO - _create_scenario_config:204 -   SENSITIVITY FIX: Domain=1km, Riemann IC with shock at 500m
-2025-10-09 23:14:12 - INFO - _create_scenario_config:205 -   High density (left): rho_m=100.0 veh/km, rho_c=120.0 veh/km
-2025-10-09 23:14:12 - INFO - _create_scenario_config:206 -   Low density (right): rho_m=30.0 veh/km, rho_c=40.0 veh/km
+2025-10-11 07:24:10 - INFO - _setup_debug_logging:119 - ================================================================================
+2025-10-11 07:24:10 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED
+2025-10-11 07:24:10 - INFO - _setup_debug_logging:121 - Log file: validation_output\results\local_test\section_7_6_rl_performance\debug.log
+2025-10-11 07:24:10 - INFO - _setup_debug_logging:122 - Quick test mode: True
+2025-10-11 07:24:10 - INFO - _setup_debug_logging:123 - ================================================================================
+2025-10-11 07:24:10 - INFO - _create_scenario_config:202 - Created scenario config: traffic_light_control.yml
+2025-10-11 07:24:10 - INFO - _create_scenario_config:203 -   BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)
+2025-10-11 07:24:10 - INFO - _create_scenario_config:204 -   Uniform density: rho_m=80.0 veh/km, rho_c=100.0 veh/km
+2025-10-11 07:24:10 - INFO - _create_scenario_config:205 -   Uniform velocity: w_m=12.0 m/s, w_c=10.0 m/s
