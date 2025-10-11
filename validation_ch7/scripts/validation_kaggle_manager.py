@@ -308,7 +308,7 @@ class ValidationKaggleManager:
         }
         return status_map.get(status_code, f'Unknown ({status_code})')
         
-    def _build_validation_kernel_script(self, section: Dict[str, Any]) -> str:
+    def _build_validation_kernel_script(self, section: Dict[str, Any], test_timeout: int = 14400) -> str:
         """
         Build validation kernel script with FULL CLEANUP pattern from kaggle_manager_github.py.
         
@@ -316,6 +316,10 @@ class ValidationKaggleManager:
         - Clone repo → Run validation → Copy artifacts → CLEANUP repo → session_summary.json
         - Only /kaggle/working/validation_results/ preserved in output
         - NPZ files + figures + metrics organized by section
+        
+        Args:
+            section: Section configuration dictionary
+            test_timeout: Timeout in seconds for test execution (default: 14400 = 4 hours)
         """
         
         return f'''#!/usr/bin/env python3
@@ -473,7 +477,7 @@ try:
             [sys.executable, "-u", "-m", test_module],  # -u for unbuffered output
             capture_output=False,  # CRITICAL: Don't buffer output
             text=True,
-            timeout=3000,  # 50 minutes max for tests
+            timeout={test_timeout},  # Configurable timeout (passed from run_validation_section)
             env=env,
             cwd=REPO_DIR
         )
@@ -487,7 +491,7 @@ try:
             log_and_print("warning", f"[WARNING] Tests returned code: {{result.returncode}}")
     
     except subprocess.TimeoutExpired:
-        log_and_print("error", "[ERROR] Validation test timeout (50 minutes)")
+        log_and_print("error", f"[ERROR] Validation test timeout ({test_timeout // 60} minutes)")
     except Exception as e:
         log_and_print("error", f"[ERROR] Validation execution failed: {{e}}")
         import traceback
@@ -611,12 +615,16 @@ print("Output ready at: /kaggle/working/validation_results/")
 print("=" * 80)
 '''
     
-    def create_validation_kernel_script(self, section: Dict[str, Any]) -> str:
+    def create_validation_kernel_script(self, section: Dict[str, Any], test_timeout: int = 14400) -> str:
         """
         Wrapper method for backward compatibility.
         Calls the new _build_validation_kernel_script().
+        
+        Args:
+            section: Section configuration dictionary
+            test_timeout: Timeout in seconds for test execution
         """
-        return self._build_validation_kernel_script(section)
+        return self._build_validation_kernel_script(section, test_timeout)
         
     def run_validation_section(self, section_name: str, timeout: int = 64000, commit_message: Optional[str] = None, quick_test: bool = False) -> tuple[bool, Optional[str]]:
         """
@@ -657,7 +665,7 @@ print("=" * 80)
             
         # STEP 2: Create validation kernel  
         print("[STEP2] Step 2: Creating validation kernel...")
-        kernel_script = self.create_validation_kernel_script(section)
+        kernel_script = self.create_validation_kernel_script(section, test_timeout=timeout)
         
         # Create unique kernel name (simplified to avoid title resolution issues)
         random_suffix = ''.join(random.choices(string.ascii_lowercase, k=4))
