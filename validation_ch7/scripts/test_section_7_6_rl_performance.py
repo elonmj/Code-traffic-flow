@@ -213,9 +213,10 @@ class RLPerformanceValidationTest(ValidationSection):
         
         self.debug_logger.info(f"Created scenario config: {scenario_path.name}")
         self.debug_logger.info(f"  BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)")
-        self.debug_logger.info(f"  Uniform density: rho_m={rho_m_uniform_veh_km:.1f} veh/km, rho_c={rho_c_uniform_veh_km:.1f} veh/km")
-        self.debug_logger.info(f"  Uniform velocity: w_m={w_m_uniform:.1f} m/s, w_c={w_c_uniform:.1f} m/s")
-        print(f"  [SCENARIO] Generated: {scenario_path.name} (1km domain, UNIFORM congestion IC)", flush=True)
+        self.debug_logger.info(f"  BUG #14 FIX: Initial={rho_m_initial_veh_km:.1f}/{rho_c_initial_veh_km:.1f} veh/km, Inflow={rho_m_inflow_veh_km:.1f}/{rho_c_inflow_veh_km:.1f} veh/km")
+        self.debug_logger.info(f"  Initial velocity: w_m={w_m_initial:.1f} m/s, w_c={w_c_initial:.1f} m/s")
+        self.debug_logger.info(f"  Inflow velocity: w_m={w_m_inflow:.1f} m/s, w_c={w_c_inflow:.1f} m/s")
+        print(f"  [SCENARIO] Generated: {scenario_path.name} (Queue formation: inflow {rho_m_inflow_veh_km:.0f} veh/km > initial {rho_m_initial_veh_km:.0f} veh/km)", flush=True)
         return scenario_path
 
     class BaselineController:

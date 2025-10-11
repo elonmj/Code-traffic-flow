@@ -1,0 +1,125 @@
+[{"stream_name":"stdout","time":0.745979435,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.746030436,"data":"ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE\n"}
+,{"stream_name":"stdout","time":0.74603706,"data":"Revendications: R5\n"}
+,{"stream_name":"stdout","time":0.746041449,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.746046797,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.74621029,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":6.571230627,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":6.5714372359999995,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":6.62547014,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":6.6464757169999995,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":6.646563229,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":6.646694233,"data":"\n"}
+,{"stream_name":"stdout","time":6.646714277,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":6.64683835,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":9.902752274000001,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":9.902840276,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":9.902963837,"data":"\n"}
+,{"stream_name":"stdout","time":9.902971651,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":9.903027784,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":14.003560912,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":16.944544608,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":19.881413166,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":22.829468036,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":25.735305631,"data":"Installing gymnasium...\n"}
+,{"stream_name":"stdout","time":28.665197858,"data":"Installing stable-baselines3...\n"}
+,{"stream_name":"stdout","time":103.262660434,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":103.262698165,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":103.262703968,"data":"\n"}
+,{"stream_name":"stdout","time":103.262709137,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":103.262714945,"data":"[QUICK_TEST] Quick test mode enabled (100 timesteps for RL, reduced simulation time)\n"}
+,{"stream_name":"stdout","time":103.26272035,"data":"Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":103.262725845,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":103.26273168,"data":"============================================================\n"}
+,{"stream_name":"stderr","time":116.244421523,"data":"2025-10-11 07:56:24.156609: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n"}
+,{"stream_name":"stderr","time":116.464864551,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stderr","time":116.464914494,"data":"E0000 00:00:1760169384.377044      64 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n"}
+,{"stream_name":"stderr","time":116.529301797,"data":"E0000 00:00:1760169384.441582      64 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"}
+,{"stream_name":"stdout","time":128.988204594,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":128.988232908,"data":"QUICK TEST MODE ENABLED\n"}
+,{"stream_name":"stdout","time":128.988237527,"data":"- Training: 2 timesteps only\n"}
+,{"stream_name":"stdout","time":128.988241436,"data":"- Duration: 2 minutes simulated time\n"}
+,{"stream_name":"stdout","time":128.988244853,"data":"- Scenarios: 1 scenario only\n"}
+,{"stream_name":"stdout","time":128.988248497,"data":"- Expected runtime: ~5 minutes on GPU\n"}
+,{"stream_name":"stdout","time":128.988252135,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":128.988255533,"data":"[ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":128.98826071,"data":"  - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures\n"}
+,{"stream_name":"stdout","time":128.988265022,"data":"  - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz\n"}
+,{"stream_name":"stdout","time":128.988268702,"data":"  - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios\n"}
+,{"stream_name":"stdout","time":128.988272678,"data":"  - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics\n"}
+,{"stream_name":"stdout","time":128.988276198,"data":"  - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex\n"}
+,{"stream_name":"stdout","time":128.988809237,"data":"2025-10-11 07:56:36 - INFO - _setup_debug_logging:119 - ================================================================================\n"}
+,{"stream_name":"stdout","time":128.988907762,"data":"2025-10-11 07:56:36 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED\n"}
+,{"stream_name":"stdout","time":128.989010499,"data":"2025-10-11 07:56:36 - INFO - _setup_debug_logging:121 - Log file: validation_output/results/local_test/section_7_6_rl_performance/debug.log\n"}
+,{"stream_name":"stdout","time":128.989111544,"data":"2025-10-11 07:56:36 - INFO - _setup_debug_logging:122 - Quick test mode: True\n"}
+,{"stream_name":"stdout","time":128.989173073,"data":"2025-10-11 07:56:36 - INFO - _setup_debug_logging:123 - ================================================================================\n"}
+,{"stream_name":"stdout","time":128.989190884,"data":"[QUICK TEST MODE] Minimal training timesteps for setup validation\n"}
+,{"stream_name":"stdout","time":128.989196318,"data":"=== Section 7.6: RL Performance Validation ===\n"}
+,{"stream_name":"stdout","time":128.989212723,"data":"Testing RL agent performance vs baseline controllers...\n"}
+,{"stream_name":"stdout","time":129.135886983,"data":"[DEVICE] Detected: GPU\n"}
+,{"stream_name":"stdout","time":129.23290064,"data":"[GPU INFO] Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":129.232933333,"data":"\n"}
+,{"stream_name":"stdout","time":129.232938388,"data":"[PHASE 1/2] Training RL agents...\n"}
+,{"stream_name":"stdout","time":129.232997843,"data":"[QUICK TEST] Training only: traffic_light_control\n"}
+,{"stream_name":"stdout","time":129.23303945,"data":"[QUICK TEST MODE] Training reduced to 100 timesteps, 120.0s episodes\n"}
+,{"stream_name":"stdout","time":129.233106558,"data":"2025-10-11 07:56:37 - INFO - train_rl_agent:579 - ================================================================================\n"}
+,{"stream_name":"stdout","time":129.233112415,"data":"2025-10-11 07:56:37 - INFO - train_rl_agent:580 - Starting train_rl_agent for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":129.233234789,"data":"2025-10-11 07:56:37 - INFO - train_rl_agent:581 -   - Device: gpu\n"}
+,{"stream_name":"stdout","time":129.233301366,"data":"2025-10-11 07:56:37 - INFO - train_rl_agent:582 -   - Total timesteps: 100\n"}
+,{"stream_name":"stdout","time":129.233383955,"data":"2025-10-11 07:56:37 - INFO - train_rl_agent:583 -   - Episode max time: 120.0s\n"}
+,{"stream_name":"stdout","time":129.233464798,"data":"2025-10-11 07:56:37 - INFO - train_rl_agent:584 -   - Checkpoint frequency: 50\n"}
+,{"stream_name":"stdout","time":129.233547375,"data":"2025-10-11 07:56:37 - INFO - train_rl_agent:585 - ================================================================================\n"}
+,{"stream_name":"stdout","time":129.233606681,"data":"\n"}
+,{"stream_name":"stdout","time":129.233619201,"data":"[TRAINING] Starting RL training for scenario: traffic_light_control\n"}
+,{"stream_name":"stdout","time":129.233624293,"data":"  Device: gpu\n"}
+,{"stream_name":"stdout","time":129.233627957,"data":"  Total timesteps: 100\n"}
+,{"stream_name":"stdout","time":129.23363144,"data":"  Episode max time: 120.0s\n"}
+,{"stream_name":"stdout","time":129.233634978,"data":"  Checkpoint frequency: 50 steps\n"}
+,{"stream_name":"stdout","time":129.23549433,"data":"2025-10-11 07:56:37 - INFO - _create_scenario_config:214 - Created scenario config: traffic_light_control.yml\n"}
+,{"stream_name":"stdout","time":129.23556279,"data":"2025-10-11 07:56:37 - INFO - _create_scenario_config:215 -   BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)\n"}
+,{"stream_name":"stdout","time":129.235696174,"data":"\n"}
+,{"stream_name":"stdout","time":129.235713945,"data":"[CRITICAL ERROR] An unhandled exception occurred: name 'rho_m_uniform_veh_km' is not defined\n"}
+,{"stream_name":"stderr","time":129.236046737,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":129.23627344,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 1168, in main\n"}
+,{"stream_name":"stderr","time":129.236281318,"data":"    success = test.run_all_tests()\n"}
+,{"stream_name":"stderr","time":129.236285096,"data":"              ^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":129.236288872,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 877, in run_all_tests\n"}
+,{"stream_name":"stderr","time":129.236293486,"data":"    self.train_rl_agent(scenario, device=device)\n"}
+,{"stream_name":"stderr","time":129.236298362,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 599, in train_rl_agent\n"}
+,{"stream_name":"stderr","time":129.236303168,"data":"    scenario_path = self._create_scenario_config(scenario_type)\n"}
+,{"stream_name":"stderr","time":129.236306927,"data":"                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":129.236310567,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py\", line 216, in _create_scenario_config\n"}
+,{"stream_name":"stderr","time":129.236314472,"data":"    self.debug_logger.info(f\"  Uniform density: rho_m={rho_m_uniform_veh_km:.1f} veh/km, rho_c={rho_c_uniform_veh_km:.1f} veh/km\")\n"}
+,{"stream_name":"stderr","time":129.236328315,"data":"                                                       ^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":129.236331976,"data":"NameError: name 'rho_m_uniform_veh_km' is not defined\n"}
+,{"stream_name":"stdout","time":131.205851281,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":131.206055305,"data":"\n"}
+,{"stream_name":"stdout","time":131.206064623,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":131.206258216,"data":"[ARTIFACTS] Copying results for section_7_6_rl_performance...\n"}
+,{"stream_name":"stdout","time":131.209232158,"data":"[OK] Section copied to: /kaggle/working/section_7_6_rl_performance\n"}
+,{"stream_name":"stdout","time":131.210198556,"data":"[ARTIFACTS] NPZ files: 0\n"}
+,{"stream_name":"stdout","time":131.210271543,"data":"[ARTIFACTS] PNG figures: 2\n"}
+,{"stream_name":"stdout","time":131.210373863,"data":"[ARTIFACTS] YAML scenarios: 1\n"}
+,{"stream_name":"stdout","time":131.210482339,"data":"[ARTIFACTS] TEX files: 1\n"}
+,{"stream_name":"stdout","time":131.21051203,"data":"[ARTIFACTS] JSON files: 1\n"}
+,{"stream_name":"stdout","time":131.210625132,"data":"[ARTIFACTS] CSV metrics: 1\n"}
+,{"stream_name":"stdout","time":131.210752498,"data":"TRACKING_SUCCESS: Artifacts copied\n"}
+,{"stream_name":"stdout","time":131.21080384,"data":"[SUCCESS] All artifacts organized and copied\n"}
+,{"stream_name":"stdout","time":131.210897696,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":131.264578761,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":131.264611972,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":131.264866147,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":131.264926953,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":131.265020234,"data":"\n"}
+,{"stream_name":"stdout","time":131.265026682,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":131.265111715,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":131.265196975,"data":"\n"}
+,{"stream_name":"stdout","time":131.265203479,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":131.265207606,"data":"VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED\n"}
+,{"stream_name":"stdout","time":131.265211786,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":131.265215449,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":134.814933504,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":134.814990099,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":134.853337625,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":135.650169797,"data":"[NbConvertApp] Writing 321270 bytes to __results__.html\n"}
+]
