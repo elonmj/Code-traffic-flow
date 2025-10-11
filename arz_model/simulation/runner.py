@@ -275,6 +275,16 @@ class SimulationRunner:
         ic_config = self.params.initial_conditions
         ic_type = ic_config.get('type', '').lower()
         self.initial_equilibrium_state = None # Initialize attribute
+        
+        # ✅ BUG #15 FIX: Store INFLOW boundary state for traffic signal control
+        # Traffic signal should modulate the INFLOW (boundary condition), not the IC
+        # Extract left boundary inflow state if available
+        self.traffic_signal_base_state = None
+        bc_config = self.params.boundary_conditions
+        if bc_config and 'left' in bc_config:
+            left_bc = bc_config['left']
+            if left_bc.get('type') == 'inflow' and 'state' in left_bc:
+                self.traffic_signal_base_state = left_bc['state']  # [rho_m, w_m, rho_c, w_c]
 
         if ic_type == 'uniform':
             state_vals = ic_config.get('state')
@@ -283,6 +293,7 @@ class SimulationRunner:
             U_init = initial_conditions.uniform_state(self.grid, *state_vals)
             # BUG #12 FIX: Store uniform IC state for traffic signal boundary conditions
             # Traffic signal needs base_state for phase transitions (red/green)
+            # NOTE: This is used as FALLBACK if traffic_signal_base_state not available
             self.initial_equilibrium_state = state_vals  # [rho_m, w_m, rho_c, w_c]
         elif ic_type == 'uniform_equilibrium':
             rho_m = ic_config.get('rho_m')
@@ -702,11 +713,17 @@ class SimulationRunner:
         # Traffic always arrives from upstream - phase controls inflow characteristics, not BC type
         # Phase 0 = red (reduced velocity inflow - models queue formation)
         # Phase 1 = green (normal inflow - free flow)
+        
+        # ✅ BUG #15 FIX: Use INFLOW BC state (traffic_signal_base_state), not IC state
+        # Traffic signal modulates the INFLOW boundary, which may differ from initial conditions
+        # Example: IC = light congestion (40 veh/km), Inflow = heavy demand (120 veh/km)
+        # Fallback to initial_equilibrium_state if traffic_signal_base_state not set
+        base_state = self.traffic_signal_base_state if hasattr(self, 'traffic_signal_base_state') and self.traffic_signal_base_state else self.initial_equilibrium_state
+        
         if phase_id == 0:
             # Red phase: Congested inflow (traffic backs up)
             # Reduce velocity by 50% to model queue formation upstream of signal
-            if hasattr(self, 'initial_equilibrium_state'):
-                base_state = self.initial_equilibrium_state
+            if base_state:
                 red_state = [
                     base_state[0],           # rho_m (maintain density)
                     base_state[1] * 0.5,     # w_m (reduce velocity 50%)
@@ -720,7 +737,7 @@ class SimulationRunner:
             # Green phase: Normal inflow (free flow)
             bc_config = {
                 'type': 'inflow',
-                'state': self.initial_equilibrium_state if hasattr(self, 'initial_equilibrium_state') else None
+                'state': base_state if base_state else None
             }
         else:
             # For phase_id > 1, treat as variations

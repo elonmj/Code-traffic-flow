@@ -1,0 +1,32 @@
+CFL: 0.4
+N: 100
+boundary_conditions:
+  left:
+    state:
+    - 0.12
+    - 8.0
+    - 0.15
+    - 6.0
+    type: inflow
+  right:
+    type: outflow
+initial_conditions:
+  state:
+  - 0.04
+  - 15.0
+  - 0.05
+  - 13.0
+  type: uniform
+output_dt: 60.0
+parameters:
+  V0_c: 22.2
+  V0_m: 25.0
+  tau_c: 1.2
+  tau_m: 1.0
+road:
+  quality_type: uniform
+  quality_value: 2
+scenario_name: rl_perf_traffic_light_control_sensitive
+t_final: 600.0
+xmax: 1000.0
+xmin: 0.0
