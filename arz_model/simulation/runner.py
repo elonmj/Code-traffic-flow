@@ -285,6 +285,8 @@ class SimulationRunner:
             left_bc = bc_config['left']
             if left_bc.get('type') == 'inflow' and 'state' in left_bc:
                 self.traffic_signal_base_state = left_bc['state']  # [rho_m, w_m, rho_c, w_c]
+                if not self.quiet:
+                    print(f"  DEBUG BUG #15: Stored traffic_signal_base_state = {self.traffic_signal_base_state}")
 
         if ic_type == 'uniform':
             state_vals = ic_config.get('state')
@@ -719,6 +721,11 @@ class SimulationRunner:
         # Example: IC = light congestion (40 veh/km), Inflow = heavy demand (120 veh/km)
         # Fallback to initial_equilibrium_state if traffic_signal_base_state not set
         base_state = self.traffic_signal_base_state if hasattr(self, 'traffic_signal_base_state') and self.traffic_signal_base_state else self.initial_equilibrium_state
+        
+        # DEBUG: Log which base state is being used
+        if not self.quiet:
+            state_source = "traffic_signal_base_state" if (hasattr(self, 'traffic_signal_base_state') and self.traffic_signal_base_state) else "initial_equilibrium_state"
+            print(f"  DEBUG set_traffic_signal_state: Using {state_source} = {base_state}")
         
         if phase_id == 0:
             # Red phase: Congested inflow (traffic backs up)
