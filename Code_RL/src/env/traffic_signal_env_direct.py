@@ -177,6 +177,15 @@ class TrafficSignalEnvDirect(gym.Env):
         # CRITICAL: Call super().reset() to properly seed the environment
         super().reset(seed=seed)
         
+        # ✅ LOGGING: Episode summary (if not first reset)
+        if hasattr(self, 'episode_step') and self.episode_step > 0 and not self.quiet:
+            print(f"\n{'='*80}")
+            print(f"[EPISODE END] Steps: {self.episode_step} | "
+                  f"Duration: {self.runner.t:.1f}s | "
+                  f"Total Reward: {self.total_reward:.2f} | "
+                  f"Avg Reward/Step: {self.total_reward/max(1, self.episode_step):.3f}")
+            print(f"{'='*80}\n")
+        
         # Reinitialize simulator to t=0
         self._initialize_simulator()
         
@@ -247,6 +256,12 @@ class TrafficSignalEnvDirect(gym.Env):
         self.episode_step += 1
         self.total_reward += reward
         self.previous_observation = observation.copy()
+        
+        # ✅ LOGGING: Step progress (every 10 steps for Bug #20 debugging)
+        if self.episode_step % 10 == 0 and not self.quiet:
+            print(f"[STEP {self.episode_step:>4d}] t={self.runner.t:>7.1f}s | "
+                  f"phase={self.current_phase} | reward={reward:>7.2f} | "
+                  f"total_reward={self.total_reward:>8.2f}", flush=True)
         
         # Check termination conditions
         terminated = False  # No explicit goal state

@@ -602,9 +602,19 @@ class RLPerformanceValidationTest(ValidationSection):
         try:
             # Create training environment with direct coupling
             # SENSITIVITY FIX: Move observations closer to BC (segments 3-8 instead of 8-13)
+            # ✅ BUG #20 FIX: Reduce decision interval from 60s to 15s for 4x learning density
+            # PROBLEM: 60s interval = only 60 decisions per hour → insufficient learning density
+            #          Episodes truncate after exactly 60 decisions (3600s / 60s)
+            #          Agent never experiences long-term dynamics beyond 1 hour
+            #          Metrics stayed flat: episode_reward=593.31 +/- 0.00 (no evolution)
+            # SOLUTION: 15s interval = 240 decisions per hour → 4x more learning opportunities
+            #          5000 timesteps = ~21 meaningful episodes (vs 83 fragmented)
+            #          Training time ~3-4h (same duration, much better learning)
+            # LITERATURE: IntelliLight (5-10s), PressLight (5-30s), MPLight (10-30s)
+            #            Our 15s interval: Conservative, aligned with research standards
             env = TrafficSignalEnvDirect(
                 scenario_config_path=str(scenario_path),
-                decision_interval=60.0,  # 1-minute decisions
+                decision_interval=15.0,  # ✅ BUG #20 FIX: 15-second decisions (was 60s)
                 episode_max_time=episode_max_time,
                 observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
                 device=device,
