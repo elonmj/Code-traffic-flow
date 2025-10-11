@@ -137,21 +137,33 @@ class RLPerformanceValidationTest(ValidationSection):
         # Problem: Riemann shock evacuates domain faster than BC can replenish
         # Solution: Uniform congestion (realistic traffic jam scenario for traffic light)
         
-        # Uniform congestion parameters (realistic upstream traffic jam)
-        rho_m_uniform_veh_km = 80.0  # Moderate congestion
-        rho_c_uniform_veh_km = 100.0
-        w_m_uniform = 12.0  # ~43 km/h (congested but moving)
-        w_c_uniform = 10.0  # ~36 km/h
+        # ✅ BUG #14 FIX: Create INFLOW > INITIAL to build queue for traffic signal control
+        # Problem: Equal inflow and initial densities → no queue formation → empty road
+        # Solution: Start with light traffic, heavy inflow creates queue to manage
+        
+        # Initial state: Light congestion (road has some traffic but flowing well)
+        rho_m_initial_veh_km = 40.0  # Light traffic (half of congested)
+        rho_c_initial_veh_km = 50.0
+        w_m_initial = 15.0  # ~54 km/h (moderate speed)
+        w_c_initial = 13.0  # ~47 km/h
+        
+        # Inflow boundary: HEAVY demand (creates pressure that traffic signal must manage)
+        rho_m_inflow_veh_km = 120.0  # High demand (3x initial)
+        rho_c_inflow_veh_km = 150.0
+        w_m_inflow = 8.0   # ~29 km/h (congested inflow)
+        w_c_inflow = 6.0   # ~22 km/h
         
         # Convert to SI units (veh/m)
-        rho_m_uniform_si = rho_m_uniform_veh_km * 0.001
-        rho_c_uniform_si = rho_c_uniform_veh_km * 0.001
+        rho_m_uniform_si = rho_m_initial_veh_km * 0.001
+        rho_c_uniform_si = rho_c_initial_veh_km * 0.001
         
-        # Keep legacy BC values (for inflow boundary)
-        rho_m_high_si = rho_m_uniform_si
-        rho_c_high_si = rho_c_uniform_si
-        w_m_high = w_m_uniform
-        w_c_high = w_c_uniform
+        # Inflow BC values (higher than initial to create queue)
+        rho_m_high_si = rho_m_inflow_veh_km * 0.001
+        rho_c_high_si = rho_c_inflow_veh_km * 0.001
+        w_m_high = w_m_inflow
+        w_c_high = w_c_inflow
+        w_m_uniform = w_m_initial
+        w_c_uniform = w_c_initial
         
         config = {
             'scenario_name': f'rl_perf_{scenario_type}_sensitive',
