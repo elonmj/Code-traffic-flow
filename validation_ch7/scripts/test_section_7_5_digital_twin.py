@@ -169,7 +169,7 @@ class DigitalTwinValidationTest(ValidationSection):
                 rho_c_peak *= mult
             
             # Calculate equilibrium w values for background state
-            # For simplicity, use approximate equilibrium: w ≈ V_e
+            # For simplicity, use approximate equilibrium: w ~ V_e
             V0_m = 22.2  # m/s
             V0_c = 25.0  # m/s
             w_m_bg = V0_m  # Approximate

@@ -281,6 +281,9 @@ class SimulationRunner:
             if state_vals is None or len(state_vals) != 4:
                 raise ValueError("Uniform IC requires 'state': [rho_m, w_m, rho_c, w_c]")
             U_init = initial_conditions.uniform_state(self.grid, *state_vals)
+            # BUG #12 FIX: Store uniform IC state for traffic signal boundary conditions
+            # Traffic signal needs base_state for phase transitions (red/green)
+            self.initial_equilibrium_state = state_vals  # [rho_m, w_m, rho_c, w_c]
         elif ic_type == 'uniform_equilibrium':
             rho_m = ic_config.get('rho_m')
             rho_c = ic_config.get('rho_c')

@@ -1,0 +1,359 @@
+0.6s 1 ================================================================================
+0.6s 2 ARZ-RL VALIDATION: SECTION_7_6_RL_PERFORMANCE
+0.6s 3 Revendications: R5
+0.6s 4 ================================================================================
+0.6s 5 Repository: https://github.com/elonmj/Code-traffic-flow.git
+0.6s 6 Branch: main
+5.4s 7 Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+5.4s 8 PyTorch: 2.6.0+cu124
+5.4s 9 CUDA available: True
+5.4s 10 CUDA device: Tesla P100-PCIE-16GB
+5.4s 11 CUDA version: 12.4
+5.4s 12 
+5.4s 13 [STEP 1/4] Cloning repository from GitHub...
+5.4s 14 Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+8.1s 15 [OK] Repository cloned successfully
+8.1s 16 TRACKING_SUCCESS: Repository cloned
+8.1s 17 
+8.1s 18 [STEP 2/4] Installing dependencies...
+8.1s 19 Installing PyYAML...
+12.0s 20 Installing matplotlib...
+15.0s 21 Installing pandas...
+17.9s 22 Installing scipy...
+20.9s 23 Installing numpy...
+23.8s 24 Installing gymnasium...
+26.7s 25 Installing stable-baselines3...
+102.9s 26 [OK] Dependencies installed
+102.9s 27 TRACKING_SUCCESS: Dependencies ready
+102.9s 28 
+102.9s 29 [STEP 3/4] Running validation tests...
+102.9s 30 [QUICK_TEST] Quick test mode enabled (100 timesteps for RL, reduced simulation time)
+102.9s 31 Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...
+102.9s 32 PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts
+102.9s 33 ============================================================
+113.6s 34 2025-10-11 06:26:54.525077: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+113.8s 35 WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+113.8s 36 E0000 00:00:1760164014.704073      64 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+113.8s 37 E0000 00:00:1760164014.755198      64 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+125.1s 38 ================================================================================
+125.1s 39 QUICK TEST MODE ENABLED
+125.1s 40 - Training: 2 timesteps only
+125.1s 41 - Duration: 2 minutes simulated time
+125.1s 42 - Scenarios: 1 scenario only
+125.1s 43 - Expected runtime: ~5 minutes on GPU
+125.1s 44 ================================================================================
+125.1s 45 [ARCHITECTURE] Structure créée: validation_output/results/local_test/section_7_6_rl_performance
+125.1s 46 - Figures:   validation_output/results/local_test/section_7_6_rl_performance/figures
+125.1s 47 - NPZ:       validation_output/results/local_test/section_7_6_rl_performance/data/npz
+125.1s 48 - Scenarios: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios
+125.1s 49 - Metrics:   validation_output/results/local_test/section_7_6_rl_performance/data/metrics
+125.1s 50 - LaTeX:     validation_output/results/local_test/section_7_6_rl_performance/latex
+125.1s 51 2025-10-11 06:27:05 - INFO - _setup_debug_logging:119 - ================================================================================
+125.1s 52 2025-10-11 06:27:05 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED
+125.1s 53 2025-10-11 06:27:05 - INFO - _setup_debug_logging:121 - Log file: validation_output/results/local_test/section_7_6_rl_performance/debug.log
+125.1s 54 2025-10-11 06:27:05 - INFO - _setup_debug_logging:122 - Quick test mode: True
+125.1s 55 2025-10-11 06:27:05 - INFO - _setup_debug_logging:123 - ================================================================================
+125.1s 56 [QUICK TEST MODE] Minimal training timesteps for setup validation
+125.1s 57 === Section 7.6: RL Performance Validation ===
+125.1s 58 Testing RL agent performance vs baseline controllers...
+125.2s 59 [DEVICE] Detected: GPU
+125.3s 60 [GPU INFO] Tesla P100-PCIE-16GB
+125.3s 61 
+125.3s 62 [PHASE 1/2] Training RL agents...
+125.3s 63 [QUICK TEST] Training only: traffic_light_control
+125.3s 64 [QUICK TEST MODE] Training reduced to 100 timesteps, 120.0s episodes
+125.3s 65 2025-10-11 06:27:06 - INFO - train_rl_agent:561 - ================================================================================
+125.3s 66 2025-10-11 06:27:06 - INFO - train_rl_agent:562 - Starting train_rl_agent for scenario: traffic_light_control
+125.3s 67 2025-10-11 06:27:06 - INFO - train_rl_agent:563 -   - Device: gpu
+125.3s 68 2025-10-11 06:27:06 - INFO - train_rl_agent:564 -   - Total timesteps: 100
+125.3s 69 2025-10-11 06:27:06 - INFO - train_rl_agent:565 -   - Episode max time: 120.0s
+125.3s 70 2025-10-11 06:27:06 - INFO - train_rl_agent:566 -   - Checkpoint frequency: 50
+125.3s 71 2025-10-11 06:27:06 - INFO - train_rl_agent:567 - ================================================================================
+125.3s 72 
+125.3s 73 [TRAINING] Starting RL training for scenario: traffic_light_control
+125.3s 74 Device: gpu
+125.3s 75 Total timesteps: 100
+125.3s 76 Episode max time: 120.0s
+125.3s 77 Checkpoint frequency: 50 steps
+125.3s 78 2025-10-11 06:27:06 - INFO - _create_scenario_config:202 - Created scenario config: traffic_light_control.yml
+125.3s 79 2025-10-11 06:27:06 - INFO - _create_scenario_config:203 -   BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)
+125.3s 80 2025-10-11 06:27:06 - INFO - _create_scenario_config:204 -   Uniform density: rho_m=80.0 veh/km, rho_c=100.0 veh/km
+125.3s 81 2025-10-11 06:27:06 - INFO - _create_scenario_config:205 -   Uniform velocity: w_m=12.0 m/s, w_c=10.0 m/s
+125.3s 82 [SCENARIO] Generated: traffic_light_control.yml (1km domain, UNIFORM congestion IC)
+125.3s 83 Initializing simulation from scenario: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+125.3s 84 Using device: gpu
+125.3s 85 DEBUG PARAMS: Reading K_m_kmh = 10.0
+125.3s 86 DEBUG PARAMS: Reading K_c_kmh = 15.0
+125.3s 87 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+125.3s 88 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+125.3s 89 Parameters loaded for scenario: rl_perf_traffic_light_control_sensitive
+125.3s 90 Grid initialized: Grid1D(N=100, xmin=0.0, xmax=1000.0, dx=10.0000, ghost=2, N_total=104, R loaded=No)
+125.3s 91 Loading road quality type: uniform
+125.3s 92 Uniform road quality value: 2
+125.3s 93 Road quality loaded.
+125.3s 94 Initial state created.
+125.3s 95 Transferring initial state and road quality to GPU...
+125.3s 96 GPU data transfer complete.
+125.3s 97 /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+125.3s 98 warn(NumbaPerformanceWarning(msg))
+126.7s 99 Initial boundary conditions applied.
+126.7s 100 TrafficSignalEnvDirect initialized:
+126.7s 101 Decision interval: 60.0s
+126.7s 102 Observation segments: 6
+126.7s 103 Observation space: (26,)
+126.7s 104 Action space: 2
+126.7s 105 Device: gpu
+126.7s 106 [INFO] Environment created: obs_space=(26,), action_space=2
+126.7s 107 [INFO] Initializing PPO agent from scratch...
+126.7s 108 Using cuda device
+126.7s 109 Wrapping the env with a `Monitor` wrapper
+126.7s 110 Wrapping the env in a DummyVecEnv.
+126.7s 111 /usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py:148: UserWarning: You have specified a mini-batch size of 64, but because the `RolloutBuffer` is of size `n_steps * n_envs = 100`, after every 1 untruncated mini-batches, there will be a truncated mini-batch of size 36
+126.7s 112 We recommend using a `batch_size` that is a factor of `n_steps * n_envs`.
+126.7s 113 Info: (n_steps=100 and n_envs=1)
+126.7s 114 warnings.warn(
+131.1s 115 
+131.1s 116 [STRATEGY] Checkpoint: every 50 steps, keep 2 latest + 1 best
+131.1s 117 [INFO] Training for 100 timesteps...
+131.1s 118 Initializing simulation from scenario: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+131.1s 119 Using device: gpu
+131.1s 120 DEBUG PARAMS: Reading K_m_kmh = 10.0
+131.1s 121 DEBUG PARAMS: Reading K_c_kmh = 15.0
+131.1s 122 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+131.1s 123 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+131.1s 124 Parameters loaded for scenario: rl_perf_traffic_light_control_sensitive
+131.1s 125 Grid initialized: Grid1D(N=100, xmin=0.0, xmax=1000.0, dx=10.0000, ghost=2, N_total=104, R loaded=No)
+131.1s 126 Loading road quality type: uniform
+131.1s 127 Uniform road quality value: 2
+131.1s 128 Road quality loaded.
+131.1s 129 Initial state created.
+131.1s 130 Transferring initial state and road quality to GPU...
+131.1s 131 GPU data transfer complete.
+131.1s 132 Initial boundary conditions applied.
+131.1s 133 2025-10-11 06:27:12 - ERROR - train_rl_agent:691 - Training failed for traffic_light_control: 'NoneType' object is not subscriptable
+131.1s 134 Traceback (most recent call last):
+131.1s 135 File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 674, in train_rl_agent
+131.1s 136 model.learn(
+131.1s 137 File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py", line 308, in learn
+131.1s 138 return super().learn(
+131.1s 139 ^^^^^^^^^^^^^^
+131.1s 140 File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 246, in learn
+131.1s 141 total_timesteps, callback = self._setup_learn(
+131.1s 142 ^^^^^^^^^^^^^^^^^^
+131.1s 143 File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py", line 424, in _setup_learn
+131.1s 144 self._last_obs = self.env.reset()  # type: ignore[assignment]
+131.1s 145 ^^^^^^^^^^^^^^^^
+131.1s 146 File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 76, in reset
+131.1s 147 obs, self.reset_infos[env_idx] = self.envs[env_idx].reset(seed=self._seeds[env_idx])
+131.1s 148 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+131.1s 149 File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py", line 83, in reset
+131.1s 150 return self.env.reset(**kwargs)
+131.1s 151 ^^^^^^^^^^^^^^^^^^^^^^^^
+131.1s 152 File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 190, in reset
+131.1s 153 self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
+131.1s 154 File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 708, in set_traffic_signal_state
+131.1s 155 base_state[0],           # rho_m (maintain density)
+131.1s 156 ~~~~~~~~~~^^^
+131.1s 157 TypeError: 'NoneType' object is not subscriptable
+131.1s 158 [ERROR] Training failed for traffic_light_control: 'NoneType' object is not subscriptable
+131.1s 159 Traceback (most recent call last):
+131.1s 160 File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 674, in train_rl_agent
+131.1s 161 model.learn(
+131.1s 162 File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py", line 308, in learn
+131.1s 163 return super().learn(
+131.1s 164 ^^^^^^^^^^^^^^
+131.1s 165 File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 246, in learn
+131.1s 166 total_timesteps, callback = self._setup_learn(
+131.1s 167 ^^^^^^^^^^^^^^^^^^
+131.1s 168 File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py", line 424, in _setup_learn
+131.1s 169 self._last_obs = self.env.reset()  # type: ignore[assignment]
+131.1s 170 ^^^^^^^^^^^^^^^^
+131.1s 171 File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 76, in reset
+131.1s 172 obs, self.reset_infos[env_idx] = self.envs[env_idx].reset(seed=self._seeds[env_idx])
+131.1s 173 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+131.1s 174 File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py", line 83, in reset
+131.1s 175 return self.env.reset(**kwargs)
+131.1s 176 ^^^^^^^^^^^^^^^^^^^^^^^^
+131.1s 177 File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 190, in reset
+131.1s 178 self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
+131.1s 179 File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 708, in set_traffic_signal_state
+131.1s 180 base_state[0],           # rho_m (maintain density)
+131.1s 181 ~~~~~~~~~~^^^
+131.1s 182 TypeError: 'NoneType' object is not subscriptable
+131.1s 183 
+131.1s 184 [PHASE 2/2] Running performance comparisons...
+131.1s 185 [QUICK TEST] Testing only: traffic_light_control
+131.1s 186 
+131.1s 187 Testing scenario: traffic_light_control (device=gpu)
+131.1s 188 2025-10-11 06:27:12 - INFO - run_performance_comparison:699 - ================================================================================
+131.1s 189 2025-10-11 06:27:12 - INFO - run_performance_comparison:700 - Starting run_performance_comparison for scenario: traffic_light_control
+131.1s 190 2025-10-11 06:27:12 - INFO - run_performance_comparison:701 - Device: gpu
+131.1s 191 2025-10-11 06:27:12 - INFO - run_performance_comparison:702 - ================================================================================
+131.1s 192 2025-10-11 06:27:12 - INFO - run_performance_comparison:703 - ================================================================================
+131.1s 193 2025-10-11 06:27:12 - INFO - run_performance_comparison:704 - Starting run_performance_comparison for scenario: traffic_light_control
+131.1s 194 2025-10-11 06:27:12 - INFO - run_performance_comparison:705 - Device: gpu
+131.1s 195 2025-10-11 06:27:12 - INFO - run_performance_comparison:706 - ================================================================================
+131.1s 196 2025-10-11 06:27:12 - INFO - _create_scenario_config:202 - Created scenario config: traffic_light_control.yml
+131.1s 197 2025-10-11 06:27:12 - INFO - _create_scenario_config:203 -   BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)
+131.1s 198 2025-10-11 06:27:12 - INFO - _create_scenario_config:204 -   Uniform density: rho_m=80.0 veh/km, rho_c=100.0 veh/km
+131.1s 199 2025-10-11 06:27:12 - INFO - _create_scenario_config:205 -   Uniform velocity: w_m=12.0 m/s, w_c=10.0 m/s
+131.1s 200 [SCENARIO] Generated: traffic_light_control.yml (1km domain, UNIFORM congestion IC)
+131.1s 201 Running baseline controller...
+131.1s 202 [QUICK TEST] Reduced duration to 600.0s (~10 control steps)
+131.1s 203 [INFO] Expected control steps: 11 (duration=600.0s, interval=60.0s)
+131.1s 204 2025-10-11 06:27:12 - INFO - run_control_simulation:285 - ================================================================================
+131.1s 205 2025-10-11 06:27:12 - INFO - run_control_simulation:286 - Starting run_control_simulation:
+131.1s 206 2025-10-11 06:27:12 - INFO - run_control_simulation:287 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+131.1s 207 2025-10-11 06:27:12 - INFO - run_control_simulation:288 -   - duration: 600.0s
+131.1s 208 2025-10-11 06:27:12 - INFO - run_control_simulation:289 -   - control_interval: 60.0s
+131.1s 209 2025-10-11 06:27:12 - INFO - run_control_simulation:290 -   - device: gpu
+131.1s 210 2025-10-11 06:27:12 - INFO - run_control_simulation:291 -   - controller: BaselineController
+131.1s 211 2025-10-11 06:27:12 - INFO - run_control_simulation:292 -   - max_control_steps: 11
+131.1s 212 2025-10-11 06:27:12 - INFO - run_control_simulation:293 - ================================================================================
+131.1s 213 [INFO] Initializing TrafficSignalEnvDirect with device=gpu
+131.1s 214 2025-10-11 06:27:12 - INFO - run_control_simulation:298 - Creating TrafficSignalEnvDirect instance...
+131.1s 215 Initializing simulation from scenario: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+131.1s 216 Using device: gpu
+131.1s 217 DEBUG PARAMS: Reading K_m_kmh = 10.0
+131.1s 218 DEBUG PARAMS: Reading K_c_kmh = 15.0
+131.1s 219 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+131.1s 220 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+131.1s 221 Parameters loaded for scenario: rl_perf_traffic_light_control_sensitive
+131.1s 222 Grid initialized: Grid1D(N=100, xmin=0.0, xmax=1000.0, dx=10.0000, ghost=2, N_total=104, R loaded=No)
+131.1s 223 Loading road quality type: uniform
+131.1s 224 Uniform road quality value: 2
+131.1s 225 Road quality loaded.
+131.1s 226 Initial state created.
+131.1s 227 Transferring initial state and road quality to GPU...
+131.1s 228 GPU data transfer complete.
+131.1s 229 Initial boundary conditions applied.
+131.1s 230 TrafficSignalEnvDirect initialized:
+131.1s 231 Decision interval: 60.0s
+131.1s 232 Observation segments: 6
+131.1s 233 Observation space: (26,)
+131.1s 234 Action space: 2
+131.1s 235 Device: gpu
+131.1s 236 2025-10-11 06:27:12 - INFO - run_control_simulation:313 - TrafficSignalEnvDirect created successfully
+131.1s 237 2025-10-11 06:27:12 - INFO - run_control_simulation:314 -   SENSITIVITY FIX: Observation segments [3-8] ≈ 30-80m from boundary
+131.1s 238 [INFO] Calling env.reset()...
+131.1s 239 2025-10-11 06:27:12 - INFO - run_control_simulation:330 - Calling env.reset()...
+131.1s 240 Initializing simulation from scenario: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+131.1s 241 Using device: gpu
+131.1s 242 DEBUG PARAMS: Reading K_m_kmh = 10.0
+131.1s 243 DEBUG PARAMS: Reading K_c_kmh = 15.0
+131.1s 244 DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777
+131.1s 245 DEBUG PARAMS: Assigned self.K_c = 4.166666666666667
+131.1s 246 Parameters loaded for scenario: rl_perf_traffic_light_control_sensitive
+131.1s 247 Grid initialized: Grid1D(N=100, xmin=0.0, xmax=1000.0, dx=10.0000, ghost=2, N_total=104, R loaded=No)
+131.1s 248 Loading road quality type: uniform
+131.1s 249 Uniform road quality value: 2
+131.1s 250 Road quality loaded.
+131.1s 251 Initial state created.
+131.1s 252 Transferring initial state and road quality to GPU...
+131.1s 253 GPU data transfer complete.
+131.1s 254 Initial boundary conditions applied.
+131.1s 255 2025-10-11 06:27:12 - ERROR - run_control_simulation:341 - Environment reset failed: 'NoneType' object is not subscriptable
+131.1s 256 Traceback (most recent call last):
+131.1s 257 File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 331, in run_control_simulation
+131.1s 258 obs, info = env.reset()
+131.1s 259 ^^^^^^^^^^^
+131.1s 260 File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 190, in reset
+131.1s 261 self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
+131.1s 262 File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 708, in set_traffic_signal_state
+131.1s 263 base_state[0],           # rho_m (maintain density)
+131.1s 264 ~~~~~~~~~~^^^
+131.1s 265 TypeError: 'NoneType' object is not subscriptable
+131.1s 266 [ERROR] Environment reset failed: 'NoneType' object is not subscriptable
+131.1s 267 2025-10-11 06:27:12 - ERROR - run_performance_comparison:825 - Performance comparison failed for traffic_light_control: cannot access local variable 'traceback' where it is not associated with a value
+131.1s 268 Traceback (most recent call last):
+131.1s 269 File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 331, in run_control_simulation
+131.1s 270 obs, info = env.reset()
+131.1s 271 ^^^^^^^^^^^
+131.1s 272 File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 190, in reset
+131.1s 273 self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
+131.1s 274 File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 708, in set_traffic_signal_state
+131.1s 275 base_state[0],           # rho_m (maintain density)
+131.1s 276 ~~~~~~~~~~^^^
+131.1s 277 TypeError: 'NoneType' object is not subscriptable
+131.1s 278 
+131.1s 279 During handling of the above exception, another exception occurred:
+131.1s 280 
+131.1s 281 Traceback (most recent call last):
+131.1s 282 File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 714, in run_performance_comparison
+131.1s 283 baseline_states, _ = self.run_control_simulation(
+131.1s 284 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+131.1s 285 File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 343, in run_control_simulation
+131.1s 286 traceback.print_exc()
+131.1s 287 ^^^^^^^^^
+131.1s 288 UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value
+131.1s 289 Traceback (most recent call last):
+131.1s 290 File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 331, in run_control_simulation
+131.1s 291 obs, info = env.reset()
+131.1s 292 ^^^^^^^^^^^
+131.1s 293 File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 190, in reset
+131.1s 294 self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
+131.1s 295 File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 708, in set_traffic_signal_state
+131.1s 296 base_state[0],           # rho_m (maintain density)
+131.1s 297 ~~~~~~~~~~^^^
+131.1s 298 TypeError: 'NoneType' object is not subscriptable
+131.1s 299 
+131.1s 300 During handling of the above exception, another exception occurred:
+131.1s 301 
+131.1s 302 Traceback (most recent call last):
+131.1s 303 File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 714, in run_performance_comparison
+131.1s 304 baseline_states, _ = self.run_control_simulation(
+131.1s 305 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+131.1s 306 File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 343, in run_control_simulation
+131.1s 307 traceback.print_exc()
+131.1s 308 ^^^^^^^^^
+131.1s 309 UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value
+131.1s 310 ERROR: cannot access local variable 'traceback' where it is not associated with a value
+131.1s 311 
+131.1s 312 [FIGURES] Generating RL performance figures...
+131.7s 313 [OK] fig_rl_performance_improvements.png
+132.2s 314 [OK] fig_rl_learning_curve.png
+132.2s 315 [FIGURES] Generated 2 figures in validation_output/results/local_test/section_7_6_rl_performance/figures
+132.2s 316 
+132.2s 317 [METRICS] Saving RL performance metrics...
+132.3s 318 [OK] validation_output/results/local_test/section_7_6_rl_performance/data/metrics/rl_performance_comparison.csv
+132.3s 319 
+132.3s 320 [LATEX] Generating content for Section 7.6...
+132.3s 321 [OK] validation_output/results/local_test/section_7_6_rl_performance/latex/section_7_6_content.tex
+132.3s 322 
+132.3s 323 === RL Performance Validation Summary ===
+132.3s 324 Scenarios passed: 0/1 (0.0%)
+132.3s 325 Average flow improvement: 0.00%
+132.3s 326 Average efficiency improvement: 0.00%
+132.3s 327 Average delay reduction: 0.00%
+132.3s 328 Overall validation: FAILED
+132.3s 329 [SUMMARY] Created: validation_output/results/local_test/section_7_6_rl_performance/session_summary.json
+134.6s 330 [WARNING] Tests returned code: 1
+134.6s 331 
+134.6s 332 [STEP 4/4] Copying artifacts and cleaning up...
+134.6s 333 [ARTIFACTS] Copying results for section_7_6_rl_performance...
+134.6s 334 [OK] Section copied to: /kaggle/working/section_7_6_rl_performance
+134.6s 335 [ARTIFACTS] NPZ files: 0
+134.6s 336 [ARTIFACTS] PNG figures: 2
+134.6s 337 [ARTIFACTS] YAML scenarios: 1
+134.6s 338 [ARTIFACTS] TEX files: 1
+134.6s 339 [ARTIFACTS] JSON files: 1
+134.6s 340 [ARTIFACTS] CSV metrics: 1
+134.6s 341 TRACKING_SUCCESS: Artifacts copied
+134.6s 342 [SUCCESS] All artifacts organized and copied
+134.6s 343 [CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow
+134.7s 344 [OK] Cleanup completed - only validation results remain
+134.7s 345 TRACKING_SUCCESS: Cleanup completed
+134.7s 346 [OK] Session summary created: /kaggle/working/validation_results/session_summary.json
+134.7s 347 TRACKING_SUCCESS: Session summary created
+134.7s 348 
+134.7s 349 [FINAL] Validation workflow completed
+134.7s 350 Remote logging finalized - ready for download
+134.7s 351 
+134.7s 352 ================================================================================
+134.7s 353 VALIDATION SECTION_7_6_RL_PERFORMANCE COMPLETED
+134.7s 354 Output ready at: /kaggle/working/validation_results/
+134.7s 355 ================================================================================
+138.1s 356 /usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=["nbconvert.preprocessors.ExtractOutputPreprocessor"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.
+138.1s 357 warn(
+138.1s 358 [NbConvertApp] Converting notebook __script__.ipynb to html
+138.9s 359 [NbConvertApp] Writing 321270 bytes to __results__.html

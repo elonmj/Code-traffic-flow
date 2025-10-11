@@ -1,0 +1,99 @@
+2025-10-11 06:27:05 - INFO - _setup_debug_logging:119 - ================================================================================
+2025-10-11 06:27:05 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED
+2025-10-11 06:27:05 - INFO - _setup_debug_logging:121 - Log file: validation_output/results/local_test/section_7_6_rl_performance/debug.log
+2025-10-11 06:27:05 - INFO - _setup_debug_logging:122 - Quick test mode: True
+2025-10-11 06:27:05 - INFO - _setup_debug_logging:123 - ================================================================================
+2025-10-11 06:27:06 - INFO - train_rl_agent:561 - ================================================================================
+2025-10-11 06:27:06 - INFO - train_rl_agent:562 - Starting train_rl_agent for scenario: traffic_light_control
+2025-10-11 06:27:06 - INFO - train_rl_agent:563 -   - Device: gpu
+2025-10-11 06:27:06 - INFO - train_rl_agent:564 -   - Total timesteps: 100
+2025-10-11 06:27:06 - INFO - train_rl_agent:565 -   - Episode max time: 120.0s
+2025-10-11 06:27:06 - INFO - train_rl_agent:566 -   - Checkpoint frequency: 50
+2025-10-11 06:27:06 - INFO - train_rl_agent:567 - ================================================================================
+2025-10-11 06:27:06 - INFO - _create_scenario_config:202 - Created scenario config: traffic_light_control.yml
+2025-10-11 06:27:06 - INFO - _create_scenario_config:203 -   BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)
+2025-10-11 06:27:06 - INFO - _create_scenario_config:204 -   Uniform density: rho_m=80.0 veh/km, rho_c=100.0 veh/km
+2025-10-11 06:27:06 - INFO - _create_scenario_config:205 -   Uniform velocity: w_m=12.0 m/s, w_c=10.0 m/s
+2025-10-11 06:27:12 - ERROR - train_rl_agent:691 - Training failed for traffic_light_control: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 674, in train_rl_agent
+    model.learn(
+  File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/ppo/ppo.py", line 308, in learn
+    return super().learn(
+           ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/on_policy_algorithm.py", line 246, in learn
+    total_timesteps, callback = self._setup_learn(
+                                ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py", line 424, in _setup_learn
+    self._last_obs = self.env.reset()  # type: ignore[assignment]
+                     ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 76, in reset
+    obs, self.reset_infos[env_idx] = self.envs[env_idx].reset(seed=self._seeds[env_idx])
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/monitor.py", line 83, in reset
+    return self.env.reset(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 190, in reset
+    self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 708, in set_traffic_signal_state
+    base_state[0],           # rho_m (maintain density)
+    ~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+2025-10-11 06:27:12 - INFO - run_performance_comparison:699 - ================================================================================
+2025-10-11 06:27:12 - INFO - run_performance_comparison:700 - Starting run_performance_comparison for scenario: traffic_light_control
+2025-10-11 06:27:12 - INFO - run_performance_comparison:701 - Device: gpu
+2025-10-11 06:27:12 - INFO - run_performance_comparison:702 - ================================================================================
+2025-10-11 06:27:12 - INFO - run_performance_comparison:703 - ================================================================================
+2025-10-11 06:27:12 - INFO - run_performance_comparison:704 - Starting run_performance_comparison for scenario: traffic_light_control
+2025-10-11 06:27:12 - INFO - run_performance_comparison:705 - Device: gpu
+2025-10-11 06:27:12 - INFO - run_performance_comparison:706 - ================================================================================
+2025-10-11 06:27:12 - INFO - _create_scenario_config:202 - Created scenario config: traffic_light_control.yml
+2025-10-11 06:27:12 - INFO - _create_scenario_config:203 -   BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)
+2025-10-11 06:27:12 - INFO - _create_scenario_config:204 -   Uniform density: rho_m=80.0 veh/km, rho_c=100.0 veh/km
+2025-10-11 06:27:12 - INFO - _create_scenario_config:205 -   Uniform velocity: w_m=12.0 m/s, w_c=10.0 m/s
+2025-10-11 06:27:12 - INFO - run_control_simulation:285 - ================================================================================
+2025-10-11 06:27:12 - INFO - run_control_simulation:286 - Starting run_control_simulation:
+2025-10-11 06:27:12 - INFO - run_control_simulation:287 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+2025-10-11 06:27:12 - INFO - run_control_simulation:288 -   - duration: 600.0s
+2025-10-11 06:27:12 - INFO - run_control_simulation:289 -   - control_interval: 60.0s
+2025-10-11 06:27:12 - INFO - run_control_simulation:290 -   - device: gpu
+2025-10-11 06:27:12 - INFO - run_control_simulation:291 -   - controller: BaselineController
+2025-10-11 06:27:12 - INFO - run_control_simulation:292 -   - max_control_steps: 11
+2025-10-11 06:27:12 - INFO - run_control_simulation:293 - ================================================================================
+2025-10-11 06:27:12 - INFO - run_control_simulation:298 - Creating TrafficSignalEnvDirect instance...
+2025-10-11 06:27:12 - INFO - run_control_simulation:313 - TrafficSignalEnvDirect created successfully
+2025-10-11 06:27:12 - INFO - run_control_simulation:314 -   SENSITIVITY FIX: Observation segments [3-8] ≈ 30-80m from boundary
+2025-10-11 06:27:12 - INFO - run_control_simulation:330 - Calling env.reset()...
+2025-10-11 06:27:12 - ERROR - run_control_simulation:341 - Environment reset failed: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 331, in run_control_simulation
+    obs, info = env.reset()
+                ^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 190, in reset
+    self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 708, in set_traffic_signal_state
+    base_state[0],           # rho_m (maintain density)
+    ~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+2025-10-11 06:27:12 - ERROR - run_performance_comparison:825 - Performance comparison failed for traffic_light_control: cannot access local variable 'traceback' where it is not associated with a value
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 331, in run_control_simulation
+    obs, info = env.reset()
+                ^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/Code_RL/src/env/traffic_signal_env_direct.py", line 190, in reset
+    self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
+  File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 708, in set_traffic_signal_state
+    base_state[0],           # rho_m (maintain density)
+    ~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 714, in run_performance_comparison
+    baseline_states, _ = self.run_control_simulation(
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_section_7_6_rl_performance.py", line 343, in run_control_simulation
+    traceback.print_exc()
+    ^^^^^^^^^
+UnboundLocalError: cannot access local variable 'traceback' where it is not associated with a value

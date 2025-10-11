@@ -299,7 +299,7 @@ class RLPerformanceValidationTest(ValidationSection):
             # Direct coupling - no mock, no HTTP server
             # SimulationRunner instantiated inside environment
             # SENSITIVITY FIX: Move observations closer to BC (segments 3-8 instead of 8-13)
-            # With 100 cells over 1km: cell 3 ≈ 30m, cell 8 ≈ 80m from left boundary
+            # With 100 cells over 1km: cell 3 ~ 30m, cell 8 ~ 80m from left boundary
             # Much closer than before (200-325m) - should capture BC effects directly
             # BUG #5 FIX: Pass quiet=False to enable BC logging during comparison
             env = TrafficSignalEnvDirect(
@@ -311,7 +311,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 quiet=False  # BUG #5 FIX: Enable BC logging to verify Bug #4 fix
             )
             self.debug_logger.info("TrafficSignalEnvDirect created successfully")
-            self.debug_logger.info("  SENSITIVITY FIX: Observation segments [3-8] ≈ 30-80m from boundary")
+            self.debug_logger.info("  SENSITIVITY FIX: Observation segments [3-8] ~ 30-80m from boundary")
             
         except Exception as e:
             error_msg = f"Failed to initialize TrafficSignalEnvDirect: {e}"
