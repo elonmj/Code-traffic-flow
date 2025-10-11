@@ -301,7 +301,7 @@ def train_dqn_agent(
     callbacks = [eval_callback, checkpoint_callback, progress_callback]
     
     print(f"\n{'='*70}")
-    print(f"🚀 TRAINING STRATEGY:")
+    print(f" TRAINING STRATEGY:")
     print(f"   - Resume from: {'Latest checkpoint' if checkpoint_path else 'Scratch (new training)'}")
     print(f"   - Total timesteps: {total_timesteps:,}")
     print(f"   - Remaining timesteps: {remaining_timesteps:,}")

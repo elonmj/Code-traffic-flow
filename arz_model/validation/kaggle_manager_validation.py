@@ -13,11 +13,11 @@ Integration Points:
 - Victoria Island 70+ segments calibration
 
 Multi-Kernel Chain (5 phases):
-1. Infrastructure (GPU + dependencies)     → 15 min
-2. Analytical (R1, R3 validation)         → 30 min  
-3. Performance (R2, R4, R6 + Victoria)    → 45 min
-4. RL Integration (R5)                    → 40 min
-5. Results Synthesis (LaTeX)              → 10 min
+1. Infrastructure (GPU + dependencies)      15 min
+2. Analytical (R1, R3 validation)          30 min
+3. Performance (R2, R4, R6 + Victoria)    45 min
+4. RL Integration (R5)                     40 min
+5. Results Synthesis (LaTeX)              10 min
 Total: ~2h20 (within Kaggle limits)
 """
 
@@ -227,7 +227,7 @@ def main():
             results = {{'phase': 'infrastructure', 'success': False, 'error': 'GPU not available'}}
         else:
             # Test basic GPU simulation
-            print("🚀 Testing basic GPU simulation...")
+            print(" Testing basic GPU simulation...")
             
             runner = SimulationRunner(
                 scenario_config_path='config/scenario_gpu_validation.yml',

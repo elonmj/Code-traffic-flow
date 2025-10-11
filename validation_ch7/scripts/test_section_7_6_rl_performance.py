@@ -126,7 +126,7 @@ class RLPerformanceValidationTest(ValidationSection):
         """Crée un fichier de configuration YAML pour un scénario de contrôle.
         
         SENSITIVITY FIX: Configuration optimized to observe BC control effects
-        - Reduced domain: 5km → 1km (faster wave propagation)
+        - Reduced domain: 5km a 1km (faster wave propagation)
         - Riemann IC: Shock wave instead of equilibrium (transient dynamics)
         - Higher densities: Strong signal for control testing
         
@@ -427,8 +427,10 @@ class RLPerformanceValidationTest(ValidationSection):
                 
                 # Store trajectory
                 # Store full state for analysis (extract from runner.U or runner.d_U)
+                # BUG #13 FIX: FORCE deep copy with np.array() to prevent GPU memory aliasing
                 current_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
-                states_history.append(current_state.copy())  # CRITICAL: .copy() to avoid reference issues
+                # Double copy: first copy_to_host(), then np.array() to ensure complete detachment
+                states_history.append(np.array(current_state, copy=True))  # CRITICAL: np.array(copy=True) prevents GPU memory aliasing
                 
                 print(f"    [STEP {steps}/{max_control_steps}] action={action:.4f}, reward={reward:.4f}, t={env.runner.t:.1f}s, state_diff={state_diff_mean:.6e}", flush=True)
                 
@@ -456,7 +458,11 @@ class RLPerformanceValidationTest(ValidationSection):
         
         env.close()
         
-        return states_history, control_actions
+        # BUG #13 FIX: Force complete detachment from GPU memory before returning
+        # Create new numpy arrays to ensure no shared memory with GPU
+        states_history_detached = [np.array(state, copy=True) for state in states_history]
+        
+        return states_history_detached, control_actions
     
     def evaluate_traffic_performance(self, states_history, scenario_type):
         """Evaluate traffic performance metrics."""

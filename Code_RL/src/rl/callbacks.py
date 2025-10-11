@@ -127,7 +127,7 @@ class TrainingProgressCallback(BaseCallback):
         import time
         self.start_time = time.time()
         if self.verbose > 0:
-            print(f"\n🚀 Training started: {self.total_timesteps:,} total timesteps")
+            print(f"\n Training started: {self.total_timesteps:,} total timesteps")
     
     def _on_step(self) -> bool:
         """Called at each step."""

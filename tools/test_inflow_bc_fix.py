@@ -73,7 +73,7 @@ def test_inflow_bc_fix():
         'type': 'inflow',
         'state': [0.1, 15.0, 0.12, 12.0]  # High density WITH momentum
     }
-    print("[BC SWITCH] Left → inflow [0.1, 15.0, 0.12, 12.0]")
+    print("[BC SWITCH] Left à inflow [0.1, 15.0, 0.12, 12.0]")
     
     # Continue simulation
     runner.run_until(t=60.0)
@@ -87,11 +87,11 @@ def test_inflow_bc_fix():
     
     if improvement > 0.1:  # At least 10% increase
         print("✅ PASS: Inflow BC successfully injected traffic!")
-        print("   → Fix is working: w_m and w_c are now imposed, not extrapolated")
+        print("    Fix is working: w_m and w_c are now imposed, not extrapolated")
         return True
     else:
         print("❌ FAIL: Traffic did not increase significantly")
-        print("   → Fix may not be working correctly")
+        print("    Fix may not be working correctly")
         return False
 
 if __name__ == '__main__':

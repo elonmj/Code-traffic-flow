@@ -746,7 +746,7 @@ class SimulationRunner:
         # SENSITIVITY FIX: Enhanced logging to verify BC updates
         if not self.quiet:
             phase_name = "RED (reduced inflow)" if phase_id == 0 else "GREEN (normal inflow)"
-            print(f"[BC UPDATE] {intersection_id} → phase {phase_id} {phase_name}", flush=True)
+            print(f"[BC UPDATE] {intersection_id} à phase {phase_id} {phase_name}", flush=True)
             if bc_config['type'] == 'inflow' and bc_config.get('state') is not None:
                 state = bc_config['state']
                 print(f"  └─ Inflow state: rho_m={state[0]:.4f}, w_m={state[1]:.1f}, "

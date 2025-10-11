@@ -633,3 +633,7 @@
 2025-10-11 07:24:54,536 - validation_kaggle_manager - INFO - 📍 Current branch: main
 2025-10-11 07:24:54,717 - validation_kaggle_manager - INFO - ✅ Git repository is clean and up to date
 2025-10-11 07:24:57,711 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-ohuc
+2025-10-11 07:55:23,390 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-11 07:55:23,526 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-11 07:55:23,683 - validation_kaggle_manager - INFO - ✅ Git repository is clean and up to date
+2025-10-11 07:55:26,769 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-neqf
