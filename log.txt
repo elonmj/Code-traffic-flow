@@ -983,3 +983,10 @@
 2025-10-11 12:31:57,441 - validation_kaggle_manager - INFO -   ?? validation_output/temp_xwvw_2/ (Untracked)
 2025-10-11 12:31:57,442 - validation_kaggle_manager - INFO -   ?? validation_output/temp_xwvw_3/ (Untracked)
 2025-10-11 12:31:57,442 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-11 12:31:57,835 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-11 12:31:58,849 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-11 12:31:58,852 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-11 12:32:10,066 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-11 12:32:12,983 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-nmpy
+2025-10-11 12:47:38,544 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-11 12:47:38,638 - validation_kaggle_manager - INFO - 📍 Current branch: main
