@@ -1,0 +1,23 @@
+{
+  "section": "section_7_6_rl_performance",
+  "timestamp": "2025-10-11T12:08:35.985475",
+  "artifacts": {
+    "figures": 2,
+    "npz_files": 0,
+    "scenarios": 1,
+    "latex_files": 1,
+    "csv_files": 1,
+    "json_files": 0
+  },
+  "validation_success": false,
+  "quick_test_mode": true,
+  "device_used": "gpu",
+  "summary_metrics": {
+    "success_rate": 0.0,
+    "scenarios_passed": 0,
+    "total_scenarios": 1,
+    "avg_flow_improvement": 0.0,
+    "avg_efficiency_improvement": 0.0,
+    "avg_delay_reduction": 0.0
+  }
+}

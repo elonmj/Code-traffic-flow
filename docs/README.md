@@ -1,5 +1,17 @@
 ﻿# Documentation - ARZ-RL Traffic Flow Model
 
+## 🆕 Checkpoint System (RL Training Resumption)
+
+- **CHECKPOINT_INDEX.md** - 📚 INDEX PRINCIPAL - Commencez ici!
+- **CHECKPOINT_QUICKSTART.md** - 🚀 Quick Start Guide (5 min)
+- **CHECKPOINT_SYSTEM.md** - 📘 Documentation complète (20 min)
+- **CHECKPOINT_IMPLEMENTATION_SUMMARY.md** - ✅ Détails implémentation
+- **CHECKPOINT_VISUAL_GUIDE.md** - 🗺️ Guide visuel avec diagrammes
+
+> **Nouveau système de reprise automatique du training RL sur Kaggle GPU!**  
+> Permet de continuer le training après interruption, changement de paramètres, ou pour plus de timesteps.  
+> **Complètement automatique** - aucune action manuelle requise!
+
 ##  Architecture & Design
 
 - **ARCHITECTURE_VALIDATION.md** - Règles strictes d'architecture validation (LECTURE OBLIGATOIRE)

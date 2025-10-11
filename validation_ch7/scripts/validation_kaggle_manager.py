@@ -679,6 +679,17 @@ print("=" * 80)
         print("[STEP3] Step 3: Starting enhanced monitoring...")
         success = self._monitor_kernel_with_session_detection(kernel_slug, timeout)
         
+        # STEP 4: Restore checkpoints for RL section (automatic training resumption)
+        if success and section_name == "section_7_6_rl_performance":
+            print("\n[STEP4] Step 4: Restoring checkpoints for next training run...")
+            checkpoint_restored = self._restore_checkpoints_for_next_run(kernel_slug, section_name)
+            
+            if checkpoint_restored:
+                print("[SUCCESS] Checkpoints ready for automatic resumption")
+                print("[INFO] Next run will continue training from latest checkpoint")
+            else:
+                print("[INFO] No checkpoints to restore (first run or insufficient training)")
+        
         return success, kernel_slug
         
     def _create_and_upload_validation_kernel(self, kernel_name: str, script_content: str) -> Optional[str]:
@@ -1142,6 +1153,168 @@ print("=" * 80)
         except Exception as e:
             print(f"[ERROR] Failed to download results: {e}")
             return False
+
+    def _restore_checkpoints_for_next_run(self, kernel_slug: str, section_name: str) -> bool:
+        """
+        Restaure les checkpoints téléchargés vers le dossier de training pour permettre
+        la reprise automatique du training au prochain run.
+        
+        Cette méthode copie les checkpoints depuis validation_output/results/{kernel_slug}/
+        vers validation_ch7/{section_name}/data/models/checkpoints/ où le code de training
+        les recherche automatiquement.
+        
+        Args:
+            kernel_slug: Le slug du kernel (ex: "elonmj/arz-validation-76rlperformance-kphs")
+            section_name: Nom de la section (ex: "section_7_6_rl_performance")
+            
+        Returns:
+            bool: True si des checkpoints ont été restaurés avec succès
+        """
+        try:
+            print("\n[CHECKPOINT] ====== CHECKPOINT RESTORATION ======")
+            
+            # Chemin source (où Kaggle a téléchargé les résultats)
+            downloaded_dir = Path('validation_output') / 'results' / kernel_slug.replace('/', '_')
+            checkpoint_source = downloaded_dir / section_name / "data" / "models" / "checkpoints"
+            
+            if not checkpoint_source.exists():
+                print(f"[CHECKPOINT] No checkpoints found in {checkpoint_source}")
+                print(f"[CHECKPOINT] This is normal for first run or if training didn't reach checkpoint threshold")
+                return False
+            
+            # Chemin destination (où le training les cherche au prochain run)
+            checkpoint_dest = Path('validation_ch7') / section_name / "data" / "models" / "checkpoints"
+            checkpoint_dest.mkdir(parents=True, exist_ok=True)
+            
+            # Copier tous les fichiers de checkpoint
+            checkpoint_files = list(checkpoint_source.glob("*_checkpoint_*_steps.zip"))
+            
+            if not checkpoint_files:
+                print(f"[CHECKPOINT] No checkpoint files found in source directory")
+                return False
+            
+            print(f"[CHECKPOINT] Found {len(checkpoint_files)} checkpoint(s) to restore:")
+            
+            restored_count = 0
+            for checkpoint_file in checkpoint_files:
+                dest_file = checkpoint_dest / checkpoint_file.name
+                try:
+                    shutil.copy2(checkpoint_file, dest_file)
+                    file_size_mb = checkpoint_file.stat().st_size / (1024 * 1024)
+                    print(f"[CHECKPOINT]   ✓ {checkpoint_file.name} ({file_size_mb:.1f} MB)")
+                    restored_count += 1
+                except Exception as e:
+                    print(f"[CHECKPOINT]   ✗ Failed to copy {checkpoint_file.name}: {e}")
+            
+            # Copier aussi best_model si disponible
+            best_model_source = downloaded_dir / section_name / "data" / "models" / "best_model"
+            if best_model_source.exists():
+                best_model_dest = checkpoint_dest.parent / "best_model"
+                best_model_dest.mkdir(parents=True, exist_ok=True)
+                
+                best_model_file = best_model_source / "best_model.zip"
+                if best_model_file.exists():
+                    try:
+                        shutil.copy2(best_model_file, best_model_dest / "best_model.zip")
+                        file_size_mb = best_model_file.stat().st_size / (1024 * 1024)
+                        print(f"[CHECKPOINT]   ✓ best_model.zip ({file_size_mb:.1f} MB)")
+                        restored_count += 1
+                    except Exception as e:
+                        print(f"[CHECKPOINT]   ✗ Failed to copy best_model.zip: {e}")
+            
+            # Copier training_metadata.json si disponible
+            metadata_source = downloaded_dir / section_name / "data" / "models" / "training_metadata.json"
+            if metadata_source.exists():
+                metadata_dest = checkpoint_dest.parent / "training_metadata.json"
+                try:
+                    shutil.copy2(metadata_source, metadata_dest)
+                    print(f"[CHECKPOINT]   ✓ training_metadata.json")
+                    restored_count += 1
+                except Exception as e:
+                    print(f"[CHECKPOINT]   ✗ Failed to copy training_metadata.json: {e}")
+            
+            if restored_count > 0:
+                print(f"\n[CHECKPOINT] ✅ Successfully restored {restored_count} file(s)")
+                print(f"[CHECKPOINT] Checkpoints ready for next run at:")
+                print(f"[CHECKPOINT]   {checkpoint_dest.absolute()}")
+                print(f"[CHECKPOINT] Next training will automatically resume from latest checkpoint")
+                return True
+            else:
+                print(f"[CHECKPOINT] ❌ No files were successfully restored")
+                return False
+        
+        except Exception as e:
+            print(f"[CHECKPOINT] ⚠️  Failed to restore checkpoints: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    def _validate_checkpoint_compatibility(self, checkpoint_dir: Path, current_config: dict) -> bool:
+        """
+        Vérifie si les checkpoints existants sont compatibles avec la configuration actuelle.
+        
+        Cette méthode compare les métadonnées du checkpoint (architecture, espaces d'observation/action)
+        avec la configuration actuelle pour éviter des erreurs de reprise.
+        
+        Args:
+            checkpoint_dir: Dossier contenant les checkpoints
+            current_config: Configuration actuelle du training (dict avec keys comme 'total_timesteps', etc.)
+            
+        Returns:
+            bool: True si compatible ou si pas de métadonnées (optimistic), False si incompatible
+        """
+        try:
+            # Charger les métadonnées du checkpoint si disponibles
+            metadata_file = checkpoint_dir.parent / "training_metadata.json"
+            
+            if not metadata_file.exists():
+                print("[CHECKPOINT] No metadata found - assuming compatible (optimistic)")
+                return True
+            
+            with open(metadata_file, 'r') as f:
+                checkpoint_metadata = json.load(f)
+            
+            print("[CHECKPOINT] Validating checkpoint compatibility...")
+            
+            # Vérifier les paramètres critiques
+            critical_params = {
+                'observation_space_shape': 'Architecture',
+                'action_space_shape': 'Action space',
+                'policy_architecture': 'Policy network'
+            }
+            
+            incompatible = []
+            for param, description in critical_params.items():
+                if param in checkpoint_metadata and param in current_config:
+                    if checkpoint_metadata[param] != current_config[param]:
+                        incompatible.append(
+                            f"{description}: checkpoint={checkpoint_metadata[param]}, "
+                            f"current={current_config[param]}"
+                        )
+            
+            if incompatible:
+                print("[CHECKPOINT] ⚠️  INCOMPATIBILITY DETECTED:")
+                for issue in incompatible:
+                    print(f"[CHECKPOINT]   - {issue}")
+                print("[CHECKPOINT] ⚠️  Checkpoint may not load correctly!")
+                print("[CHECKPOINT] Recommendation: Delete checkpoints to start fresh:")
+                print(f"[CHECKPOINT]   rm -rf {checkpoint_dir}")
+                return False
+            
+            print("[CHECKPOINT] ✅ Compatibility check passed")
+            
+            # Afficher info sur le checkpoint
+            if 'total_timesteps_completed' in checkpoint_metadata:
+                print(f"[CHECKPOINT] Previous training: {checkpoint_metadata['total_timesteps_completed']} timesteps completed")
+            if 'mean_reward' in checkpoint_metadata:
+                print(f"[CHECKPOINT] Previous mean reward: {checkpoint_metadata['mean_reward']:.2f}")
+            
+            return True
+            
+        except Exception as e:
+            print(f"[CHECKPOINT] ⚠️  Could not validate compatibility: {e}")
+            print("[CHECKPOINT] Proceeding optimistically - training will decide if checkpoint is valid")
+            return True  # Optimistic - let training code decide
 
     def run_all_validation_sections(self, timeout_per_section: int = 12000) -> Dict[str, Any]:
         """
