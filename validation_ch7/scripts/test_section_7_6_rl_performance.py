@@ -153,13 +153,10 @@ class RLPerformanceValidationTest(ValidationSection):
         w_m_inflow = 8.0   # ~29 km/h (congested inflow)
         w_c_inflow = 6.0   # ~22 km/h
         
-        # Convert to SI units (veh/m)
-        rho_m_uniform_si = rho_m_initial_veh_km * 0.001
-        rho_c_uniform_si = rho_c_initial_veh_km * 0.001
-        
-        # Inflow BC values (higher than initial to create queue)
-        rho_m_high_si = rho_m_inflow_veh_km * 0.001
-        rho_c_high_si = rho_c_inflow_veh_km * 0.001
+        # ✅ BUG #16 FIX: Do NOT pre-convert densities to SI for YAML
+        # SimulationRunner expects veh/km in YAML and handles SI conversion internally
+        # Previous bug: Double conversion (veh/km → SI → SI again) caused 1000× error
+        # Keep values in veh/km for both IC and BC
         w_m_high = w_m_inflow
         w_c_high = w_c_inflow
         w_m_uniform = w_m_initial
@@ -174,7 +171,9 @@ class RLPerformanceValidationTest(ValidationSection):
             'output_dt': 60.0,
             'CFL': 0.4,
             'boundary_conditions': {
-                'left': {'type': 'inflow', 'state': [rho_m_high_si, w_m_high, rho_c_high_si, w_c_high]},
+                # BUG #16 FIX: Write densities in veh/km (not SI) to YAML
+                # SimulationRunner will convert internally: 120 veh/km → 0.12 veh/m
+                'left': {'type': 'inflow', 'state': [rho_m_inflow_veh_km, w_m_high, rho_c_inflow_veh_km, w_c_high]},
                 'right': {'type': 'outflow'}
             },
             'road': {'quality_type': 'uniform', 'quality_value': 2}
@@ -184,9 +183,10 @@ class RLPerformanceValidationTest(ValidationSection):
             config['parameters'] = {'V0_m': 25.0, 'V0_c': 22.2, 'tau_m': 1.0, 'tau_c': 1.2}
             # ✅ BUG #11 FIX: CORRECT FORMAT for 'uniform' IC type
             # runner.py expects 'state': [rho_m, w_m, rho_c, w_c] NOT separate keys!
+            # ✅ BUG #16 FIX: Use veh/km in YAML (not SI)
             config['initial_conditions'] = {
                 'type': 'uniform',
-                'state': [rho_m_uniform_si, w_m_uniform, rho_c_uniform_si, w_c_uniform]
+                'state': [rho_m_initial_veh_km, w_m_uniform, rho_c_initial_veh_km, w_c_uniform]
             }
         elif scenario_type == 'ramp_metering':
             config['parameters'] = {'V0_m': 27.8, 'V0_c': 25.0, 'tau_m': 0.8, 'tau_c': 1.0}
