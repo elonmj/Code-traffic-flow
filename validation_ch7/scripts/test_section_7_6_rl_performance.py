@@ -162,6 +162,18 @@ class RLPerformanceValidationTest(ValidationSection):
         w_m_uniform = w_m_initial
         w_c_uniform = w_c_initial
         
+        # ✅ BUG #21 FIX: Define SI unit variables for Riemann IC (ramp_metering, adaptive_speed)
+        # Convert veh/km to veh/m for scenarios that need Riemann initial conditions
+        # High density (congested conditions)
+        rho_m_high_si = rho_m_inflow_veh_km / 1000.0  # veh/m (from veh/km)
+        rho_c_high_si = rho_c_inflow_veh_km / 1000.0  # veh/m
+        # Low density (free flow conditions)
+        rho_m_low_si = rho_m_initial_veh_km / 1000.0  # veh/m
+        rho_c_low_si = rho_c_initial_veh_km / 1000.0  # veh/m
+        # Velocities for low density (free flow)
+        w_m_low = w_m_initial  # m/s (moderate speed)
+        w_c_low = w_c_initial  # m/s
+        
         config = {
             'scenario_name': f'rl_perf_{scenario_type}_sensitive',
             'N': 100,           # CHANGED: Reduce from 200 for faster propagation
