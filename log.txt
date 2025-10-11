@@ -1046,3 +1046,10 @@
 2025-10-11 14:58:13,480 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
 2025-10-11 14:58:13,480 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-11 14:59:05,530 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-11 14:59:05,862 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-11 14:59:05,955 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-11 14:59:05,955 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-11 14:59:05,956 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-11 14:59:06,069 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-11 14:59:06,272 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-11 14:59:06,272 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
