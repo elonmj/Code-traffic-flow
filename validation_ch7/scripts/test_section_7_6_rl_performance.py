@@ -122,6 +122,34 @@ class RLPerformanceValidationTest(ValidationSection):
         self.debug_logger.info(f"Quick test mode: {self.quick_test}")
         self.debug_logger.info("="*80)
     
+    def _get_project_root(self):
+        """Get project root directory (validation_ch7 parent).
+        
+        This method ensures checkpoint paths work on both local and Kaggle environments.
+        __file__ is in validation_ch7/scripts/ → parent.parent gets project root.
+        """
+        project_root = Path(__file__).parent.parent.parent
+        self.debug_logger.info(f"[PATH] Project root resolved: {project_root}")
+        return project_root
+    
+    def _get_checkpoint_dir(self):
+        """Get checkpoint directory in Git-tracked location.
+        
+        Uses validation_ch7/checkpoints/section_7_6/ which is:
+        - Git-tracked (persists across Kaggle kernel restarts)
+        - Relative to project root (works locally AND on Kaggle)
+        - Section-specific (organized)
+        """
+        project_root = self._get_project_root()
+        checkpoint_dir = project_root / "validation_ch7" / "checkpoints" / "section_7_6"
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        self.debug_logger.info(f"[PATH] Checkpoint directory: {checkpoint_dir}")
+        self.debug_logger.info(f"[PATH] Checkpoint directory exists: {checkpoint_dir.exists()}")
+        if checkpoint_dir.exists():
+            existing_files = list(checkpoint_dir.glob("*.zip"))
+            self.debug_logger.info(f"[PATH] Found {len(existing_files)} existing checkpoints")
+        return checkpoint_dir
+    
     def _create_scenario_config(self, scenario_type: str) -> Path:
         """Crée un fichier de configuration YAML pour un scénario de contrôle.
         
@@ -605,8 +633,12 @@ class RLPerformanceValidationTest(ValidationSection):
         
         self.models_dir.mkdir(parents=True, exist_ok=True)
         model_path = self.models_dir / f"rl_agent_{scenario_type}.zip"
-        checkpoint_dir = self.models_dir / "checkpoints"
-        checkpoint_dir.mkdir(exist_ok=True)
+        
+        # FIX Bug #23: Use Git-tracked checkpoint directory instead of local_test
+        checkpoint_dir = self._get_checkpoint_dir()  # Git-tracked location
+        
+        print(f"  [CHECKPOINT] Directory: {checkpoint_dir}", flush=True)
+        print(f"  [MODEL] Save path: {model_path}", flush=True)
 
         # Create scenario configuration
         scenario_path = self._create_scenario_config(scenario_type)
@@ -975,17 +1007,43 @@ class RLPerformanceValidationTest(ValidationSection):
         print(f"[FIGURES] Generated 2 figures in {self.figures_dir}")
 
     def _generate_improvement_figure(self):
-        """Generate a bar chart comparing RL vs Baseline performance."""
+        """Generate a bar chart comparing RL vs Baseline performance.
+        
+        FIX Bug #25: Filter scenarios that have improvements data.
+        Previous version included all scenarios, even those with errors, resulting in 0-height bars.
+        """
         if not self.test_results:
+            print("  [WARNING] No test results available for improvement figure", flush=True)
             return
         
-        scenarios = list(self.test_results.keys())
+        # FIX: Filter scenarios that have improvement data (completed training)
+        completed_scenarios = [
+            s for s in self.test_results.keys()
+            if 'improvements' in self.test_results[s]
+        ]
+        
+        if not completed_scenarios:
+            print("  [WARNING] No completed scenarios with improvement data", flush=True)
+            # Generate placeholder figure with message
+            fig, ax = plt.subplots(figsize=(12, 7))
+            ax.text(0.5, 0.5, 'No completed scenarios available\n(Training in progress or encountered errors)', 
+                    ha='center', va='center', fontsize=16, color='gray')
+            ax.set_xlim(0, 1)
+            ax.set_ylim(0, 1)
+            ax.axis('off')
+            fig.tight_layout()
+            fig.savefig(self.figures_dir / 'fig_rl_performance_improvements.png', dpi=300)
+            plt.close(fig)
+            print("  [OK] fig_rl_performance_improvements.png (placeholder)", flush=True)
+            return
+        
+        scenarios = completed_scenarios
         metrics = ['efficiency_improvement', 'flow_improvement', 'delay_reduction']
         labels = ['Efficacité (%)', 'Débit (%)', 'Délai (%)']
         
         data = {label: [] for label in labels}
         for scenario in scenarios:
-            improvements = self.test_results[scenario].get('improvements', {})
+            improvements = self.test_results[scenario]['improvements']  # Safe now (filtered above)
             data[labels[0]].append(improvements.get('efficiency_improvement', 0))
             data[labels[1]].append(improvements.get('flow_improvement', 0))
             data[labels[2]].append(improvements.get('delay_reduction', 0))
@@ -1008,7 +1066,7 @@ class RLPerformanceValidationTest(ValidationSection):
         fig.tight_layout()
         fig.savefig(self.figures_dir / 'fig_rl_performance_improvements.png', dpi=300)
         plt.close(fig)
-        print(f"  [OK] fig_rl_performance_improvements.png")
+        print(f"  [OK] fig_rl_performance_improvements.png ({len(scenarios)} scenarios)", flush=True)
 
     def _generate_learning_curve_figure(self):
         """Generate a mock learning curve figure."""
@@ -1039,36 +1097,50 @@ class RLPerformanceValidationTest(ValidationSection):
         print(f"  [OK] fig_rl_learning_curve.png")
 
     def save_rl_metrics(self):
-        """Save detailed RL performance metrics to CSV."""
+        """Save detailed RL performance metrics to CSV.
+        
+        FIX Bug #24: Include ALL scenarios that completed training (even if not successful).
+        Previous version skipped scenarios with success=False, resulting in empty CSV.
+        """
         print("\n[METRICS] Saving RL performance metrics...")
         if not self.test_results:
             return
 
         rows = []
         for scenario, result in self.test_results.items():
-            if not result.get('success'):
+            # FIX: Include scenarios that completed training, even if not successful
+            # Only skip scenarios that errored completely (no improvements data)
+            if 'improvements' not in result:
+                print(f"  [SKIP] {scenario} - no improvements data (training error)", flush=True)
                 continue
             
-            base_perf = result['baseline_performance']
-            rl_perf = result['rl_performance']
+            # OLD: if not result.get('success'): continue  ← This caused empty CSV
+            
+            base_perf = result.get('baseline_performance', {})
+            rl_perf = result.get('rl_performance', {})
             improvements = result['improvements']
             
             rows.append({
                 'scenario': scenario,
-                'baseline_efficiency': base_perf['efficiency'],
-                'rl_efficiency': rl_perf['efficiency'],
-                'efficiency_improvement_pct': improvements['efficiency_improvement'],
-                'baseline_flow': base_perf['total_flow'],
-                'rl_flow': rl_perf['total_flow'],
-                'flow_improvement_pct': improvements['flow_improvement'],
-                'baseline_delay': base_perf['delay'],
-                'rl_delay': rl_perf['delay'],
-                'delay_reduction_pct': improvements['delay_reduction'],
+                'success': result.get('success', False),  # NEW: Track success status
+                'baseline_efficiency': base_perf.get('efficiency', 0),
+                'rl_efficiency': rl_perf.get('efficiency', 0),
+                'efficiency_improvement_pct': improvements.get('efficiency_improvement', 0),
+                'baseline_flow': base_perf.get('total_flow', 0),
+                'rl_flow': rl_perf.get('total_flow', 0),
+                'flow_improvement_pct': improvements.get('flow_improvement', 0),
+                'baseline_delay': base_perf.get('delay', 0),
+                'rl_delay': rl_perf.get('delay', 0),
+                'delay_reduction_pct': improvements.get('delay_reduction', 0),
             })
 
+        if not rows:
+            print("  [WARNING] No completed scenarios to save", flush=True)
+            return
+        
         df = pd.DataFrame(rows)
         df.to_csv(self.metrics_dir / 'rl_performance_comparison.csv', index=False)
-        print(f"  [OK] {self.metrics_dir / 'rl_performance_comparison.csv'}")
+        print(f"  [OK] Saved {len(rows)} scenarios to {self.metrics_dir / 'rl_performance_comparison.csv'}", flush=True)
 
     def generate_section_7_6_latex(self):
         """Generate LaTeX content for Section 7.6."""
