@@ -321,10 +321,15 @@ class RLPerformanceValidationTest(ValidationSection):
             """Mise à jour de l'état interne de l'agent (si nécessaire)."""
             pass
 
-    def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=60.0, device='gpu'):
+    def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=15.0, device='gpu'):
         """Execute real ARZ simulation with direct coupling (GPU-accelerated on Kaggle).
         
         Quick test mode uses normal duration to allow control strategies to have measurable impact.
+        
+        ✅ BUG #27 FIX: Changed control_interval default from 60.0s to 15.0s
+        This matches the training configuration (Bug #20 fix) to ensure fair comparison.
+        With 15s intervals, we get 240 decisions per hour vs 60 with 60s intervals,
+        allowing the controller to leverage transient traffic dynamics.
         """
         # Quick test mode: reduce duration for fast validation
         if self.quick_test:
