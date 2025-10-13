@@ -674,17 +674,18 @@ class RLPerformanceValidationTest(ValidationSection):
                 # Find latest checkpoint
                 latest_checkpoint = max(checkpoint_files, key=lambda p: int(p.stem.split('_')[-2]))
                 completed_steps = int(latest_checkpoint.stem.split('_')[-2])
-                remaining_steps = total_timesteps - completed_steps
                 
-                if remaining_steps > 0:
-                    print(f"  [RESUME] Found checkpoint at {completed_steps} steps", flush=True)
-                    print(f"  [RESUME] Loading model from {latest_checkpoint}", flush=True)
-                    model = PPO.load(str(latest_checkpoint), env=env)
-                    print(f"  [RESUME] Will train for {remaining_steps} more steps", flush=True)
-                else:
-                    print(f"  [COMPLETE] Training already completed ({completed_steps}/{total_timesteps} steps)", flush=True)
-                    env.close()
-                    return str(model_path)
+                # ✅ FIX Bug #26: ALWAYS continue training, NEVER skip
+                # Previous: if remaining_steps > 0 → train, else → SKIP (WRONG!)
+                # Problem: 0% improvements prove model NOT converged yet
+                # Solution: ALWAYS resume and train MORE steps for convergence
+                print(f"  [RESUME] Found checkpoint at {completed_steps} steps", flush=True)
+                print(f"  [RESUME] Loading model from {latest_checkpoint}", flush=True)
+                model = PPO.load(str(latest_checkpoint), env=env)
+                
+                # Calculate additional steps (minimum 10% of target for refinement)
+                remaining_steps = max(total_timesteps - completed_steps, total_timesteps // 10)
+                print(f"  [RESUME] Will train for {remaining_steps} more steps (continuous improvement)", flush=True)
             else:
                 remaining_steps = total_timesteps
                 # Train PPO agent from scratch
