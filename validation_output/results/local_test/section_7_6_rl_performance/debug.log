@@ -1,9 +1,21 @@
-2025-10-11 07:24:10 - INFO - _setup_debug_logging:119 - ================================================================================
-2025-10-11 07:24:10 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED
-2025-10-11 07:24:10 - INFO - _setup_debug_logging:121 - Log file: validation_output\results\local_test\section_7_6_rl_performance\debug.log
-2025-10-11 07:24:10 - INFO - _setup_debug_logging:122 - Quick test mode: True
-2025-10-11 07:24:10 - INFO - _setup_debug_logging:123 - ================================================================================
-2025-10-11 07:24:10 - INFO - _create_scenario_config:202 - Created scenario config: traffic_light_control.yml
-2025-10-11 07:24:10 - INFO - _create_scenario_config:203 -   BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)
-2025-10-11 07:24:10 - INFO - _create_scenario_config:204 -   Uniform density: rho_m=80.0 veh/km, rho_c=100.0 veh/km
-2025-10-11 07:24:10 - INFO - _create_scenario_config:205 -   Uniform velocity: w_m=12.0 m/s, w_c=10.0 m/s
+2025-10-13 09:51:10 - INFO - _setup_debug_logging:119 - ================================================================================
+2025-10-13 09:51:10 - INFO - _setup_debug_logging:120 - DEBUG LOGGING INITIALIZED
+2025-10-13 09:51:10 - INFO - _setup_debug_logging:121 - Log file: validation_output\results\local_test\section_7_6_rl_performance\debug.log
+2025-10-13 09:51:10 - INFO - _setup_debug_logging:122 - Quick test mode: True
+2025-10-13 09:51:10 - INFO - _setup_debug_logging:123 - ================================================================================
+2025-10-13 09:51:11 - INFO - train_rl_agent:620 - ================================================================================
+2025-10-13 09:51:11 - INFO - train_rl_agent:621 - Starting train_rl_agent for scenario: traffic_light_control
+2025-10-13 09:51:11 - INFO - train_rl_agent:622 -   - Device: cpu
+2025-10-13 09:51:11 - INFO - train_rl_agent:623 -   - Total timesteps: 100
+2025-10-13 09:51:11 - INFO - train_rl_agent:624 -   - Episode max time: 120.0s
+2025-10-13 09:51:11 - INFO - train_rl_agent:625 -   - Checkpoint frequency: 50
+2025-10-13 09:51:11 - INFO - train_rl_agent:626 - ================================================================================
+2025-10-13 09:51:11 - INFO - _get_project_root:132 - [PATH] Project root resolved: D:\Projets\Alibi\Code project
+2025-10-13 09:51:11 - INFO - _get_checkpoint_dir:146 - [PATH] Checkpoint directory: D:\Projets\Alibi\Code project\validation_ch7\checkpoints\section_7_6
+2025-10-13 09:51:11 - INFO - _get_checkpoint_dir:147 - [PATH] Checkpoint directory exists: True
+2025-10-13 09:51:11 - INFO - _get_checkpoint_dir:150 - [PATH] Found 6 existing checkpoints
+2025-10-13 09:51:11 - INFO - _create_scenario_config:254 - Created scenario config: traffic_light_control.yml
+2025-10-13 09:51:11 - INFO - _create_scenario_config:255 -   BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)
+2025-10-13 09:51:11 - INFO - _create_scenario_config:256 -   BUG #14 FIX: Initial=40.0/50.0 veh/km, Inflow=120.0/150.0 veh/km
+2025-10-13 09:51:11 - INFO - _create_scenario_config:257 -   Initial velocity: w_m=15.0 m/s, w_c=13.0 m/s
+2025-10-13 09:51:11 - INFO - _create_scenario_config:258 -   Inflow velocity: w_m=8.0 m/s, w_c=6.0 m/s

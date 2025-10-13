@@ -1,0 +1,50 @@
+2025-10-11 20:49:16,843 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-10-11 20:49:16,843 - INFO - Branch: main
+2025-10-11 20:49:23,197 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-10-11 20:49:23,197 - INFO - PyTorch: 2.6.0+cu124
+2025-10-11 20:49:23,244 - INFO - CUDA available: True
+2025-10-11 20:49:23,266 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-10-11 20:49:23,266 - INFO - CUDA version: 12.4
+2025-10-11 20:49:23,266 - INFO - 
+[STEP 1/4] Cloning repository from GitHub...
+2025-10-11 20:49:23,266 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-10-11 20:49:25,482 - INFO - [OK] Repository cloned successfully
+2025-10-11 20:49:25,482 - INFO - TRACKING_SUCCESS: Repository cloned
+2025-10-11 20:49:25,482 - INFO - 
+[STEP 2/4] Installing dependencies...
+2025-10-11 20:49:25,482 - INFO - Installing PyYAML...
+2025-10-11 20:49:29,928 - INFO - Installing matplotlib...
+2025-10-11 20:49:32,867 - INFO - Installing pandas...
+2025-10-11 20:49:35,826 - INFO - Installing scipy...
+2025-10-11 20:49:38,800 - INFO - Installing numpy...
+2025-10-11 20:49:41,742 - INFO - Installing gymnasium...
+2025-10-11 20:49:44,727 - INFO - Installing stable-baselines3...
+2025-10-11 20:51:00,460 - INFO - [OK] Dependencies installed
+2025-10-11 20:51:00,461 - INFO - TRACKING_SUCCESS: Dependencies ready
+2025-10-11 20:51:00,461 - INFO - 
+[STEP 3/4] Running validation tests...
+2025-10-11 20:51:00,461 - INFO - [FULL_TEST] Full test mode (20000 timesteps)
+2025-10-11 20:51:00,461 - INFO - Executing Python module: validation_ch7.scripts.test_section_7_6_rl_performance...
+2025-10-11 20:51:00,461 - INFO - PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts
+2025-10-11 20:51:00,461 - INFO - ============================================================
+2025-10-12 00:51:00,657 - ERROR - [ERROR] Validation test timeout (240 minutes)
+2025-10-12 00:51:00,657 - INFO - 
+[STEP 4/4] Copying artifacts and cleaning up...
+2025-10-12 00:51:00,657 - INFO - [ARTIFACTS] Copying results for section_7_6_rl_performance...
+2025-10-12 00:51:00,663 - INFO - [OK] Section copied to: /kaggle/working/section_7_6_rl_performance
+2025-10-12 00:51:00,664 - INFO - [ARTIFACTS] NPZ files: 0
+2025-10-12 00:51:00,664 - INFO - [ARTIFACTS] PNG figures: 2
+2025-10-12 00:51:00,664 - INFO - [ARTIFACTS] YAML scenarios: 3
+2025-10-12 00:51:00,664 - INFO - [ARTIFACTS] TEX files: 1
+2025-10-12 00:51:00,664 - INFO - [ARTIFACTS] JSON files: 1
+2025-10-12 00:51:00,665 - INFO - [ARTIFACTS] CSV metrics: 1
+2025-10-12 00:51:00,665 - INFO - TRACKING_SUCCESS: Artifacts copied
+2025-10-12 00:51:00,665 - INFO - [SUCCESS] All artifacts organized and copied
+2025-10-12 00:51:00,665 - INFO - [CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow
+2025-10-12 00:51:00,708 - INFO - [OK] Cleanup completed - only validation results remain
+2025-10-12 00:51:00,708 - INFO - TRACKING_SUCCESS: Cleanup completed
+2025-10-12 00:51:00,708 - INFO - [OK] Session summary created: /kaggle/working/validation_results/session_summary.json
+2025-10-12 00:51:00,709 - INFO - TRACKING_SUCCESS: Session summary created
+2025-10-12 00:51:00,709 - INFO - 
+[FINAL] Validation workflow completed
+2025-10-12 00:51:00,709 - INFO - Remote logging finalized - ready for download
