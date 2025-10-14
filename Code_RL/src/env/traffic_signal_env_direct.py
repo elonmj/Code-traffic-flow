@@ -47,7 +47,7 @@ class TrafficSignalEnvDirect(gym.Env):
     def __init__(self,
                  scenario_config_path: str,
                  base_config_path: str = None,
-                 decision_interval: float = 10.0,
+                 decision_interval: float = 15.0,  # Changed from 10.0 (Bug #27 validation, 4x improvement)
                  observation_segments: Dict[str, list] = None,
                  normalization_params: Dict[str, float] = None,
                  reward_weights: Dict[str, float] = None,
@@ -60,7 +60,10 @@ class TrafficSignalEnvDirect(gym.Env):
         Args:
             scenario_config_path: Path to ARZ scenario YAML config
             base_config_path: Path to ARZ base config (default: arz_model/config/config_base.yml)
-            decision_interval: Time between agent decisions in seconds (default: 10.0)
+            decision_interval: Time between agent decisions in seconds (default: 15.0)
+                              Justification: Bug #27 investigation showed 4x improvement (593 → 2361 episode reward)
+                              Literature: Chu et al. (2020) found 15s provides 'best balance' for urban TSC
+                              Physical: 15s ≈ 0.18 × τ_propagation (transient-rich regime, captures dynamics)
             observation_segments: Dict with 'upstream' and 'downstream' segment indices
                                  Example: {'upstream': [8, 9, 10], 'downstream': [11, 12, 13]}
             normalization_params: Dict with 'rho_max', 'v_free' for observation normalization

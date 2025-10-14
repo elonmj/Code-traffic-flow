@@ -95,3 +95,24 @@
 2025-10-06 11:53:00,548 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-06 11:53:02,943 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-06 11:53:05,954 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-75digitaltwin-zimd
+2025-10-14 19:19:25,869 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-14 19:19:26,020 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-14 19:19:26,076 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-14 19:19:26,076 - validation_kaggle_manager - INFO -   M  ode_RL/configs/env_lagos.yaml (Modified (staged))
+2025-10-14 19:19:26,076 - validation_kaggle_manager - INFO -    M Code_RL/src/env/traffic_signal_env_direct.py (Modified (unstaged))
+2025-10-14 19:19:26,076 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/run_kaggle_validation_section_7_6.py (Modified (unstaged))
+2025-10-14 19:19:26,076 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/test_section_7_6_rl_performance.py (Modified (unstaged))
+2025-10-14 19:19:26,076 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/validation_cli.py (Modified (unstaged))
+2025-10-14 19:19:26,076 - validation_kaggle_manager - INFO -   ?? validate_control_interval_fix.py (Untracked)
+2025-10-14 19:19:26,076 - validation_kaggle_manager - INFO -   ?? validation_ch7/cache/section_7_6/traffic_light_control_515c5ce5_rl_cache.pkl (Untracked)
+2025-10-14 19:19:26,077 - validation_kaggle_manager - INFO -   ?? validation_ch7/cache/section_7_6/traffic_light_control_baseline_cache.pkl (Untracked)
+2025-10-14 19:19:26,077 - validation_kaggle_manager - INFO -   ?? validation_ch7/checkpoints/ (Untracked)
+2025-10-14 19:19:26,077 - validation_kaggle_manager - INFO -   ?? validation_ch7/scripts/run_kaggle_validation_section_7_6.py.backup (Untracked)
+2025-10-14 19:19:26,077 - validation_kaggle_manager - INFO -   ?? validation_ch7/scripts/validation_output/ (Untracked)
+2025-10-14 19:19:26,078 - validation_kaggle_manager - INFO -   ?? validation_test_output.log (Untracked)
+2025-10-14 19:19:26,079 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-14 19:19:26,174 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-14 19:19:26,313 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-14 19:19:26,328 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-14 19:19:30,249 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-14 19:19:32,668 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-rmey
