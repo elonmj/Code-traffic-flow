@@ -1345,3 +1345,50 @@
 2025-10-13 10:49:27,941 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-13 10:49:55,302 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-13 10:49:58,734 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-xein
+2025-10-13 14:58:49,239 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-13 14:58:49,946 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-13 14:58:50,235 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-13 14:58:50,239 - validation_kaggle_manager - INFO -   D  hapters/intro.tex (Deleted (staged))
+2025-10-13 14:58:50,239 - validation_kaggle_manager - INFO -    D chapters/partie1/ch1_etat_art_modeles.tex (Deleted (unstaged))
+2025-10-13 14:58:50,240 - validation_kaggle_manager - INFO -    D chapters/partie1/ch2_rl_gestion_trafic.tex (Deleted (unstaged))
+2025-10-13 14:58:50,241 - validation_kaggle_manager - INFO -    D chapters/partie1/ch2prime_caracteristiques_transposition.tex (Deleted (unstaged))
+2025-10-13 14:58:50,244 - validation_kaggle_manager - INFO -    D chapters/partie2/ch3_formulation_modele.tex (Deleted (unstaged))
+2025-10-13 14:58:50,246 - validation_kaggle_manager - INFO -    D chapters/partie2/ch3prime_modeles_intersections.tex (Deleted (unstaged))
+2025-10-13 14:58:50,248 - validation_kaggle_manager - INFO -    D chapters/partie2/ch4_fondements_mathematiques.tex (Deleted (unstaged))
+2025-10-13 14:58:50,250 - validation_kaggle_manager - INFO -    D chapters/partie2/ch4_resolution_numerique.tex (Deleted (unstaged))
+2025-10-13 14:58:50,251 - validation_kaggle_manager - INFO -    D chapters/partie2/ch5_construction_jumeau.tex (Deleted (unstaged))
+2025-10-13 14:58:50,251 - validation_kaggle_manager - INFO -    D chapters/partie2/ch6_conception_implementation.tex (Deleted (unstaged))
+2025-10-13 14:58:50,252 - validation_kaggle_manager - INFO -    D chapters/partie2/plan.md (Deleted (unstaged))
+2025-10-13 14:58:50,253 - validation_kaggle_manager - INFO -    D chapters/partie2/suite.md (Deleted (unstaged))
+2025-10-13 14:58:50,254 - validation_kaggle_manager - INFO -    D chapters/partie3/ch7_evaluation_robustesse.tex (Deleted (unstaged))
+2025-10-13 14:58:50,255 - validation_kaggle_manager - INFO -    D chapters/partie3/ch7_validation_entrainement.tex (Deleted (unstaged))
+2025-10-13 14:58:50,255 - validation_kaggle_manager - INFO -    D chapters/partie3/ch8_discussion_perspectives.tex (Deleted (unstaged))
+2025-10-13 14:58:50,256 - validation_kaggle_manager - INFO -    D chapters/partie3/images/fig_behavioral_patterns.png (Deleted (unstaged))
+2025-10-13 14:58:50,262 - validation_kaggle_manager - INFO -    D chapters/partie3/images/fig_calibration_error_histogram.png (Deleted (unstaged))
+2025-10-13 14:58:50,263 - validation_kaggle_manager - INFO -    D chapters/partie3/images/fig_calibration_metrics.png (Deleted (unstaged))
+2025-10-13 14:58:50,264 - validation_kaggle_manager - INFO -    D chapters/partie3/images/fig_calibration_scatter.png (Deleted (unstaged))
+2025-10-13 14:58:50,267 - validation_kaggle_manager - INFO -    D chapters/partie3/images/fig_calibration_timeseries.png (Deleted (unstaged))
+2025-10-13 14:58:50,272 - validation_kaggle_manager - INFO -    D chapters/partie3/images/fig_digital_twin_metrics.png (Deleted (unstaged))
+2025-10-13 14:58:50,273 - validation_kaggle_manager - INFO -    D chapters/partie3/images/fig_fundamental_diagram.png (Deleted (unstaged))
+2025-10-13 14:58:50,276 - validation_kaggle_manager - INFO -    D chapters/partie3/images/fig_robustness_perturbations.png (Deleted (unstaged))
+2025-10-13 14:58:50,280 - validation_kaggle_manager - INFO -    D chapters/partie3/section_7_4_calibration_content.tex (Deleted (unstaged))
+2025-10-13 14:58:50,282 - validation_kaggle_manager - INFO -    D chapters/partie3/section_7_5_digital_twin_content.tex (Deleted (unstaged))
+2025-10-13 14:58:50,286 - validation_kaggle_manager - INFO -    D validation_ch7/checkpoints/section_7_6/traffic_light_control_checkpoint_6100_steps.zip (Deleted (unstaged))
+2025-10-13 14:58:50,289 - validation_kaggle_manager - INFO -    D validation_ch7/checkpoints/section_7_6/traffic_light_control_checkpoint_6150_steps.zip (Deleted (unstaged))
+2025-10-13 14:58:50,294 - validation_kaggle_manager - INFO -    M validation_output/results/local_test/section_7_6_rl_performance/debug.log (Modified (unstaged))
+2025-10-13 14:58:50,296 - validation_kaggle_manager - INFO -   ?? Collect_data/ (Untracked)
+2025-10-13 14:58:50,297 - validation_kaggle_manager - INFO -   ?? arz_model/core/main.bbl (Untracked)
+2025-10-13 14:58:50,298 - validation_kaggle_manager - INFO -   ?? arz_model/core/main.blg (Untracked)
+2025-10-13 14:58:50,299 - validation_kaggle_manager - INFO -   ?? arz_model/core/main.log (Untracked)
+2025-10-13 14:58:50,300 - validation_kaggle_manager - INFO -   ?? chapters.zip (Untracked)
+2025-10-13 14:58:50,303 - validation_kaggle_manager - INFO -   ?? s41598-024-64885-w.pdf (Untracked)
+2025-10-13 14:58:50,304 - validation_kaggle_manager - INFO -   ?? s41598-024-75638-0.pdf (Untracked)
+2025-10-13 14:58:50,305 - validation_kaggle_manager - INFO -   ?? validation_ch7/checkpoints/section_7_6/traffic_light_control_checkpoint_6400_steps.zip (Untracked)
+2025-10-13 14:58:50,307 - validation_kaggle_manager - INFO -   ?? validation_ch7/checkpoints/section_7_6/traffic_light_control_checkpoint_6450_steps.zip (Untracked)
+2025-10-13 14:58:50,308 - validation_kaggle_manager - INFO -   ?? validation_output/results/local_test/section_7_6_rl_performance/data/models/tensorboard/PPO_2/events.out.tfevents.1760360294.DESKTOP-VO6HLNV.16192.0 (Untracked)
+2025-10-13 14:58:50,314 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-13 14:58:51,217 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-13 14:58:51,979 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-13 14:58:51,981 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-13 14:59:43,689 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-13 14:59:46,765 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-hlnl

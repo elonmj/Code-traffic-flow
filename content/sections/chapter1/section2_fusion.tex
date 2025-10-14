@@ -1,0 +1,75 @@
+\section{L'Apprentissage par Renforcement : Une Solution d'Intelligence Artificielle pour la Congestion Ouest-Africaine}
+\label{sec:rl_pour_afrique_ouest}
+
+\subsection{Introduction : L'IA pour Répondre à l'Urgence du Trafic}
+\label{subsec:rl_intro_unifie}
+
+La gestion du trafic dans les métropoles d'Afrique de l'Ouest, comme Cotonou et Lagos, est un défi économique et social majeur. Comme établi à la section précédente, les modèles de trafic classiques peinent à capturer la complexité d'un environnement hétérogène, dominé par les motos et leurs comportements uniques. Face à l'inefficacité des approches traditionnelles de contrôle, l'Intelligence Artificielle (IA), et plus spécifiquement l'Apprentissage par Renforcement (RL), offre un changement de paradigme.
+
+Plutôt que de se baser sur des cycles fixes, le RL permet à un système de contrôle d'apprendre dynamiquement des stratégies optimales par interaction directe avec l'environnement de trafic. C'est une approche proactive et adaptative, particulièrement pertinente pour des systèmes non-linéaires et imprévisibles.
+
+Cette section démontre la pertinence de cette approche en trois temps. D'abord, elle quantifie l'urgence économique et sociale qui justifie l'investissement dans des solutions d'IA. Ensuite, elle présente les principes fondamentaux du RL et les algorithmes pertinents pour le contrôle de trafic, en justifiant notre choix méthodologique. Enfin, elle souligne les adaptations nécessaires pour transposer ces technologies au contexte ouest-africain.
+
+\subsection{L'Urgence Économique et Sociale : Quantifier le Coût de la Congestion}
+\label{subsec:urgence_economique_unifie}
+
+Avant d'explorer la solution technologique, il est impératif de mesurer l'ampleur du problème. La congestion n'est pas une simple nuisance ; c'est un frein systémique au développement économique et au bien-être social en Afrique de l'Ouest.
+
+\subsubsection{Le Cas Emblématique de Lagos : Une Économie Paralysée}
+\label{subsubsec:cas_lagos_unifie}
+
+Lagos, première métropole économique du Nigeria, illustre dramatiquement les coûts de l'inaction. Une étude de 2019 \cite{dannelagos2019} révèle des chiffres saisissants :
+\begin{itemize}
+    \item \textbf{Impact macroéconomique} : Une perte annuelle de \textbf{N10,39 trillions (\$22,48 milliards USD)}, soit 6 à 8\% du PIB nigérian.
+    \item \textbf{Temps productif perdu} : Chaque citoyen perd en moyenne 3 heures productives par jour dans les embouteillages.
+    \item \textbf{Coûts opérationnels} : Les opérateurs de transport de fret subissent des surcoûts de N79 039 par an \cite{researchgate2024}, et la consommation de carburant augmente de 20 à 30\% en conditions de "stop-and-go".
+\end{itemize}
+Avec 1,8 million de véhicules sur moins de 1\% du territoire national, Lagos détient l'indice de congestion le plus élevé au monde (Numbeo 2022), transformant ses artères en un véritable goulet d'étranglement économique.
+
+\subsubsection{Extrapolation Régionale et Coûts Sociaux}
+\label{subsubsec:extrapolation_regionale_unifie}
+
+Le cas de Lagos n'est pas isolé. À Cotonou, bien que les données soient plus rares, on estime que la congestion affecte 2 à 4\% du PIB béninois, avec 1,5 à 2 heures perdues par usager chaque jour \cite{fousseni2014}. Au-delà des chiffres, les coûts sociaux sont immenses :
+\begin{itemize}
+    \item \textbf{Santé publique} : La pollution atmosphérique générée par les véhicules à l'arrêt provoque une incidence accrue de pathologies respiratoires, notamment chez les conducteurs de taxis-motos.
+    \item \textbf{Usure des infrastructures} : Le vieillissement accéléré des véhicules (âge moyen >15 ans au Bénin) et des routes augmente les coûts de maintenance pour les ménages et l'État.
+    \item \textbf{Stress et qualité de vie} : L'impact psychologique des temps de trajet imprévisibles et prolongés dégrade significativement la qualité de vie urbaine.
+\end{itemize}
+Face à cet enjeu, l'optimisation du trafic par l'IA n'est pas un luxe technologique, mais un levier de développement à fort potentiel de retour sur investissement.
+
+\subsection{Principes de l'Apprentissage par Renforcement pour le Contrôle de Trafic}
+\label{subsec:rl_principes_unifie}
+
+L'apprentissage par renforcement est la branche de l'IA qui apprend à un \textbf{agent} (le contrôleur de feux) à prendre des décisions optimales en interagissant avec un \textbf{environnement} (le réseau de trafic). Le processus est guidé par un signal de \textbf{récompense}, qui évalue la qualité de chaque \textbf{action} (ex: changer la phase des feux) prise dans un \textbf{état} donné (ex: longueur des files d'attente). L'objectif de l'agent est de développer une \textbf{politique} (une stratégie) qui maximise la récompense cumulée sur le long terme.
+
+Ce cadre est formalisé par le Processus de Décision Markovien (MDP), un tuple $(S, A, P, R, \gamma)$ qui modélise les transitions entre états, les récompenses et la dynamique de l'environnement. La propriété de Markov, qui suppose que le futur ne dépend que du présent, est une simplification puissante mais qui nécessite des adaptations pour capturer les comportements complexes des motos, dont les décisions peuvent être influencées par des conditions antérieures.
+
+\subsubsection{Panorama des Algorithmes et Justification du Choix}
+\label{subsubsec:rl_algos_unifie}
+
+Le domaine du RL offre une riche palette d'algorithmes. Les approches fondamentales comme le \textbf{Q-Learning} ont prouvé leur efficacité pour des problèmes simples mais peinent à gérer la complexité des grands réseaux urbains. Pour surmonter cela, les \textbf{Deep Q-Networks (DQN)} utilisent des réseaux de neurones pour approximer la fonction de valeur, permettant de traiter des espaces d'états vastes et continus, comme ceux issus de capteurs ou de simulations. Une étude récente \cite{reinforcement2024approach} a ainsi montré une réduction de 49\% des files d'attente avec un DQN.
+
+Pour des problèmes de coordination, les algorithmes \textbf{Acteur-Critique} (A2C, A3C) et l'apprentissage par renforcement multi-agents (\textbf{MARL}) sont particulièrement pertinents. Le MARL, où chaque intersection est un agent qui coopère avec ses voisins, est une approche prometteuse pour les réseaux denses comme à Lagos. Une étude a montré qu'une telle approche pouvait réduire la consommation de carburant de 11\% et le temps de trajet de 13\% \cite{multiagent2023reinforcement}. Des architectures plus avancées, basées sur les réseaux de neurones graphiques (GNN), permettent de modéliser explicitement les relations spatio-temporelles du réseau routier \cite{survey2025reinforcement}.
+
+\begin{choicebox}[Notre Choix Méthodologique]
+    Dans le cadre de ce travail, nous avons retenu une approche basée sur les \textbf{Deep Q-Networks (DQN)}. Ce choix est motivé par un compromis optimal entre performance et complexité. Le DQN est capable de traiter l'information riche et continue issue de notre jumeau numérique (basé sur le modèle ARZ) tout en restant plus simple à entraîner et à déployer qu'une architecture MARL complète, ce qui en fait un candidat idéal pour une première implémentation dans un contexte à ressources potentiellement limitées. Notre contribution résidera dans l'adaptation de l'espace d'états et de la fonction de récompense pour intégrer les spécificités du trafic ouest-africain.
+\end{choicebox}
+
+\subsection{Synthèse de la Section}
+\label{subsec:rl_conclusion_unifie}
+
+Cette section a positionné l'apprentissage par renforcement comme une solution d'intelligence artificielle crédible et puissante face à l'urgence économique et sociale de la congestion en Afrique de l'Ouest. Nous avons vu que le RL offre le cadre théorique nécessaire pour développer des systèmes de contrôle adaptatifs, capables de naviguer la complexité du trafic local.
+
+En choisissant une approche DQN, nous nous dotons d'un outil puissant capable de traiter des données complexes, tout en restant pragmatiques quant aux contraintes de déploiement. Le succès de cette approche dépendra de sa capacité à être nourrie par un environnement de simulation fidèle à la réalité. C'est l'objet du chapitre suivant, qui détaillera la construction de notre jumeau numérique basé sur un modèle ARZ étendu, conçu spécifiquement pour le contexte ouest-africain.
+
+\begin{synthesisbox}[Synthèse du Chapitre 1 et Transition]
+    \textbf{Le Chapitre 1} a démontré l'inefficacité des outils de modélisation traditionnels face à la complexité du trafic ouest-africain, dominé par les motos, et a quantifié les coûts socio-économiques qui en résultent.
+
+    \vspace{0.2cm}
+
+    La problématique est donc : \textit{comment piloter intelligemment un système de trafic dont la dynamique échappe aux cadres conventionnels ?}
+
+    \vspace{0.2cm}
+
+    \textbf{Le Chapitre 2} répondra à ce défi en détaillant la conception d'un \textbf{jumeau numérique de trafic} (modèle ARZ étendu) qui servira de base à l'entraînement d'un \textbf{agent de contrôle par IA} (DQN).
+\end{synthesisbox}

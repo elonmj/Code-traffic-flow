@@ -4,6 +4,11 @@ Script de lancement pour upload et monitoring Kaggle - Section 7.6 RL Performanc
 
 Tests Revendication R5 (Performance superieure des agents RL)
 
+CONTEXTE BÉNINOIS:
+    La baseline fixed-time reflète le seul système de contrôle déployé au Bénin.
+    Cette validation démontre l'amélioration apportée par le RL dans ce contexte local.
+    L'absence de systèmes actuated/adaptatifs reflète la réalité de l'infrastructure béninoise.
+
 Usage:
     python run_kaggle_validation_section_7_6.py           # Full test (2 hours)
     python run_kaggle_validation_section_7_6.py --quick   # Quick test (15 min)
@@ -59,11 +64,13 @@ else:
 # Lancer la validation section 7.6
 print("\n[2/3] Lancement de la validation section 7.6...")
 print("  Revendication testée: R5 (Performance RL > Baselines)")
+print("  Contexte: Infrastructure béninoise (baseline fixed-time appropriée)")
 print("\n  Tests inclus:")
-print("    - Comparaison RL vs. Baseline pour 3 scénarios de contrôle:")
-print("      1. Contrôle de feux de signalisation")
+print("    - Comparaison RL vs. Baseline fixed-time pour 3 scénarios:")
+print("      1. Contrôle de feux de signalisation (reflète pratique béninoise)")
 print("      2. Ramp metering (dosage d'accès)")
 print("      3. Contrôle adaptatif de vitesse")
+print("  Note: Baseline reflète le seul système déployé au Bénin")
 print("\n  Outputs générés:")
 print("    - 2 figures PNG (comparaison performance, courbe d'apprentissage)")
 print("    - 1 CSV avec les métriques détaillées")

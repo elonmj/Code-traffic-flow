@@ -1,0 +1,94 @@
+\section{État de l'Art des Modèles de Trafic et des Méthodes Numériques Associées}
+\label{sec:etat_art_modeles}
+
+\subsection{Introduction}
+
+Cette section établit le positionnement théorique de notre travail en examinant l'évolution des modèles macroscopiques de trafic, depuis les approches de premier ordre (LWR) jusqu'aux modèles de second ordre (ARZ), et leurs extensions multi-classes. Nous identifierons ensuite les lacunes spécifiques de ces modèles pour représenter les comportements caractéristiques du trafic ouest-africain, notamment la prédominance des motos et leurs patterns de circulation uniques (\textit{gap-filling}, \textit{interweaving}, \textit{creeping}). Cette analyse justifiera le développement d'un modèle ARZ étendu adapté au contexte béninois.
+
+\subsection{Modèles Macroscopiques de Flux de Trafic}
+\subsubsection{Les Modèles de Premier Ordre (LWR) et leurs Limitations}
+Le modèle Lighthill-Whitham-Richards (LWR), développé dans les années 1950, est le pionnier des approches macroscopiques \cite{LighthillWhitham1955, Richards1956}. Il repose sur la conservation du nombre de véhicules :
+
+\begin{equation}
+    \frac{\partial \rho}{\partial t} + \frac{\partial q}{\partial x} = 0
+\end{equation}
+
+où $\rho(x, t)$ est la densité et $q(x, t)$ le débit. L'hypothèse clé est une relation d'équilibre instantané entre débit, densité et vitesse moyenne $v$ via le diagramme fondamental : $q = \rho v$ et $v = V_e(\rho)$ \cite{Lebacque1993}.
+
+Malgré sa simplicité, le modèle LWR présente des limitations majeures pour notre contexte : il suppose un ajustement instantané de la vitesse à $V_e(\rho)$, ne peut reproduire l'hystérésis ni les oscillations stop-and-go, ignore l'anticipation et les temps de réaction, et surtout, sa relation vitesse-densité unique rend difficile la représentation d'un trafic mixte hétérogène (motos vs voitures), un point crucial pour le Bénin \cite{FanHertySeibold2014, AwKlarMaterneRascle2000, WongWong2002}. Ces lacunes ont motivé le développement de modèles de second ordre.
+
+\subsubsection{Les Modèles de Second Ordre : Le Cadre ARZ}
+Les modèles de second ordre surmontent les limitations du LWR en introduisant une équation dynamique supplémentaire pour l'évolution de la vitesse, permettant de capturer l'inertie du flux et les états hors équilibre \cite{FanHertySeibold2014}. Parmi les différentes familles (Payne-Whitham, GSOM/METANET), le modèle Aw-Rascle-Zhang (ARZ) se distingue par sa capacité à éviter les comportements non physiques \cite{AwKlarMaterneRascle2000, Zhang2002}.
+
+\textbf{Principes du modèle ARZ :} Le modèle ARZ conserve l'équation de masse du LWR et ajoute une équation pour une variable de second ordre. Dans sa formulation avec relaxation \cite{yu2024traffic} :
+
+\begin{equation}
+    \frac{\partial \rho}{\partial t} + \frac{\partial (\rho v)}{\partial x} = 0
+\end{equation}
+
+\begin{equation}
+    \frac{\partial v}{\partial t} + (v - \rho p'(\rho)) \frac{\partial v}{\partial x} = \frac{V_e(\rho) - v}{\tau}
+\end{equation}
+
+où $p(\rho)$ est une fonction de "pression" reflétant l'anticipation des conducteurs, et $\tau$ le temps caractéristique de relaxation vers la vitesse d'équilibre $V_e(\rho)$.
+
+\textbf{Avantages clés :} Le modèle ARZ respecte l'anisotropie du trafic (les conducteurs réagissent aux conditions en aval), capture les phénomènes hors équilibre (hystérésis, ondes stop-and-go), évite les vitesses négatives, et surtout, offre la flexibilité nécessaire pour des extensions multi-classes \cite{LingChanutLebacque2011Multiclass, FanHertySeibold2014}.
+
+\textbf{Défis :} La complexité du système hyperbolique non linéaire rend l'analyse et la résolution numérique plus délicates que pour LWR \cite{DiEtAl2024}. La calibration des paramètres ($p(\rho)$, $\tau$, $V_e(\rho)$) est particulièrement critique. Les approches traditionnelles par optimisation déterministe présentent des limitations (absence de quantification d'incertitude, risque de violation des contraintes physiques, surapprentissage). La littérature récente (2022-2025) suggère une évolution vers des méthodes bayésiennes avec contraintes physiques informées \cite{KhelifiEtAl2023}, ouvrant des perspectives prometteuses pour des calibrations futures plus robustes.
+
+\subsubsection{Modélisation de l'Hétérogénéité et des Comportements Spécifiques}
+Le trafic réel, surtout dans les pays en développement comme le Bénin, est fortement hétérogène : voitures, camions, bus, motos et vélos coexistent avec des tailles, capacités dynamiques et comportements de conduite variés. Cette hétérogénéité influence fortement la dynamique globale du flux.
+
+\paragraph{Extensions multi-classes des modèles macroscopiques}
+Les approches multi-classes considèrent le trafic comme une superposition de "fluides" interagissants. Pour LWR, cela se traduit par des diagrammes fondamentaux spécifiques à chaque classe ou l'usage de coefficients d'équivalence (PCE/PCU) \cite{RambhaN/ACE269Lec12}. Pour ARZ, chaque classe $i$ dispose de son propre système d'équations avec des paramètres distincts ($\rho_i$, $v_i$, $p_i(\rho)$, $V_{e,i}(\rho)$, $\tau_i$), où les interactions entre classes sont modélisées via des densités de congestion communes et des termes couplés \cite{FanWork2015, ColomboMarcellini2020}.
+
+\textbf{Limitation critique :} Les extensions multi-classes existantes supposent souvent des interactions simplifiées et peinent à capturer des comportements fins comme l'entrelacement complexe des motos, un phénomène dominant dans notre contexte.
+
+\paragraph{Comportements spécifiques des motos : Gap-filling, Interweaving et Creeping}
+Le contexte béninois est marqué par la prédominance des motos, particulièrement les taxis-motos ("Zémidjans"), dont les comportements affectent significativement la dynamique du trafic. Trois phénomènes se révèlent critiques :
+
+\textbf{Gap-filling (remplissage d'interstices) :} Les motos utilisent les espaces entre véhicules plus grands pour progresser même en congestion \cite{khan2021macroscopic, NguyenEtAl2012}. Ce comportement s'apparente à un processus de filtration où les motos perçoivent une densité effective réduite. Au niveau macroscopique, cela pourrait se traduire par une fonction de pression $p_{moto}(\rho)$ modifiée ou une densité effective perçue différente de la densité réelle.
+
+\textbf{Interweaving (entrelacement/remontée de file) :} Les mouvements latéraux continus entre files de véhicules, particulièrement intenses à basse vitesse \cite{DiFrancescoEtAl2015, TiwariEtAl2007}. Ce phénomène, quasi-bidimensionnel, optimise l'utilisation de l'espace mais reste difficile à transcrire dans un cadre macroscopique 1D. Des approches par "voies flexibles" ou par modélisation de flux latéraux ont été proposées \cite{ColomboMarcelliniRossi2023}.
+
+\textbf{Creeping (reptation) :} Capacité des motos à se déplacer très lentement dans des conditions de congestion extrême où les autres véhicules sont arrêtés \cite{Saumtally2012, FanWork2015}. Ce comportement nécessite une adaptation des relations vitesse-densité pour permettre une vitesse résiduelle non nulle même à très haute densité. Des modèles de transition de phase ou des modifications de $V_{e,moto}(\rho)$ avec une vitesse minimale garantie peuvent capturer ce phénomène.
+
+\textbf{Lacune de la littérature :} La modélisation macroscopique de ces comportements spécifiques, en particulier leur intégration simultanée dans des modèles ARZ multi-classes, reste largement inexploitée. Les rares études existantes se concentrent sur un seul comportement ou utilisent des approches microscopiques difficilement transposables au niveau macroscopique nécessaire pour un jumeau numérique urbain.
+
+\subsection{Synthèse de la Section}
+Cette section a établi le positionnement théorique de notre travail en examinant l'évolution des modèles macroscopiques de trafic. La progression LWR → ARZ → ARZ multi-classes reflète une sophistication croissante pour capturer des dynamiques de trafic complexes : des états d'équilibre simples vers les phénomènes hors équilibre (hystérésis, ondes stop-and-go), puis vers la représentation de l'hétérogénéité des flux.
+
+Cependant, notre analyse révèle une \textbf{lacune critique} : aucun modèle existant n'intègre simultanément l'hétérogénéité extrême du trafic ouest-africain, les comportements spécifiques des motos (gap-filling, interweaving, creeping), et l'impact de la qualité infrastructurelle variable. Plus précisément :
+
+\begin{enumerate}
+    \item Les extensions multi-classes d'ARZ supposent des interactions simplifiées et ne capturent pas adéquatement les trois comportements dominants des Zémidjans béninois \cite{Saumtally2012}.
+    \item La paramétrisation des fonctions clés ($V_e(\rho)$, $p(\rho)$, $\tau$) ignore généralement l'impact de la qualité infrastructurelle locale \cite{JollyEtAl2005}.
+    \item Aucun modèle ARZ multi-classe validé par des données empiriques collectées localement n'existe pour ce contexte.
+\end{enumerate}
+
+Cette lacune justifie notre contribution principale : le développement d'un \textbf{modèle ARZ étendu multi-classes} spécifiquement conçu, calibré et validé pour le contexte béninois, qui servira de fondement au jumeau numérique de trafic pour l'optimisation intelligente par apprentissage par renforcement.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Positionnement de notre modèle ARZ étendu}
+    \label{tab:modeles_comparaison}
+    \begin{tabular}{|p{3cm}|p{4.5cm}|p{4.5cm}|}
+        \hline
+        \textbf{Modèle}                          & \textbf{Capacités}                                                                      & \textbf{Lacunes pour notre contexte}                  \\
+        \hline
+        LWR                                      & Capture des ondes de choc, simplicité computationnelle                                  & Équilibre instantané, mono-classe, pas d'hystérésis   \\
+        \hline
+        ARZ standard                             & Phénomènes hors équilibre, anisotropie, flexibilité                                     & Paramétrisation générique, pas de comportements motos \\
+        \hline
+        \textbf{ARZ étendu (notre contribution)} & \textbf{Multi-classes + gap-filling + interweaving + creeping + impact infrastructurel} & \textbf{Calibration locale nécessaire}                \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{synthesisbox}[Synthèse : Lacune et Contribution]
+    \textbf{Lacune identifiée :} Aucun modèle ARZ multi-classe n'intègre simultanément les comportements spécifiques des Zémidjans (gap-filling, interweaving, creeping), l'impact de la qualité infrastructurelle variable, et une validation par données empiriques locales.
+
+    \vspace{0.3cm}
+
+    \textbf{Notre contribution :} Modèle ARZ étendu multi-classes avec paramétrisation adaptée au contexte béninois, calibré sur données réelles de Lagos/Cotonou, et servant de base à un jumeau numérique pour optimisation RL.
+\end{synthesisbox}
