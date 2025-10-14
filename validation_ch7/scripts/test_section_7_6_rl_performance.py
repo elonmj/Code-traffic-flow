@@ -22,6 +22,9 @@ import logging
 import traceback
 import time
 import pickle
+import hashlib
+import json
+from datetime import datetime
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -158,6 +161,167 @@ class RLPerformanceValidationTest(ValidationSection):
             existing_files = list(checkpoint_dir.glob("*.zip"))
             self.debug_logger.info(f"[PATH] Found {len(existing_files)} existing checkpoints")
         return checkpoint_dir
+    
+    def _get_cache_dir(self):
+        """Get baseline cache directory in Git-tracked location.
+        
+        Cache structure: validation_ch7/cache/section_7_6/
+        - Persists across Kaggle restarts (Git-tracked)
+        - Organized by section
+        - Stores baseline simulation states for reuse
+        """
+        project_root = self._get_project_root()
+        cache_dir = project_root / "validation_ch7" / "cache" / "section_7_6"
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        self.debug_logger.info(f"[CACHE] Directory: {cache_dir}")
+        return cache_dir
+    
+    def _compute_config_hash(self, scenario_path: Path) -> str:
+        """Compute MD5 hash of scenario configuration for cache validation.
+        
+        Returns 8-character hex hash for cache filename.
+        Changes in configuration (densities, velocities, domain) invalidate cache.
+        """
+        with open(scenario_path, 'r') as f:
+            yaml_content = f.read()
+        hash_obj = hashlib.md5(yaml_content.encode('utf-8'))
+        config_hash = hash_obj.hexdigest()[:8]  # 8 chars sufficient for uniqueness
+        self.debug_logger.info(f"[CACHE] Config hash: {config_hash}")
+        return config_hash
+    
+    def _save_baseline_cache(self, scenario_type: str, scenario_path: Path, 
+                            states_history: list, duration: float, 
+                            control_interval: float = 15.0, device: str = 'gpu'):
+        """Save baseline simulation states to persistent cache.
+        
+        Cache structure:
+        {
+            'scenario_type': 'traffic_light_control',
+            'scenario_config_hash': 'abc12345',
+            'max_timesteps': len(states_history),
+            'states_history': [...],
+            'duration': 3600.0,
+            'control_interval': 15.0,
+            'timestamp': '2025-10-14 12:00:00',
+            'device': 'gpu',
+            'cache_version': '1.0'
+        }
+        """
+        cache_dir = self._get_cache_dir()
+        config_hash = self._compute_config_hash(scenario_path)
+        cache_filename = f"{scenario_type}_{config_hash}_baseline_cache.pkl"
+        cache_path = cache_dir / cache_filename
+        
+        cache_data = {
+            'scenario_type': scenario_type,
+            'scenario_config_hash': config_hash,
+            'max_timesteps': len(states_history),
+            'states_history': states_history,
+            'duration': duration,
+            'control_interval': control_interval,
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'device': device,
+            'cache_version': '1.0'
+        }
+        
+        with open(cache_path, 'wb') as f:
+            pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+        
+        self.debug_logger.info(f"[CACHE] Saved {len(states_history)} states to {cache_filename}")
+        print(f"  [CACHE] Saved baseline cache: {cache_filename} ({len(states_history)} steps)", flush=True)
+    
+    def _load_baseline_cache(self, scenario_type: str, scenario_path: Path, 
+                            required_duration: float, control_interval: float = 15.0) -> list:
+        """Load baseline cache if it exists and is valid for requested duration.
+        
+        Returns:
+            - states_history if cache valid and sufficient
+            - None if no cache, config changed, or cache insufficient
+        """
+        cache_dir = self._get_cache_dir()
+        config_hash = self._compute_config_hash(scenario_path)
+        cache_filename = f"{scenario_type}_{config_hash}_baseline_cache.pkl"
+        cache_path = cache_dir / cache_filename
+        
+        if not cache_path.exists():
+            self.debug_logger.info(f"[CACHE] No cache found for {scenario_type}")
+            print(f"  [CACHE] No cache found. Running baseline controller...", flush=True)
+            return None
+        
+        try:
+            with open(cache_path, 'rb') as f:
+                cache_data = pickle.load(f)
+            
+            # Validate cache version
+            if cache_data.get('cache_version') != '1.0':
+                self.debug_logger.warning(f"[CACHE] Invalid version, ignoring cache")
+                return None
+            
+            # Validate config hash
+            if cache_data['scenario_config_hash'] != config_hash:
+                self.debug_logger.warning(f"[CACHE] Config changed, ignoring cache")
+                return None
+            
+            cached_duration = cache_data['duration']
+            cached_steps = cache_data['max_timesteps']
+            required_steps = int(required_duration / control_interval) + 1
+            
+            self.debug_logger.info(f"[CACHE] Found cache: {cached_steps} steps (duration={cached_duration}s)")
+            self.debug_logger.info(f"[CACHE] Required: {required_steps} steps (duration={required_duration}s)")
+            
+            if cached_steps >= required_steps:
+                # Cache sufficient, use it
+                print(f"  [CACHE] ✅ Using cached baseline ({cached_steps} steps ≥ {required_steps} required)", flush=True)
+                return cache_data['states_history'][:required_steps]
+            else:
+                # Cache insufficient, needs extension
+                print(f"  [CACHE] ⚠️  Partial cache ({cached_steps} steps < {required_steps} required)", flush=True)
+                print(f"  [CACHE] Additive extension needed: {cached_steps} → {required_steps}", flush=True)
+                return cache_data['states_history']  # Return partial for extension
+                
+        except Exception as e:
+            self.debug_logger.error(f"[CACHE] Failed to load cache: {e}", exc_info=True)
+            print(f"  [CACHE] Error loading cache: {e}", flush=True)
+            return None
+    
+    def _extend_baseline_cache(self, scenario_type: str, scenario_path: Path,
+                              existing_states: list, target_duration: float,
+                              control_interval: float = 15.0, device: str = 'gpu') -> list:
+        """Extend existing baseline cache additively (aligned with ADDITIVE training philosophy).
+        
+        Example:
+            - Cached: 5000 steps (3600s)
+            - Required: 10000 steps (7200s)
+            - Action: Resume simulation from 3600s → 7200s (additive extension)
+            - NOT: Recalculate 0s → 7200s (wasteful)
+        """
+        cached_duration = len(existing_states) * control_interval
+        extension_duration = target_duration - cached_duration
+        
+        print(f"  [CACHE] ADDITIVE EXTENSION: {cached_duration}s → {target_duration}s (+{extension_duration}s)", flush=True)
+        self.debug_logger.info(f"[CACHE] Extending cache additively: {len(existing_states)} steps → target {int(target_duration/control_interval)+1} steps")
+        
+        # Run simulation for extension period only
+        # NOTE: This requires modifying run_control_simulation to support initial state
+        # For now, we'll run full simulation (future optimization: add resume capability)
+        print(f"  [CACHE] ⚠️  Extension requires full recalculation (resume not yet implemented)", flush=True)
+        print(f"  [CACHE] Running full baseline simulation for {target_duration}s...", flush=True)
+        
+        baseline_controller = self.BaselineController(scenario_type)
+        extended_states, _ = self.run_control_simulation(
+            baseline_controller, scenario_path, 
+            duration=target_duration, 
+            control_interval=control_interval,
+            device=device
+        )
+        
+        # Save extended cache
+        self._save_baseline_cache(
+            scenario_type, scenario_path, extended_states, 
+            target_duration, control_interval, device
+        )
+        
+        return extended_states
     
     def _create_scenario_config(self, scenario_type: str) -> Path:
         """Crée un fichier de configuration YAML pour un scénario de contrôle.
@@ -694,17 +858,17 @@ class RLPerformanceValidationTest(ValidationSection):
                 latest_checkpoint = max(checkpoint_files, key=lambda p: int(p.stem.split('_')[-2]))
                 completed_steps = int(latest_checkpoint.stem.split('_')[-2])
                 
-                # ✅ FIX Bug #26: ALWAYS continue training, NEVER skip
-                # Previous: if remaining_steps > 0 → train, else → SKIP (WRONG!)
-                # Problem: 0% improvements prove model NOT converged yet
-                # Solution: ALWAYS resume and train MORE steps for convergence
+                #  BUG #27 FIX: ADDITIVE TRAINING SYSTEM (continuous improvement)
+                # Previous: remaining = max(target - checkpoint, target//10)  TRUNCATES when checkpoint > target
+                # Example OLD: checkpoint=6450, request=5000  train only 500 steps 
+                # Example NEW: checkpoint=6450, request=5000  train 5000 MORE = 11450 total 
                 print(f"  [RESUME] Found checkpoint at {completed_steps} steps", flush=True)
                 print(f"  [RESUME] Loading model from {latest_checkpoint}", flush=True)
                 model = PPO.load(str(latest_checkpoint), env=env)
                 
                 # Calculate additional steps (minimum 10% of target for refinement)
-                remaining_steps = max(total_timesteps - completed_steps, total_timesteps // 10)
-                print(f"  [RESUME] Will train for {remaining_steps} more steps (continuous improvement)", flush=True)
+                remaining_steps = total_timesteps  # ADDITIVE: always train requested amount
+                new_total = completed_steps + remaining_steps; print(f"  [RESUME] ADDITIVE: {completed_steps} + {remaining_steps} = {new_total} total steps", flush=True)
             else:
                 remaining_steps = total_timesteps
                 # Train PPO agent from scratch
@@ -802,39 +966,62 @@ class RLPerformanceValidationTest(ValidationSection):
         try:
             scenario_path = self._create_scenario_config(scenario_type)
 
-            # --- Baseline controller evaluation with Caching ---
-            cache_dir = self.output_dir.parent / "validation_output" / "baseline_cache"
-            cache_dir.mkdir(parents=True, exist_ok=True)
-            # Distinguish cache for quick_test vs full run
-            cache_filename = f"{scenario_type}_{'quick' if self.quick_test else 'full'}.pkl"
-            cache_path = cache_dir / cache_filename
-
-            if cache_path.exists():
-                print(f"  [CACHE] Loading baseline performance from {cache_path}", flush=True)
-                self.debug_logger.info(f"Found baseline cache at {cache_path}, loading metrics.")
-                with open(cache_path, 'rb') as f:
-                    baseline_performance = pickle.load(f)
-            else:
-                print(f"  [CACHE] No cache found. Running baseline controller...", flush=True)
-                self.debug_logger.info(f"No baseline cache found for {scenario_type}. Running full simulation.")
+            # --- Baseline controller evaluation with INTELLIGENT CACHING ---
+            # ✅ BASELINE CACHE OPTIMIZATION: Baseline (fixed-time 60s) never changes
+            # Strategy: Cache states_history, extend additively when RL training grows
+            # Example: Cache 5000 steps → RL needs 10000 → extend 5000→10000 (not 0→10000)
+            # Benefit: ~36min/scenario saved on GPU, aligns with ADDITIVE training philosophy
+            
+            print(f"  [BASELINE] Checking intelligent cache system...", flush=True)
+            
+            # Determine simulation duration based on quick_test mode
+            baseline_duration = 600.0 if self.quick_test else 3600.0  # 10min quick, 1h full
+            control_interval = 15.0  # Match training configuration (Bug #20 fix)
+            
+            # Try to load cached baseline states
+            cached_states = self._load_baseline_cache(
+                scenario_type, scenario_path, 
+                baseline_duration, control_interval
+            )
+            
+            if cached_states is not None:
+                # Cache hit! Use cached states
+                required_steps = int(baseline_duration / control_interval) + 1
                 
+                if len(cached_states) >= required_steps:
+                    # Perfect! Cache is sufficient
+                    baseline_states = cached_states[:required_steps]
+                    print(f"  [CACHE] ✅ Using {len(baseline_states)} cached baseline states", flush=True)
+                else:
+                    # Cache partial, needs additive extension
+                    print(f"  [CACHE] Extending cache additively...", flush=True)
+                    baseline_states = self._extend_baseline_cache(
+                        scenario_type, scenario_path, cached_states,
+                        baseline_duration, control_interval, device
+                    )
+            else:
+                # Cache miss, run full baseline simulation and save
+                print(f"  [BASELINE] Running full simulation ({baseline_duration}s)...", flush=True)
                 baseline_controller = self.BaselineController(scenario_type)
                 baseline_states, _ = self.run_control_simulation(
-                    baseline_controller, 
-                    scenario_path,
+                    baseline_controller, scenario_path,
+                    duration=baseline_duration,
+                    control_interval=control_interval,
                     device=device
                 )
+                
                 if baseline_states is None:
                     return {'success': False, 'error': 'Baseline simulation failed'}
                 
-                baseline_states_copy = [state.copy() for state in baseline_states]
-                baseline_performance = self.evaluate_traffic_performance(baseline_states_copy, scenario_type)
-
-                # Save results to cache
-                print(f"  [CACHE] Saving baseline performance to {cache_path}", flush=True)
-                self.debug_logger.info(f"Saving baseline metrics to {cache_path}")
-                with open(cache_path, 'wb') as f:
-                    pickle.dump(baseline_performance, f)
+                # Save to intelligent cache for future reuse
+                self._save_baseline_cache(
+                    scenario_type, scenario_path, baseline_states,
+                    baseline_duration, control_interval, device
+                )
+            
+            # Evaluate baseline performance from cached/computed states
+            baseline_states_copy = [state.copy() for state in baseline_states]
+            baseline_performance = self.evaluate_traffic_performance(baseline_states_copy, scenario_type)
             
             # Test RL controller
             print("  Running RL controller...", flush=True)
@@ -1317,3 +1504,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
