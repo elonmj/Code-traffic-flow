@@ -1470,3 +1470,10 @@
 2025-10-14 12:50:48,159 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-dplx
 2025-10-14 12:51:26,905 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
 2025-10-14 12:51:27,033 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-14 12:51:27,095 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-14 12:51:27,099 - validation_kaggle_manager - INFO -   M  og.txt (Modified (staged))
+2025-10-14 12:51:27,099 - validation_kaggle_manager - INFO -   ?? kaggle_launch_log.txt (Untracked)
+2025-10-14 12:51:27,099 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-14 12:51:27,166 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-14 12:51:27,269 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-14 12:51:27,269 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
