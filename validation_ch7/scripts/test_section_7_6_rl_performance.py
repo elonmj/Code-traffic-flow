@@ -194,10 +194,13 @@ class RLPerformanceValidationTest(ValidationSection):
                             control_interval: float = 15.0, device: str = 'gpu'):
         """Save baseline simulation states to persistent cache.
         
+        ✅ CORRECTION: Baseline cache is UNIVERSAL (no config_hash dependency)
+        Rationale: Fixed-time baseline (60s GREEN/60s RED) behavior never changes
+        regardless of scenario densities/velocities. One cache per scenario_type.
+        
         Cache structure:
         {
             'scenario_type': 'traffic_light_control',
-            'scenario_config_hash': 'abc12345',
             'max_timesteps': len(states_history),
             'states_history': [...],
             'duration': 3600.0,
@@ -208,13 +211,12 @@ class RLPerformanceValidationTest(ValidationSection):
         }
         """
         cache_dir = self._get_cache_dir()
-        config_hash = self._compute_config_hash(scenario_path)
-        cache_filename = f"{scenario_type}_{config_hash}_baseline_cache.pkl"
+        # FIXED: No config_hash - baseline is universal
+        cache_filename = f"{scenario_type}_baseline_cache.pkl"
         cache_path = cache_dir / cache_filename
         
         cache_data = {
             'scenario_type': scenario_type,
-            'scenario_config_hash': config_hash,
             'max_timesteps': len(states_history),
             'states_history': states_history,
             'duration': duration,
@@ -227,25 +229,28 @@ class RLPerformanceValidationTest(ValidationSection):
         with open(cache_path, 'wb') as f:
             pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
         
-        self.debug_logger.info(f"[CACHE] Saved {len(states_history)} states to {cache_filename}")
-        print(f"  [CACHE] Saved baseline cache: {cache_filename} ({len(states_history)} steps)", flush=True)
+        self.debug_logger.info(f"[CACHE BASELINE] Saved {len(states_history)} states to {cache_filename}")
+        print(f"  [CACHE BASELINE] ✅ Saved universal cache: {cache_filename} ({len(states_history)} steps)", flush=True)
     
     def _load_baseline_cache(self, scenario_type: str, scenario_path: Path, 
                             required_duration: float, control_interval: float = 15.0) -> list:
         """Load baseline cache if it exists and is valid for requested duration.
         
+        ✅ CORRECTION: Baseline cache is UNIVERSAL (no config validation needed)
+        Rationale: Fixed-time baseline behavior is independent of scenario config.
+        
         Returns:
             - states_history if cache valid and sufficient
-            - None if no cache, config changed, or cache insufficient
+            - None if no cache or cache insufficient
         """
         cache_dir = self._get_cache_dir()
-        config_hash = self._compute_config_hash(scenario_path)
-        cache_filename = f"{scenario_type}_{config_hash}_baseline_cache.pkl"
+        # FIXED: No config_hash - baseline is universal
+        cache_filename = f"{scenario_type}_baseline_cache.pkl"
         cache_path = cache_dir / cache_filename
         
         if not cache_path.exists():
-            self.debug_logger.info(f"[CACHE] No cache found for {scenario_type}")
-            print(f"  [CACHE] No cache found. Running baseline controller...", flush=True)
+            self.debug_logger.info(f"[CACHE BASELINE] No cache found for {scenario_type}")
+            print(f"  [CACHE BASELINE] No universal cache found. Running baseline controller...", flush=True)
             return None
         
         try:
@@ -254,34 +259,29 @@ class RLPerformanceValidationTest(ValidationSection):
             
             # Validate cache version
             if cache_data.get('cache_version') != '1.0':
-                self.debug_logger.warning(f"[CACHE] Invalid version, ignoring cache")
-                return None
-            
-            # Validate config hash
-            if cache_data['scenario_config_hash'] != config_hash:
-                self.debug_logger.warning(f"[CACHE] Config changed, ignoring cache")
+                self.debug_logger.warning(f"[CACHE BASELINE] Invalid version, ignoring cache")
                 return None
             
             cached_duration = cache_data['duration']
             cached_steps = cache_data['max_timesteps']
             required_steps = int(required_duration / control_interval) + 1
             
-            self.debug_logger.info(f"[CACHE] Found cache: {cached_steps} steps (duration={cached_duration}s)")
-            self.debug_logger.info(f"[CACHE] Required: {required_steps} steps (duration={required_duration}s)")
+            self.debug_logger.info(f"[CACHE BASELINE] Found universal cache: {cached_steps} steps (duration={cached_duration}s)")
+            self.debug_logger.info(f"[CACHE BASELINE] Required: {required_steps} steps (duration={required_duration}s)")
             
             if cached_steps >= required_steps:
                 # Cache sufficient, use it
-                print(f"  [CACHE] ✅ Using cached baseline ({cached_steps} steps ≥ {required_steps} required)", flush=True)
+                print(f"  [CACHE BASELINE] ✅ Using universal cache ({cached_steps} steps ≥ {required_steps} required)", flush=True)
                 return cache_data['states_history'][:required_steps]
             else:
                 # Cache insufficient, needs extension
-                print(f"  [CACHE] ⚠️  Partial cache ({cached_steps} steps < {required_steps} required)", flush=True)
-                print(f"  [CACHE] Additive extension needed: {cached_steps} → {required_steps}", flush=True)
+                print(f"  [CACHE BASELINE] ⚠️  Partial cache ({cached_steps} steps < {required_steps} required)", flush=True)
+                print(f"  [CACHE BASELINE] Additive extension needed: {cached_steps} → {required_steps}", flush=True)
                 return cache_data['states_history']  # Return partial for extension
                 
         except Exception as e:
-            self.debug_logger.error(f"[CACHE] Failed to load cache: {e}", exc_info=True)
-            print(f"  [CACHE] Error loading cache: {e}", flush=True)
+            self.debug_logger.error(f"[CACHE BASELINE] Failed to load cache: {e}", exc_info=True)
+            print(f"  [CACHE BASELINE] Error loading cache: {e}", flush=True)
             return None
     
     def _extend_baseline_cache(self, scenario_type: str, scenario_path: Path,
@@ -322,6 +322,113 @@ class RLPerformanceValidationTest(ValidationSection):
         )
         
         return extended_states
+    
+    # ========================================================================
+    # SOPHISTICATED RL CACHE SYSTEM (Config-Specific)
+    # ========================================================================
+    
+    def _save_rl_cache(self, scenario_type: str, scenario_path: Path,
+                      model_path: Path, total_timesteps: int, device: str = 'gpu'):
+        """Save RL training metadata to persistent cache.
+        
+        ✅ RL cache is CONFIG-SPECIFIC (requires config_hash)
+        Rationale: RL agent is trained on specific scenario densities/velocities.
+        Different configs require different trained models.
+        
+        Cache structure:
+        {
+            'scenario_type': 'traffic_light_control',
+            'scenario_config_hash': 'abc12345',
+            'model_path': 'path/to/rl_agent.zip',
+            'total_timesteps': 10000,
+            'timestamp': '2025-10-14 12:00:00',
+            'device': 'gpu',
+            'cache_version': '1.0'
+        }
+        """
+        cache_dir = self._get_cache_dir()
+        config_hash = self._compute_config_hash(scenario_path)
+        cache_filename = f"{scenario_type}_{config_hash}_rl_cache.pkl"
+        cache_path = cache_dir / cache_filename
+        
+        cache_data = {
+            'scenario_type': scenario_type,
+            'scenario_config_hash': config_hash,
+            'model_path': str(model_path),
+            'total_timesteps': total_timesteps,
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'device': device,
+            'cache_version': '1.0'
+        }
+        
+        with open(cache_path, 'wb') as f:
+            pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+        
+        self.debug_logger.info(f"[CACHE RL] Saved metadata to {cache_filename}")
+        print(f"  [CACHE RL] ✅ Saved config-specific cache: {cache_filename} ({total_timesteps} steps)", flush=True)
+    
+    def _load_rl_cache(self, scenario_type: str, scenario_path: Path,
+                      required_timesteps: int) -> dict:
+        """Load RL training metadata if valid for current config.
+        
+        ✅ RL cache requires config_hash validation
+        Rationale: Agent trained on different densities/velocities is invalid.
+        
+        Returns:
+            - cache_data dict if valid and sufficient
+            - None if no cache, config changed, or insufficient training
+        """
+        cache_dir = self._get_cache_dir()
+        config_hash = self._compute_config_hash(scenario_path)
+        cache_filename = f"{scenario_type}_{config_hash}_rl_cache.pkl"
+        cache_path = cache_dir / cache_filename
+        
+        if not cache_path.exists():
+            self.debug_logger.info(f"[CACHE RL] No cache found for {scenario_type} with config {config_hash}")
+            print(f"  [CACHE RL] No config-specific cache found. Training new agent...", flush=True)
+            return None
+        
+        try:
+            with open(cache_path, 'rb') as f:
+                cache_data = pickle.load(f)
+            
+            # Validate cache version
+            if cache_data.get('cache_version') != '1.0':
+                self.debug_logger.warning(f"[CACHE RL] Invalid version, ignoring cache")
+                return None
+            
+            # Validate config hash (CRITICAL for RL)
+            if cache_data['scenario_config_hash'] != config_hash:
+                self.debug_logger.warning(f"[CACHE RL] Config changed, cache invalid")
+                print(f"  [CACHE RL] ⚠️  Config changed, training new agent...", flush=True)
+                return None
+            
+            # Check if model file exists
+            model_path = Path(cache_data['model_path'])
+            if not model_path.exists():
+                self.debug_logger.warning(f"[CACHE RL] Model file not found: {model_path}")
+                print(f"  [CACHE RL] ⚠️  Model file missing, training new agent...", flush=True)
+                return None
+            
+            cached_timesteps = cache_data['total_timesteps']
+            
+            self.debug_logger.info(f"[CACHE RL] Found cache: {cached_timesteps} timesteps trained")
+            self.debug_logger.info(f"[CACHE RL] Required: {required_timesteps} timesteps")
+            
+            if cached_timesteps >= required_timesteps:
+                # Cache sufficient
+                print(f"  [CACHE RL] ✅ Using cached model ({cached_timesteps} steps ≥ {required_timesteps} required)", flush=True)
+                return cache_data
+            else:
+                # Cache insufficient, additive training possible
+                print(f"  [CACHE RL] ⚠️  Partial training ({cached_timesteps} steps < {required_timesteps} required)", flush=True)
+                print(f"  [CACHE RL] Additive training: {cached_timesteps} → {required_timesteps} (+{required_timesteps - cached_timesteps} steps)", flush=True)
+                return cache_data  # Return for additive training
+                
+        except Exception as e:
+            self.debug_logger.error(f"[CACHE RL] Failed to load cache: {e}", exc_info=True)
+            print(f"  [CACHE RL] Error loading cache: {e}", flush=True)
+            return None
     
     def _create_scenario_config(self, scenario_type: str) -> Path:
         """Crée un fichier de configuration YAML pour un scénario de contrôle.
@@ -825,6 +932,17 @@ class RLPerformanceValidationTest(ValidationSection):
 
         # Create scenario configuration
         scenario_path = self._create_scenario_config(scenario_type)
+        
+        # ✅ CHECK SOPHISTICATED RL CACHE (config-specific)
+        print(f"  [CACHE RL] Checking intelligent cache system...", flush=True)
+        rl_cache = self._load_rl_cache(scenario_type, scenario_path, total_timesteps)
+        
+        if rl_cache and rl_cache['total_timesteps'] >= total_timesteps:
+            # Cache hit with sufficient training!
+            cached_model_path = Path(rl_cache['model_path'])
+            print(f"  [CACHE RL] ✅ Using cached model: {cached_model_path}", flush=True)
+            print(f"  [CACHE RL] Model trained for {rl_cache['total_timesteps']} steps (≥ {total_timesteps} required)", flush=True)
+            return str(cached_model_path)
 
         try:
             # Create training environment with direct coupling
@@ -938,6 +1056,15 @@ class RLPerformanceValidationTest(ValidationSection):
             # Save final model
             model.save(str(model_path))
             print(f"  [SUCCESS] Final model saved to {model_path}", flush=True)
+            
+            # Calculate total timesteps trained (checkpoint + new training)
+            final_total_timesteps = completed_steps + remaining_steps if checkpoint_files else remaining_steps
+            
+            # ✅ SAVE SOPHISTICATED RL CACHE (config-specific)
+            self._save_rl_cache(
+                scenario_type, scenario_path, model_path, 
+                final_total_timesteps, device
+            )
             
             env.close()
             

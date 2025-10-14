@@ -1,12 +1,21 @@
-# Baseline Cache System - Section 7.6
+# Intelligent Cache System - Section 7.6
 
 ## Purpose
 
-This directory stores **persistent baseline simulation caches** to avoid redundant computation of fixed-time baseline controllers.
+This directory stores **persistent caches** for both baseline simulations and RL training to avoid redundant computation.
+
+## Cache Architecture
+
+### Two Independent Cache Systems:
+
+1. **Baseline Cache**: UNIVERSAL (config-independent)
+2. **RL Cache**: CONFIG-SPECIFIC (requires config hash validation)
 
 ## Why Cache Baseline?
 
 **Key Insight**: Baseline controllers (fixed-time traffic lights) never change their behavior. Running the same baseline simulation multiple times is wasteful.
+
+**CRITICAL CORRECTION**: Baseline behavior is INDEPENDENT of scenario config!
 
 **Performance Impact**: 
 - Baseline simulation: ~36 minutes per scenario on GPU
@@ -15,16 +24,21 @@ This directory stores **persistent baseline simulation caches** to avoid redunda
 
 ## Cache Structure
 
-Each cache file is named: `{scenario_type}_{config_hash}_baseline_cache.pkl`
+### Baseline Cache (Universal)
+**Filename**: `{scenario_type}_baseline_cache.pkl`
+**Example**: `traffic_light_control_baseline_cache.pkl`
+**Rationale**: Fixed-time behavior (60s/60s) is independent of scenario densities/velocities
 
-Example: `traffic_light_control_abc12345_baseline_cache.pkl`
+### RL Cache (Config-Specific)
+**Filename**: `{scenario_type}_{config_hash}_rl_cache.pkl`
+**Example**: `traffic_light_control_abc12345_rl_cache.pkl`
+**Rationale**: RL agent trained on specific densities/velocities requires config validation
 
-### Cache Contents
+### Baseline Cache Contents
 
 ```python
 {
     'scenario_type': 'traffic_light_control',
-    'scenario_config_hash': 'abc12345',  # MD5 hash of YAML config
     'max_timesteps': 240,                 # Number of state snapshots
     'states_history': [state0, state1, ...],  # Simulation states
     'duration': 3600.0,                   # Simulated time (seconds)
@@ -35,11 +49,28 @@ Example: `traffic_light_control_abc12345_baseline_cache.pkl`
 }
 ```
 
+### RL Cache Contents
+
+```python
+{
+    'scenario_type': 'traffic_light_control',
+    'scenario_config_hash': 'abc12345',  # MD5 hash of YAML config (REQUIRED)
+    'model_path': 'path/to/rl_agent.zip', # Trained model location
+    'total_timesteps': 10000,             # Total training steps completed
+    'timestamp': '2025-10-14 12:00:00',   # Cache creation time
+    'device': 'gpu',                       # Device used for training
+    'cache_version': '1.0'                # Cache format version
+}
+```
+
 ## Intelligent Cache Features
 
 ### 1. Configuration Hash Validation
 
-The system computes an MD5 hash of the scenario YAML configuration. If the configuration changes (densities, velocities, domain size), the hash changes and the cache is invalidated.
+**Baseline**: NO config hash validation (universal behavior)
+**RL**: STRICT config hash validation (config-specific training)
+
+The system computes an MD5 hash of the scenario YAML configuration for RL cache only. If the configuration changes (densities, velocities, domain size), RL cache is invalidated but baseline cache remains valid.
 
 ### 2. Additive Extension
 
@@ -62,9 +93,14 @@ When running validation:
 
 ## Cache Invalidation
 
-Cache is invalidated when:
-- Scenario configuration changes (different densities, speeds, domain)
+### Baseline Cache Invalidation
 - Control interval changes (15s → 60s)
+- Cache version mismatch (format upgrade)
+- **NOT affected by**: Scenario config changes (densities, velocities)
+
+### RL Cache Invalidation
+- Scenario configuration changes (different densities, speeds, domain)
+- Model file missing or corrupted
 - Cache version mismatch (format upgrade)
 
 ## Benefits
