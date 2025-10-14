@@ -45,11 +45,12 @@ sys.path.append(str(code_rl_path))
 # Import the new direct environment (no mock, no HTTP server needed)
 from Code_RL.src.env.traffic_signal_env_direct import TrafficSignalEnvDirect
 
-# RL training utilities with checkpoint support
+# ✅ DESIGN ALIGNMENT: Follow Code_RL architecture (same hyperparameters, callbacks)
+# Import Code_RL components to ensure consistency
 from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import EvalCallback
 
-# Import checkpoint callbacks for training resumption
+# Import Code_RL callbacks (checkpoint system with rotation)
 sys.path.append(str(code_rl_path / "src" / "rl"))
 from callbacks import RotatingCheckpointCallback, TrainingProgressCallback
 
@@ -58,6 +59,23 @@ from Code_RL.src.utils.config import (
     load_lagos_traffic_params,
     create_scenario_config_with_lagos_data
 )
+
+# ✅ CODE_RL HYPERPARAMETERS (source of truth from train_dqn.py)
+# These match Code_RL/src/rl/train_dqn.py line 151-167
+CODE_RL_HYPERPARAMETERS = {
+    "learning_rate": 1e-3,  # Code_RL default (NOT 1e-4)
+    "buffer_size": 50000,
+    "learning_starts": 1000,
+    "batch_size": 32,  # Code_RL default (NOT 64)
+    "tau": 1.0,
+    "gamma": 0.99,
+    "train_freq": 4,
+    "gradient_steps": 1,
+    "target_update_interval": 1000,
+    "exploration_fraction": 0.1,
+    "exploration_initial_eps": 1.0,
+    "exploration_final_eps": 0.05
+}
 
 # Définir le chemin vers les configurations de Code_RL
 CODE_RL_CONFIG_DIR = code_rl_path / "configs"
@@ -812,54 +830,66 @@ class RLPerformanceValidationTest(ValidationSection):
         return result
     
     def train_rl_agent(self, scenario_type: str, total_timesteps=10000, device='gpu'):
-        """Train RL agent using real ARZ simulation with direct coupling.
+        """
+        Train RL agent following Code_RL design (hyperparameters, checkpoint system).
         
-        Default: 10000 timesteps (quality training for reliable convergence)
-        Recommended minimum for meaningful RL improvements (10-40% over baseline).
+        DESIGN ALIGNMENT WITH CODE_RL:
+        - Uses CODE_RL_HYPERPARAMETERS (learning_rate=1e-3, batch_size=32, etc.)
+        - Uses Code_RL callbacks (RotatingCheckpointCallback, TrainingProgressCallback)
+        - Uses Code_RL environment (TrafficSignalEnvDirect)
+        - Uses Bug #27 validated control interval (15s → 4x improvement)
         
-        Uses checkpoint system for training resumption and progress tracking.
+        VALIDATION-SPECIFIC FEATURES:
+        - Intelligent cache system (config-specific)
+        - Quick test mode (100 timesteps)
+        - Debug logging
+        
+        Args:
+            scenario_type: Type of traffic scenario ('low_congestion', etc.)
+            total_timesteps: Number of training timesteps (default: 10000)
+            device: Device for training ('cpu' or 'gpu')
+        
+        Returns:
+            str: Path to trained model, or None if training failed
         """
         
-        # Quick test mode: drastically reduce timesteps AND episode duration for setup validation
+        # Quick test mode: reduce timesteps for setup validation
         if self.quick_test:
-            total_timesteps = 100  # Just 100 steps to test integration (quick but realistic)
-            episode_max_time = 120.0  # 2 minutes per episode instead of 1 hour
-            n_steps = 100  # Collect 100 steps before updating
-            checkpoint_freq = 50  # Save checkpoint every 50 steps
-            print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps, {episode_max_time}s episodes", flush=True)
+            total_timesteps = 100  # Quick integration test
+            checkpoint_freq = 50
+            print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps", flush=True)
         else:
-            episode_max_time = 3600.0  # 1 hour for full test
-            n_steps = 2048  # DQN replay buffer interactions before training
-            checkpoint_freq = 500  # Save checkpoint every 500 steps (adaptive)
-            print(f"[FULL MODE] Training with {total_timesteps} timesteps", flush=True)
+            # Adaptive checkpoint frequency (matches Code_RL train_dqn.py logic)
+            if total_timesteps < 5000:
+                checkpoint_freq = 100  # Quick test
+            elif total_timesteps < 20000:
+                checkpoint_freq = 500  # Small run
+            else:
+                checkpoint_freq = 1000  # Production
         
         self.debug_logger.info("="*80)
-        self.debug_logger.info(f"Starting train_rl_agent for scenario: {scenario_type}")
+        self.debug_logger.info(f"Training RL agent (Code_RL design) for scenario: {scenario_type}")
         self.debug_logger.info(f"  - Device: {device}")
         self.debug_logger.info(f"  - Total timesteps: {total_timesteps}")
-        self.debug_logger.info(f"  - Episode max time: {episode_max_time}s")
-        self.debug_logger.info(f"  - Checkpoint frequency: {checkpoint_freq}")
+        self.debug_logger.info(f"  - Checkpoint freq: {checkpoint_freq}")
+        self.debug_logger.info(f"  - Hyperparameters: CODE_RL_HYPERPARAMETERS (lr=1e-3, batch=32)")
         self.debug_logger.info("="*80)
         
         print(f"\n[TRAINING] Starting RL training for scenario: {scenario_type}", flush=True)
         print(f"  Device: {device}", flush=True)
         print(f"  Total timesteps: {total_timesteps}", flush=True)
-        print(f"  Episode max time: {episode_max_time}s", flush=True)
-        print(f"  Checkpoint frequency: {checkpoint_freq} steps", flush=True)
+        print(f"  Design: Following Code_RL train_dqn.py (hyperparameters + checkpoint system)", flush=True)
         
         self.models_dir.mkdir(parents=True, exist_ok=True)
         model_path = self.models_dir / f"rl_agent_{scenario_type}.zip"
         
-        # FIX Bug #23: Use Git-tracked checkpoint directory instead of local_test
-        checkpoint_dir = self._get_checkpoint_dir()  # Git-tracked location
+        # FIX Bug #23: Use Git-tracked checkpoint directory
+        checkpoint_dir = self._get_checkpoint_dir()
         
-        print(f"  [CHECKPOINT] Directory: {checkpoint_dir}", flush=True)
-        print(f"  [MODEL] Save path: {model_path}", flush=True)
-
-        # Create scenario configuration
+        # Create scenario configuration (validation-specific)
         scenario_path = self._create_scenario_config(scenario_type)
         
-        # ✅ CHECK SOPHISTICATED RL CACHE (config-specific)
+        # ✅ CHECK SOPHISTICATED RL CACHE (config-specific, validation-specific)
         print(f"  [CACHE RL] Checking intelligent cache system...", flush=True)
         rl_cache = self._load_rl_cache(scenario_type, scenario_path, total_timesteps)
         
@@ -871,25 +901,17 @@ class RLPerformanceValidationTest(ValidationSection):
             return str(cached_model_path)
 
         try:
-            # Create training environment with direct coupling
-            # SENSITIVITY FIX: Move observations closer to BC (segments 3-8 instead of 8-13)
-            # ✅ BUG #20 FIX: Reduce decision interval from 60s to 15s for 4x learning density
-            # PROBLEM: 60s interval = only 60 decisions per hour → insufficient learning density
-            #          Episodes truncate after exactly 60 decisions (3600s / 60s)
-            #          Agent never experiences long-term dynamics beyond 1 hour
-            #          Metrics stayed flat: episode_reward=593.31 +/- 0.00 (no evolution)
-            # SOLUTION: 15s interval = 240 decisions per hour → 4x more learning opportunities
-            #          5000 timesteps = ~21 meaningful episodes (vs 83 fragmented)
-            #          Training time ~3-4h (same duration, much better learning)
+            # Create training environment using Code_RL environment
+            # ✅ BUG #27 FIX: decision_interval=15.0 (4x improvement: 593→2361 episode reward)
             # LITERATURE: IntelliLight (5-10s), PressLight (5-30s), MPLight (10-30s)
-            #            Our 15s interval: Conservative, aligned with research standards
+            #             Our 15s: Conservative, research-aligned
             env = TrafficSignalEnvDirect(
                 scenario_config_path=str(scenario_path),
-                decision_interval=15.0,  # ✅ BUG #20 FIX: 15-second decisions (was 60s)
-                episode_max_time=episode_max_time,
+                decision_interval=15.0,  # ✅ BUG #27 validated: 4x improvement
+                episode_max_time=3600.0 if not self.quick_test else 120.0,
                 observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
                 device=device,
-                quiet=False  # ENABLED: Show BC logging to verify inflow state injection
+                quiet=False
             )
             
             print(f"  [INFO] Environment created: obs_space={env.observation_space.shape}, "
@@ -897,61 +919,47 @@ class RLPerformanceValidationTest(ValidationSection):
             
             # Check for existing checkpoint to resume
             checkpoint_files = list(checkpoint_dir.glob(f"{scenario_type}_checkpoint_*_steps.zip"))
+            
             if checkpoint_files:
                 # Find latest checkpoint
                 latest_checkpoint = max(checkpoint_files, key=lambda p: int(p.stem.split('_')[-2]))
                 completed_steps = int(latest_checkpoint.stem.split('_')[-2])
                 
-                #  BUG #27 FIX: ADDITIVE TRAINING SYSTEM (continuous improvement)
-                # Previous: remaining = max(target - checkpoint, target//10)  TRUNCATES when checkpoint > target
-                # Example OLD: checkpoint=6450, request=5000  train only 500 steps 
-                # Example NEW: checkpoint=6450, request=5000  train 5000 MORE = 11450 total 
                 print(f"  [RESUME] Found checkpoint at {completed_steps} steps", flush=True)
                 print(f"  [RESUME] Loading model from {latest_checkpoint}", flush=True)
-                model = DQN.load(str(latest_checkpoint), env=env)
                 
-                # Calculate additional steps (minimum 10% of target for refinement)
-                remaining_steps = total_timesteps  # ADDITIVE: always train requested amount
-                new_total = completed_steps + remaining_steps; print(f"  [RESUME] ADDITIVE: {completed_steps} + {remaining_steps} = {new_total} total steps", flush=True)
+                model = DQN.load(str(latest_checkpoint), env=env)
+                remaining_steps = total_timesteps
+                new_total = completed_steps + remaining_steps
+                print(f"  [RESUME] ADDITIVE: {completed_steps} + {remaining_steps} = {new_total} total steps", flush=True)
             else:
                 remaining_steps = total_timesteps
-                # Train DQN agent from scratch (matching Code_RL design)
-                print(f"  [INFO] Initializing DQN agent from scratch...", flush=True)
+                # Train DQN agent from scratch (Code_RL design)
+                print(f"  [INFO] Initializing DQN agent (Code_RL hyperparameters)...", flush=True)
                 model = DQN(
                     'MlpPolicy',
                     env,
                     verbose=1,
-                    learning_rate=1e-4,
-                    buffer_size=50000,
-                    learning_starts=1000,
-                    batch_size=64,
-                    tau=1.0,
-                    gamma=0.99,
-                    train_freq=4,
-                    gradient_steps=1,
-                    target_update_interval=1000,
-                    exploration_fraction=0.1,
-                    exploration_initial_eps=1.0,
-                    exploration_final_eps=0.05,
+                    **CODE_RL_HYPERPARAMETERS,  # ✅ Use Code_RL hyperparameters (lr=1e-3, batch=32)
                     tensorboard_log=str(self.models_dir / "tensorboard")
                 )
             
-            # Setup callbacks with checkpoint system
+            # Setup callbacks (Code_RL checkpoint system)
             callbacks = []
             
-            # 1. Rotating checkpoints for resume capability
+            # 1. Rotating checkpoints for resume capability (Code_RL design)
             checkpoint_callback = RotatingCheckpointCallback(
                 save_freq=checkpoint_freq,
                 save_path=str(checkpoint_dir),
                 name_prefix=f"{scenario_type}_checkpoint",
-                max_checkpoints=2,  # Keep only 2 most recent
-                save_replay_buffer=True,  # DQN uses replay buffer for experience replay
+                max_checkpoints=2,  # Keep only 2 most recent (Kaggle disk space)
+                save_replay_buffer=True,  # DQN uses replay buffer
                 save_vecnormalize=True,
                 verbose=1
             )
             callbacks.append(checkpoint_callback)
             
-            # 2. Progress tracking
+            # 2. Progress tracking (Code_RL design)
             progress_callback = TrainingProgressCallback(
                 total_timesteps=remaining_steps,
                 log_freq=checkpoint_freq,
@@ -959,7 +967,7 @@ class RLPerformanceValidationTest(ValidationSection):
             )
             callbacks.append(progress_callback)
             
-            # 3. Best model evaluation
+            # 3. Best model evaluation (Code_RL design)
             best_model_dir = self.models_dir / "best_model"
             best_model_dir.mkdir(exist_ok=True)
             eval_callback = EvalCallback(
@@ -975,8 +983,9 @@ class RLPerformanceValidationTest(ValidationSection):
             callbacks.append(eval_callback)
             
             print(f"\n  [STRATEGY] Checkpoint: every {checkpoint_freq} steps, keep 2 latest + 1 best", flush=True)
-            print(f"  [INFO] Training for {remaining_steps} timesteps...", flush=True)
+            print(f"  [INFO] Training for {remaining_steps} timesteps (Code_RL design)...", flush=True)
             
+            # Train the model (Code_RL design)
             model.learn(
                 total_timesteps=remaining_steps,
                 callback=callbacks,
@@ -988,10 +997,10 @@ class RLPerformanceValidationTest(ValidationSection):
             model.save(str(model_path))
             print(f"  [SUCCESS] Final model saved to {model_path}", flush=True)
             
-            # Calculate total timesteps trained (checkpoint + new training)
+            # Calculate total timesteps trained
             final_total_timesteps = completed_steps + remaining_steps if checkpoint_files else remaining_steps
             
-            # ✅ SAVE SOPHISTICATED RL CACHE (config-specific)
+            # ✅ SAVE SOPHISTICATED RL CACHE (validation-specific)
             self._save_rl_cache(
                 scenario_type, scenario_path, model_path, 
                 final_total_timesteps, device

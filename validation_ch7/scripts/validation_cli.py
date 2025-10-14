@@ -42,6 +42,12 @@ def main():
         help='Kaggle kernel timeout in seconds (default: 8000)'
     )
     
+    parser.add_argument(
+        '--quick-test',
+        action='store_true',
+        help='Enable quick test mode (100 timesteps, ~15min runtime)'
+    )
+    
     args = parser.parse_args()
     
     print("=" * 80)
@@ -49,6 +55,8 @@ def main():
     print("=" * 80)
     print(f"Section: {args.section}")
     print(f"Timeout: {args.timeout}s")
+    if args.quick_test:
+        print(f"Mode: QUICK TEST (100 timesteps)")
     if args.commit_message:
         print(f"Custom commit message: {args.commit_message}")
     print("=" * 80)
@@ -60,7 +68,8 @@ def main():
         success, kernel_slug = manager.run_validation_section(
             section_name=args.section,
             timeout=args.timeout,
-            commit_message=args.commit_message
+            commit_message=args.commit_message,
+            quick_test=args.quick_test
         )
         
         if success:
