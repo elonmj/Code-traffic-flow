@@ -195,6 +195,10 @@ class TrafficSignalEnvDirect(gym.Env):
         self.current_phase = 0
         self.previous_observation = None
         
+        # Reset queue tracking for reward calculation
+        if hasattr(self, 'previous_queue_length'):
+            delattr(self, 'previous_queue_length')
+        
         # Set initial traffic signal state
         self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
         
@@ -331,46 +335,63 @@ class TrafficSignalEnvDirect(gym.Env):
     
     def _calculate_reward(self, observation: np.ndarray, action: int, prev_phase: int) -> float:
         """
-        Calculate reward following Chapter 6 specification.
+        Queue-based reward following Cai & Wei (2024).
         
-        Reward = R_congestion + R_stabilite + R_fluidite
+        Reward = -(queue_length_t+1 - queue_length_t) - penalty_phase_change
+        
+        This replaces the density-based reward that caused RL to learn RED constant
+        strategy (minimizing density) instead of optimal GREEN cycling (maximizing throughput).
         
         Args:
-            observation: Current observation vector
-            action: Action taken (0 or 1)
-            prev_phase: Previous phase ID
-            
+            observation: State vector normalized
+            action: Control action (0=maintain, 1=switch)
+            prev_phase: Previous phase (not used)
+        
         Returns:
-            Scalar reward value
+            reward: Scalar reward value
+        
+        References:
+            Cai & Wei (2024). Deep reinforcement learning for traffic signal control.
+            Scientific Reports 14:14116. Nature Portfolio.
         """
-        # Extract densities from observation (already normalized, denormalize for calculation)
-        # Observation format: [ρ_m, v_m, ρ_c, v_c] × n_segments + phase_onehot
-        # Denormalize using class-specific parameters (Chapter 6)
-        densities_m = observation[0::4][:self.n_segments] * self.rho_max_m
-        densities_c = observation[2::4][:self.n_segments] * self.rho_max_c
-        
-        # R_congestion: negative sum of densities (penalize congestion)
-        # Approximation: Σ ρ_i × Δx (Δx = grid.dx from runner)
+        n_segments = self.n_segments
         dx = self.runner.grid.dx
-        total_density = np.sum(densities_m + densities_c) * dx
-        R_congestion = -self.alpha * total_density
         
-        # R_stabilite: penalize phase changes
+        # Extract and denormalize densities and velocities
+        densities_m = observation[0::4][:n_segments] * self.rho_max_m
+        velocities_m = observation[1::4][:n_segments] * self.v_free_m
+        densities_c = observation[2::4][:n_segments] * self.rho_max_c
+        velocities_c = observation[3::4][:n_segments] * self.v_free_c
+        
+        # Define queue threshold: vehicles with speed < 5 m/s are queued
+        QUEUE_SPEED_THRESHOLD = 5.0  # m/s (~18 km/h, congestion threshold)
+        
+        # Count queued vehicles (density where v < threshold)
+        queued_m = densities_m[velocities_m < QUEUE_SPEED_THRESHOLD]
+        queued_c = densities_c[velocities_c < QUEUE_SPEED_THRESHOLD]
+        
+        # Total queue length (vehicles in congestion)
+        current_queue_length = np.sum(queued_m) + np.sum(queued_c)
+        current_queue_length *= dx  # Convert to total vehicles
+        
+        # Get previous queue length
+        if not hasattr(self, 'previous_queue_length'):
+            self.previous_queue_length = current_queue_length
+            delta_queue = 0.0
+        else:
+            delta_queue = current_queue_length - self.previous_queue_length
+            self.previous_queue_length = current_queue_length
+        
+        # Reward component 1: Queue change (PRIMARY)
+        # Negative change = queue reduction = positive reward
+        R_queue = -delta_queue * 10.0  # Scale factor for meaningful magnitudes
+        
+        # Reward component 2: Phase change penalty (SECONDARY)
         phase_changed = (action == 1)
-        R_stabilite = -self.kappa if phase_changed else 0.0
-        
-        # R_fluidite: reward for flow (outflow from observed segments)
-        # Approximation: use flux (ρ×v) as proxy for outflow (Chapter 6, Section 6.2.3)
-        # F_out ≈ Σ (ρ × v) × Δx
-        velocities_m = observation[1::4][:self.n_segments] * self.v_free_m
-        velocities_c = observation[3::4][:self.n_segments] * self.v_free_c
-        flow_m = np.sum(densities_m * velocities_m) * dx
-        flow_c = np.sum(densities_c * velocities_c) * dx
-        total_flow = flow_m + flow_c
-        R_fluidite = self.mu * total_flow
+        R_stability = -self.kappa if phase_changed else 0.0
         
         # Total reward
-        reward = R_congestion + R_stabilite + R_fluidite
+        reward = R_queue + R_stability
         
         return float(reward)
     
