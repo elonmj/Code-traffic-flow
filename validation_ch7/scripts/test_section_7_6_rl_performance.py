@@ -614,11 +614,11 @@ class RLPerformanceValidationTest(ValidationSection):
         
         return result
     
-    def train_rl_agent(self, scenario_type: str, total_timesteps=5000, device='gpu'):
+    def train_rl_agent(self, scenario_type: str, total_timesteps=10000, device='gpu'):
         """Train RL agent using real ARZ simulation with direct coupling.
         
-        Default: 5000 timesteps (compromise between quality and time)
-        Can be increased to 10000 if needed, but will take longer on Kaggle.
+        Default: 10000 timesteps (quality training for reliable convergence)
+        Recommended minimum for meaningful RL improvements (10-40% over baseline).
         
         Uses checkpoint system for training resumption and progress tracking.
         """
