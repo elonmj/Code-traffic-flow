@@ -46,12 +46,18 @@ sys.path.append(str(code_rl_path))
 from Code_RL.src.env.traffic_signal_env_direct import TrafficSignalEnvDirect
 
 # RL training utilities with checkpoint support
-from stable_baselines3 import PPO
+from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import EvalCallback
 
 # Import checkpoint callbacks for training resumption
 sys.path.append(str(code_rl_path / "src" / "rl"))
 from callbacks import RotatingCheckpointCallback, TrainingProgressCallback
+
+# ✅ Import Code_RL config utilities (DRY principle - Don't Repeat Yourself)
+from Code_RL.src.utils.config import (
+    load_lagos_traffic_params,
+    create_scenario_config_with_lagos_data
+)
 
 # Définir le chemin vers les configurations de Code_RL
 CODE_RL_CONFIG_DIR = code_rl_path / "configs"
@@ -431,112 +437,32 @@ class RLPerformanceValidationTest(ValidationSection):
             return None
     
     def _create_scenario_config(self, scenario_type: str) -> Path:
-        """Crée un fichier de configuration YAML pour un scénario de contrôle.
+        """✅ ORCHESTRATOR: Calls Code_RL to create scenario with REAL Lagos data.
         
-        SENSITIVITY FIX: Configuration optimized to observe BC control effects
-        - Reduced domain: 5km a 1km (faster wave propagation)
-        - Riemann IC: Shock wave instead of equilibrium (transient dynamics)
-        - Higher densities: Strong signal for control testing
-        
-        **IMPORTANT**: initial_conditions with type='uniform_equilibrium' expects densities in VEH/KM
-        For Riemann IC, state arrays use SI units (veh/m, m/s) directly.
+        Validation's role: Orchestrate, not duplicate.
+        Code_RL owns: Data loading, scenario creation, traffic parameters.
+        Validation owns: Testing, comparison, metrics calculation.
         """
-        # ✅ BUG #10 FIX: Use UNIFORM CONGESTION IC instead of Riemann shock
-        # Problem: Riemann shock evacuates domain faster than BC can replenish
-        # Solution: Uniform congestion (realistic traffic jam scenario for traffic light)
-        
-        # ✅ BUG #14 FIX: Create INFLOW > INITIAL to build queue for traffic signal control
-        # Problem: Equal inflow and initial densities → no queue formation → empty road
-        # Solution: Start with light traffic, heavy inflow creates queue to manage
-        
-        # Initial state: Light congestion (road has some traffic but flowing well)
-        rho_m_initial_veh_km = 40.0  # Light traffic (half of congested)
-        rho_c_initial_veh_km = 50.0
-        w_m_initial = 15.0  # ~54 km/h (moderate speed)
-        w_c_initial = 13.0  # ~47 km/h
-        
-        # Inflow boundary: HEAVY demand (creates pressure that traffic signal must manage)
-        rho_m_inflow_veh_km = 120.0  # High demand (3x initial)
-        rho_c_inflow_veh_km = 150.0
-        w_m_inflow = 8.0   # ~29 km/h (congested inflow)
-        w_c_inflow = 6.0   # ~22 km/h
-        
-        # ✅ BUG #16 FIX: Do NOT pre-convert densities to SI for YAML
-        # SimulationRunner expects veh/km in YAML and handles SI conversion internally
-        # Previous bug: Double conversion (veh/km → SI → SI again) caused 1000× error
-        # Keep values in veh/km for both IC and BC
-        w_m_high = w_m_inflow
-        w_c_high = w_c_inflow
-        w_m_uniform = w_m_initial
-        w_c_uniform = w_c_initial
-        
-        # ✅ BUG #21 FIX: Define SI unit variables for Riemann IC (ramp_metering, adaptive_speed)
-        # Convert veh/km to veh/m for scenarios that need Riemann initial conditions
-        # High density (congested conditions)
-        rho_m_high_si = rho_m_inflow_veh_km / 1000.0  # veh/m (from veh/km)
-        rho_c_high_si = rho_c_inflow_veh_km / 1000.0  # veh/m
-        # Low density (free flow conditions)
-        rho_m_low_si = rho_m_initial_veh_km / 1000.0  # veh/m
-        rho_c_low_si = rho_c_initial_veh_km / 1000.0  # veh/m
-        # Velocities for low density (free flow)
-        w_m_low = w_m_initial  # m/s (moderate speed)
-        w_c_low = w_c_initial  # m/s
-        
-        config = {
-            'scenario_name': f'rl_perf_{scenario_type}_sensitive',
-            'N': 100,           # CHANGED: Reduce from 200 for faster propagation
-            'xmin': 0.0,
-            'xmax': 1000.0,     # CHANGED: Reduce from 5000m to 1km domain
-            't_final': 600.0,   # 10 minutes
-            'output_dt': 60.0,
-            'CFL': 0.4,
-            'boundary_conditions': {
-                # BUG #16 FIX: Write densities in veh/km (not SI) to YAML
-                # SimulationRunner will convert internally: 120 veh/km → 0.12 veh/m
-                'left': {'type': 'inflow', 'state': [rho_m_inflow_veh_km, w_m_high, rho_c_inflow_veh_km, w_c_high]},
-                'right': {'type': 'outflow'}
-            },
-            'road': {'quality_type': 'uniform', 'quality_value': 2}
-        }
-
-        if scenario_type == 'traffic_light_control':
-            config['parameters'] = {'V0_m': 25.0, 'V0_c': 22.2, 'tau_m': 1.0, 'tau_c': 1.2}
-            # ✅ BUG #11 FIX: CORRECT FORMAT for 'uniform' IC type
-            # runner.py expects 'state': [rho_m, w_m, rho_c, w_c] NOT separate keys!
-            # ✅ BUG #16 FIX: Use veh/km in YAML (not SI)
-            config['initial_conditions'] = {
-                'type': 'uniform',
-                'state': [rho_m_initial_veh_km, w_m_uniform, rho_c_initial_veh_km, w_c_uniform]
-            }
-        elif scenario_type == 'ramp_metering':
-            config['parameters'] = {'V0_m': 27.8, 'V0_c': 25.0, 'tau_m': 0.8, 'tau_c': 1.0}
-            # Use Riemann IC for ramp_metering too
-            config['initial_conditions'] = {
-                'type': 'riemann',
-                'U_L': [rho_m_high_si*0.8, w_m_high, rho_c_high_si*0.8, w_c_high],
-                'U_R': [rho_m_low_si*0.8, w_m_low, rho_c_low_si*0.8, w_c_low],
-                'split_pos': 500.0
-            }
-        elif scenario_type == 'adaptive_speed_control':
-            config['parameters'] = {'V0_m': 30.6, 'V0_c': 27.8, 'tau_m': 0.6, 'tau_c': 0.8}
-            # Use Riemann IC for adaptive_speed_control too
-            config['initial_conditions'] = {
-                'type': 'riemann',
-                'U_L': [rho_m_high_si*0.7, w_m_high, rho_c_high_si*0.7, w_c_high],
-                'U_R': [rho_m_low_si*0.7, w_m_low, rho_c_low_si*0.7, w_c_low],
-                'split_pos': 500.0
-            }
-
         scenario_path = self.scenarios_dir / f"{scenario_type}.yml"
-        with open(scenario_path, 'w') as f:
-            yaml.dump(config, f, default_flow_style=False)
         
-        self.debug_logger.info(f"Created scenario config: {scenario_path.name}")
-        self.debug_logger.info(f"  BUG #10 FIX: Domain=1km, UNIFORM congestion IC (no shock)")
-        self.debug_logger.info(f"  BUG #14 FIX: Initial={rho_m_initial_veh_km:.1f}/{rho_c_initial_veh_km:.1f} veh/km, Inflow={rho_m_inflow_veh_km:.1f}/{rho_c_inflow_veh_km:.1f} veh/km")
-        self.debug_logger.info(f"  Initial velocity: w_m={w_m_initial:.1f} m/s, w_c={w_c_initial:.1f} m/s")
-        self.debug_logger.info(f"  Inflow velocity: w_m={w_m_inflow:.1f} m/s, w_c={w_c_inflow:.1f} m/s")
-        print(f"  [SCENARIO] Generated: {scenario_path.name} (Queue formation: inflow {rho_m_inflow_veh_km:.0f} veh/km > initial {rho_m_initial_veh_km:.0f} veh/km)", flush=True)
+        # ✅ Call Code_RL function (DRY principle - Don't Repeat Yourself)
+        config = create_scenario_config_with_lagos_data(
+            scenario_type=scenario_type,
+            output_path=scenario_path,
+            config_dir=str(CODE_RL_CONFIG_DIR),
+            duration=600.0,  # 10 minutes
+            domain_length=1000.0  # 1km
+        )
+        
+        # Log for validation tracking
+        lagos_params = config.get('lagos_parameters', {})
+        self.debug_logger.info(f"[SCENARIO] Created using Code_RL: {scenario_path.name}")
+        self.debug_logger.info(f"  Context: {lagos_params.get('context', 'Victoria Island Lagos')}")
+        self.debug_logger.info(f"  Max densities: {lagos_params.get('max_density_motorcycles', 250):.0f}/{lagos_params.get('max_density_cars', 120):.0f} veh/km")
+        self.debug_logger.info(f"  Free speeds: {lagos_params.get('free_speed_motorcycles', 32):.0f}/{lagos_params.get('free_speed_cars', 28):.0f} km/h")
+        
+        print(f"  [SCENARIO] ✅ Created via Code_RL with REAL Lagos data", flush=True)
+        
         return scenario_path
 
     class BaselineController:
@@ -572,12 +498,12 @@ class RLPerformanceValidationTest(ValidationSection):
             self.agent = self._load_agent()
 
         def _load_agent(self):
-            """Charge un agent RL pré-entraîné."""
+            """Charge un agent DQN pré-entraîné."""
             if not self.model_path or not self.model_path.exists():
-                print(f"  [WARNING] Modèle RL non trouvé: {self.model_path}. L'agent ne pourra pas agir.")
+                print(f"  [WARNING] Modèle DQN non trouvé: {self.model_path}. L'agent ne pourra pas agir.")
                 return None
-            print(f"  [INFO] Chargement du modèle RL depuis : {self.model_path}")
-            return PPO.load(str(self.model_path))
+            print(f"  [INFO] Chargement du modèle DQN depuis : {self.model_path}")
+            return DQN.load(str(self.model_path))
 
         def get_action(self, state):
             """Prédit une action en utilisant l'agent RL."""
@@ -903,7 +829,7 @@ class RLPerformanceValidationTest(ValidationSection):
             print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps, {episode_max_time}s episodes", flush=True)
         else:
             episode_max_time = 3600.0  # 1 hour for full test
-            n_steps = 2048  # Default PPO buffer size
+            n_steps = 2048  # DQN replay buffer interactions before training
             checkpoint_freq = 500  # Save checkpoint every 500 steps (adaptive)
             print(f"[FULL MODE] Training with {total_timesteps} timesteps", flush=True)
         
@@ -982,26 +908,31 @@ class RLPerformanceValidationTest(ValidationSection):
                 # Example NEW: checkpoint=6450, request=5000  train 5000 MORE = 11450 total 
                 print(f"  [RESUME] Found checkpoint at {completed_steps} steps", flush=True)
                 print(f"  [RESUME] Loading model from {latest_checkpoint}", flush=True)
-                model = PPO.load(str(latest_checkpoint), env=env)
+                model = DQN.load(str(latest_checkpoint), env=env)
                 
                 # Calculate additional steps (minimum 10% of target for refinement)
                 remaining_steps = total_timesteps  # ADDITIVE: always train requested amount
                 new_total = completed_steps + remaining_steps; print(f"  [RESUME] ADDITIVE: {completed_steps} + {remaining_steps} = {new_total} total steps", flush=True)
             else:
                 remaining_steps = total_timesteps
-                # Train PPO agent from scratch
-                print(f"  [INFO] Initializing PPO agent from scratch...", flush=True)
-                model = PPO(
+                # Train DQN agent from scratch (matching Code_RL design)
+                print(f"  [INFO] Initializing DQN agent from scratch...", flush=True)
+                model = DQN(
                     'MlpPolicy',
                     env,
                     verbose=1,
-                    learning_rate=3e-4,
-                    n_steps=n_steps,
-                    batch_size=min(64, n_steps),  # Batch size can't exceed n_steps
-                    n_epochs=10,
+                    learning_rate=1e-4,
+                    buffer_size=50000,
+                    learning_starts=1000,
+                    batch_size=64,
+                    tau=1.0,
                     gamma=0.99,
-                    gae_lambda=0.95,
-                    clip_range=0.2,
+                    train_freq=4,
+                    gradient_steps=1,
+                    target_update_interval=1000,
+                    exploration_fraction=0.1,
+                    exploration_initial_eps=1.0,
+                    exploration_final_eps=0.05,
                     tensorboard_log=str(self.models_dir / "tensorboard")
                 )
             
@@ -1014,7 +945,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 save_path=str(checkpoint_dir),
                 name_prefix=f"{scenario_type}_checkpoint",
                 max_checkpoints=2,  # Keep only 2 most recent
-                save_replay_buffer=False,  # PPO doesn't use replay buffer
+                save_replay_buffer=True,  # DQN uses replay buffer for experience replay
                 save_vecnormalize=True,
                 verbose=1
             )

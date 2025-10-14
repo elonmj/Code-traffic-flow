@@ -2,14 +2,22 @@
 
 ## Purpose
 
-This directory stores **persistent caches** for both baseline simulations and RL training to avoid redundant computation.
+This directory stores **persistent caches** for both baseline simulations and RL training (DQN) to avoid redundant computation.
+
+## ✅ CRITICAL CORRECTIONS APPLIED
+
+### 1. Algorithm: DQN (not PPO)
+**Rationale**: Matches Code_RL design. Previous PPO usage was inconsistent with thesis claims.
+
+### 2. Real Lagos Data (not generic configs)
+**Rationale**: Uses real Victoria Island Lagos traffic parameters (250/120 veh/km max densities, 32/28 km/h speeds) instead of invented 40/50 veh/km values.
 
 ## Cache Architecture
 
 ### Two Independent Cache Systems:
 
 1. **Baseline Cache**: UNIVERSAL (config-independent)
-2. **RL Cache**: CONFIG-SPECIFIC (requires config hash validation)
+2. **RL Cache (DQN)**: CONFIG-SPECIFIC (requires config hash validation)
 
 ## Why Cache Baseline?
 

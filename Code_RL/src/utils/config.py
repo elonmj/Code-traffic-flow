@@ -78,6 +78,79 @@ def load_configs(config_dir: str) -> Dict[str, Any]:
     return configs
 
 
+def load_lagos_traffic_params(config_dir: Optional[str] = None) -> Dict[str, float]:
+    """Load real Lagos traffic parameters from traffic_lagos.yaml.
+    
+    Extracts key traffic parameters for Victoria Island Lagos:
+    - Max densities: motorcycles and cars (veh/km)
+    - Free speeds: motorcycles and cars (km/h)
+    - Vehicle mix: percentages for each vehicle type
+    - Behaviors: creeping rate, gap filling, signal compliance
+    
+    Args:
+        config_dir: Path to configs directory. If None, uses default Code_RL/configs
+    
+    Returns:
+        Dictionary with extracted parameters ready for simulation use
+    
+    Example:
+        >>> params = load_lagos_traffic_params()
+        >>> print(params['max_density_motorcycles'])  # 250.0 veh/km
+        >>> print(params['free_speed_cars'])  # 28.0 km/h
+    """
+    if config_dir is None:
+        # Default to Code_RL/configs directory
+        config_dir = Path(__file__).parent.parent.parent / "configs"
+    else:
+        config_dir = Path(config_dir)
+    
+    lagos_config_path = config_dir / "traffic_lagos.yaml"
+    
+    if not lagos_config_path.exists():
+        print(f"[WARNING] traffic_lagos.yaml not found at {lagos_config_path}")
+        print("[WARNING] Using fallback parameters")
+        # Fallback to reasonable defaults
+        return {
+            'max_density_motorcycles': 200.0,  # veh/km
+            'max_density_cars': 100.0,
+            'free_speed_motorcycles': 30.0,  # km/h
+            'free_speed_cars': 25.0,
+            'vehicle_mix_motorcycles': 0.30,
+            'vehicle_mix_cars': 0.50,
+            'creeping_rate': 0.5,
+            'gap_filling_rate': 0.7,
+            'signal_compliance': 0.8
+        }
+    
+    config = load_config(str(lagos_config_path))
+    traffic = config.get('traffic', {})
+    
+    # Extract nested parameters
+    max_densities = traffic.get('max_densities', {})
+    free_speeds = traffic.get('free_speeds', {})
+    vehicle_mix = traffic.get('vehicle_mix', {})
+    behaviors = traffic.get('behaviors', {})
+    
+    params = {
+        'max_density_motorcycles': float(max_densities.get('motorcycles', 250)),  # veh/km
+        'max_density_cars': float(max_densities.get('cars', 120)),
+        'max_density_total': float(max_densities.get('total', 370)),
+        'free_speed_motorcycles': float(free_speeds.get('motorcycles', 32)),  # km/h
+        'free_speed_cars': float(free_speeds.get('cars', 28)),
+        'free_speed_average': float(free_speeds.get('average', 30)),
+        'vehicle_mix_motorcycles': float(vehicle_mix.get('motorcycles_percentage', 35)) / 100.0,
+        'vehicle_mix_cars': float(vehicle_mix.get('cars_percentage', 45)) / 100.0,
+        'vehicle_mix_buses': float(vehicle_mix.get('buses_percentage', 15)) / 100.0,
+        'vehicle_mix_trucks': float(vehicle_mix.get('trucks_percentage', 5)) / 100.0,
+        'creeping_rate': float(behaviors.get('creeping_rate', 0.6)),
+        'gap_filling_rate': float(behaviors.get('gap_filling_rate', 0.8)),
+        'signal_compliance': float(behaviors.get('signal_compliance', 0.7)),
+        'context': traffic.get('context', 'Victoria Island Lagos')
+    }
+    
+    return params
+
+
 def validate_config_consistency(configs: Dict[str, Any]) -> bool:
     """Validate consistency between configuration files"""
     errors = []
@@ -321,6 +394,117 @@ class ExperimentTracker:
             summary_data.append(row)
         
         return pd.DataFrame(summary_data)
+
+
+def create_scenario_config_with_lagos_data(
+    scenario_type: str,
+    output_path: Optional[Path] = None,
+    config_dir: Optional[str] = None,
+    duration: float = 600.0,
+    domain_length: float = 1000.0
+) -> Dict[str, Any]:
+    """Create scenario configuration using REAL Lagos traffic data.
+    
+    Args:
+        scenario_type: Type of scenario ('traffic_light_control', 'ramp_metering', 'adaptive_speed_control')
+        output_path: Optional path to save YAML config
+        config_dir: Path to configs directory for Lagos data
+        duration: Simulation duration in seconds (default: 600s = 10 minutes)
+        domain_length: Road domain length in meters (default: 1000m = 1km)
+    
+    Returns:
+        Dictionary with scenario configuration using real Lagos parameters
+    """
+    # Load REAL Lagos traffic parameters
+    lagos_params = load_lagos_traffic_params(config_dir)
+    
+    # Extract real parameters
+    max_density_m = lagos_params['max_density_motorcycles']  # 250 veh/km (REAL)
+    max_density_c = lagos_params['max_density_cars']  # 120 veh/km (REAL)
+    free_speed_m_kmh = lagos_params['free_speed_motorcycles']  # 32 km/h (REAL)
+    free_speed_c_kmh = lagos_params['free_speed_cars']  # 28 km/h (REAL)
+    
+    # Convert speeds to m/s
+    free_speed_m = free_speed_m_kmh / 3.6  # ~8.9 m/s
+    free_speed_c = free_speed_c_kmh / 3.6  # ~7.8 m/s
+    
+    # Realistic Lagos congestion levels
+    # Initial state: Moderate congestion (50% of max - typical Lagos daytime)
+    rho_m_initial_veh_km = max_density_m * 0.5  # 125 veh/km
+    rho_c_initial_veh_km = max_density_c * 0.5  # 60 veh/km
+    w_m_initial = free_speed_m * 0.6  # Reduced speed in congestion (~19 km/h)
+    w_c_initial = free_speed_c * 0.6  # ~17 km/h
+    
+    # Inflow: Heavy congestion (80% of max - peak Lagos traffic)
+    rho_m_inflow_veh_km = max_density_m * 0.8  # 200 veh/km
+    rho_c_inflow_veh_km = max_density_c * 0.8  # 96 veh/km
+    w_m_inflow = free_speed_m * 0.3  # Heavily congested (~10 km/h)
+    w_c_inflow = free_speed_c * 0.3  # ~8 km/h
+    
+    # Base configuration
+    config = {
+        'scenario_name': f'{scenario_type}_lagos_real',
+        'N': 100,
+        'xmin': 0.0,
+        'xmax': domain_length,
+        't_final': duration,
+        'output_dt': 60.0,
+        'CFL': 0.4,
+        'boundary_conditions': {
+            'left': {'type': 'inflow', 'state': [rho_m_inflow_veh_km, w_m_inflow, rho_c_inflow_veh_km, w_c_inflow]},
+            'right': {'type': 'outflow'}
+        },
+        'road': {'quality_type': 'uniform', 'quality_value': 2},
+        'lagos_parameters': lagos_params  # Include full Lagos params for reference
+    }
+    
+    # Scenario-specific parameters
+    if scenario_type == 'traffic_light_control':
+        config['parameters'] = {
+            'V0_m': free_speed_m,  # Use REAL Lagos speeds
+            'V0_c': free_speed_c,
+            'tau_m': 1.0,
+            'tau_c': 1.2
+        }
+        config['initial_conditions'] = {
+            'type': 'uniform',
+            'state': [rho_m_initial_veh_km, w_m_initial, rho_c_initial_veh_km, w_c_initial]
+        }
+    elif scenario_type == 'ramp_metering':
+        config['parameters'] = {
+            'V0_m': free_speed_m * 1.1,
+            'V0_c': free_speed_c * 1.1,
+            'tau_m': 0.8,
+            'tau_c': 1.0
+        }
+        # Riemann IC for ramp scenario
+        config['initial_conditions'] = {
+            'type': 'riemann',
+            'U_L': [rho_m_inflow_veh_km/1000*0.8, w_m_inflow, rho_c_inflow_veh_km/1000*0.8, w_c_inflow],
+            'U_R': [rho_m_initial_veh_km/1000*0.8, w_m_initial, rho_c_initial_veh_km/1000*0.8, w_c_initial],
+            'split_pos': domain_length / 2
+        }
+    elif scenario_type == 'adaptive_speed_control':
+        config['parameters'] = {
+            'V0_m': free_speed_m * 1.2,
+            'V0_c': free_speed_c * 1.2,
+            'tau_m': 0.6,
+            'tau_c': 0.8
+        }
+        # Riemann IC for adaptive speed scenario
+        config['initial_conditions'] = {
+            'type': 'riemann',
+            'U_L': [rho_m_inflow_veh_km/1000*0.7, w_m_inflow, rho_c_inflow_veh_km/1000*0.7, w_c_inflow],
+            'U_R': [rho_m_initial_veh_km/1000*0.7, w_m_initial, rho_c_initial_veh_km/1000*0.7, w_c_initial],
+            'split_pos': domain_length / 2
+        }
+    
+    # Save if output path provided
+    if output_path:
+        save_config(config, str(output_path))
+        print(f"[LAGOS CONFIG] Saved to {output_path}")
+    
+    return config
 
 
 def analyze_experiment_config(exp_config: Dict[str, Any], configs: Dict[str, Any]) -> List[str]:
