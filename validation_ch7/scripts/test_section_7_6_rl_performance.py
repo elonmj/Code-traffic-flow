@@ -21,6 +21,7 @@ import yaml
 import logging
 import traceback
 import time
+import pickle
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
@@ -797,34 +798,43 @@ class RLPerformanceValidationTest(ValidationSection):
         self.debug_logger.info(f"Starting run_performance_comparison for scenario: {scenario_type}")
         self.debug_logger.info(f"Device: {device}")
         self.debug_logger.info("="*80)
-        self.debug_logger.info("="*80)
-        self.debug_logger.info(f"Starting run_performance_comparison for scenario: {scenario_type}")
-        self.debug_logger.info(f"Device: {device}")
-        self.debug_logger.info("="*80)
         
         try:
             scenario_path = self._create_scenario_config(scenario_type)
 
-            # --- Baseline controller evaluation ---
-            print("  Running baseline controller...", flush=True)
-            baseline_controller = self.BaselineController(scenario_type)
-            baseline_states, _ = self.run_control_simulation(
-                baseline_controller, 
-                scenario_path,
-                device=device
-            )
-            if baseline_states is None:
-                return {'success': False, 'error': 'Baseline simulation failed'}
-            
-            # CRITICAL FIX: Deep copy to prevent aliasing
-            baseline_states_copy = [state.copy() for state in baseline_states]
-            self.debug_logger.info(f"Baseline states copied: {len(baseline_states_copy)} snapshots")
-            self.debug_logger.info(f"Baseline FIRST state hash: {hash(baseline_states_copy[0].tobytes())}")
-            self.debug_logger.info(f"Baseline LAST state hash: {hash(baseline_states_copy[-1].tobytes())}")
-            self.debug_logger.info(f"Baseline first state sample: rho_m[10:15]={baseline_states_copy[0][0, 10:15]}")
-            self.debug_logger.info(f"Baseline last state sample: rho_m[10:15]={baseline_states_copy[-1][0, 10:15]}")
-            
-            baseline_performance = self.evaluate_traffic_performance(baseline_states_copy, scenario_type)
+            # --- Baseline controller evaluation with Caching ---
+            cache_dir = self.output_dir.parent / "validation_output" / "baseline_cache"
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            # Distinguish cache for quick_test vs full run
+            cache_filename = f"{scenario_type}_{'quick' if self.quick_test else 'full'}.pkl"
+            cache_path = cache_dir / cache_filename
+
+            if cache_path.exists():
+                print(f"  [CACHE] Loading baseline performance from {cache_path}", flush=True)
+                self.debug_logger.info(f"Found baseline cache at {cache_path}, loading metrics.")
+                with open(cache_path, 'rb') as f:
+                    baseline_performance = pickle.load(f)
+            else:
+                print(f"  [CACHE] No cache found. Running baseline controller...", flush=True)
+                self.debug_logger.info(f"No baseline cache found for {scenario_type}. Running full simulation.")
+                
+                baseline_controller = self.BaselineController(scenario_type)
+                baseline_states, _ = self.run_control_simulation(
+                    baseline_controller, 
+                    scenario_path,
+                    device=device
+                )
+                if baseline_states is None:
+                    return {'success': False, 'error': 'Baseline simulation failed'}
+                
+                baseline_states_copy = [state.copy() for state in baseline_states]
+                baseline_performance = self.evaluate_traffic_performance(baseline_states_copy, scenario_type)
+
+                # Save results to cache
+                print(f"  [CACHE] Saving baseline performance to {cache_path}", flush=True)
+                self.debug_logger.info(f"Saving baseline metrics to {cache_path}")
+                with open(cache_path, 'wb') as f:
+                    pickle.dump(baseline_performance, f)
             
             # Test RL controller
             print("  Running RL controller...", flush=True)
@@ -853,37 +863,30 @@ class RLPerformanceValidationTest(ValidationSection):
             if rl_states is None:
                 return {'success': False, 'error': 'RL simulation failed'}
             
-            # CRITICAL FIX: Deep copy to prevent aliasing
             rl_states_copy = [state.copy() for state in rl_states]
-            self.debug_logger.info(f"RL states copied: {len(rl_states_copy)} snapshots")
-            self.debug_logger.info(f"RL FIRST state hash: {hash(rl_states_copy[0].tobytes())}")
-            self.debug_logger.info(f"RL LAST state hash: {hash(rl_states_copy[-1].tobytes())}")
-            self.debug_logger.info(f"RL first state sample: rho_m[10:15]={rl_states_copy[0][0, 10:15]}")
-            self.debug_logger.info(f"RL last state sample: rho_m[10:15]={rl_states_copy[-1][0, 10:15]}")
-            
             rl_performance = self.evaluate_traffic_performance(rl_states_copy, scenario_type)
-            
-            # DEBUG: Verify states are actually different (using copied versions)
-            baseline_state_hash = hash(baseline_states_copy[0].tobytes())
-            rl_state_hash = hash(rl_states_copy[0].tobytes())
-            states_identical = (baseline_state_hash == rl_state_hash)
-            self.debug_logger.warning(f"States comparison - Identical: {states_identical}, baseline_hash={baseline_state_hash}, rl_hash={rl_state_hash}")
-            
-            # Additional verification: Compare metrics BEFORE and AFTER copying
-            if states_identical:
-                self.debug_logger.error("BUG CONFIRMED: States are identical despite different simulations!")
-                self.debug_logger.error(f"baseline_states_copy[0] sample: {baseline_states_copy[0][0, 10:15]}")
-                self.debug_logger.error(f"rl_states_copy[0] sample: {rl_states_copy[0][0, 10:15]}")
             
             # DEBUG: Log performance metrics
             self.debug_logger.info(f"Baseline performance: {baseline_performance}")
             self.debug_logger.info(f"RL performance: {rl_performance}")
             
             # Calculate improvements
-            flow_improvement = (rl_performance['total_flow'] - baseline_performance['total_flow']) / baseline_performance['total_flow'] * 100
-            efficiency_improvement = (rl_performance['efficiency'] - baseline_performance['efficiency']) / baseline_performance['efficiency'] * 100
-            delay_reduction = (baseline_performance['delay'] - rl_performance['delay']) / baseline_performance['delay'] * 100
-            
+            # Handle potential division by zero if baseline performance is zero
+            if baseline_performance.get('total_flow', 0) > 1e-9:
+                flow_improvement = (rl_performance['total_flow'] - baseline_performance['total_flow']) / baseline_performance['total_flow'] * 100
+            else:
+                flow_improvement = 0.0
+
+            if baseline_performance.get('efficiency', 0) > 1e-9:
+                efficiency_improvement = (rl_performance['efficiency'] - baseline_performance['efficiency']) / baseline_performance['efficiency'] * 100
+            else:
+                efficiency_improvement = 0.0
+
+            if baseline_performance.get('delay', 0) > 1e-9:
+                delay_reduction = (baseline_performance['delay'] - rl_performance['delay']) / baseline_performance['delay'] * 100
+            else:
+                delay_reduction = 0.0
+
             # DEBUG: Log calculated improvements
             self.debug_logger.info(f"Flow improvement: {flow_improvement:.3f}%")
             self.debug_logger.info(f"Efficiency improvement: {efficiency_improvement:.3f}%")
