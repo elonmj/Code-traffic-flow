@@ -130,3 +130,25 @@
 2025-10-15 15:02:35,552 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-xrld
 2025-10-15 15:47:04,520 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
 2025-10-15 15:47:04,670 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   M  ode_RL/src/env/traffic_signal_env_direct.py (Modified (staged))
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/log.txt (Modified (unstaged))
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   ?? BUG28_PHASE_CHANGE_DETECTION_FIX.md (Untracked)
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   ?? KAGGLE_RETEST_BUG28_FIX.md (Untracked)
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   ?? analyze_new_kernel.py (Untracked)
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   ?? analyze_rewards_temp.py (Untracked)
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   ?? arz_model/tests/test_uxsim_viz.py (Untracked)
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   ?? arz_model/visualization/uxsim_adapter.py (Untracked)
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   ?? diagnostic_reward_function.py (Untracked)
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   ?? test_bug28_fix.py (Untracked)
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-76rlperformance-peum/ (Untracked)
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO -   ?? validation_output/results/joselonm_arz-validation-76rlperformance-xrld/ (Untracked)
+2025-10-15 15:47:04,738 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-15 15:47:04,826 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-15 15:47:05,655 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-15 15:47:05,655 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-15 15:47:13,343 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-15 15:47:16,394 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-vmyo
+2025-10-15 16:22:39,692 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-15 16:22:39,788 - validation_kaggle_manager - INFO - 📍 Current branch: main
