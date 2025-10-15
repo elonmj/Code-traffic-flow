@@ -635,18 +635,39 @@ class RLPerformanceValidationTest(ValidationSection):
 
     class RLController:
         """Wrapper pour un agent RL. Charge un modèle pré-entraîné."""
-        def __init__(self, scenario_type, model_path: Path):
+        def __init__(self, scenario_type, model_path: Path, scenario_config_path: Path, device='gpu'):
             self.scenario_type = scenario_type
             self.model_path = model_path
+            self.scenario_config_path = scenario_config_path
+            self.device = device
             self.agent = self._load_agent()
 
         def _load_agent(self):
-            """Charge un agent DQN pré-entraîné."""
+            """Charge un agent DQN pré-entraîné.
+            
+            ✅ BUG #30 FIX: Load model WITH environment (critical for SB3 models)
+            Without env parameter, the model can't properly interact with the environment,
+            leading to zero rewards and stuck actions during evaluation.
+            """
             if not self.model_path or not self.model_path.exists():
                 print(f"  [WARNING] Modèle DQN non trouvé: {self.model_path}. L'agent ne pourra pas agir.")
                 return None
+            
             print(f"  [INFO] Chargement du modèle DQN depuis : {self.model_path}")
-            return DQN.load(str(self.model_path))
+            
+            # ✅ BUG #30 FIX: Create environment for model loading (matches training config)
+            # This is CRITICAL - SB3 models need an environment to function properly
+            env = TrafficSignalEnvDirect(
+                scenario_config_path=str(self.scenario_config_path),
+                decision_interval=15.0,  # Match training configuration (Bug #27 fix)
+                episode_max_time=3600.0,
+                observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
+                device=self.device,
+                quiet=True  # Suppress environment logging during evaluation
+            )
+            
+            print(f"  [BUG #30 FIX] Loading model WITH environment (env provided)", flush=True)
+            return DQN.load(str(self.model_path), env=env)
 
         def get_action(self, state):
             """Prédit une action en utilisant l'agent RL."""
@@ -1326,7 +1347,8 @@ class RLPerformanceValidationTest(ValidationSection):
             else:
                 print(f"  [INFO] Loading existing model from {model_path}")
             
-            rl_controller = self.RLController(scenario_type, model_path)
+            # ✅ BUG #30 FIX: Pass scenario_config_path and device to RLController
+            rl_controller = self.RLController(scenario_type, model_path, scenario_path, device)
             rl_states, _ = self.run_control_simulation(
                 rl_controller, 
                 scenario_path,
