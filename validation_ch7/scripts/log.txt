@@ -182,3 +182,37 @@
 2025-10-15 16:22:40,789 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-15 16:22:47,457 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-15 16:22:50,327 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-wblw
+2025-10-15 16:33:52,009 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-15 16:33:52,110 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   M  rz_model/visualize_results.py (Modified (staged))
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/log.txt (Modified (unstaged))
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? BUG28_PHASE_CHANGE_DETECTION_FIX.md (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? BUG28_REWARD_FUNCTION_ANALYSIS.md (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? KAGGLE_RETEST_BUG28_FIX.md (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? analyze_bug29_results.py (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? analyze_new_kernel.py (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? analyze_rewards_temp.py (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? arz_model/tests/test_uxsim_viz.py (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? arz_model/visualization/uxsim_adapter.py (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? check_bug29_kernel.py (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? diagnostic_reward_function.py (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? results/ (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? test_bug28_fix.py (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? test_bug29_fix.py (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? test_evolution.gif (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? test_final.png (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? test_t0.png (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? test_uxsim_adapter_standalone.py (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-73-wwck/section_7_3_analytical/figures/ (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-76rlperformance-peum/ (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? validation_output/results/joselonm_arz-validation-76rlperformance-vmyo/ (Untracked)
+2025-10-15 16:33:52,178 - validation_kaggle_manager - INFO -   ?? validation_output/results/joselonm_arz-validation-76rlperformance-wblw/ (Untracked)
+2025-10-15 16:33:52,188 - validation_kaggle_manager - INFO -   ?? validation_output/results/joselonm_arz-validation-76rlperformance-xrld/ (Untracked)
+2025-10-15 16:33:52,188 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-15 16:33:52,245 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-15 16:33:52,876 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-15 16:33:52,876 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-15 16:33:58,549 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-15 16:34:01,064 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-wncg

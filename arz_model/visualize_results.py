@@ -12,13 +12,13 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 try:
-    from code.io.data_manager import load_simulation_data
-    from code.visualization.plotting import plot_profiles, plot_spacetime
+    from arz_model.io.data_manager import load_simulation_data
+    from arz_model.visualization.plotting import plot_profiles, plot_spacetime
     # Import Grid1D and ModelParameters for type hinting if needed,
     # but they are loaded within the data dictionary
 except ImportError as e:
     print(f"Error importing necessary modules: {e}")
-    print("Please ensure the script is run correctly (e.g., 'python -m code.visualize_results ...')")
+    print("Please ensure the script is run correctly (e.g., 'python -m arz_model.visualize_results ...')")
     print("and all required modules (io, visualization) are present.")
     sys.exit(1)
 
@@ -76,6 +76,29 @@ def main():
         type=float,
         help="Maximum color scale value for spacetime plots."
     )
+    parser.add_argument(
+        '--viz_engine',
+        choices=['matplotlib', 'uxsim'],
+        default='matplotlib',
+        help="Visualization engine to use: 'matplotlib' for traditional plots (default), 'uxsim' for 2D network visualization."
+    )
+    parser.add_argument(
+        '--snapshot_time',
+        type=float,
+        default=-1,
+        help="Time index for UXsim snapshot visualization (-1 for final time, or specific time index)."
+    )
+    parser.add_argument(
+        '--animation',
+        action='store_true',
+        help="Generate animation when using UXsim engine (GIF format)."
+    )
+    parser.add_argument(
+        '--animation_fps',
+        type=int,
+        default=10,
+        help="Frames per second for UXsim animation (default: 10)."
+    )
 
     args = parser.parse_args()
 
@@ -128,6 +151,51 @@ def main():
         sys.exit(1)
 
     print(f"Data loaded for scenario: {params.scenario_name}")
+
+    # Handle UXsim visualization engine
+    if args.viz_engine == 'uxsim':
+        print("Using UXsim visualization engine for 2D network visualization...")
+        try:
+            # Dynamic import to allow graceful fallback
+            from arz_model.visualization.uxsim_adapter import ARZtoUXsimVisualizer
+            
+            # Create UXsim visualizer
+            viz = ARZtoUXsimVisualizer(input_file)
+            
+            # Generate snapshot visualization
+            if not args.animation or args.plots != ['all']:  # Generate snapshot by default or if specific plots requested
+                snapshot_idx = int(args.snapshot_time) if args.snapshot_time >= 0 else -1
+                snapshot_path = os.path.join(output_dir, f"uxsim_network_snapshot_t{snapshot_idx}.png")
+                
+                print(f"  - Generating UXsim network snapshot (time index: {snapshot_idx})...")
+                fig = viz.visualize_snapshot(time_index=snapshot_idx, save_path=snapshot_path)
+                
+                if args.show:
+                    import matplotlib.pyplot as plt
+                    plt.show()
+                else:
+                    import matplotlib.pyplot as plt
+                    plt.close(fig)
+                
+                print(f"  ✓ UXsim snapshot saved: {snapshot_path}")
+            
+            # Generate animation if requested
+            if args.animation:
+                animation_path = os.path.join(output_dir, f"uxsim_network_evolution_{params.scenario_name}.gif")
+                print(f"  - Generating UXsim network animation...")
+                viz.create_animation(animation_path, fps=args.animation_fps)
+                print(f"  ✓ UXsim animation saved: {animation_path}")
+            
+            print("UXsim visualization completed.")
+            return  # Skip traditional matplotlib plots when using UXsim
+            
+        except ImportError as e:
+            print(f"Error: UXsim visualization not available. {e}")
+            print("  Hint: Install UXsim with 'pip install uxsim' or use '--viz_engine matplotlib'")
+            sys.exit(1)
+        except Exception as e:
+            print(f"Error during UXsim visualization: {e}")
+            sys.exit(1)
 
     # Generate plots
     plots_to_generate = set(args.plots)
