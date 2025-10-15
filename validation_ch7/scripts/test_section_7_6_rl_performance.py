@@ -677,11 +677,21 @@ class RLPerformanceValidationTest(ValidationSection):
                 # action can be: scalar (0-d array), 1-d array, or regular number
                 if isinstance(action, np.ndarray):
                     if action.ndim == 0:  # 0-dimensional (scalar)
-                        return float(action.item())
+                        action_value = float(action.item())
                     else:  # 1-d or higher
-                        return float(action.flat[0])  # Use flat to handle any dimension
+                        action_value = float(action.flat[0])  # Use flat to handle any dimension
                 else:
-                    return float(action)
+                    action_value = float(action)
+                
+                # ✅ MICROSCOPIC DEBUG: Log every prediction with observation summary
+                if not hasattr(self, 'prediction_count'):
+                    self.prediction_count = 0
+                self.prediction_count += 1
+                
+                obs_summary = f"obs_shape={state.shape}" if hasattr(state, 'shape') else f"obs_type={type(state)}"
+                print(f"[MICROSCOPE_PREDICTION] step={self.prediction_count} {obs_summary} action={action_value:.4f} deterministic=True", flush=True)
+                
+                return action_value
             
             # Action par défaut si l'agent n'est pas chargé
             print("  [WARNING] Agent RL non chargé, action par défaut (0.5).")
@@ -1222,6 +1232,16 @@ class RLPerformanceValidationTest(ValidationSection):
             print(f"\n  [STRATEGY] Checkpoint: every {checkpoint_freq} steps, keep 2 latest + 1 best", flush=True)
             print(f"  [INFO] Training for {remaining_steps} timesteps (Code_RL design)...", flush=True)
             
+            # ✅ MICROSCOPIC DEBUG: Mark training phase start with clear boundary
+            print("", flush=True)
+            print("="*80, flush=True)
+            print("[MICROSCOPE_PHASE] === TRAINING START ===", flush=True)
+            print(f"[MICROSCOPE_CONFIG] scenario={scenario_type} timesteps={remaining_steps} device={device}", flush=True)
+            print(f"[MICROSCOPE_CONFIG] decision_interval=15.0s episode_max_time={3600.0 if not self.quick_test else 120.0}s", flush=True)
+            print("[MICROSCOPE_INSTRUCTION] Watch for [REWARD_MICROSCOPE] patterns in output", flush=True)
+            print("="*80, flush=True)
+            print("", flush=True)
+            
             # Train the model (Code_RL design)
             model.learn(
                 total_timesteps=remaining_steps,
@@ -1229,6 +1249,13 @@ class RLPerformanceValidationTest(ValidationSection):
                 progress_bar=True,
                 reset_num_timesteps=False  # Preserve step counter when resuming
             )
+            
+            # ✅ MICROSCOPIC DEBUG: Mark training phase end
+            print("", flush=True)
+            print("="*80, flush=True)
+            print("[MICROSCOPE_PHASE] === TRAINING COMPLETE ===", flush=True)
+            print("="*80, flush=True)
+            print("", flush=True)
             
             # Save final model
             model.save(str(model_path))
@@ -1347,6 +1374,16 @@ class RLPerformanceValidationTest(ValidationSection):
             else:
                 print(f"  [INFO] Loading existing model from {model_path}")
             
+            # ✅ MICROSCOPIC DEBUG: Mark evaluation phase start
+            print("", flush=True)
+            print("="*80, flush=True)
+            print("[MICROSCOPE_PHASE] === EVALUATION START ===", flush=True)
+            print(f"[MICROSCOPE_CONFIG] scenario={scenario_type} model={model_path.name} device={device}", flush=True)
+            print("[MICROSCOPE_BUG30] Model will be loaded WITH environment (Bug #30 fix)", flush=True)
+            print("[MICROSCOPE_INSTRUCTION] Watch for [REWARD_MICROSCOPE] and [BUG #30 FIX] patterns", flush=True)
+            print("="*80, flush=True)
+            print("", flush=True)
+            
             # ✅ BUG #30 FIX: Pass scenario_config_path and device to RLController
             rl_controller = self.RLController(scenario_type, model_path, scenario_path, device)
             rl_states, _ = self.run_control_simulation(
@@ -1355,6 +1392,13 @@ class RLPerformanceValidationTest(ValidationSection):
                 device=device,
                 controller_type='RL'
             )
+            
+            # ✅ MICROSCOPIC DEBUG: Mark evaluation phase end
+            print("", flush=True)
+            print("="*80, flush=True)
+            print("[MICROSCOPE_PHASE] === EVALUATION COMPLETE ===", flush=True)
+            print("="*80, flush=True)
+            print("", flush=True)
             if rl_states is None:
                 return {'success': False, 'error': 'RL simulation failed'}
             

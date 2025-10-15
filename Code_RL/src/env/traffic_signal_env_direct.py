@@ -425,6 +425,31 @@ class TrafficSignalEnvDirect(gym.Env):
         # Total reward
         reward = R_queue + R_stability + R_diversity
         
+        # ✅ MICROSCOPIC DEBUG LOGGING (Bug #30 validation)
+        # Log every reward computation with full state details for analysis
+        if not hasattr(self, 'reward_log_count'):
+            self.reward_log_count = 0
+        self.reward_log_count += 1
+        
+        # Create detailed log entry with searchable patterns
+        log_entry = (
+            f"[REWARD_MICROSCOPE] step={self.reward_log_count} "
+            f"t={self.t:.1f}s "
+            f"phase={self.current_phase} "
+            f"prev_phase={prev_phase} "
+            f"phase_changed={phase_changed} "
+            f"| QUEUE: current={current_queue_length:.2f} "
+            f"prev={self.previous_queue_length:.2f} "
+            f"delta={delta_queue:.4f} "
+            f"R_queue={R_queue:.4f} "
+            f"| PENALTY: R_stability={R_stability:.4f} "
+            f"| DIVERSITY: actions={self.action_history[-5:] if len(self.action_history) >= 5 else self.action_history} "
+            f"diversity_count={len(set(recent_actions)) if len(self.action_history) >= 5 else 0} "
+            f"R_diversity={R_diversity:.4f} "
+            f"| TOTAL: reward={reward:.4f}"
+        )
+        print(log_entry, flush=True)
+        
         return float(reward)
     
     def render(self):
