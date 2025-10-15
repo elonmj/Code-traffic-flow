@@ -1,0 +1,27 @@
+CFL: 0.4
+N: 50
+boundary_conditions:
+  left:
+    state:
+    - 200.0
+    - 3.0
+    - 100.0
+    - 3.0
+    type: inflow
+  right:
+    type: outflow
+initial_conditions:
+  state:
+  - 10.0
+  - 15.0
+  - 5.0
+  - 15.0
+  type: uniform
+output_dt: 5.0
+road:
+  quality_type: uniform
+  quality_value: 2
+scenario_name: bug35_fix_test
+t_final: 30.0
+xmax: 500.0
+xmin: 0.0

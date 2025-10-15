@@ -32,11 +32,7 @@ boundary_conditions:
 # Placeholder, as ICs are scenario-specific
 initial_conditions:
   type: "uniform"
-  state:
-    rho_m_veh_m: 0.01  # Very low density
-    w_m_ms: 10.0       # Initial guess for w_m
-    rho_c_veh_m: 0.01  # Very low density
-    w_c_ms: 10.0       # Initial guess for w_c
+  state: [10.0, 10.0, 10.0, 10.0]  # [rho_m (veh/km), w_m (m/s), rho_c (veh/km), w_c (m/s)]
 
 # Physical Parameters (Base Values)
 # Units: km/h for speeds, seconds for time, veh/km for density unless otherwise specified

@@ -141,10 +141,15 @@ def _ode_rhs(t: float, y: np.ndarray, cell_index: int, grid: Grid1D, params: Mod
     physical_idx = max(0, min(cell_index - grid.num_ghost_cells, grid.N_physical - 1))
 
     if grid.road_quality is None:
-         # Default to a common category (e.g., 3) if R is not loaded
-         # Or raise an error, depending on desired behavior
-         # raise ValueError("Road quality must be loaded before calling ODE RHS")
-         R_local = 3 # Or get from params.default_road_quality if defined
+         # ✅ BUG #35 FIX: Raise error instead of silent fallback
+         # Silent fallback to R=3 was masking initialization failures
+         # Equilibrium speed depends CRITICALLY on road quality → must be loaded
+         raise ValueError(
+             "❌ BUG #35: Road quality array not loaded before ODE solver! "
+             "Equilibrium speed Ve calculation requires grid.road_quality. "
+             "Fix: Ensure scenario config has 'road: {quality_type: uniform, quality_value: 2}' "
+             "and runner._load_road_quality() is called during initialization."
+         )
     else:
         R_local = grid.road_quality[physical_idx]
 

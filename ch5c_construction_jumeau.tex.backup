@@ -1,0 +1,136 @@
+
+\chapter{Implémentation Numérique : Construction du Jumeau Numérique}
+\label{chap:construction_jn}
+
+\section{Introduction}
+\label{sec:intro_construction_jn}
+
+Ce chapitre présente la méthodologie et les étapes concrètes de la construction du jumeau numérique, qui constitue le cœur de notre environnement de simulation. L'objectif est de passer d'un modèle mathématique théorique à une représentation digitale fidèle et dynamique d'un segment urbain complexe en Afrique de l'Ouest. Ce jumeau numérique, une fois validé, servira de fondation pour la calibration du modèle et l'entraînement de l'agent d'apprentissage par renforcement qui fait l'objet du chapitre suivant.
+
+La démarche adoptée est résolument pragmatique, conçue pour répondre aux défis posés par le contexte. Nous commencerons par justifier le choix du **corridor de Victoria Island à Lagos** comme terrain d'application. Ce choix est motivé non seulement par la disponibilité relative des données, mais aussi par sa pertinence en tant que cas d'étude représentatif des problématiques de trafic ouest-africain.
+
+Ensuite, nous détaillerons la construction du modèle en deux phases distinctes. La première est la modélisation de l'**infrastructure statique**, où nous décrirons comment la topologie du réseau a été extraite via OpenStreetMap \parencite{OSM:2024} et comment les lacunes de données inhérentes à cette source ont été comblées. La seconde phase portera sur l'**acquisition des données dynamiques** via l'API TomTom Traffic \parencite{TomTomAPI:2024}. Nous y présenterons l'architecture de notre collecteur de données, la conception d'une stratégie de collecte adaptative optimisée, et les résultats concluants d'un test de 24 heures qui a permis de valider l'ensemble de la chaîne technique.
+
+\section{Sélection et Caractérisation du Corridor d'Étude}
+\label{sec:selection_corridor}
+
+Le choix du terrain d'expérimentation est une étape fondatrice qui conditionne la pertinence et la validité des résultats. Notre sélection s'est portée sur un corridor majeur de **Victoria Island (VI)**, le centre névralgique des affaires de Lagos, Nigeria. Ce choix repose sur quatre critères principaux qui en font un laboratoire idéal pour notre étude.
+
+\begin{enumerate}
+  \item \textbf{Mixité et Hétérogénéité du Trafic :} Le corridor présente un mélange de véhicules extrêmement varié (voitures particulières, bus, tricycles) avec une proportion très significative de motos-taxis ("Okadas"). Cette composition, documentée par des études locales \parencite{LUDI:2020}, est représentative du trafic ouest-africain, ce qui en fait un excellent cas d'étude pour valider notre modèle ARZ multi-classes.
+
+  \item \textbf{Congestion Chronique :} En tant que quartier d'affaires, VI subit des embouteillages quotidiens intenses, particulièrement lors des heures de pointe étendues, du matin très tôt jusqu'à tard dans la soirée. Cette situation nous garantit d'observer toute la gamme des états de trafic, du flux libre à la congestion saturée, et de pouvoir étudier les phénomènes de \textit{creeping} et de \textit{gap-filling} des motos en conditions réelles.
+
+  \item \textbf{Intersections Régulées :} L'axe principal du corridor est ponctué de plusieurs carrefours d'envergure contrôlés par des feux de signalisation. Ces intersections, notamment le croisement entre Akin Adesola Street et Adeola Odeku Street, constituent les points de contrôle que notre futur agent RL visera à optimiser.
+
+  \item \textbf{Disponibilité des Données :} Lagos, en tant que mégapole, bénéficie d'une meilleure couverture de données par des services commerciaux comme TomTom, ce qui est indispensable pour la calibration et la validation d'un modèle qui se veut ancré dans la réalité.
+\end{enumerate}
+
+Le corridor sélectionné, illustré en Figure~\ref{fig:carte_corridor_vi}, forme un système pertinent pour l'analyse, avec des points d'entrée et de sortie clairement identifiables.
+
+% \begin{figure}[htbp]
+%     \centering
+%     % Placeholder for a map screenshot
+%     \framebox[0.9\textwidth]{\rule{0pt}{6cm} \hspace*{1cm} \Large \textit{Image satellite du corridor de Victoria Island}}
+%     \caption{Le corridor d'étude à Victoria Island, Lagos. Sont mises en évidence les artères principales (Akin Adesola St., Adeola Odeku St.) et les intersections clés qui seront modélisées.}
+%     \label{fig:carte_corridor_vi}
+% \end{figure}
+
+\section{Modélisation de l'Infrastructure Statique}
+\label{sec:infra_statique}
+
+La première brique de notre jumeau numérique est une représentation fidèle et paramétrée du réseau routier physique. Cette étape s'est déroulée en deux temps : une extraction automatisée, suivie d'une phase cruciale de qualification pour enrichir les données.
+
+\subsection{Extraction de la Topologie via OpenStreetMap}
+\label{subsec:extraction_osm_static}
+
+Nous avons utilisé la bibliothèque Python \texttt{osmnx} pour interroger la base de données OpenStreetMap. En ciblant le centre géographique du corridor (Latitude: 6.431108, Longitude: 3.423805), nous avons extrait un graphe routier directionnel comprenant **75 segments** uniques. Cette extraction nous a fourni les données fondamentales pour chaque segment : sa géométrie précise (une \texttt{LINESTRING} de coordonnées GPS), sa longueur calculée, et ses attributs de base.
+
+Cette première étape a mis en lumière une lacune de données attendue : les attributs physiques nécessaires à notre modèle ARZ, tels que le nombre de voies (`lanes`) et la qualité du revêtement (`surface`), étaient presque totalement absents. Cette absence a validé la nécessité de la phase suivante.
+
+\subsection{Qualification Manuelle et Enrichissement des Données}
+\label{subsec:qualification_manuelle_static}
+
+Pour transformer le squelette topologique en un modèle physiquement réaliste, nous avons procédé à un enrichissement des données en utilisant Google Street View comme source de "vérité terrain".
+\begin{itemize}
+  \item \textbf{Nombre de Voies (`lanes\_manual`):} Pour chaque segment, le nombre de voies a été compté visuellement. Une valeur initiale de \textbf{3 voies} a été assignée aux artères principales, servant de baseline homogène.
+  \item \textbf{Qualité de l'Infrastructure (`Rx\_manual`):} Une note de qualité a été assignée à chaque segment en utilisant une échelle de 1 (excellent) à 4 (dégradé). Les routes du corridor étant globalement bien entretenues, une note initiale de \textbf{2 (Bon)} a été attribuée.
+\end{itemize}
+Ce processus a abouti à la création d'un fichier de travail (`fichier\_de\_travail\_complet.xlsx`), qui constitue la base de données statique du jumeau numérique. Un extrait est présenté dans le Tableau~\ref{tab:extrait_donnees_statiques}.
+
+% \begin{table}[htbp]
+%     \centering
+%     \caption{Extrait du fichier de données statiques enrichies pour le corridor.}
+%     \label{tab:extrait_donnees_statiques}
+%     \begin{tabular}{l c c c c}
+%         \toprule
+%         \textbf{name\_clean} & \textbf{highway} & \textbf{length (m)} & \textbf{lanes\_manual} & \textbf{Rx\_manual} \\
+%         \midrule
+%         Akin Adesola Street  & primary          & 604.58              & 3                      & 2                   \\
+%         Adeola Odeku Street  & secondary        & 208.17              & 3                      & 2                   \\
+%         Saka Tinubu Street   & tertiary         & 89.65               & 2                      & 2                   \\
+%         Ahmadu Bello Way     & primary          & 664.59              & 3                      & 2                   \\
+%         ...                  & ...              & ...                 & ...                    & ...                 \\
+%         \bottomrule
+%     \end{tabular}
+% \end{table}
+
+\section{Acquisition des Données de Trafic Dynamique}
+\label{sec:acquisition_dynamique_data}
+
+Une fois l'infrastructure statique modélisée, l'étape suivante consiste à lui insuffler la vie en capturant la dynamique du trafic au fil du temps.
+
+\subsection{Architecture du Système de Collecte}
+\label{subsec:architecture_collecteur_dynamic}
+
+Nous avons développé un collecteur en Python qui interroge l'API **TomTom Traffic**. Le service **Flow Segment Data** est utilisé pour récupérer la vitesse actuelle (`currentSpeed`) et la vitesse en flux libre (`freeFlowSpeed`). Pour garantir une collecte continue sur plusieurs jours, le script a été déployé sur un serveur cloud via le service **PythonAnywhere**, en utilisant un compte payant pour assurer la fiabilité via la fonctionnalité "Always-on task". Une flotte de **10 clés API** est utilisée en rotation pour respecter les quotas journaliers tout en maximisant la fréquence des requêtes.
+
+\subsection{Conception de la Stratégie de Collecte Adaptative}
+\label{subsec:strategie_adaptative_dynamic}
+
+Une collecte à intervalle fixe est sous-optimale. En nous basant sur une analyse des schémas de trafic typiques de Lagos, nous avons implémenté une stratégie de collecte adaptative "Haute Fidélité" qui ajuste sa fréquence :
+\begin{itemize}
+  \item \textbf{Heures de Pointe (06h-10h \& 16h-22h):} Intervalle de **3 minutes**.
+  \item \textbf{Journée Normale (10h-16h):} Intervalle de **5 minutes**.
+  \item \textbf{Nuit (22h-06h):} Intervalle de **15 minutes**.
+\end{itemize}
+Cette approche concentre plus de 65\% des ~22,800 appels quotidiens sur les 10 heures les plus critiques de la journée.
+
+\subsection{Validation du Collecteur et Premières Analyses}
+\label{subsec:validation_collecteur_dynamic}
+
+Un test de 24 heures a été mené sur 10 segments stratégiques pour valider l'ensemble de la chaîne. Les données collectées, dont un extrait est visible en Figure~\ref{fig:extrait_donnees_csv}, ont permis de tirer des conclusions positives.
+
+% \begin{figure}[htbp]
+%     \centering
+%     % Placeholder for a screenshot of the CSV data
+%     \framebox[0.9\textwidth]{\rule{0pt}{4cm} \hspace*{1cm} \Large \texttt{timestamp,u,v,name,current\_speed...\\2025-08-06 09:06:17,...,Akin Adesola St,46,55,0.997...\\...}}
+%     \caption{Extrait du fichier de données brutes \texttt{donnees\_test\_24h.csv} collectées par le script. Chaque ligne représente l'état d'un segment à un horodatage précis.}
+%     \label{fig:extrait_donnees_csv}
+% \end{figure}
+
+L'analyse de ces données (Figure~\ref{fig:courbe_vitesse_24h_final}) a non seulement confirmé la robustesse technique du collecteur, mais a aussi révélé la courbe de congestion journalière typique du corridor, avec un creux de vitesse marqué à 7h du matin.
+
+% \begin{figure}[htbp]
+%     \centering
+%     % Placeholder for a plot of the traffic speed over 24h
+%     \framebox[0.8\textwidth]{\rule{0pt}{5cm} \hspace*{1cm} \Large \textit{Graphique de la vitesse moyenne par heure}}
+%     \caption{Vitesse moyenne globale sur les segments de test durant un cycle de 24h. Les deux creux correspondent aux périodes de congestion de la pointe du matin (vers 7h) et du soir (vers 17h), validant la capacité du collecteur à capturer le rythme journalier du trafic.}
+%     \label{fig:courbe_vitesse_24h_final}
+% \end{figure}
+
+\section{Conclusion du Chapitre}
+\label{sec:conclusion_construction_jn_final}
+
+Au terme de ce chapitre, nous avons franchi une étape décisive en passant de la théorie à la pratique. Nous avons construit et caractérisé un environnement de simulation complet pour le corridor de Victoria Island. La topologie statique du réseau est définie et enrichie, et la chaîne de collecte de données dynamiques est non seulement opérationnelle mais aussi validée. Ce jumeau numérique, fondé sur des données réelles et spécifiques au contexte, constitue désormais une base solide et fiable, prête à être utilisée dans la phase suivante : la calibration fine des paramètres comportementaux de notre modèle et l'entraînement de l'agent d'optimisation.
+
+\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=Points Clés du Chapitre 5c]
+  \begin{itemize}
+    \item \textbf{Jumeau opérationnel} : Environnement simulation complet corridor Victoria Island
+    \item \textbf{Topologie enrichie} : Réseau défini avec spécificités géométriques et réglementaires
+    \item \textbf{Collecte données validée} : Chaîne acquisition temps-réel opérationnelle et fiable
+    \item \textbf{Ancrage contextuel} : Fondé sur données réelles Lagos, pas modèle théorique
+    \item \textbf{Transition théorie-pratique} : Passage décisif vers calibration et entraînement agent
+    \item \textbf{Base solide établie} : Plateforme prête pour optimisation comportementale ARZ-RL
+  \end{itemize}
+\end{tcolorbox}
