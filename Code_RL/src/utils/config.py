@@ -428,25 +428,35 @@ def create_scenario_config_with_lagos_data(
     free_speed_m = free_speed_m_kmh / 3.6  # ~8.9 m/s
     free_speed_c = free_speed_c_kmh / 3.6  # ~7.8 m/s
     
-    # ✅ BUG #33 FIX: Create flux conditions for traffic accumulation
-    # Physics: q = rho * v → For traffic to build up, q_inflow > q_initial
+    # ✅ BUG #34 FIX: Inflow must use EQUILIBRIUM SPEED not free speed
+    # Discovery: ARZ model relaxes w → Ve via source term S = (Ve - w) / tau
+    # At rho=200 veh/km: Ve_m = 2.26 m/s << V0_m = 8.89 m/s
+    # Result: Prescribed high-speed flux gets reduced by relaxation → no accumulation
+    # Solution: Use equilibrium speed for inflow to match ARZ physics
+    
+    # Calculate equilibrium speeds using ARZ model formula
+    rho_jam_veh_km = max_density_m + max_density_c  # 370 veh/km total
+    rho_jam = rho_jam_veh_km / 1000.0  # Convert to veh/m
+    V_creeping = 0.6  # Default creeping speed (m/s)
     
     # Initial state: LIGHT traffic (road starts relatively empty)
-    # Use 10% of max density, free-flow speeds → Low flux q_init
     rho_m_initial_veh_km = max_density_m * 0.1  # 25 veh/km (light)
     rho_c_initial_veh_km = max_density_c * 0.1  # 12 veh/km (light)
-    w_m_initial = free_speed_m  # Free-flow (~32 km/h)
-    w_c_initial = free_speed_c  # Free-flow (~28 km/h)
-    # Flux_init = 25 * 8.9 = 222 veh/s (per km width)
+    rho_total_initial = (rho_m_initial_veh_km + rho_c_initial_veh_km) / 1000.0  # 0.037 veh/m
+    g_initial = max(0.0, 1.0 - rho_total_initial / rho_jam)  # ≈ 0.9 (nearly free)
+    w_m_initial = V_creeping + (free_speed_m - V_creeping) * g_initial  # ≈ 8.1 m/s
+    w_c_initial = free_speed_c * g_initial  # ≈ 7.0 m/s
+    # Flux_init ≈ 0.037 * 7.5 = 0.28 veh/s (very low, sustainable)
     
     # Inflow: HEAVY demand (peak Lagos traffic approaching intersection)
-    # Use 80% of max density, free-flow speeds → HIGH flux q_inflow
     rho_m_inflow_veh_km = max_density_m * 0.8  # 200 veh/km (heavy)
     rho_c_inflow_veh_km = max_density_c * 0.8  # 96 veh/km (heavy)
-    w_m_inflow = free_speed_m  # Free-flow (traffic arrives at speed)
-    w_c_inflow = free_speed_c  # Free-flow
-    # Flux_inflow = 200 * 8.9 = 1780 veh/s → q_inflow >> q_init ✅
-    # Traffic WILL accumulate → Queue builds up → RL can learn!
+    rho_total_inflow = (rho_m_inflow_veh_km + rho_c_inflow_veh_km) / 1000.0  # 0.296 veh/m
+    g_inflow = max(0.0, 1.0 - rho_total_inflow / rho_jam)  # ≈ 0.2 (congested)
+    w_m_inflow = V_creeping + (free_speed_m - V_creeping) * g_inflow  # ≈ 2.26 m/s (equilibrium!)
+    w_c_inflow = free_speed_c * g_inflow  # ≈ 1.56 m/s (equilibrium!)
+    # Flux_inflow ≈ 0.296 * 2.0 = 0.59 veh/s → q_inflow >> q_init AND sustainable ✅
+    # Traffic WILL accumulate because inflow matches ARZ equilibrium → No relaxation loss!
     
     # Base configuration
     config = {
