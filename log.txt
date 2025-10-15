@@ -1785,3 +1785,18 @@
 2025-10-15 23:15:55,161 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-15 23:16:02,982 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-15 23:16:05,307 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-drbh
+2025-10-15 23:23:21,664 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-15 23:23:21,764 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-15 23:23:21,832 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-15 23:23:21,832 - validation_kaggle_manager - INFO -   M  ode_RL/src/env/traffic_signal_env_direct.py (Modified (staged))
+2025-10-15 23:23:21,832 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-15 23:23:21,832 - validation_kaggle_manager - INFO -   ?? BUG_35_DEBUG_CYCLE_SESSION.md (Untracked)
+2025-10-15 23:23:21,832 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-76rlperformance-drbh/ (Untracked)
+2025-10-15 23:23:21,832 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-15 23:23:21,981 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-15 23:23:22,681 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-15 23:23:22,681 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-15 23:23:30,285 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-15 23:23:32,553 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-subm
+2025-10-15 23:33:04,843 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-15 23:33:04,945 - validation_kaggle_manager - INFO - 📍 Current branch: main

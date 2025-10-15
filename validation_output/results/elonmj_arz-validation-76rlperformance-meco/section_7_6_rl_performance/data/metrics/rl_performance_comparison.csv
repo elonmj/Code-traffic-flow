@@ -1,3 +1,0 @@
-scenario,success,baseline_efficiency,rl_efficiency,efficiency_improvement_pct,baseline_flow,rl_flow,flow_improvement_pct,baseline_delay,rl_delay,delay_reduction_pct
-ramp_metering,False,5.205740095324166,5.205740095324166,0.0,32.535875595776034,32.535875595776034,0.0,-176.03216165144343,-176.03216165144343,0.0
-adaptive_speed_control,False,5.20574500423316,5.20574500423316,0.0,32.53590627645725,32.53590627645725,0.0,-176.03240723775866,-176.03240723775866,0.0
