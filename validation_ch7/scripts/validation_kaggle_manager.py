@@ -462,6 +462,12 @@ try:
     else:
         log_and_print("info", "[FULL_TEST] Full test mode (20000 timesteps)")
     
+    # ✅ NEW: Propagate RL_SCENARIO environment variable for single scenario selection
+    scenario_selection = "{section.get('scenario', '')}"
+    if scenario_selection:
+        env["RL_SCENARIO"] = scenario_selection
+        log_and_print("info", f"[SCENARIO] Single scenario mode: {{scenario_selection}}")
+    
     # Execute validation tests via subprocess as a module to properly handle package imports
     # Using -m ensures Python treats code/ as a proper package
     test_module = f"validation_ch7.scripts.{section['script'].replace('.py', '')}"
@@ -626,7 +632,7 @@ print("=" * 80)
         """
         return self._build_validation_kernel_script(section, test_timeout)
         
-    def run_validation_section(self, section_name: str, timeout: int = 64000, commit_message: Optional[str] = None, quick_test: bool = False) -> tuple[bool, Optional[str]]:
+    def run_validation_section(self, section_name: str, timeout: int = 64000, commit_message: Optional[str] = None, quick_test: bool = False, scenario: Optional[str] = None) -> tuple[bool, Optional[str]]:
         """
         Run specific validation section on Kaggle GPU.
         
@@ -637,6 +643,7 @@ print("=" * 80)
             timeout: Timeout in seconds for kernel execution
             commit_message: Optional custom git commit message (Phase 2: CLI enhancement)
             quick_test: If True, run in quick test mode (2 timesteps instead of 20000)
+            scenario: Optional single scenario to run (for section 7.6 only)
         """
         
         # Find section config
@@ -652,6 +659,11 @@ print("=" * 80)
         
         # Inject quick_test flag into section config
         section['quick_test'] = quick_test
+        
+        # ✅ NEW: Inject scenario selection into section config
+        if scenario:
+            section['scenario'] = scenario
+            print(f"[CONFIG] Single scenario mode: {scenario}")
             
         print(f"[START] Running validation section: {section['name']}")
         print(f"[CONFIG] Revendications: {', '.join(section['revendications'])}")
@@ -1164,22 +1176,24 @@ print("=" * 80)
 
     def _restore_checkpoints_for_next_run(self, kernel_slug: str, section_name: str) -> bool:
         """
-        Restaure les checkpoints téléchargés vers le dossier de training pour permettre
+        Restaure les checkpoints ET caches téléchargés vers le dossier de training pour permettre
         la reprise automatique du training au prochain run.
         
-        Cette méthode copie les checkpoints depuis validation_output/results/{kernel_slug}/
-        vers validation_ch7/{section_name}/data/models/checkpoints/ où le code de training
-        les recherche automatiquement.
+        ✅ EXTENDED: Now also restores baseline/RL cache files (.pkl)
+        
+        Cette méthode copie:
+        1. Checkpoints (.zip) depuis data/models/checkpoints/
+        2. Cache files (.pkl) depuis cache/section_7_6/
         
         Args:
             kernel_slug: Le slug du kernel (ex: "elonmj/arz-validation-76rlperformance-kphs")
             section_name: Nom de la section (ex: "section_7_6_rl_performance")
             
         Returns:
-            bool: True si des checkpoints ont été restaurés avec succès
+            bool: True si des checkpoints/caches ont été restaurés avec succès
         """
         try:
-            print("\n[CHECKPOINT] ====== CHECKPOINT RESTORATION ======")
+            print("\n[RESTORE] ====== CHECKPOINT & CACHE RESTORATION ======")
             
             # Chemin source (où Kaggle a téléchargé les résultats)
             downloaded_dir = Path('validation_output') / 'results' / kernel_slug.replace('/', '_')
@@ -1241,14 +1255,59 @@ print("=" * 80)
                 except Exception as e:
                     print(f"[CHECKPOINT]   ✗ Failed to copy training_metadata.json: {e}")
             
+            # ========================================================================
+            # ✅ NEW: RESTORE CACHE FILES (.pkl) for additive training
+            # ========================================================================
+            print(f"\n[CACHE] Restoring cache files (.pkl)...")
+            
+            cache_source = downloaded_dir / section_name / "cache" / "section_7_6"
+            
+            if cache_source.exists():
+                cache_dest = Path('validation_ch7') / 'cache' / 'section_7_6'
+                cache_dest.mkdir(parents=True, exist_ok=True)
+                
+                # Find all cache files (baseline + RL metadata)
+                cache_files = list(cache_source.glob("*.pkl"))
+                
+                if cache_files:
+                    print(f"[CACHE] Found {len(cache_files)} cache file(s) to restore:")
+                    
+                    for cache_file in cache_files:
+                        dest_file = cache_dest / cache_file.name
+                        try:
+                            shutil.copy2(cache_file, dest_file)
+                            file_size_mb = cache_file.stat().st_size / (1024 * 1024)
+                            
+                            # Identify cache type
+                            if '_rl_cache.pkl' in cache_file.name:
+                                cache_type = "RL metadata"
+                            elif '_baseline_cache.pkl' in cache_file.name:
+                                cache_type = "Baseline states"
+                            else:
+                                cache_type = "Unknown"
+                            
+                            print(f"[CACHE]   ✓ {cache_file.name} ({file_size_mb:.1f} MB) [{cache_type}]")
+                            restored_count += 1
+                        except Exception as e:
+                            print(f"[CACHE]   ✗ Failed to copy {cache_file.name}: {e}")
+                else:
+                    print(f"[CACHE] No cache files found (first run or caching not triggered)")
+            else:
+                print(f"[CACHE] Cache directory not found (first run or caching not triggered)")
+            
+            # ========================================================================
+            # FINAL SUMMARY
+            # ========================================================================
+            
             if restored_count > 0:
-                print(f"\n[CHECKPOINT] ✅ Successfully restored {restored_count} file(s)")
-                print(f"[CHECKPOINT] Checkpoints ready for next run at:")
-                print(f"[CHECKPOINT]   {checkpoint_dest.absolute()}")
-                print(f"[CHECKPOINT] Next training will automatically resume from latest checkpoint")
+                print(f"\n[RESTORE] ✅ Successfully restored {restored_count} file(s)")
+                print(f"[RESTORE] Ready for next run:")
+                print(f"[RESTORE]   Checkpoints: {checkpoint_dest.absolute()}")
+                print(f"[RESTORE]   Caches: {cache_dest.absolute()}")
+                print(f"[RESTORE] Next training will automatically resume from latest checkpoint & caches")
                 return True
             else:
-                print(f"[CHECKPOINT] ❌ No files were successfully restored")
+                print(f"[RESTORE] ❌ No files were successfully restored")
                 return False
         
         except Exception as e:

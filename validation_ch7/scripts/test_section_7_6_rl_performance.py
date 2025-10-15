@@ -168,6 +168,51 @@ class RLPerformanceValidationTest(ValidationSection):
         self.debug_logger.info(f"[PATH] Project root resolved: {project_root}")
         return project_root
     
+    # ========================================================================
+    # CHECKPOINT & CACHE ARCHITECTURE DOCUMENTATION
+    # ========================================================================
+    # 
+    # **Design Philosophy: Baseline Universal, RL Config-Specific**
+    # 
+    # 1. **Baseline Cache** (validation_ch7/cache/section_7_6/):
+    #    - Format: {scenario}_baseline_cache.pkl
+    #    - Config-independent: NO config_hash in name
+    #    - Rationale: Fixed-time controller (60s GREEN/RED) behavior never changes
+    #    - Reusable across ALL RL training runs regardless of densities/velocities
+    #    - Additive extension: Can extend 600s → 3600s without full recalculation
+    # 
+    # 2. **RL Checkpoints** (validation_ch7/checkpoints/section_7_6/):
+    #    - Format: {scenario}_checkpoint_{config_hash}_{steps}_steps.zip
+    #    - Config-specific: INCLUDES config_hash for validation
+    #    - Rationale: Agent trained on different configs (dt_decision, max_steps) is invalid
+    #    - Validation: _validate_checkpoint_config() checks hash before loading
+    #    - Auto-archiving: Incompatible checkpoints moved to archived/ subdirectory
+    # 
+    # 3. **RL Cache Metadata** (validation_ch7/cache/section_7_6/):
+    #    - Format: {scenario}_{config_hash}_rl_cache.pkl
+    #    - Config-specific: Stores model_path, total_timesteps, config_hash
+    #    - Purpose: Fast lookup of trained models without scanning filesystem
+    #    - Validation: Checks config_hash and model file existence
+    # 
+    # **Config Change Handling**:
+    # - Baseline: NO action needed (universal cache still valid)
+    # - RL Checkpoints: Automatically archived with _CONFIG_{old_hash} suffix
+    # - RL Cache: Ignored (new cache created with new config_hash)
+    # - Logging: Clear messages about config changes and archival actions
+    # 
+    # **Example Scenario**:
+    # - Initial: dt_decision=10s, max_steps=360
+    #   → Checkpoint: traffic_light_control_checkpoint_abc12345_100_steps.zip
+    #   → RL Cache: traffic_light_control_abc12345_rl_cache.pkl
+    # 
+    # - Config Change: dt_decision=15s, max_steps=240
+    #   → Old checkpoint archived: archived/traffic_light_control_checkpoint_abc12345_100_steps_CONFIG_abc12345.zip
+    #   → New checkpoint created: traffic_light_control_checkpoint_def67890_100_steps.zip
+    #   → Old RL cache ignored (hash mismatch)
+    #   → New RL cache: traffic_light_control_def67890_rl_cache.pkl
+    # 
+    # ========================================================================
+    
     def _get_checkpoint_dir(self):
         """Get checkpoint directory in Git-tracked location.
         
@@ -212,6 +257,73 @@ class RLPerformanceValidationTest(ValidationSection):
         config_hash = hash_obj.hexdigest()[:8]  # 8 chars sufficient for uniqueness
         self.debug_logger.info(f"[CACHE] Config hash: {config_hash}")
         return config_hash
+    
+    def _validate_checkpoint_config(self, checkpoint_path: Path, scenario_path: Path) -> bool:
+        """Validate that checkpoint was trained with current configuration.
+        
+        Checks if checkpoint's config_hash matches current scenario config.
+        Returns True if compatible, False if config changed.
+        """
+        current_hash = self._compute_config_hash(scenario_path)
+        
+        # Extract config_hash from checkpoint metadata if stored
+        # Format: scenario_checkpoint_HASH_steps.zip
+        # For backward compatibility with old checkpoints without hash, assume valid
+        checkpoint_name = checkpoint_path.stem
+        
+        # Check if checkpoint has config_hash in name
+        # New format: traffic_light_control_checkpoint_515c5ce5_50_steps
+        # Old format: traffic_light_control_checkpoint_50_steps
+        parts = checkpoint_name.split('_')
+        
+        # Find hash (8 hex chars) in checkpoint name
+        checkpoint_hash = None
+        for part in parts:
+            if len(part) == 8 and all(c in '0123456789abcdef' for c in part):
+                checkpoint_hash = part
+                break
+        
+        if checkpoint_hash is None:
+            # Old checkpoint without config_hash - assume incompatible for safety
+            self.debug_logger.warning(f"[CHECKPOINT] No config_hash in {checkpoint_path.name} - treating as incompatible")
+            return False
+        
+        is_valid = (checkpoint_hash == current_hash)
+        if is_valid:
+            self.debug_logger.info(f"[CHECKPOINT] Config validated: {checkpoint_hash} matches {current_hash}")
+        else:
+            self.debug_logger.warning(f"[CHECKPOINT] Config CHANGED: {checkpoint_hash} != {current_hash}")
+        
+        return is_valid
+    
+    def _archive_incompatible_checkpoint(self, checkpoint_path: Path, old_config_hash: str):
+        """Archive incompatible checkpoint with config_hash label.
+        
+        Moves checkpoint to archived/ subdirectory with config_hash in name.
+        This preserves old checkpoints for debugging while preventing accidental loading.
+        """
+        checkpoint_dir = checkpoint_path.parent
+        archive_dir = checkpoint_dir / "archived"
+        archive_dir.mkdir(exist_ok=True)
+        
+        # Create archived filename with config_hash
+        archived_name = f"{checkpoint_path.stem}_CONFIG_{old_config_hash}{checkpoint_path.suffix}"
+        archived_path = archive_dir / archived_name
+        
+        # Move checkpoint and associated files (replay buffer)
+        import shutil
+        shutil.move(str(checkpoint_path), str(archived_path))
+        
+        # Move replay buffer if exists
+        replay_buffer_path = checkpoint_path.with_suffix('.pkl')
+        if replay_buffer_path.exists():
+            replay_buffer_archived = archive_dir / f"{checkpoint_path.stem}_CONFIG_{old_config_hash}.pkl"
+            shutil.move(str(replay_buffer_path), str(replay_buffer_archived))
+        
+        self.debug_logger.info(f"[CHECKPOINT] Archived incompatible checkpoint to {archived_path}")
+        print(f"  [CHECKPOINT] ⚠️  Archived incompatible checkpoint (config changed):", flush=True)
+        print(f"     Old config: {old_config_hash}", flush=True)
+        print(f"     Archived to: {archived_path.name}", flush=True)
     
     def _save_baseline_cache(self, scenario_type: str, scenario_path: Path, 
                             states_history: list, duration: float, 
@@ -313,10 +425,12 @@ class RLPerformanceValidationTest(ValidationSection):
                               control_interval: float = 15.0, device: str = 'gpu') -> list:
         """Extend existing baseline cache additively (aligned with ADDITIVE training philosophy).
         
+        ✅ NOW TRULY ADDITIVE: Resumes from cached final state
+        
         Example:
-            - Cached: 5000 steps (3600s)
-            - Required: 10000 steps (7200s)
-            - Action: Resume simulation from 3600s → 7200s (additive extension)
+            - Cached: 241 steps (3600s)
+            - Required: 481 steps (7200s)
+            - Action: Resume simulation from 3600s → 7200s (additive +240 steps)
             - NOT: Recalculate 0s → 7200s (wasteful)
         """
         cached_duration = len(existing_states) * control_interval
@@ -325,19 +439,30 @@ class RLPerformanceValidationTest(ValidationSection):
         print(f"  [CACHE] ADDITIVE EXTENSION: {cached_duration}s → {target_duration}s (+{extension_duration}s)", flush=True)
         self.debug_logger.info(f"[CACHE] Extending cache additively: {len(existing_states)} steps → target {int(target_duration/control_interval)+1} steps")
         
-        # Run simulation for extension period only
-        # NOTE: This requires modifying run_control_simulation to support initial state
-        # For now, we'll run full simulation (future optimization: add resume capability)
-        print(f"  [CACHE] ⚠️  Extension requires full recalculation (resume not yet implemented)", flush=True)
-        print(f"  [CACHE] Running full baseline simulation for {target_duration}s...", flush=True)
+        # ✅ IMPLEMENTED: Resume from cached final state (TRUE additive extension)
+        print(f"  [CACHE] ✅ Resuming from cached state (TRUE additive extension)", flush=True)
+        print(f"  [CACHE] Running ONLY extension: {extension_duration}s...", flush=True)
         
         baseline_controller = self.BaselineController(scenario_type)
-        extended_states, _ = self.run_control_simulation(
+        # Resume controller internal state to match cached duration
+        # BaselineController.time_step is incremented by dt in update()
+        # Initialize to cached_duration so controller continues from where it left off
+        baseline_controller.time_step = cached_duration
+        
+        # Run simulation for EXTENSION period only
+        extension_states, _ = self.run_control_simulation(
             baseline_controller, scenario_path, 
-            duration=target_duration, 
+            duration=extension_duration,  # ONLY the missing duration
             control_interval=control_interval,
-            device=device
+            device=device,
+            initial_state=existing_states[-1],  # ✅ Resume from cached final state
+            controller_type='BASELINE'
         )
+        
+        # Combine cached + extension states
+        extended_states = existing_states + extension_states
+        
+        print(f"  [CACHE] ✅ Combined: {len(existing_states)} cached + {len(extension_states)} new = {len(extended_states)} total", flush=True)
         
         # Save extended cache
         self._save_baseline_cache(
@@ -545,8 +670,10 @@ class RLPerformanceValidationTest(ValidationSection):
             """Mise à jour de l'état interne de l'agent (si nécessaire)."""
             pass
 
-    def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=15.0, device='gpu'):
+    def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=15.0, device='gpu', initial_state=None, controller_type='UNKNOWN'):
         """Execute real ARZ simulation with direct coupling (GPU-accelerated on Kaggle).
+        
+        ✅ NEW: Supports resumption from initial_state for truly additive baseline caching
         
         Quick test mode uses normal duration to allow control strategies to have measurable impact.
         
@@ -554,6 +681,15 @@ class RLPerformanceValidationTest(ValidationSection):
         This matches the training configuration (Bug #20 fix) to ensure fair comparison.
         With 15s intervals, we get 240 decisions per hour vs 60 with 60s intervals,
         allowing the controller to leverage transient traffic dynamics.
+        
+        Args:
+            controller: BaselineController or RLController instance
+            scenario_path: Path to scenario YAML configuration
+            duration: Simulation duration in seconds
+            control_interval: Time between control decisions (seconds)
+            device: 'gpu' or 'cpu'
+            initial_state: Optional initial ARZ state for resumption (for additive baseline caching)
+            controller_type: Type of controller for logging ('BASELINE' or 'RL')
         """
         # Quick test mode: reduce duration for fast validation
         if self.quick_test:
@@ -613,9 +749,24 @@ class RLPerformanceValidationTest(ValidationSection):
             obs, info = env.reset()
             self.debug_logger.info(f"env.reset() successful - obs shape: {obs.shape}, info: {info}")
             
+            # ✅ ADDITIVE BASELINE EXTENSION: Override initial state if provided
+            if initial_state is not None:
+                print(f"  [RESUME] Overriding initial state with cached final state", flush=True)
+                self.debug_logger.info(f"[RESUME] Setting initial state from cache (shape={initial_state.shape})")
+                
+                # Copy cached state to runner
+                if device == 'gpu':
+                    env.runner.d_U.copy_from_host(initial_state)
+                    # Synchronize to ensure GPU state is updated
+                    env.runner.d_U.synchronize()
+                else:
+                    env.runner.U = initial_state.copy()
+                
+                self.debug_logger.info(f"[RESUME] Initial state overridden successfully")
+            
             # Log initial state details
-            initial_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
-            self.debug_logger.info(f"INITIAL STATE shape: {initial_state.shape}, dtype: {initial_state.dtype}")
+            current_initial_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
+            self.debug_logger.info(f"INITIAL STATE shape: {current_initial_state.shape}, dtype: {current_initial_state.dtype}")
             self.debug_logger.info(f"INITIAL STATE statistics: mean={initial_state.mean():.6e}, std={initial_state.std():.6e}, min={initial_state.min():.6e}, max={initial_state.max():.6e}")
             
         except Exception as e:
@@ -662,7 +813,10 @@ class RLPerformanceValidationTest(ValidationSection):
                     obs, reward, terminated, truncated, info = env.step(action)
                     total_reward += reward
                     
-                    self.debug_logger.info(f"  Reward: {reward:.6f}")
+                    # NOTE: Reward is ALWAYS calculated by the Gymnasium environment (architecture standard)
+                    # For baseline controller, reward is logged but NOT used for control decisions
+                    # For RL controller, reward is used for training/evaluation
+                    self.debug_logger.info(f"  [{controller_type}] Reward: {reward:.6f}")
                     self.debug_logger.info(f"  Terminated: {terminated}, Truncated: {truncated}")
                     
                 except Exception as e:
@@ -714,7 +868,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 # Double copy: first copy_to_host(), then np.array() to ensure complete detachment
                 states_history.append(np.array(current_state, copy=True))  # CRITICAL: np.array(copy=True) prevents GPU memory aliasing
                 
-                print(f"    [STEP {steps}/{max_control_steps}] action={action:.4f}, reward={reward:.4f}, t={env.runner.t:.1f}s, state_diff={state_diff_mean:.6e}", flush=True)
+                print(f"    [{controller_type}] [STEP {steps}/{max_control_steps}] action={action:.4f}, reward={reward:.4f}, t={env.runner.t:.1f}s, state_diff={state_diff_mean:.6e}", flush=True)
                 
         except Exception as e:
             print(f"  [ERROR] Simulation loop failed at step {steps}: {e}", flush=True)
@@ -726,7 +880,8 @@ class RLPerformanceValidationTest(ValidationSection):
         # Performance summary
         avg_step_time = np.mean(step_times) if step_times else 0
         perf_summary = f"""
-  [SIMULATION COMPLETED] Summary:
+  [{controller_type}] [SIMULATION COMPLETED] Summary:
+    - Controller type: {controller_type}
     - Total control steps: {steps}
     - Total reward: {total_reward:.2f}
     - Avg step time: {avg_step_time:.3f}s (device={device})
@@ -925,15 +1080,67 @@ class RLPerformanceValidationTest(ValidationSection):
                 latest_checkpoint = max(checkpoint_files, key=lambda p: int(p.stem.split('_')[-2]))
                 completed_steps = int(latest_checkpoint.stem.split('_')[-2])
                 
-                print(f"  [RESUME] Found checkpoint at {completed_steps} steps", flush=True)
-                print(f"  [RESUME] Loading model from {latest_checkpoint}", flush=True)
+                print(f"  [CHECKPOINT] Found checkpoint at {completed_steps} steps: {latest_checkpoint.name}", flush=True)
                 
-                model = DQN.load(str(latest_checkpoint), env=env)
-                remaining_steps = total_timesteps
-                new_total = completed_steps + remaining_steps
-                print(f"  [RESUME] ADDITIVE: {completed_steps} + {remaining_steps} = {new_total} total steps", flush=True)
+                # ✅ FIX: Validate checkpoint config compatibility
+                if self._validate_checkpoint_config(latest_checkpoint, scenario_path):
+                    # Config matches - safe to resume
+                    print(f"  [CHECKPOINT] ✅ Config validated - resuming training", flush=True)
+                    print(f"  [RESUME] Loading model from {latest_checkpoint}", flush=True)
+                    
+                    try:
+                        model = DQN.load(str(latest_checkpoint), env=env)
+                        # ✅ CRITICAL FIX: True additive training (only train remaining steps)
+                        remaining_steps = total_timesteps - completed_steps
+                        new_total = completed_steps + remaining_steps
+                        print(f"  [RESUME] ADDITIVE: {completed_steps} + {remaining_steps} = {new_total} total steps", flush=True)
+                    except Exception as load_error:
+                        # Checkpoint loading failed despite config match - archive and restart
+                        self.debug_logger.error(f"[CHECKPOINT] Loading failed despite config match: {load_error}")
+                        print(f"  [CHECKPOINT] ❌ Loading failed: {load_error}", flush=True)
+                        print(f"  [CHECKPOINT] Archiving corrupted checkpoint and restarting...", flush=True)
+                        
+                        # Extract hash from checkpoint name for archiving
+                        parts = latest_checkpoint.stem.split('_')
+                        old_hash = next((p for p in parts if len(p) == 8 and all(c in '0123456789abcdef' for c in p)), "UNKNOWN")
+                        self._archive_incompatible_checkpoint(latest_checkpoint, old_hash)
+                        
+                        # Start from scratch
+                        remaining_steps = total_timesteps
+                        model = DQN(
+                            'MlpPolicy',
+                            env,
+                            verbose=1,
+                            **CODE_RL_HYPERPARAMETERS,
+                            tensorboard_log=str(self.models_dir / "tensorboard")
+                        )
+                        completed_steps = 0
+                else:
+                    # Config changed - archive old checkpoint and restart
+                    print(f"  [CHECKPOINT] ⚠️  Config mismatch - cannot resume training", flush=True)
+                    
+                    # Extract old hash from checkpoint name
+                    parts = latest_checkpoint.stem.split('_')
+                    old_hash = next((p for p in parts if len(p) == 8 and all(c in '0123456789abcdef' for c in p)), "LEGACY")
+                    
+                    # Archive all incompatible checkpoints
+                    for ckpt in checkpoint_files:
+                        self._archive_incompatible_checkpoint(ckpt, old_hash)
+                    
+                    # Start training from scratch
+                    remaining_steps = total_timesteps
+                    completed_steps = 0
+                    print(f"  [CHECKPOINT] Starting fresh training with new config", flush=True)
+                    model = DQN(
+                        'MlpPolicy',
+                        env,
+                        verbose=1,
+                        **CODE_RL_HYPERPARAMETERS,
+                        tensorboard_log=str(self.models_dir / "tensorboard")
+                    )
             else:
                 remaining_steps = total_timesteps
+                completed_steps = 0
                 # Train DQN agent from scratch (Code_RL design)
                 print(f"  [INFO] Initializing DQN agent (Code_RL hyperparameters)...", flush=True)
                 model = DQN(
@@ -947,11 +1154,15 @@ class RLPerformanceValidationTest(ValidationSection):
             # Setup callbacks (Code_RL checkpoint system)
             callbacks = []
             
+            # Compute config_hash for checkpoint naming (config-specific checkpoints)
+            config_hash = self._compute_config_hash(scenario_path)
+            
             # 1. Rotating checkpoints for resume capability (Code_RL design)
+            # ✅ FIX: Include config_hash in checkpoint name for validation
             checkpoint_callback = RotatingCheckpointCallback(
                 save_freq=checkpoint_freq,
                 save_path=str(checkpoint_dir),
-                name_prefix=f"{scenario_type}_checkpoint",
+                name_prefix=f"{scenario_type}_checkpoint_{config_hash}",  # ✅ Config-specific name
                 max_checkpoints=2,  # Keep only 2 most recent (Kaggle disk space)
                 save_replay_buffer=True,  # DQN uses replay buffer
                 save_vecnormalize=True,
@@ -1074,7 +1285,8 @@ class RLPerformanceValidationTest(ValidationSection):
                     baseline_controller, scenario_path,
                     duration=baseline_duration,
                     control_interval=control_interval,
-                    device=device
+                    device=device,
+                    controller_type='BASELINE'
                 )
                 
                 if baseline_states is None:
@@ -1112,7 +1324,8 @@ class RLPerformanceValidationTest(ValidationSection):
             rl_states, _ = self.run_control_simulation(
                 rl_controller, 
                 scenario_path,
-                device=device
+                device=device,
+                controller_type='RL'
             )
             if rl_states is None:
                 return {'success': False, 'error': 'RL simulation failed'}
@@ -1202,11 +1415,22 @@ class RLPerformanceValidationTest(ValidationSection):
         # Train agents before evaluation
         print("\n[PHASE 1/2] Training RL agents...")
         
-        # CRITICAL FIX (Bug #28): Single scenario strategy (literature-validated)
-        # Maadi et al. (2022): "100 episodes = standard benchmark"
-        # Rafique et al. (2024): "Single scenario convergence better than multi-scenario"
-        # Strategy: Deep training on 1 scenario (24k steps) > Shallow on 3 scenarios (10k each)
-        scenarios_to_train = ['traffic_light_control']  # ALWAYS train only traffic_light (90% of TSC literature)
+        # ✅ NEW: Support single scenario selection via environment variable
+        # This allows CLI --scenario argument to control which scenario to run
+        rl_scenario_env = os.environ.get('RL_SCENARIO', None)
+        
+        if rl_scenario_env:
+            # Single scenario mode (CLI specified)
+            scenarios_to_train = [rl_scenario_env]
+            print(f"[SCENARIO] Single scenario mode (CLI): {rl_scenario_env}")
+        else:
+            # Default: Single scenario strategy (literature-validated)
+            # CRITICAL FIX (Bug #28): Single scenario strategy (literature-validated)
+            # Maadi et al. (2022): "100 episodes = standard benchmark"
+            # Rafique et al. (2024): "Single scenario convergence better than multi-scenario"
+            # Strategy: Deep training on 1 scenario (24k steps) > Shallow on 3 scenarios (10k each)
+            scenarios_to_train = ['traffic_light_control']  # ALWAYS train only traffic_light (90% of TSC literature)
+            print(f"[SCENARIO] Default single scenario mode: traffic_light_control")
         
         if self.quick_test:
             total_timesteps = 100  # Quick integration test

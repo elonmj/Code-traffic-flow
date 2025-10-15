@@ -48,6 +48,14 @@ def main():
         help='Enable quick test mode (100 timesteps, ~15min runtime)'
     )
     
+    parser.add_argument(
+        '--scenario',
+        type=str,
+        choices=['traffic_light_control', 'ramp_metering', 'adaptive_speed_control'],
+        default=None,
+        help='Single scenario to run (for section 7.6 only). If not specified, runs all scenarios.'
+    )
+    
     args = parser.parse_args()
     
     print("=" * 80)
@@ -57,6 +65,8 @@ def main():
     print(f"Timeout: {args.timeout}s")
     if args.quick_test:
         print(f"Mode: QUICK TEST (100 timesteps)")
+    if args.scenario:
+        print(f"Scenario: {args.scenario} (single scenario mode)")
     if args.commit_message:
         print(f"Custom commit message: {args.commit_message}")
     print("=" * 80)
@@ -69,7 +79,8 @@ def main():
             section_name=args.section,
             timeout=args.timeout,
             commit_message=args.commit_message,
-            quick_test=args.quick_test
+            quick_test=args.quick_test,
+            scenario=args.scenario  # ✅ NEW: Pass scenario selection
         )
         
         if success:

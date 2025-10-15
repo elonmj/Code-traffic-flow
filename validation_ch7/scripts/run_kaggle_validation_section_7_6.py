@@ -28,6 +28,23 @@ def main():
     # Check for quick test mode (preserved from original)
     quick_test = '--quick' in sys.argv or '--quick-test' in sys.argv
     
+    # ✅ NEW: Check for single scenario mode
+    # Expected format: --scenario=traffic_light_control or --scenario traffic_light_control
+    scenario = None
+    valid_scenarios = ['traffic_light_control', 'ramp_metering', 'adaptive_speed_control']
+    
+    for i, arg in enumerate(sys.argv):
+        if arg.startswith('--scenario='):
+            scenario = arg.split('=')[1]
+        elif arg == '--scenario' and i + 1 < len(sys.argv):
+            scenario = sys.argv[i + 1]
+    
+    # Validate scenario if provided
+    if scenario and scenario not in valid_scenarios:
+        print(f"[ERROR] Invalid scenario: {scenario}")
+        print(f"[ERROR] Valid scenarios: {', '.join(valid_scenarios)}")
+        sys.exit(1)
+    
     # ============================================================================
     # SECTION-SPECIFIC INFORMATION (preserved from original for user experience)
     # ============================================================================
@@ -58,6 +75,10 @@ def main():
     print(f"  - Revendication: R5 (Performance RL > Baselines)")
     print(f"  - Mode: {'QUICK TEST (100 timesteps)' if quick_test else 'FULL TEST (5000 timesteps)'}")
     print(f"  - Durée estimée: {'15 minutes' if quick_test else '3-4 heures'} sur GPU")
+    if scenario:
+        print(f"  - Scenario: {scenario} (single scenario mode)")
+    else:
+        print(f"  - Scenario: Default (traffic_light_control)")
     
     # Test information (preserved from original)
     print("\n[2/3] Lancement de la validation section 7.6...")
@@ -98,6 +119,10 @@ def main():
     
     if quick_test:
         cmd.append("--quick-test")
+    
+    # ✅ NEW: Add scenario selection if specified
+    if scenario:
+        cmd.extend(["--scenario", scenario])
     
     # Execute validation_cli.py and capture result
     try:

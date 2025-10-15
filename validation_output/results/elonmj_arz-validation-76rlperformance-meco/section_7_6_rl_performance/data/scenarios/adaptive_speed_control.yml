@@ -1,0 +1,53 @@
+CFL: 0.4
+N: 100
+boundary_conditions:
+  left:
+    state:
+    - 200.0
+    - 2.6666666666666665
+    - 96.0
+    - 2.333333333333333
+    type: inflow
+  right:
+    type: outflow
+initial_conditions:
+  U_L:
+  - 0.13999999999999999
+  - 2.6666666666666665
+  - 0.0672
+  - 2.333333333333333
+  U_R:
+  - 0.0875
+  - 5.333333333333333
+  - 0.041999999999999996
+  - 4.666666666666666
+  split_pos: 500.0
+  type: riemann
+lagos_parameters:
+  context: Victoria Island Lagos
+  creeping_rate: 0.6
+  free_speed_average: 30.0
+  free_speed_cars: 28.0
+  free_speed_motorcycles: 32.0
+  gap_filling_rate: 0.8
+  max_density_cars: 120.0
+  max_density_motorcycles: 250.0
+  max_density_total: 370.0
+  signal_compliance: 0.7
+  vehicle_mix_buses: 0.15
+  vehicle_mix_cars: 0.45
+  vehicle_mix_motorcycles: 0.35
+  vehicle_mix_trucks: 0.05
+output_dt: 60.0
+parameters:
+  V0_c: 9.333333333333332
+  V0_m: 10.666666666666666
+  tau_c: 0.8
+  tau_m: 0.6
+road:
+  quality_type: uniform
+  quality_value: 2
+scenario_name: adaptive_speed_control_lagos_real
+t_final: 600.0
+xmax: 1000.0
+xmin: 0.0
