@@ -387,14 +387,43 @@ class TrafficSignalEnvDirect(gym.Env):
         
         # Reward component 1: Queue change (PRIMARY)
         # Negative change = queue reduction = positive reward
-        R_queue = -delta_queue * 10.0  # Scale factor for meaningful magnitudes
+        # ✅ BUG #29 FIX: Amplify queue signal (was 10.0, now 50.0)
+        # Problem: Queue barely changes (delta_queue ≈ 0), reward always ≈ 0
+        # With 10.0 multiplier, even 0.1 vehicle change = 1.0 reward (too weak)
+        # With 50.0 multiplier, 0.1 vehicle change = 5.0 reward (more meaningful)
+        R_queue = -delta_queue * 50.0  # Increased from 10.0 to amplify learning signal
         
         # Reward component 2: Phase change penalty (SECONDARY)
-        phase_changed = (action == 1)
-        R_stability = -self.kappa if phase_changed else 0.0
+        # ✅ BUG #28 FIX: Correctly detect actual phase changes
+        # ✅ BUG #29 FIX: Reduce penalty from 0.1 to 0.01
+        # Problem: With constant queue (R_queue≈0), penalty dominates
+        #   - Change phase: reward = 0 - 0.1 = -0.1 (ALWAYS NEGATIVE)
+        #   - Stay same: reward = 0 - 0 = 0.0 (ALWAYS BETTER)
+        # Agent learns: "Never change phase to avoid penalty" → stuck at one action
+        # Solution: Make penalty 10x smaller so queue changes can dominate
+        phase_changed = (self.current_phase != prev_phase)
+        R_stability = -0.01 if phase_changed else 0.0  # Reduced from -0.1
+        
+        # Reward component 3: Action diversity bonus (NEW)
+        # ✅ BUG #29 FIX: Encourage exploration
+        # Problem: Agent stuck at one action (100% RED or 100% GREEN)
+        # Solution: Small bonus for using different actions recently
+        if not hasattr(self, 'action_history'):
+            self.action_history = []
+        self.action_history.append(self.current_phase)
+        if len(self.action_history) > 10:
+            self.action_history.pop(0)
+        
+        # Give bonus if agent used both actions in last 5 steps
+        if len(self.action_history) >= 5:
+            recent_actions = self.action_history[-5:]
+            action_diversity = len(set(recent_actions))
+            R_diversity = 0.02 if action_diversity > 1 else 0.0
+        else:
+            R_diversity = 0.0
         
         # Total reward
-        reward = R_queue + R_stability
+        reward = R_queue + R_stability + R_diversity
         
         return float(reward)
     
