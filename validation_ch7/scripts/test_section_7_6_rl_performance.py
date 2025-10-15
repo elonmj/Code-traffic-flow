@@ -767,13 +767,16 @@ class RLPerformanceValidationTest(ValidationSection):
             # Log initial state details
             current_initial_state = env.runner.d_U.copy_to_host() if device == 'gpu' else env.runner.U.copy()
             self.debug_logger.info(f"INITIAL STATE shape: {current_initial_state.shape}, dtype: {current_initial_state.dtype}")
-            self.debug_logger.info(f"INITIAL STATE statistics: mean={initial_state.mean():.6e}, std={initial_state.std():.6e}, min={initial_state.min():.6e}, max={initial_state.max():.6e}")
+            # Only log statistics if initial_state was provided (resumption case)
+            if initial_state is not None:
+                self.debug_logger.info(f"INITIAL STATE statistics: mean={initial_state.mean():.6e}, std={initial_state.std():.6e}, min={initial_state.min():.6e}, max={initial_state.max():.6e}")
             
         except Exception as e:
             error_msg = f"Environment reset failed: {e}"
             self.debug_logger.error(error_msg, exc_info=True)
             print(f"  [ERROR] {error_msg}", flush=True)
-            traceback.print_exc()
+            import traceback as tb
+            tb.print_exc()
             env.close()
             return None, None
             
@@ -1227,7 +1230,8 @@ class RLPerformanceValidationTest(ValidationSection):
             error_msg = f"Training failed for {scenario_type}: {e}"
             self.debug_logger.error(error_msg, exc_info=True)
             print(f"[ERROR] {error_msg}", flush=True)
-            traceback.print_exc()
+            import traceback as tb
+            tb.print_exc()
             return None
 
     def run_performance_comparison(self, scenario_type, device='gpu'):
@@ -1392,7 +1396,8 @@ class RLPerformanceValidationTest(ValidationSection):
         except Exception as e:
             error_msg = f"Performance comparison failed for {scenario_type}: {e}"
             self.debug_logger.error(error_msg, exc_info=True)
-            traceback.print_exc()
+            import traceback as tb
+            tb.print_exc()
             print(f"  ERROR: {str(e)}")
             return {'success': False, 'error': str(e)}
     
