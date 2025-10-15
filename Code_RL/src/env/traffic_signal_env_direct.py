@@ -366,6 +366,20 @@ class TrafficSignalEnvDirect(gym.Env):
         densities_c = observation[2::4][:n_segments] * self.rho_max_c
         velocities_c = observation[3::4][:n_segments] * self.v_free_c
         
+        # 🔍 BUG #35 DIAGNOSTIC: Log queue calculation details
+        if not hasattr(self, '_queue_log_count'):
+            self._queue_log_count = 0
+        if self._queue_log_count < 5 or self.current_step % 10 == 0:  # First 5 steps + every 10th
+            print(f"[QUEUE_DIAGNOSTIC] ===== Step {self.current_step} t={self.runner.t:.1f}s =====")
+            print(f"[QUEUE_DIAGNOSTIC] Observation shape: {observation.shape}, n_segments: {n_segments}")
+            print(f"[QUEUE_DIAGNOSTIC] Normalized obs[0:4]: {observation[:4]} (rho_m, v_m, rho_c, v_c)")
+            print(f"[QUEUE_DIAGNOSTIC] Denorm factors: rho_max_m={self.rho_max_m:.3f}, v_free_m={self.v_free_m:.2f}")
+            print(f"[QUEUE_DIAGNOSTIC] velocities_m (m/s): {velocities_m}")
+            print(f"[QUEUE_DIAGNOSTIC] velocities_c (m/s): {velocities_c}")
+            print(f"[QUEUE_DIAGNOSTIC] densities_m (veh/m): {densities_m}")
+            print(f"[QUEUE_DIAGNOSTIC] densities_c (veh/m): {densities_c}")
+            self._queue_log_count += 1
+        
         # Define queue threshold: vehicles with speed < 5 m/s are queued
         QUEUE_SPEED_THRESHOLD = 5.0  # m/s (~18 km/h, congestion threshold)
         
@@ -373,9 +387,21 @@ class TrafficSignalEnvDirect(gym.Env):
         queued_m = densities_m[velocities_m < QUEUE_SPEED_THRESHOLD]
         queued_c = densities_c[velocities_c < QUEUE_SPEED_THRESHOLD]
         
+        # 🔍 BUG #35 DIAGNOSTIC: Log threshold check results
+        if self._queue_log_count <= 5 or self.current_step % 10 == 0:
+            print(f"[QUEUE_DIAGNOSTIC] Threshold: {QUEUE_SPEED_THRESHOLD} m/s")
+            print(f"[QUEUE_DIAGNOSTIC] Below threshold (m): {velocities_m < QUEUE_SPEED_THRESHOLD}")
+            print(f"[QUEUE_DIAGNOSTIC] Below threshold (c): {velocities_c < QUEUE_SPEED_THRESHOLD}")
+            print(f"[QUEUE_DIAGNOSTIC] queued_m densities: {queued_m} (sum={np.sum(queued_m):.4f})")
+            print(f"[QUEUE_DIAGNOSTIC] queued_c densities: {queued_c} (sum={np.sum(queued_c):.4f})")
+        
         # Total queue length (vehicles in congestion)
         current_queue_length = np.sum(queued_m) + np.sum(queued_c)
         current_queue_length *= dx  # Convert to total vehicles
+        
+        # 🔍 BUG #35 DIAGNOSTIC: Log final queue length
+        if self._queue_log_count <= 5 or self.current_step % 10 == 0:
+            print(f"[QUEUE_DIAGNOSTIC] dx={dx:.2f}m, queue_length={current_queue_length:.2f} vehicles")
         
         # Get previous queue length
         if not hasattr(self, 'previous_queue_length'):
