@@ -434,7 +434,7 @@ class TrafficSignalEnvDirect(gym.Env):
         # Create detailed log entry with searchable patterns
         log_entry = (
             f"[REWARD_MICROSCOPE] step={self.reward_log_count} "
-            f"t={self.t:.1f}s "
+            f"t={self.runner.t:.1f}s "
             f"phase={self.current_phase} "
             f"prev_phase={prev_phase} "
             f"phase_changed={phase_changed} "
