@@ -879,6 +879,8 @@ class RLPerformanceValidationTest(ValidationSection):
 
         # Performance summary
         avg_step_time = np.mean(step_times) if step_times else 0
+        total_wallclock_time = sum(step_times) if step_times else 0
+        speed_ratio = (env.runner.t / total_wallclock_time) if total_wallclock_time > 0 else 0
         perf_summary = f"""
   [{controller_type}] [SIMULATION COMPLETED] Summary:
     - Controller type: {controller_type}
@@ -886,8 +888,8 @@ class RLPerformanceValidationTest(ValidationSection):
     - Total reward: {total_reward:.2f}
     - Avg step time: {avg_step_time:.3f}s (device={device})
     - Simulated time: {env.runner.t:.1f}s / {duration:.1f}s
-    - Wallclock time: {sum(step_times):.1f}s
-    - Speed ratio: {env.runner.t / sum(step_times):.2f}x real-time
+    - Wallclock time: {total_wallclock_time:.1f}s
+    - Speed ratio: {speed_ratio:.2f}x real-time
 """
         print(perf_summary, flush=True)
         self.debug_logger.info(perf_summary)
