@@ -428,18 +428,25 @@ def create_scenario_config_with_lagos_data(
     free_speed_m = free_speed_m_kmh / 3.6  # ~8.9 m/s
     free_speed_c = free_speed_c_kmh / 3.6  # ~7.8 m/s
     
-    # Realistic Lagos congestion levels
-    # Initial state: Moderate congestion (50% of max - typical Lagos daytime)
-    rho_m_initial_veh_km = max_density_m * 0.5  # 125 veh/km
-    rho_c_initial_veh_km = max_density_c * 0.5  # 60 veh/km
-    w_m_initial = free_speed_m * 0.6  # Reduced speed in congestion (~19 km/h)
-    w_c_initial = free_speed_c * 0.6  # ~17 km/h
+    # ✅ BUG #33 FIX: Create flux conditions for traffic accumulation
+    # Physics: q = rho * v → For traffic to build up, q_inflow > q_initial
     
-    # Inflow: Heavy congestion (80% of max - peak Lagos traffic)
-    rho_m_inflow_veh_km = max_density_m * 0.8  # 200 veh/km
-    rho_c_inflow_veh_km = max_density_c * 0.8  # 96 veh/km
-    w_m_inflow = free_speed_m * 0.3  # Heavily congested (~10 km/h)
-    w_c_inflow = free_speed_c * 0.3  # ~8 km/h
+    # Initial state: LIGHT traffic (road starts relatively empty)
+    # Use 10% of max density, free-flow speeds → Low flux q_init
+    rho_m_initial_veh_km = max_density_m * 0.1  # 25 veh/km (light)
+    rho_c_initial_veh_km = max_density_c * 0.1  # 12 veh/km (light)
+    w_m_initial = free_speed_m  # Free-flow (~32 km/h)
+    w_c_initial = free_speed_c  # Free-flow (~28 km/h)
+    # Flux_init = 25 * 8.9 = 222 veh/s (per km width)
+    
+    # Inflow: HEAVY demand (peak Lagos traffic approaching intersection)
+    # Use 80% of max density, free-flow speeds → HIGH flux q_inflow
+    rho_m_inflow_veh_km = max_density_m * 0.8  # 200 veh/km (heavy)
+    rho_c_inflow_veh_km = max_density_c * 0.8  # 96 veh/km (heavy)
+    w_m_inflow = free_speed_m  # Free-flow (traffic arrives at speed)
+    w_c_inflow = free_speed_c  # Free-flow
+    # Flux_inflow = 200 * 8.9 = 1780 veh/s → q_inflow >> q_init ✅
+    # Traffic WILL accumulate → Queue builds up → RL can learn!
     
     # Base configuration
     config = {
