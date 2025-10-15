@@ -946,16 +946,22 @@ def strang_splitting_step_with_network(U_n, dt, grid, params, nodes, network_cou
         # Version GPU avec couplage stable
         from .network_coupling_stable import apply_network_coupling_stable_gpu
         d_U_n = U_n  # Assume déjà sur GPU
+        
+        # ✅ BUG #35 FIX: Pass d_R to GPU ODE solver for correct equilibrium speed calculation
+        if not hasattr(grid, 'd_R') or grid.d_R is None:
+            if grid.road_quality is None:
+                raise ValueError("❌ BUG #35: Road quality must be loaded before GPU simulation!")
+            grid.d_R = cuda.to_device(grid.road_quality)
 
         # Étape 1: ODE dt/2
-        d_U_star = solve_ode_step_gpu(d_U_n, dt / 2.0, grid, params, None)
+        d_U_star = solve_ode_step_gpu(d_U_n, dt / 2.0, grid, params, grid.d_R)
 
         # Étape 2: Hyperbolique avec couplage réseau stable
         d_U_with_bc = apply_network_coupling_stable_gpu(d_U_star, dt, grid, params, time)
         d_U_ss = solve_hyperbolic_step_standard_gpu(d_U_with_bc, dt, grid, params)
 
         # Étape 3: ODE dt/2
-        d_U_np1 = solve_ode_step_gpu(d_U_ss, dt / 2.0, grid, params, None)
+        d_U_np1 = solve_ode_step_gpu(d_U_ss, dt / 2.0, grid, params, grid.d_R)
 
         return d_U_np1
 

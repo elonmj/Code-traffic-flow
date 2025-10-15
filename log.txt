@@ -1731,3 +1731,32 @@
 2025-10-15 20:46:12,016 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-15 20:46:26,603 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-15 20:46:29,033 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-cuyy
+2025-10-15 23:01:46,706 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-15 23:01:46,797 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   M  rz_model/config/config_base.yml (Modified (staged))
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -    M arz_model/numerics/__pycache__/time_integration.cpython-312.pyc (Modified (unstaged))
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -    M arz_model/numerics/time_integration.py (Modified (unstaged))
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -    M launch_bug34.log (Modified (unstaged))
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -    M log.txt (Modified (unstaged))
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? BUG_35_EXECUTIVE_SUMMARY.md (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? BUG_35_FIX_VERIFICATION.md (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? BUG_35_ROOT_CAUSE_ANALYSIS.md (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? BUG_35_SOLUTION_FR.md (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? BUG_35_VELOCITY_NOT_RELAXING_TO_EQUILIBRIUM.md (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? ch5a_fondements_mathematiques.tex.backup (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? ch5b_resolution_numerique.tex.backup (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? ch5c_construction_jumeau.tex.backup (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? diagnose_bug35_relaxation.py (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? launch_and_monitor_rl.py (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? test_bug35_fix.py (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? test_bug35_scenario.yml (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? test_observation_segments.py (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-76rlperformance-cuyy/ (Untracked)
+2025-10-15 23:01:46,876 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-15 23:01:47,043 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-15 23:01:48,044 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-15 23:01:48,044 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-15 23:01:56,342 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-15 23:02:00,367 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-obwe
+2025-10-15 23:08:18,770 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...

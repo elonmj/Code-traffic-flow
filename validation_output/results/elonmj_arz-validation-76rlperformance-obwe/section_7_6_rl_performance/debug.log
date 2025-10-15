@@ -1,0 +1,757 @@
+2025-10-15 22:04:05 - INFO - _setup_debug_logging:155 - ================================================================================
+2025-10-15 22:04:05 - INFO - _setup_debug_logging:156 - DEBUG LOGGING INITIALIZED
+2025-10-15 22:04:05 - INFO - _setup_debug_logging:157 - Log file: validation_output/results/local_test/section_7_6_rl_performance/debug.log
+2025-10-15 22:04:05 - INFO - _setup_debug_logging:158 - Quick test mode: True
+2025-10-15 22:04:05 - INFO - _setup_debug_logging:159 - ================================================================================
+2025-10-15 22:04:05 - INFO - train_rl_agent:1061 - ================================================================================
+2025-10-15 22:04:05 - INFO - train_rl_agent:1062 - Training RL agent (Code_RL design) for scenario: traffic_light_control
+2025-10-15 22:04:05 - INFO - train_rl_agent:1063 -   - Device: gpu
+2025-10-15 22:04:05 - INFO - train_rl_agent:1064 -   - Total timesteps: 100
+2025-10-15 22:04:05 - INFO - train_rl_agent:1065 -   - Checkpoint freq: 50
+2025-10-15 22:04:05 - INFO - train_rl_agent:1066 -   - Hyperparameters: CODE_RL_HYPERPARAMETERS (lr=1e-3, batch=32)
+2025-10-15 22:04:05 - INFO - train_rl_agent:1067 - ================================================================================
+2025-10-15 22:04:05 - INFO - _get_project_root:168 - [PATH] Project root resolved: /kaggle/working/Code-traffic-flow
+2025-10-15 22:04:05 - INFO - _get_checkpoint_dir:227 - [PATH] Checkpoint directory: /kaggle/working/Code-traffic-flow/validation_ch7/checkpoints/section_7_6
+2025-10-15 22:04:05 - INFO - _get_checkpoint_dir:228 - [PATH] Checkpoint directory exists: True
+2025-10-15 22:04:05 - INFO - _get_checkpoint_dir:231 - [PATH] Found 0 existing checkpoints
+2025-10-15 22:04:05 - INFO - _create_scenario_config:602 - [SCENARIO] Created using Code_RL: traffic_light_control.yml
+2025-10-15 22:04:05 - INFO - _create_scenario_config:603 -   Context: Victoria Island Lagos
+2025-10-15 22:04:05 - INFO - _create_scenario_config:604 -   Max densities: 250/120 veh/km
+2025-10-15 22:04:05 - INFO - _create_scenario_config:605 -   Free speeds: 32/28 km/h
+2025-10-15 22:04:05 - INFO - _get_project_root:168 - [PATH] Project root resolved: /kaggle/working/Code-traffic-flow
+2025-10-15 22:04:05 - INFO - _get_cache_dir:245 - [CACHE] Directory: /kaggle/working/Code-traffic-flow/validation_ch7/cache/section_7_6
+2025-10-15 22:04:05 - INFO - _compute_config_hash:258 - [CACHE] Config hash: a6721e38
+2025-10-15 22:04:05 - INFO - _load_rl_cache:536 - [CACHE RL] No cache found for traffic_light_control with config a6721e38
+2025-10-15 22:04:11 - INFO - _compute_config_hash:258 - [CACHE] Config hash: a6721e38
+2025-10-15 22:05:02 - INFO - _get_project_root:168 - [PATH] Project root resolved: /kaggle/working/Code-traffic-flow
+2025-10-15 22:05:02 - INFO - _get_cache_dir:245 - [CACHE] Directory: /kaggle/working/Code-traffic-flow/validation_ch7/cache/section_7_6
+2025-10-15 22:05:02 - INFO - _compute_config_hash:258 - [CACHE] Config hash: a6721e38
+2025-10-15 22:05:02 - INFO - _save_rl_cache:516 - [CACHE RL] Saved metadata to traffic_light_control_a6721e38_rl_cache.pkl
+2025-10-15 22:05:02 - INFO - run_performance_comparison:1293 - ================================================================================
+2025-10-15 22:05:02 - INFO - run_performance_comparison:1294 - Starting run_performance_comparison for scenario: traffic_light_control
+2025-10-15 22:05:02 - INFO - run_performance_comparison:1295 - Device: gpu
+2025-10-15 22:05:02 - INFO - run_performance_comparison:1296 - ================================================================================
+2025-10-15 22:05:02 - INFO - _create_scenario_config:602 - [SCENARIO] Created using Code_RL: traffic_light_control.yml
+2025-10-15 22:05:02 - INFO - _create_scenario_config:603 -   Context: Victoria Island Lagos
+2025-10-15 22:05:02 - INFO - _create_scenario_config:604 -   Max densities: 250/120 veh/km
+2025-10-15 22:05:02 - INFO - _create_scenario_config:605 -   Free speeds: 32/28 km/h
+2025-10-15 22:05:02 - INFO - _get_project_root:168 - [PATH] Project root resolved: /kaggle/working/Code-traffic-flow
+2025-10-15 22:05:02 - INFO - _get_cache_dir:245 - [CACHE] Directory: /kaggle/working/Code-traffic-flow/validation_ch7/cache/section_7_6
+2025-10-15 22:05:02 - INFO - _load_baseline_cache:405 - [CACHE BASELINE] Found universal cache: 40 steps (duration=600.0s)
+2025-10-15 22:05:02 - INFO - _load_baseline_cache:406 - [CACHE BASELINE] Required: 41 steps (duration=600.0s)
+2025-10-15 22:05:02 - INFO - _extend_baseline_cache:440 - [CACHE] Extending cache additively: 40 steps → target 41 steps
+2025-10-15 22:05:02 - INFO - run_control_simulation:734 - ================================================================================
+2025-10-15 22:05:02 - INFO - run_control_simulation:735 - Starting run_control_simulation:
+2025-10-15 22:05:02 - INFO - run_control_simulation:736 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+2025-10-15 22:05:02 - INFO - run_control_simulation:737 -   - duration: 0.0s
+2025-10-15 22:05:02 - INFO - run_control_simulation:738 -   - control_interval: 15.0s
+2025-10-15 22:05:02 - INFO - run_control_simulation:739 -   - device: gpu
+2025-10-15 22:05:02 - INFO - run_control_simulation:740 -   - controller: BaselineController
+2025-10-15 22:05:02 - INFO - run_control_simulation:741 -   - max_control_steps: 1
+2025-10-15 22:05:02 - INFO - run_control_simulation:742 - ================================================================================
+2025-10-15 22:05:02 - INFO - run_control_simulation:747 - Creating TrafficSignalEnvDirect instance...
+2025-10-15 22:05:02 - INFO - run_control_simulation:762 - TrafficSignalEnvDirect created successfully
+2025-10-15 22:05:02 - INFO - run_control_simulation:763 -   SENSITIVITY FIX: Observation segments [3-8] ~ 30-80m from boundary
+2025-10-15 22:05:02 - INFO - run_control_simulation:779 - Calling env.reset()...
+2025-10-15 22:05:02 - INFO - run_control_simulation:781 - env.reset() successful - obs shape: (26,), info: {'episode_step': 0, 'simulation_time': 0.0, 'current_phase': 0}
+2025-10-15 22:05:02 - INFO - run_control_simulation:786 - [RESUME] Setting initial state from cache (shape=(4, 104))
+2025-10-15 22:05:02 - INFO - run_control_simulation:796 - [RESUME] Initial state overridden successfully
+2025-10-15 22:05:02 - INFO - run_control_simulation:800 - INITIAL STATE shape: (4, 104), dtype: float64
+2025-10-15 22:05:02 - INFO - run_control_simulation:803 - INITIAL STATE statistics: mean=7.933704e+00, std=8.178274e+00, min=2.677855e-03, max=1.772026e+01
+2025-10-15 22:05:02 - INFO - run_control_simulation:820 - Starting simulation loop - max 1 control steps
+2025-10-15 22:05:02 - INFO - run_control_simulation:929 - 
+  [BASELINE] [SIMULATION COMPLETED] Summary:
+    - Controller type: BASELINE
+    - Total control steps: 0
+    - Total reward: 0.00
+    - Avg step time: 0.000s (device=gpu)
+    - Simulated time: 0.0s / 0.0s
+    - Wallclock time: 0.0s
+    - Speed ratio: 0.00x real-time
+
+2025-10-15 22:05:02 - INFO - run_control_simulation:930 - Returning 0 state snapshots
+2025-10-15 22:05:02 - INFO - _get_project_root:168 - [PATH] Project root resolved: /kaggle/working/Code-traffic-flow
+2025-10-15 22:05:02 - INFO - _get_cache_dir:245 - [CACHE] Directory: /kaggle/working/Code-traffic-flow/validation_ch7/cache/section_7_6
+2025-10-15 22:05:02 - INFO - _save_baseline_cache:368 - [CACHE BASELINE] Saved 40 states to traffic_light_control_baseline_cache.pkl
+2025-10-15 22:05:02 - INFO - evaluate_traffic_performance:953 - Evaluating performance with 40 state snapshots
+2025-10-15 22:05:02 - INFO - evaluate_traffic_performance:954 -   HASH CHECK - first=-241335000709889361, last=-5555293101664453164
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 0: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - INFO - evaluate_traffic_performance:963 - First state sample - rho_m[10:15]=[0.12099642 0.12250802 0.12360909 0.12428391 0.12465821], w_m[10:15]=[7.2740965  7.26930779 7.26499621 7.26265481 7.26146517]
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 1: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 2: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 3: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 4: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 5: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 6: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 7: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 8: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 9: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 10: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 11: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 12: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 13: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 14: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 15: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 16: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 17: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 18: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 19: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 20: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 21: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 22: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 23: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 24: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 25: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 26: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 27: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 28: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 29: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 30: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 31: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 32: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 33: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 34: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 35: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 36: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 37: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 38: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - DEBUG - evaluate_traffic_performance:960 - State 39: shape=(4, 104), dtype=float64
+2025-10-15 22:05:02 - INFO - evaluate_traffic_performance:965 - Last state sample - rho_m[10:15]=[0.02230073 0.02229694 0.02229543 0.02229482 0.02229456], w_m[10:15]=[17.7152503  17.71823457 17.71941674 17.71989863 17.72010112]
+2025-10-15 22:05:02 - INFO - evaluate_traffic_performance:1019 - Calculated metrics: flow=28.290255, efficiency=4.526441, delay=-174.08s
+2025-10-15 22:05:02 - INFO - run_control_simulation:734 - ================================================================================
+2025-10-15 22:05:02 - INFO - run_control_simulation:735 - Starting run_control_simulation:
+2025-10-15 22:05:02 - INFO - run_control_simulation:736 -   - scenario_path: validation_output/results/local_test/section_7_6_rl_performance/data/scenarios/traffic_light_control.yml
+2025-10-15 22:05:02 - INFO - run_control_simulation:737 -   - duration: 600.0s
+2025-10-15 22:05:02 - INFO - run_control_simulation:738 -   - control_interval: 15.0s
+2025-10-15 22:05:02 - INFO - run_control_simulation:739 -   - device: gpu
+2025-10-15 22:05:02 - INFO - run_control_simulation:740 -   - controller: RLController
+2025-10-15 22:05:02 - INFO - run_control_simulation:741 -   - max_control_steps: 41
+2025-10-15 22:05:02 - INFO - run_control_simulation:742 - ================================================================================
+2025-10-15 22:05:02 - INFO - run_control_simulation:747 - Creating TrafficSignalEnvDirect instance...
+2025-10-15 22:05:02 - INFO - run_control_simulation:762 - TrafficSignalEnvDirect created successfully
+2025-10-15 22:05:02 - INFO - run_control_simulation:763 -   SENSITIVITY FIX: Observation segments [3-8] ~ 30-80m from boundary
+2025-10-15 22:05:02 - INFO - run_control_simulation:779 - Calling env.reset()...
+2025-10-15 22:05:02 - INFO - run_control_simulation:781 - env.reset() successful - obs shape: (26,), info: {'episode_step': 0, 'simulation_time': 0.0, 'current_phase': 0}
+2025-10-15 22:05:02 - INFO - run_control_simulation:800 - INITIAL STATE shape: (4, 104), dtype: float64
+2025-10-15 22:05:02 - INFO - run_control_simulation:820 - Starting simulation loop - max 41 control steps
+2025-10-15 22:05:02 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:02 - INFO - run_control_simulation:835 - STEP 0 START:
+2025-10-15 22:05:02 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:02 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:02 - INFO - run_control_simulation:838 -   Simulation time: 0.00s
+2025-10-15 22:05:02 - INFO - run_control_simulation:853 -   [RL] Reward: -0.010000
+2025-10-15 22:05:02 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:02 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:02 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:02 - INFO - run_control_simulation:872 -     Diff statistics: mean=3.415185e+00, max=8.689480e+00, std=3.626462e+00
+2025-10-15 22:05:02 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.029864, rho_c=0.012787
+2025-10-15 22:05:02 - INFO - run_control_simulation:883 -     Mean velocities: w_m=16.005645, w_c=12.288487
+2025-10-15 22:05:02 - INFO - run_control_simulation:887 -   State hash: -7507336089097447101
+2025-10-15 22:05:02 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:02 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:02 - INFO - run_control_simulation:835 - STEP 1 START:
+2025-10-15 22:05:02 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:02 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:02 - INFO - run_control_simulation:838 -   Simulation time: 15.00s
+2025-10-15 22:05:03 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:03 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:03 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:03 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:03 - INFO - run_control_simulation:872 -     Diff statistics: mean=4.426928e-01, max=1.817399e+00, std=5.601639e-01
+2025-10-15 22:05:03 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.029531, rho_c=0.010996
+2025-10-15 22:05:03 - INFO - run_control_simulation:883 -     Mean velocities: w_m=16.506404, w_c=13.553405
+2025-10-15 22:05:03 - INFO - run_control_simulation:887 -   State hash: -5937790976132121502
+2025-10-15 22:05:03 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:03 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:03 - INFO - run_control_simulation:835 - STEP 2 START:
+2025-10-15 22:05:03 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:03 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:03 - INFO - run_control_simulation:838 -   Simulation time: 30.00s
+2025-10-15 22:05:03 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:03 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:03 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:03 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:03 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.477755e-01, max=7.978900e-01, std=2.282541e-01
+2025-10-15 22:05:03 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.029120, rho_c=0.009077
+2025-10-15 22:05:03 - INFO - run_control_simulation:883 -     Mean velocities: w_m=16.682327, w_c=13.940073
+2025-10-15 22:05:03 - INFO - run_control_simulation:887 -   State hash: -3855252589601445841
+2025-10-15 22:05:03 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:03 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:03 - INFO - run_control_simulation:835 - STEP 3 START:
+2025-10-15 22:05:03 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:03 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:03 - INFO - run_control_simulation:838 -   Simulation time: 45.00s
+2025-10-15 22:05:04 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:04 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:04 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:04 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:04 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.011433e-01, max=6.602001e-01, std=1.740564e-01
+2025-10-15 22:05:04 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.028651, rho_c=0.007139
+2025-10-15 22:05:04 - INFO - run_control_simulation:883 -     Mean velocities: w_m=16.847790, w_c=14.139928
+2025-10-15 22:05:04 - INFO - run_control_simulation:887 -   State hash: 3672747774618444611
+2025-10-15 22:05:04 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:04 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:04 - INFO - run_control_simulation:835 - STEP 4 START:
+2025-10-15 22:05:04 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:04 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:04 - INFO - run_control_simulation:838 -   Simulation time: 60.00s
+2025-10-15 22:05:04 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:04 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:04 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:04 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:04 - INFO - run_control_simulation:872 -     Diff statistics: mean=9.036117e-02, max=6.122320e-01, std=1.605183e-01
+2025-10-15 22:05:04 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.027675, rho_c=0.005389
+2025-10-15 22:05:04 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.030610, w_c=14.311898
+2025-10-15 22:05:04 - INFO - run_control_simulation:887 -   State hash: 5970094610018840420
+2025-10-15 22:05:04 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:04 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:04 - INFO - run_control_simulation:835 - STEP 5 START:
+2025-10-15 22:05:04 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:04 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:04 - INFO - run_control_simulation:838 -   Simulation time: 75.00s
+2025-10-15 22:05:05 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:05 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:05 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:05 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:05 - INFO - run_control_simulation:872 -     Diff statistics: mean=7.248062e-02, max=5.779055e-01, std=1.479756e-01
+2025-10-15 22:05:05 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026795, rho_c=0.004615
+2025-10-15 22:05:05 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.174047, w_c=14.456729
+2025-10-15 22:05:05 - INFO - run_control_simulation:887 -   State hash: -5587567349440478768
+2025-10-15 22:05:05 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:05 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:05 - INFO - run_control_simulation:835 - STEP 6 START:
+2025-10-15 22:05:05 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:05 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:05 - INFO - run_control_simulation:838 -   Simulation time: 90.00s
+2025-10-15 22:05:05 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:05 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:05 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:05 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:05 - INFO - run_control_simulation:872 -     Diff statistics: mean=2.716801e-02, max=3.347270e-01, std=6.831511e-02
+2025-10-15 22:05:05 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026564, rho_c=0.004510
+2025-10-15 22:05:05 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.217842, w_c=14.521270
+2025-10-15 22:05:05 - INFO - run_control_simulation:887 -   State hash: -3801558029429417354
+2025-10-15 22:05:05 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:05 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:05 - INFO - run_control_simulation:835 - STEP 7 START:
+2025-10-15 22:05:05 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:05 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:05 - INFO - run_control_simulation:838 -   Simulation time: 105.00s
+2025-10-15 22:05:06 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:06 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:06 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:06 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:06 - INFO - run_control_simulation:872 -     Diff statistics: mean=6.694845e-03, max=1.151665e-01, std=1.868427e-02
+2025-10-15 22:05:06 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026527, rho_c=0.004492
+2025-10-15 22:05:06 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.225807, w_c=14.540029
+2025-10-15 22:05:06 - INFO - run_control_simulation:887 -   State hash: 280380787983739470
+2025-10-15 22:05:06 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:06 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:06 - INFO - run_control_simulation:835 - STEP 8 START:
+2025-10-15 22:05:06 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:06 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:06 - INFO - run_control_simulation:838 -   Simulation time: 120.00s
+2025-10-15 22:05:06 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:06 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:06 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:06 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:06 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.531779e-03, max=3.087735e-02, std=4.623905e-03
+2025-10-15 22:05:06 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026522, rho_c=0.004488
+2025-10-15 22:05:06 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227208, w_c=14.544746
+2025-10-15 22:05:06 - INFO - run_control_simulation:887 -   State hash: 844824214852455009
+2025-10-15 22:05:06 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:06 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:06 - INFO - run_control_simulation:835 - STEP 9 START:
+2025-10-15 22:05:06 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:06 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:06 - INFO - run_control_simulation:838 -   Simulation time: 135.00s
+2025-10-15 22:05:07 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:07 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:07 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:07 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:07 - INFO - run_control_simulation:872 -     Diff statistics: mean=3.452806e-04, max=7.575118e-03, std=1.097898e-03
+2025-10-15 22:05:07 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004487
+2025-10-15 22:05:07 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227470, w_c=14.545864
+2025-10-15 22:05:07 - INFO - run_control_simulation:887 -   State hash: -6902641430640410117
+2025-10-15 22:05:07 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:07 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:07 - INFO - run_control_simulation:835 - STEP 10 START:
+2025-10-15 22:05:07 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:07 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:07 - INFO - run_control_simulation:838 -   Simulation time: 150.00s
+2025-10-15 22:05:07 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:07 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:07 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:07 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:07 - INFO - run_control_simulation:872 -     Diff statistics: mean=7.730641e-05, max=1.782899e-03, std=2.541467e-04
+2025-10-15 22:05:07 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004487
+2025-10-15 22:05:07 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227521, w_c=14.546121
+2025-10-15 22:05:07 - INFO - run_control_simulation:887 -   State hash: -1946610506443974649
+2025-10-15 22:05:07 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:07 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:07 - INFO - run_control_simulation:835 - STEP 11 START:
+2025-10-15 22:05:07 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:07 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:07 - INFO - run_control_simulation:838 -   Simulation time: 165.00s
+2025-10-15 22:05:08 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:08 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:08 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:08 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:08 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.720545e-05, max=4.102117e-04, std=5.786927e-05
+2025-10-15 22:05:08 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004487
+2025-10-15 22:05:08 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227532, w_c=14.546179
+2025-10-15 22:05:08 - INFO - run_control_simulation:887 -   State hash: 8891238951267088843
+2025-10-15 22:05:08 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:08 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:08 - INFO - run_control_simulation:835 - STEP 12 START:
+2025-10-15 22:05:08 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:08 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:08 - INFO - run_control_simulation:838 -   Simulation time: 180.00s
+2025-10-15 22:05:08 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:08 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:08 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:08 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:08 - INFO - run_control_simulation:872 -     Diff statistics: mean=3.806005e-06, max=9.303081e-05, std=1.302380e-05
+2025-10-15 22:05:08 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:08 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227534, w_c=14.546192
+2025-10-15 22:05:08 - INFO - run_control_simulation:887 -   State hash: -3697319549132542218
+2025-10-15 22:05:08 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:08 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:08 - INFO - run_control_simulation:835 - STEP 13 START:
+2025-10-15 22:05:08 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:08 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:08 - INFO - run_control_simulation:838 -   Simulation time: 195.00s
+2025-10-15 22:05:09 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:09 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:09 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:09 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:09 - INFO - run_control_simulation:872 -     Diff statistics: mean=8.368694e-07, max=2.087843e-05, std=2.904567e-06
+2025-10-15 22:05:09 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:09 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:09 - INFO - run_control_simulation:887 -   State hash: -2598205160262111748
+2025-10-15 22:05:09 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:09 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:09 - INFO - run_control_simulation:835 - STEP 14 START:
+2025-10-15 22:05:09 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:09 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:09 - INFO - run_control_simulation:838 -   Simulation time: 210.00s
+2025-10-15 22:05:09 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:09 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:09 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:09 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:09 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.829616e-07, max=4.646584e-06, std=6.429022e-07
+2025-10-15 22:05:09 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:09 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:09 - INFO - run_control_simulation:887 -   State hash: -1743666512905310104
+2025-10-15 22:05:09 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:09 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:09 - INFO - run_control_simulation:835 - STEP 15 START:
+2025-10-15 22:05:09 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:09 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:09 - INFO - run_control_simulation:838 -   Simulation time: 225.00s
+2025-10-15 22:05:10 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:10 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:10 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:10 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:10 - INFO - run_control_simulation:872 -     Diff statistics: mean=3.978507e-08, max=1.026794e-06, std=1.413697e-07
+2025-10-15 22:05:10 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:10 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:10 - INFO - run_control_simulation:887 -   State hash: 751798979352426594
+2025-10-15 22:05:10 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:10 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:10 - INFO - run_control_simulation:835 - STEP 16 START:
+2025-10-15 22:05:10 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:10 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:10 - INFO - run_control_simulation:838 -   Simulation time: 240.00s
+2025-10-15 22:05:10 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:10 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:10 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:10 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:10 - INFO - run_control_simulation:872 -     Diff statistics: mean=8.607088e-09, max=2.254755e-07, std=3.090290e-08
+2025-10-15 22:05:10 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:10 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:10 - INFO - run_control_simulation:887 -   State hash: -2513471752693836224
+2025-10-15 22:05:10 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:10 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:10 - INFO - run_control_simulation:835 - STEP 17 START:
+2025-10-15 22:05:10 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:10 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:10 - INFO - run_control_simulation:838 -   Simulation time: 255.00s
+2025-10-15 22:05:11 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:11 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:11 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:11 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:11 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.852997e-09, max=4.922894e-08, std=6.718483e-09
+2025-10-15 22:05:11 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:11 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:11 - INFO - run_control_simulation:887 -   State hash: 7400299829831084019
+2025-10-15 22:05:11 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:11 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:11 - INFO - run_control_simulation:835 - STEP 18 START:
+2025-10-15 22:05:11 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:11 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:11 - INFO - run_control_simulation:838 -   Simulation time: 270.00s
+2025-10-15 22:05:11 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:11 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:11 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:11 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:11 - INFO - run_control_simulation:872 -     Diff statistics: mean=3.970844e-10, max=1.069122e-08, std=1.453212e-09
+2025-10-15 22:05:11 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:11 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:11 - INFO - run_control_simulation:887 -   State hash: 1297355356402696690
+2025-10-15 22:05:11 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:11 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:11 - INFO - run_control_simulation:835 - STEP 19 START:
+2025-10-15 22:05:11 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:11 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:11 - INFO - run_control_simulation:838 -   Simulation time: 285.00s
+2025-10-15 22:05:11 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:11 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:11 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:11 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:11 - INFO - run_control_simulation:872 -     Diff statistics: mean=8.472035e-11, max=2.310315e-09, std=3.128290e-10
+2025-10-15 22:05:11 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:11 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:11 - INFO - run_control_simulation:887 -   State hash: -2759238306709583421
+2025-10-15 22:05:11 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:11 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:11 - INFO - run_control_simulation:835 - STEP 20 START:
+2025-10-15 22:05:11 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:11 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:11 - INFO - run_control_simulation:838 -   Simulation time: 300.00s
+2025-10-15 22:05:12 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:12 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:12 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:12 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:12 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.800023e-11, max=4.969092e-10, std=6.703790e-11
+2025-10-15 22:05:12 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:12 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:12 - INFO - run_control_simulation:887 -   State hash: 8947334744294200338
+2025-10-15 22:05:12 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:12 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:12 - INFO - run_control_simulation:835 - STEP 21 START:
+2025-10-15 22:05:12 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:12 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:12 - INFO - run_control_simulation:838 -   Simulation time: 315.00s
+2025-10-15 22:05:12 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:12 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:12 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:12 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:12 - INFO - run_control_simulation:872 -     Diff statistics: mean=3.809539e-12, max=1.064127e-10, std=1.430516e-11
+2025-10-15 22:05:12 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:12 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:12 - INFO - run_control_simulation:887 -   State hash: -4627689392388707396
+2025-10-15 22:05:12 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:12 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:12 - INFO - run_control_simulation:835 - STEP 22 START:
+2025-10-15 22:05:12 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:12 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:12 - INFO - run_control_simulation:838 -   Simulation time: 330.00s
+2025-10-15 22:05:13 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:13 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:13 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:13 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:13 - INFO - run_control_simulation:872 -     Diff statistics: mean=8.033112e-13, max=2.269473e-11, std=3.040188e-12
+2025-10-15 22:05:13 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:13 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:13 - INFO - run_control_simulation:887 -   State hash: 4655085203859509369
+2025-10-15 22:05:13 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:13 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:13 - INFO - run_control_simulation:835 - STEP 23 START:
+2025-10-15 22:05:13 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:13 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:13 - INFO - run_control_simulation:838 -   Simulation time: 345.00s
+2025-10-15 22:05:13 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:13 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:13 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:13 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:13 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.687630e-13, max=4.812151e-12, std=6.429026e-13
+2025-10-15 22:05:13 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:13 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:13 - INFO - run_control_simulation:887 -   State hash: -8692693466215731060
+2025-10-15 22:05:13 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:13 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:13 - INFO - run_control_simulation:835 - STEP 24 START:
+2025-10-15 22:05:13 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:13 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:13 - INFO - run_control_simulation:838 -   Simulation time: 360.00s
+2025-10-15 22:05:14 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:14 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:14 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:14 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:14 - INFO - run_control_simulation:872 -     Diff statistics: mean=3.531257e-14, max=1.024958e-12, std=1.363964e-13
+2025-10-15 22:05:14 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:14 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:14 - INFO - run_control_simulation:887 -   State hash: -813260378196791541
+2025-10-15 22:05:14 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:14 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:14 - INFO - run_control_simulation:835 - STEP 25 START:
+2025-10-15 22:05:14 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:14 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:14 - INFO - run_control_simulation:838 -   Simulation time: 375.00s
+2025-10-15 22:05:14 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:14 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:14 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:14 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:14 - INFO - run_control_simulation:872 -     Diff statistics: mean=7.431160e-15, max=2.113865e-13, std=2.849219e-14
+2025-10-15 22:05:14 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:14 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:14 - INFO - run_control_simulation:887 -   State hash: 3872615528008165082
+2025-10-15 22:05:14 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:14 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:14 - INFO - run_control_simulation:835 - STEP 26 START:
+2025-10-15 22:05:14 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:14 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:14 - INFO - run_control_simulation:838 -   Simulation time: 390.00s
+2025-10-15 22:05:15 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:15 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:15 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:15 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:15 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.380187e-15, max=4.796163e-14, std=5.884982e-15
+2025-10-15 22:05:15 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:15 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:15 - INFO - run_control_simulation:887 -   State hash: -5087349317401764755
+2025-10-15 22:05:15 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:15 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:15 - INFO - run_control_simulation:835 - STEP 27 START:
+2025-10-15 22:05:15 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:15 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:15 - INFO - run_control_simulation:838 -   Simulation time: 405.00s
+2025-10-15 22:05:15 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:15 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:15 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:15 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:15 - INFO - run_control_simulation:872 -     Diff statistics: mean=2.481687e-16, max=1.065814e-14, std=1.348906e-15
+2025-10-15 22:05:15 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:15 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:15 - INFO - run_control_simulation:887 -   State hash: -2327991379629599775
+2025-10-15 22:05:15 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:15 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:15 - INFO - run_control_simulation:835 - STEP 28 START:
+2025-10-15 22:05:15 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:15 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:15 - INFO - run_control_simulation:838 -   Simulation time: 420.00s
+2025-10-15 22:05:16 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:16 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:16 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:16 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:16 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.153883e-16, max=7.105427e-15, std=8.319311e-16
+2025-10-15 22:05:16 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:16 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:16 - INFO - run_control_simulation:887 -   State hash: -1036382967346671196
+2025-10-15 22:05:16 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:16 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:16 - INFO - run_control_simulation:835 - STEP 29 START:
+2025-10-15 22:05:16 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:16 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:16 - INFO - run_control_simulation:838 -   Simulation time: 435.00s
+2025-10-15 22:05:16 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:16 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:16 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:16 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:16 - INFO - run_control_simulation:872 -     Diff statistics: mean=2.135774e-17, max=5.329071e-15, std=2.880643e-16
+2025-10-15 22:05:16 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:16 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:16 - INFO - run_control_simulation:887 -   State hash: -4905179473273595169
+2025-10-15 22:05:16 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:16 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:16 - INFO - run_control_simulation:835 - STEP 30 START:
+2025-10-15 22:05:16 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:16 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:16 - INFO - run_control_simulation:838 -   Simulation time: 450.00s
+2025-10-15 22:05:17 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:17 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:17 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:17 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:17 - INFO - run_control_simulation:872 -     Diff statistics: mean=0.000000e+00, max=0.000000e+00, std=0.000000e+00
+2025-10-15 22:05:17 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:17 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:17 - INFO - run_control_simulation:887 -   State hash: -4905179473273595169
+2025-10-15 22:05:17 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:17 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:17 - INFO - run_control_simulation:835 - STEP 31 START:
+2025-10-15 22:05:17 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:17 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:17 - INFO - run_control_simulation:838 -   Simulation time: 465.00s
+2025-10-15 22:05:17 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:17 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:17 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:17 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:17 - INFO - run_control_simulation:872 -     Diff statistics: mean=0.000000e+00, max=0.000000e+00, std=0.000000e+00
+2025-10-15 22:05:17 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:17 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:17 - INFO - run_control_simulation:887 -   State hash: -4905179473273595169
+2025-10-15 22:05:17 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:17 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:17 - INFO - run_control_simulation:835 - STEP 32 START:
+2025-10-15 22:05:17 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:17 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:17 - INFO - run_control_simulation:838 -   Simulation time: 480.00s
+2025-10-15 22:05:18 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:18 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:18 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:18 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:18 - INFO - run_control_simulation:872 -     Diff statistics: mean=0.000000e+00, max=0.000000e+00, std=0.000000e+00
+2025-10-15 22:05:18 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:18 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:18 - INFO - run_control_simulation:887 -   State hash: -4905179473273595169
+2025-10-15 22:05:18 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:18 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:18 - INFO - run_control_simulation:835 - STEP 33 START:
+2025-10-15 22:05:18 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:18 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:18 - INFO - run_control_simulation:838 -   Simulation time: 495.00s
+2025-10-15 22:05:18 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:18 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:18 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:18 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:18 - INFO - run_control_simulation:872 -     Diff statistics: mean=0.000000e+00, max=0.000000e+00, std=0.000000e+00
+2025-10-15 22:05:18 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:18 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:18 - INFO - run_control_simulation:887 -   State hash: -4905179473273595169
+2025-10-15 22:05:18 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:18 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:18 - INFO - run_control_simulation:835 - STEP 34 START:
+2025-10-15 22:05:18 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:18 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:18 - INFO - run_control_simulation:838 -   Simulation time: 510.00s
+2025-10-15 22:05:19 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:19 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:19 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:19 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:19 - INFO - run_control_simulation:872 -     Diff statistics: mean=9.931605e-17, max=7.105427e-15, std=6.503592e-16
+2025-10-15 22:05:19 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:19 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:19 - INFO - run_control_simulation:887 -   State hash: 6502389724230642639
+2025-10-15 22:05:19 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:19 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:19 - INFO - run_control_simulation:835 - STEP 35 START:
+2025-10-15 22:05:19 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:19 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:19 - INFO - run_control_simulation:838 -   Simulation time: 525.00s
+2025-10-15 22:05:19 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:19 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:19 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:19 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:19 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.728573e-17, max=7.105427e-15, std=3.479448e-16
+2025-10-15 22:05:19 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:19 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:19 - INFO - run_control_simulation:887 -   State hash: 4575526918289234759
+2025-10-15 22:05:19 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:19 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:19 - INFO - run_control_simulation:835 - STEP 36 START:
+2025-10-15 22:05:19 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:19 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:19 - INFO - run_control_simulation:838 -   Simulation time: 540.00s
+2025-10-15 22:05:20 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:20 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:20 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:20 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:20 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.310008e-17, max=3.552714e-15, std=1.943100e-16
+2025-10-15 22:05:20 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:20 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:20 - INFO - run_control_simulation:887 -   State hash: -1937670630310555133
+2025-10-15 22:05:20 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:20 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:20 - INFO - run_control_simulation:835 - STEP 37 START:
+2025-10-15 22:05:20 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:20 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:20 - INFO - run_control_simulation:838 -   Simulation time: 555.00s
+2025-10-15 22:05:20 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:20 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:20 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:20 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:20 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.308966e-17, max=3.552714e-15, std=1.943104e-16
+2025-10-15 22:05:20 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:20 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:20 - INFO - run_control_simulation:887 -   State hash: 3230967479424243840
+2025-10-15 22:05:20 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:20 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:20 - INFO - run_control_simulation:835 - STEP 38 START:
+2025-10-15 22:05:20 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:20 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:20 - INFO - run_control_simulation:838 -   Simulation time: 570.00s
+2025-10-15 22:05:21 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:21 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: False
+2025-10-15 22:05:21 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:21 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:21 - INFO - run_control_simulation:872 -     Diff statistics: mean=1.657578e-19, max=1.040834e-17, std=1.004599e-18
+2025-10-15 22:05:21 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:21 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:21 - INFO - run_control_simulation:887 -   State hash: 8833583509174074804
+2025-10-15 22:05:21 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:21 - INFO - run_control_simulation:834 - ================================================================================
+2025-10-15 22:05:21 - INFO - run_control_simulation:835 - STEP 39 START:
+2025-10-15 22:05:21 - INFO - run_control_simulation:836 -   Controller: RLController
+2025-10-15 22:05:21 - INFO - run_control_simulation:837 -   Action: 1.000000
+2025-10-15 22:05:21 - INFO - run_control_simulation:838 -   Simulation time: 585.00s
+2025-10-15 22:05:21 - INFO - run_control_simulation:853 -   [RL] Reward: 0.000000
+2025-10-15 22:05:21 - INFO - run_control_simulation:854 -   Terminated: False, Truncated: True
+2025-10-15 22:05:21 - INFO - run_control_simulation:870 -   STATE EVOLUTION:
+2025-10-15 22:05:21 - INFO - run_control_simulation:871 -     Before shape: (4, 104), After shape: (4, 104)
+2025-10-15 22:05:21 - INFO - run_control_simulation:872 -     Diff statistics: mean=0.000000e+00, max=0.000000e+00, std=0.000000e+00
+2025-10-15 22:05:21 - INFO - run_control_simulation:882 -     Mean densities: rho_m=0.026521, rho_c=0.004486
+2025-10-15 22:05:21 - INFO - run_control_simulation:883 -     Mean velocities: w_m=17.227535, w_c=14.546195
+2025-10-15 22:05:21 - INFO - run_control_simulation:887 -   State hash: 8833583509174074804
+2025-10-15 22:05:21 - INFO - run_control_simulation:889 - ================================================================================
+2025-10-15 22:05:21 - INFO - run_control_simulation:929 - 
+  [RL] [SIMULATION COMPLETED] Summary:
+    - Controller type: RL
+    - Total control steps: 40
+    - Total reward: -0.01
+    - Avg step time: 0.492s (device=gpu)
+    - Simulated time: 600.0s / 600.0s
+    - Wallclock time: 19.7s
+    - Speed ratio: 30.47x real-time
+
+2025-10-15 22:05:21 - INFO - run_control_simulation:930 - Returning 40 state snapshots
+2025-10-15 22:05:21 - INFO - evaluate_traffic_performance:953 - Evaluating performance with 40 state snapshots
+2025-10-15 22:05:21 - INFO - evaluate_traffic_performance:954 -   HASH CHECK - first=-7507336089097447101, last=8833583509174074804
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 0: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - INFO - evaluate_traffic_performance:963 - First state sample - rho_m[10:15]=[0.02598921 0.02656696 0.02717803 0.02779986 0.02840156], w_m[10:15]=[16.58094357 16.52130442 16.46653825 16.4189181  16.3802789 ]
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 1: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 2: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 3: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 4: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 5: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 6: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 7: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 8: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 9: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 10: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 11: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 12: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 13: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 14: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 15: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 16: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 17: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 18: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 19: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 20: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 21: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 22: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 23: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 24: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 25: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 26: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 27: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 28: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 29: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 30: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 31: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 32: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 33: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 34: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 35: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 36: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 37: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 38: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - DEBUG - evaluate_traffic_performance:960 - State 39: shape=(4, 104), dtype=float64
+2025-10-15 22:05:21 - INFO - evaluate_traffic_performance:965 - Last state sample - rho_m[10:15]=[0.02209535 0.02209194 0.02209061 0.02209007 0.02208984], w_m[10:15]=[17.75361676 17.7563278  17.75738546 17.75781042 17.75798681]
+2025-10-15 22:05:21 - INFO - evaluate_traffic_performance:1019 - Calculated metrics: flow=32.425207, efficiency=5.188033, delay=-175.97s
+2025-10-15 22:05:21 - INFO - run_performance_comparison:1409 - Baseline performance: {'total_flow': 28.290254626590418, 'avg_speed': 865.9984289058208, 'avg_density': 0.059881334847858826, 'efficiency': 4.526440740254467, 'delay': -174.08243257789172, 'throughput': 141451.27313295208}
+2025-10-15 22:05:21 - INFO - run_performance_comparison:1410 - RL performance: {'total_flow': 32.42520699763865, 'avg_speed': 1285.401091376977, 'avg_density': 0.025475069317121752, 'efficiency': 5.188033119622183, 'delay': -175.96627867200107, 'throughput': 162126.03498819322}
+2025-10-15 22:05:21 - INFO - run_performance_comparison:1430 - Flow improvement: 14.616%
+2025-10-15 22:05:21 - INFO - run_performance_comparison:1431 - Efficiency improvement: 14.616%
+2025-10-15 22:05:21 - INFO - run_performance_comparison:1432 - Delay reduction: 0.000%
