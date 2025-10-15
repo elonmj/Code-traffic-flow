@@ -756,9 +756,9 @@ class RLPerformanceValidationTest(ValidationSection):
                 
                 # Copy cached state to runner
                 if device == 'gpu':
-                    env.runner.d_U.copy_from_host(initial_state)
-                    # Synchronize to ensure GPU state is updated
-                    env.runner.d_U.synchronize()
+                    # For GPU, create new device array from host data
+                    from numba import cuda
+                    env.runner.d_U = cuda.to_device(initial_state)
                 else:
                     env.runner.U = initial_state.copy()
                 
