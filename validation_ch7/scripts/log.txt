@@ -237,3 +237,16 @@
 2025-10-16 08:03:40,742 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-16 08:03:47,970 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-16 08:03:50,589 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-rfht
+2025-10-16 08:24:19,890 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-16 08:24:20,017 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-16 08:24:20,084 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-16 08:24:20,085 - validation_kaggle_manager - INFO -   M  rz_model/numerics/__pycache__/boundary_conditions.cpython-312.pyc (Modified (staged))
+2025-10-16 08:24:20,085 - validation_kaggle_manager - INFO -    M arz_model/numerics/__pycache__/time_integration.cpython-312.pyc (Modified (unstaged))
+2025-10-16 08:24:20,085 - validation_kaggle_manager - INFO -    M validation_ch7/scripts/log.txt (Modified (unstaged))
+2025-10-16 08:24:20,086 - validation_kaggle_manager - INFO -   ?? validation_ch7/scripts/validation_output/results/joselonm_arz-validation-76rlperformance-rfht/ (Untracked)
+2025-10-16 08:24:20,086 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-16 08:24:20,463 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-16 08:24:21,462 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-16 08:24:21,462 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-16 08:24:56,203 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-16 08:24:58,762 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-lmuj

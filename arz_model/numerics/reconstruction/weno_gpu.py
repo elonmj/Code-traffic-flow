@@ -106,7 +106,7 @@ def compute_flux_divergence_weno_kernel(d_U, d_fluxes, d_L_out, dx, epsilon, num
             d_L_out[var, idx] = -(flux_right - flux_left) * dx_inv
 
 
-def calculate_spatial_discretization_weno_gpu(d_U_in, grid, params):
+def calculate_spatial_discretization_weno_gpu(d_U_in, grid, params, current_bc_params=None):
     """
     Version GPU de calculate_spatial_discretization_weno utilisant les kernels CUDA WENO5.
     
@@ -120,6 +120,7 @@ def calculate_spatial_discretization_weno_gpu(d_U_in, grid, params):
         d_U_in (cuda.devicearray.DeviceNDArray): État conservé sur GPU (4, N_total)
         grid (Grid1D): Objet grille
         params (ModelParameters): Paramètres du modèle
+        current_bc_params (dict, optional): Paramètres BC dynamiques (mise à jour pendant la simulation)
         
     Returns:
         cuda.devicearray.DeviceNDArray: L(U) = -dF/dx sur GPU (4, N_total)
@@ -134,7 +135,8 @@ def calculate_spatial_discretization_weno_gpu(d_U_in, grid, params):
     # 0. Application des conditions aux limites sur l'état d'entrée
     d_U_bc = cuda.device_array_like(d_U_in)
     d_U_bc[:] = d_U_in[:]  # Copie
-    boundary_conditions.apply_boundary_conditions_gpu(d_U_bc, grid, params)
+    # ✅ FIX BUG #36: Use dispatcher with current_bc_params instead of direct GPU function
+    boundary_conditions.apply_boundary_conditions(d_U_bc, grid, params, current_bc_params)
     
     # 1. Conversion vers les variables primitives (GPU)
     d_P = conserved_to_primitives_arr_gpu(
@@ -317,6 +319,14 @@ def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, curre
     
     print(f"[DEBUG_WENO_GPU_NATIVE] Returned from dispatcher")
     
+    # ✅ DEBUG ULTRA-DEEP: Check ghost cell values after BC application
+    U_bc_check = d_U_bc.copy_to_host()
+    print(f"[DEBUG_BC_RESULT] Ghost cells after BC application:")
+    print(f"  Left ghost (motorcycle density): {U_bc_check[0, :n_ghost]}")
+    print(f"  Left ghost (motorcycle momentum): {U_bc_check[1, :n_ghost]}")
+    print(f"  First 3 physical cells (motorcycle density): {U_bc_check[0, n_ghost:n_ghost+3]}")
+    print(f"  First physical cell index: {n_ghost}, value: {U_bc_check[0, n_ghost]}")
+    
     # 1. Conversion conservées → primitives (utiliser la version CPU temporairement)
     U_bc_cpu = d_U_bc.copy_to_host()
     P_cpu = conserved_to_primitives_arr(
@@ -346,12 +356,19 @@ def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, curre
     n_interfaces = N_physical + 1
     blockspergrid_flux = (n_interfaces + threadsperblock - 1) // threadsperblock
     
+    # ✅ DEBUG: Check primitives before flux calculation
+    print(f"[DEBUG_PRIMITIVES] P_left first 3 values (rho_m): {d_P_left[0, :n_ghost+3].copy_to_host()}")
+    print(f"[DEBUG_PRIMITIVES] P_right first 3 values (rho_m): {d_P_right[0, :n_ghost+3].copy_to_host()}")
+    
     _compute_weno_fluxes_kernel[blockspergrid_flux, threadsperblock](
         d_P_left, d_P_right, d_fluxes, 
         params.alpha, params.rho_jam, params.epsilon,
         params.K_m, params.gamma_m, params.K_c, params.gamma_c,
         n_ghost, N_physical
     )
+    
+    # ✅ DEBUG: Check fluxes after calculation
+    print(f"[DEBUG_FLUXES] d_fluxes[0, :5] (rho_m fluxes at first interfaces): {d_fluxes[0, :5].copy_to_host()}")
     
     # 4. Calcul de la divergence des flux L(U) = -dF/dx
     d_L_U = cuda.device_array_like(d_U_in)

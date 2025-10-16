@@ -1,2 +1,0 @@
-scenario,success,baseline_efficiency,rl_efficiency,efficiency_improvement_pct,baseline_flow,rl_flow,flow_improvement_pct,baseline_delay,rl_delay,delay_reduction_pct
-traffic_light_control,False,4.526440740254467,4.522074670043578,-0.09645702797035402,28.290254626590418,28.262966687772366,-0.09645702797034461,-174.08243257789172,-174.0368915421376,0.0
