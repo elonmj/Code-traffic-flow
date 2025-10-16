@@ -429,14 +429,17 @@ def _compute_weno_fluxes_kernel(d_P_left, d_P_right, d_fluxes,
 def _compute_flux_divergence_weno_kernel(d_fluxes, d_L_U, dx, num_ghost_cells, N_physical):
     """
     Kernel pour calculer L(U) = -dF/dx.
+    
+    ✅ BUG FIX: Write to physical cell indices (0..N_physical-1), not absolute indices including ghosts.
     """
     idx = cuda.grid(1)
     
     if idx < N_physical:
-        j = num_ghost_cells + idx
+        j = num_ghost_cells + idx  # Absolute index in flux array (which includes ghost cells)
         dx_inv = 1.0 / dx
         
         for var in range(4):
-            flux_right = d_fluxes[var, j]      # F_{j+1/2}
+            flux_right = d_fluxes[var, j]      # F_{j+1/2}  
             flux_left = d_fluxes[var, j-1]     # F_{j-1/2}
-            d_L_U[var, j] = -(flux_right - flux_left) * dx_inv
+            # ✅ FIX: Store result at physical cell index (0..N_physical-1), not absolute j
+            d_L_U[var, idx] = -(flux_right - flux_left) * dx_inv
