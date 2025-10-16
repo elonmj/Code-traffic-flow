@@ -270,7 +270,7 @@ def _central_upwind_flux_gpu_device(U_L, U_R, flux_out, alpha, rho_jam, epsilon,
         flux_out[i] = 0.5 * (U_L[i] + U_R[i])  # Placeholder
 
 
-def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params):
+def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, current_bc_params=None):
     """
     Implémentation GPU native complète de la discrétisation spatiale WENO5.
     
@@ -285,6 +285,7 @@ def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params):
         d_U_in: État conservé sur GPU (4, N_total)
         grid: Objet grille
         params: Paramètres du modèle
+        current_bc_params: (Optional) Mise à jour des paramètres BC (pour inflow dynamique)
         
     Returns:
         cuda.devicearray.DeviceNDArray: L(U) = -dF/dx sur GPU (4, N_total)
@@ -297,8 +298,8 @@ def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params):
     d_U_bc = cuda.device_array_like(d_U_in)
     d_U_bc[:] = d_U_in[:]
     
-    # Utiliser la version GPU des conditions aux limites
-    boundary_conditions.apply_boundary_conditions_gpu(d_U_bc, grid, params)
+    # Utiliser le dispatcher des conditions aux limites (passe current_bc_params si fourni)
+    boundary_conditions.apply_boundary_conditions(d_U_bc, grid, params, current_bc_params)
     
     # 1. Conversion conservées → primitives (utiliser la version CPU temporairement)
     U_bc_cpu = d_U_bc.copy_to_host()

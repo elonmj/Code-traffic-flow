@@ -548,21 +548,21 @@ class SimulationRunner:
                     # Use network-aware time integration
                     if self.device == 'gpu':
                         self.d_U = time_integration.strang_splitting_step_with_network(
-                            self.d_U, dt, self.grid, self.params, self.nodes, self.network_coupling
+                            self.d_U, dt, self.grid, self.params, self.nodes, self.network_coupling, self.current_bc_params
                         )
                         current_U = self.d_U
                     else:
                         self.U = time_integration.strang_splitting_step_with_network(
-                            self.U, dt, self.grid, self.params, self.nodes, self.network_coupling
+                            self.U, dt, self.grid, self.params, self.nodes, self.network_coupling, self.current_bc_params
                         )
                         current_U = self.U
                 else:
                     # Standard time integration
                     if self.device == 'gpu':
-                        self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, d_R=self.d_R)
+                        self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, self.d_R, self.current_bc_params)
                         current_U = self.d_U
                     else:
-                        self.U = time_integration.strang_splitting_step(self.U, dt, self.grid, self.params)
+                        self.U = time_integration.strang_splitting_step(self.U, dt, self.grid, self.params, current_bc_params=self.current_bc_params)
                         current_U = self.U
 
 

@@ -384,7 +384,7 @@ def solve_ode_step_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_ode: float, gr
 
 # --- Strang Splitting Step ---
 
-def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelParameters, d_R=None):
+def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelParameters, d_R=None, current_bc_params: dict | None = None):
     """
     Performs one full time step using Strang splitting.
     Handles both CPU and GPU arrays based on params.device.
@@ -396,6 +396,7 @@ def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelPara
         params (ModelParameters): Model parameters (including device).
         d_R (cuda.devicearray.DeviceNDArray, optional): GPU road quality array.
                                                         Required if params.device == 'gpu'. Defaults to None.
+        current_bc_params (dict | None): Mise à jour des paramètres BC (pour inflow dynamique). Defaults to None.
 
     Returns:
         np.ndarray or cuda.devicearray.DeviceNDArray: State array at time n+1 (same type as input).
@@ -412,17 +413,17 @@ def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelPara
         # Step 1: Solve ODEs for dt/2
         d_U_star = solve_ode_step_gpu(d_U_n, dt / 2.0, grid, params, d_R)
 
-        # Step 2: Solve Hyperbolic part for full dt
+        # Step 2: Solve Hyperbolic part for full dt (with current_bc_params for dynamic BC)
         # Dynamic solver selection
         if params.spatial_scheme == 'first_order' and params.time_scheme == 'euler':
             # Use SSP-RK3 as fallback for simple first-order Euler GPU
-            d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
+            d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params, current_bc_params)
         elif params.spatial_scheme == 'first_order' and params.time_scheme == 'ssprk3':
-            d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
+            d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params, current_bc_params)
         elif params.spatial_scheme == 'weno5' and params.time_scheme == 'euler':
-            d_U_ss = solve_hyperbolic_step_weno_gpu(d_U_star, dt, grid, params)
+            d_U_ss = solve_hyperbolic_step_weno_gpu(d_U_star, dt, grid, params, current_bc_params)
         elif params.spatial_scheme == 'weno5' and params.time_scheme == 'ssprk3':
-            d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params)
+            d_U_ss = solve_hyperbolic_step_ssprk3_gpu(d_U_star, dt, grid, params, current_bc_params)
         else:
             raise ValueError(f"GPU device currently supports: "
                            f"('first_order', 'euler'), ('first_order', 'ssprk3'), "
@@ -611,7 +612,7 @@ def compute_flux_divergence_first_order(U: np.ndarray, grid: Grid1D, params: Mod
 
 # --- GPU WENO and SSP-RK3 Implementations ---
 
-def solve_hyperbolic_step_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hyp: float, grid: Grid1D, params: ModelParameters) -> cuda.devicearray.DeviceNDArray:
+def solve_hyperbolic_step_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hyp: float, grid: Grid1D, params: ModelParameters, current_bc_params: dict | None = None) -> cuda.devicearray.DeviceNDArray:
     """
     Version GPU générique de l'étape hyperbolique - utilise SSP-RK3 par défaut.
     Cette fonction est un wrapper qui dirige vers la bonne implémentation selon le schéma.
@@ -621,6 +622,7 @@ def solve_hyperbolic_step_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hyp: fl
         dt_hyp (float): Pas de temps hyperbolique
         grid (Grid1D): Objet grille
         params (ModelParameters): Paramètres du modèle
+        current_bc_params (dict | None): Mise à jour des paramètres BC (pour inflow dynamique)
 
     Returns:
         cuda.devicearray.DeviceNDArray: État mis à jour après intégration sur GPU
@@ -632,10 +634,10 @@ def solve_hyperbolic_step_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hyp: fl
         raise TypeError("d_U_in must be a CUDA device array")
     
     # Utiliser SSP-RK3 par défaut pour la compatibilité
-    return solve_hyperbolic_step_ssprk3_gpu(d_U_in, dt_hyp, grid, params)
+    return solve_hyperbolic_step_ssprk3_gpu(d_U_in, dt_hyp, grid, params, current_bc_params)
 
 
-def solve_hyperbolic_step_weno_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hyp: float, grid: Grid1D, params: ModelParameters) -> cuda.devicearray.DeviceNDArray:
+def solve_hyperbolic_step_weno_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hyp: float, grid: Grid1D, params: ModelParameters, current_bc_params: dict | None = None) -> cuda.devicearray.DeviceNDArray:
     """
     Version GPU de solve_hyperbolic_step_weno_cpu() utilisant WENO5 + Euler.
     
@@ -644,6 +646,7 @@ def solve_hyperbolic_step_weno_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hy
         dt_hyp (float): Pas de temps hyperbolique
         grid (Grid1D): Objet grille
         params (ModelParameters): Paramètres du modèle
+        current_bc_params (dict | None): Mise à jour des paramètres BC (pour inflow dynamique)
 
     Returns:
         cuda.devicearray.DeviceNDArray: État mis à jour après WENO5 + Euler sur GPU
@@ -655,7 +658,7 @@ def solve_hyperbolic_step_weno_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hy
         raise TypeError("d_U_in must be a CUDA device array")
     
     # Calcul de la discrétisation spatiale L(U) = -dF/dx avec WENO5 GPU
-    d_L_U = calculate_spatial_discretization_weno_gpu(d_U_in, grid, params)
+    d_L_U = calculate_spatial_discretization_weno_gpu(d_U_in, grid, params, current_bc_params)
     
     # Mise à jour temporelle Euler sur GPU
     d_U_out = cuda.device_array_like(d_U_in)
@@ -673,7 +676,7 @@ def solve_hyperbolic_step_weno_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hy
     return d_U_out
 
 
-def solve_hyperbolic_step_ssprk3_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hyp: float, grid: Grid1D, params: ModelParameters) -> cuda.devicearray.DeviceNDArray:
+def solve_hyperbolic_step_ssprk3_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hyp: float, grid: Grid1D, params: ModelParameters, current_bc_params: dict | None = None) -> cuda.devicearray.DeviceNDArray:
     """
     Version GPU de solve_hyperbolic_step_ssprk3() utilisant les kernels CUDA existants.
     
@@ -686,6 +689,7 @@ def solve_hyperbolic_step_ssprk3_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_
         dt_hyp (float): Pas de temps hyperbolique
         grid (Grid1D): Objet grille
         params (ModelParameters): Paramètres du modèle
+        current_bc_params (dict | None): Mise à jour des paramètres BC (pour inflow dynamique)
 
     Returns:
         cuda.devicearray.DeviceNDArray: État mis à jour après SSP-RK3 sur GPU
@@ -722,8 +726,8 @@ def solve_hyperbolic_step_ssprk3_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_
             (N_physical + 255) // 256, 256
         ](d_U_state, d_U_extended, n_ghost, N_physical)
         
-        # Appliquer les conditions aux limites
-        boundary_conditions.apply_boundary_conditions_gpu(d_U_extended, grid, params)
+        # Appliquer les conditions aux limites avec current_bc_params
+        boundary_conditions.apply_boundary_conditions(d_U_extended, grid, params, current_bc_params)
         
         # Calculer la discrétisation spatiale selon le schéma choisi
         if params.spatial_scheme == 'first_order':
@@ -736,8 +740,8 @@ def solve_hyperbolic_step_ssprk3_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_
             ](d_U_extended, d_fluxes, d_L_out, grid.dx, params.epsilon, n_ghost, N_physical)
             
         elif params.spatial_scheme == 'weno5':
-            # Utiliser WENO5 GPU
-            d_L_extended = calculate_spatial_discretization_weno_gpu(d_U_extended, grid, params)
+            # Utiliser WENO5 GPU avec current_bc_params
+            d_L_extended = calculate_spatial_discretization_weno_gpu(d_U_extended, grid, params, current_bc_params)
             
             # Extraire les cellules physiques et transposer vers le format (N_physical, 4)
             _extract_physical_cells_kernel[
@@ -787,7 +791,7 @@ def solve_hyperbolic_step_ssprk3_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_
     return d_U_out
 
 
-def calculate_spatial_discretization_weno_gpu(d_U_in: cuda.devicearray.DeviceNDArray, grid: Grid1D, params: ModelParameters) -> cuda.devicearray.DeviceNDArray:
+def calculate_spatial_discretization_weno_gpu(d_U_in: cuda.devicearray.DeviceNDArray, grid: Grid1D, params: ModelParameters, current_bc_params: dict | None = None) -> cuda.devicearray.DeviceNDArray:
     """
     Version GPU de calculate_spatial_discretization_weno utilisant les kernels CUDA WENO5 existants.
     
@@ -795,6 +799,7 @@ def calculate_spatial_discretization_weno_gpu(d_U_in: cuda.devicearray.DeviceNDA
         d_U_in (cuda.devicearray.DeviceNDArray): État conservé sur GPU (4, N_total)
         grid (Grid1D): Objet grille
         params (ModelParameters): Paramètres du modèle
+        current_bc_params (dict | None): Mise à jour des paramètres BC (pour inflow dynamique)
         
     Returns:
         cuda.devicearray.DeviceNDArray: L(U) = -dF/dx sur GPU (4, N_total)
@@ -805,7 +810,7 @@ def calculate_spatial_discretization_weno_gpu(d_U_in: cuda.devicearray.DeviceNDA
     # Utiliser l'implémentation GPU native complète
     try:
         from .reconstruction.weno_gpu import calculate_spatial_discretization_weno_gpu_native
-        d_L_U = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params)
+        d_L_U = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, current_bc_params)
         return d_L_U
     except ImportError:
         # Fallback temporaire si la fonction native n'existe pas encore
@@ -925,7 +930,7 @@ def _apply_density_floor_kernel(d_U, epsilon, num_ghost_cells, N_physical):
 
 # --- Network-Aware Time Integration ---
 
-def strang_splitting_step_with_network(U_n, dt, grid, params, nodes, network_coupling):
+def strang_splitting_step_with_network(U_n, dt, grid, params, nodes, network_coupling, current_bc_params=None):
     """
     Strang splitting avec couplage réseau stable.
 
@@ -936,6 +941,7 @@ def strang_splitting_step_with_network(U_n, dt, grid, params, nodes, network_cou
         params: Paramètres
         nodes: Liste des nœuds
         network_coupling: Gestionnaire de couplage réseau
+        current_bc_params (dict | None): Mise à jour des paramètres BC (pour inflow dynamique)
 
     Returns:
         État au temps n+1
@@ -946,22 +952,16 @@ def strang_splitting_step_with_network(U_n, dt, grid, params, nodes, network_cou
         # Version GPU avec couplage stable
         from .network_coupling_stable import apply_network_coupling_stable_gpu
         d_U_n = U_n  # Assume déjà sur GPU
-        
-        # ✅ BUG #35 FIX: Pass d_R to GPU ODE solver for correct equilibrium speed calculation
-        if not hasattr(grid, 'd_R') or grid.d_R is None:
-            if grid.road_quality is None:
-                raise ValueError("❌ BUG #35: Road quality must be loaded before GPU simulation!")
-            grid.d_R = cuda.to_device(grid.road_quality)
 
         # Étape 1: ODE dt/2
-        d_U_star = solve_ode_step_gpu(d_U_n, dt / 2.0, grid, params, grid.d_R)
+        d_U_star = solve_ode_step_gpu(d_U_n, dt / 2.0, grid, params, None)
 
-        # Étape 2: Hyperbolique avec couplage réseau stable
+        # Étape 2: Hyperbolique avec couplage réseau stable et current_bc_params
         d_U_with_bc = apply_network_coupling_stable_gpu(d_U_star, dt, grid, params, time)
-        d_U_ss = solve_hyperbolic_step_standard_gpu(d_U_with_bc, dt, grid, params)
+        d_U_ss = solve_hyperbolic_step_standard_gpu(d_U_with_bc, dt, grid, params, current_bc_params)
 
         # Étape 3: ODE dt/2
-        d_U_np1 = solve_ode_step_gpu(d_U_ss, dt / 2.0, grid, params, grid.d_R)
+        d_U_np1 = solve_ode_step_gpu(d_U_ss, dt / 2.0, grid, params, None)
 
         return d_U_np1
 
@@ -972,7 +972,7 @@ def strang_splitting_step_with_network(U_n, dt, grid, params, nodes, network_cou
         # Étape 1: ODE dt/2
         U_star = solve_ode_step_cpu(U_n, dt / 2.0, grid, params)
 
-        # Étape 2: Hyperbolique avec couplage réseau stable
+        # Étape 2: Hyperbolique avec couplage réseau stable et current_bc_params
         U_with_bc = apply_network_coupling_stable(U_star, dt, grid, params, time)
         U_ss = solve_hyperbolic_step_standard(U_with_bc, dt, grid, params)
 
@@ -998,18 +998,18 @@ def solve_hyperbolic_step_standard(U, dt, grid, params):
         raise ValueError(f"Unsupported scheme combination: spatial_scheme='{params.spatial_scheme}', time_scheme='{params.time_scheme}'")
 
 
-def solve_hyperbolic_step_standard_gpu(d_U, dt, grid, params):
+def solve_hyperbolic_step_standard_gpu(d_U, dt, grid, params, current_bc_params=None):
     """
     Résout l'étape hyperbolique standard selon le schéma configuré (GPU).
     """
     if params.spatial_scheme == 'first_order' and params.time_scheme == 'euler':
-        return solve_hyperbolic_step_ssprk3_gpu(d_U, dt, grid, params)
+        return solve_hyperbolic_step_ssprk3_gpu(d_U, dt, grid, params, current_bc_params)
     elif params.spatial_scheme == 'first_order' and params.time_scheme == 'ssprk3':
-        return solve_hyperbolic_step_ssprk3_gpu(d_U, dt, grid, params)
+        return solve_hyperbolic_step_ssprk3_gpu(d_U, dt, grid, params, current_bc_params)
     elif params.spatial_scheme == 'weno5' and params.time_scheme == 'euler':
-        return solve_hyperbolic_step_weno_gpu(d_U, dt, grid, params)
+        return solve_hyperbolic_step_weno_gpu(d_U, dt, grid, params, current_bc_params)
     elif params.spatial_scheme == 'weno5' and params.time_scheme == 'ssprk3':
-        return solve_hyperbolic_step_ssprk3_gpu(d_U, dt, grid, params)
+        return solve_hyperbolic_step_ssprk3_gpu(d_U, dt, grid, params, current_bc_params)
     else:
         raise ValueError(f"Unsupported scheme combination: spatial_scheme='{params.spatial_scheme}', time_scheme='{params.time_scheme}'")
 

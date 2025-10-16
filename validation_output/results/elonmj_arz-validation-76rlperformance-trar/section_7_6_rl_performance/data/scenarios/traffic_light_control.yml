@@ -1,0 +1,47 @@
+CFL: 0.4
+N: 100
+boundary_conditions:
+  left:
+    state:
+    - 300.0
+    - 1.014444444444445
+    - 96.0
+    - 0.38888888888888923
+    type: inflow
+  right:
+    type: outflow
+initial_conditions:
+  state:
+  - 25.0
+  - 8.06
+  - 12.0
+  - 7.0
+  type: uniform
+lagos_parameters:
+  context: Victoria Island Lagos
+  creeping_rate: 0.6
+  free_speed_average: 30.0
+  free_speed_cars: 28.0
+  free_speed_motorcycles: 32.0
+  gap_filling_rate: 0.8
+  max_density_cars: 120.0
+  max_density_motorcycles: 250.0
+  max_density_total: 370.0
+  signal_compliance: 0.7
+  vehicle_mix_buses: 0.15
+  vehicle_mix_cars: 0.45
+  vehicle_mix_motorcycles: 0.35
+  vehicle_mix_trucks: 0.05
+output_dt: 60.0
+parameters:
+  V0_c: 7.777777777777778
+  V0_m: 8.88888888888889
+  tau_c: 1.2
+  tau_m: 1.0
+road:
+  quality_type: uniform
+  quality_value: 2
+scenario_name: traffic_light_control_lagos_real
+t_final: 600.0
+xmax: 1000.0
+xmin: 0.0
