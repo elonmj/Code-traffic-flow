@@ -294,12 +294,28 @@ def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, curre
     N_physical = grid.N_physical
     n_ghost = grid.num_ghost_cells
     
+    # DEBUG: Log parameter arrival
+    print(f"[DEBUG_WENO_GPU_NATIVE] Entered function. current_bc_params type: {type(current_bc_params)}")
+    if current_bc_params is not None:
+        print(f"[DEBUG_WENO_GPU_NATIVE] current_bc_params keys: {current_bc_params.keys() if isinstance(current_bc_params, dict) else 'not dict'}")
+        if isinstance(current_bc_params, dict) and 'left' in current_bc_params:
+            left_bc = current_bc_params.get('left', {})
+            if isinstance(left_bc, dict) and 'state' in left_bc:
+                print(f"[DEBUG_WENO_GPU_NATIVE] left inflow state: {left_bc['state']}")
+    else:
+        print(f"[DEBUG_WENO_GPU_NATIVE] current_bc_params IS NONE!")
+    
     # 0. Appliquer les conditions aux limites sur GPU
     d_U_bc = cuda.device_array_like(d_U_in)
     d_U_bc[:] = d_U_in[:]
     
+    # DEBUG: Before dispatcher call
+    print(f"[DEBUG_WENO_GPU_NATIVE] About to call dispatcher with current_bc_params={'NOT NONE' if current_bc_params is not None else 'NONE'}")
+    
     # Utiliser le dispatcher des conditions aux limites (passe current_bc_params si fourni)
     boundary_conditions.apply_boundary_conditions(d_U_bc, grid, params, current_bc_params)
+    
+    print(f"[DEBUG_WENO_GPU_NATIVE] Returned from dispatcher")
     
     # 1. Conversion conservées → primitives (utiliser la version CPU temporairement)
     U_bc_cpu = d_U_bc.copy_to_host()

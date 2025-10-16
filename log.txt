@@ -2127,3 +2127,8 @@
 2025-10-16 07:35:50,490 - validation_kaggle_manager - INFO -   ?? test_bug36_simple.py (Untracked)
 2025-10-16 07:35:50,490 - validation_kaggle_manager - INFO -   ?? validation_output/results/elonmj_arz-validation-76rlperformance-trar/ (Untracked)
 2025-10-16 07:35:50,491 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-16 07:35:50,796 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-16 07:35:52,079 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-16 07:35:52,079 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-16 07:36:01,773 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-16 07:36:04,383 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-rjot

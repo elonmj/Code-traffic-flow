@@ -657,6 +657,9 @@ def solve_hyperbolic_step_weno_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_hy
     if not cuda.is_cuda_array(d_U_in):
         raise TypeError("d_U_in must be a CUDA device array")
     
+    # DEBUG: Log parameter passing
+    print(f"[DEBUG_SOLVE_HYPERBOLIC_WENO_GPU] current_bc_params: {type(current_bc_params)}")
+    
     # Calcul de la discrétisation spatiale L(U) = -dF/dx avec WENO5 GPU
     d_L_U = calculate_spatial_discretization_weno_gpu(d_U_in, grid, params, current_bc_params)
     
@@ -806,6 +809,13 @@ def calculate_spatial_discretization_weno_gpu(d_U_in: cuda.devicearray.DeviceNDA
     """
     if not GPU_AVAILABLE:
         raise RuntimeError("GPU WENO implementation not available. Check GPU imports.")
+    
+    # DEBUG: Log parameter passing
+    print(f"[DEBUG_SPATIAL_DISCRETIZATION_WENO_GPU] current_bc_params type: {type(current_bc_params)}")
+    if current_bc_params is not None:
+        print(f"[DEBUG_SPATIAL_DISCRETIZATION_WENO_GPU] Passing to native with current_bc_params")
+    else:
+        print(f"[DEBUG_SPATIAL_DISCRETIZATION_WENO_GPU] current_bc_params is NONE!")
     
     # Utiliser l'implémentation GPU native complète
     try:
