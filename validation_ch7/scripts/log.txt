@@ -216,3 +216,6 @@
 2025-10-15 16:33:52,876 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-15 16:33:58,549 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-15 16:34:01,064 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-wncg
+2025-10-16 07:59:26,136 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-16 07:59:26,378 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-16 07:59:26,549 - validation_kaggle_manager - INFO - ✅ Git repository is clean and up to date
