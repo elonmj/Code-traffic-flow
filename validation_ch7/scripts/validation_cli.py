@@ -38,8 +38,8 @@ def main():
     parser.add_argument(
         '--timeout',
         type=int,
-        default=8000,
-        help='Kaggle kernel timeout in seconds (default: 8000)'
+        default=None,
+        help='Kaggle kernel timeout in seconds (default: None = NO TIMEOUT)'
     )
     
     parser.add_argument(
@@ -75,9 +75,12 @@ def main():
     try:
         manager = ValidationKaggleManager()
         
+        # If no timeout specified, use a very large value (effectively no limit)
+        effective_timeout = args.timeout if args.timeout is not None else 1000000
+        
         success, kernel_slug = manager.run_validation_section(
             section_name=args.section,
-            timeout=args.timeout,
+            timeout=effective_timeout,
             commit_message=args.commit_message,
             quick_test=args.quick_test,
             scenario=args.scenario  # ✅ NEW: Pass scenario selection

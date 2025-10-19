@@ -57,7 +57,6 @@ def main():
         print("  - Duration: 2 minutes simulated time per episode")
         print("  - Scenarios: 1 scenario (traffic_light_control)")
         print("  - Expected runtime: ~15 minutes on GPU")
-        timeout = 1800  # 30 min
     else:
         print("LANCEMENT VALIDATION KAGGLE GPU - SECTION 7.6 RL PERFORMANCE")
         print("=" * 80)
@@ -67,7 +66,6 @@ def main():
         print("  - Scenarios: 3 scenarios")
         print("  - Expected runtime: ~3-4 hours on GPU")
         print("  - NOTE: Utilisez --quick pour test rapide")
-        timeout = 14400  # 4 hours
     
     # Display configuration (without manager instantiation - no duplication!)
     print(f"\n[INFO] Configuration:")
@@ -113,7 +111,6 @@ def main():
         sys.executable,
         str(cli_path),
         "--section", "section_7_6_rl_performance",
-        "--timeout", str(timeout),
         "--commit-message", commit_msg
     ]
     
