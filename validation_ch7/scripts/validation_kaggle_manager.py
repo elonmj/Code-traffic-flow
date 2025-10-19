@@ -308,7 +308,7 @@ class ValidationKaggleManager:
         }
         return status_map.get(status_code, f'Unknown ({status_code})')
         
-    def _build_validation_kernel_script(self, section: Dict[str, Any], test_timeout: int = 14400) -> str:
+    def _build_validation_kernel_script(self, section: Dict[str, Any], test_timeout: int = None) -> str:
         """
         Build validation kernel script with FULL CLEANUP pattern from kaggle_manager_github.py.
         
@@ -319,7 +319,7 @@ class ValidationKaggleManager:
         
         Args:
             section: Section configuration dictionary
-            test_timeout: Timeout in seconds for test execution (default: 14400 = 4 hours)
+            test_timeout: IGNORED - No timeout on Kaggle (training runs to completion)
         """
         
         return f'''#!/usr/bin/env python3
@@ -483,7 +483,6 @@ try:
             [sys.executable, "-u", "-m", test_module],  # -u for unbuffered output
             capture_output=False,  # CRITICAL: Don't buffer output
             text=True,
-            timeout={test_timeout},  # Configurable timeout (passed from run_validation_section)
             env=env,
             cwd=REPO_DIR
         )
@@ -621,14 +620,14 @@ print("Output ready at: /kaggle/working/validation_results/")
 print("=" * 80)
 '''
     
-    def create_validation_kernel_script(self, section: Dict[str, Any], test_timeout: int = 14400) -> str:
+    def create_validation_kernel_script(self, section: Dict[str, Any], test_timeout: int = None) -> str:
         """
         Wrapper method for backward compatibility.
         Calls the new _build_validation_kernel_script().
         
         Args:
             section: Section configuration dictionary
-            test_timeout: Timeout in seconds for test execution
+            test_timeout: IGNORED - No timeout on Kaggle
         """
         return self._build_validation_kernel_script(section, test_timeout)
         
