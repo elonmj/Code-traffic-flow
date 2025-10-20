@@ -236,6 +236,7 @@ class KaggleClient:
         - Initial delay (120s) to let Kaggle index the kernel
         - Adaptive exponential backoff (35s → 260s)
         - Silent error handling during monitoring (404 is normal initially)
+        - Uses print() for immediate console visibility (not logger)
         
         Args:
             kernel_slug: Full kernel slug
@@ -246,13 +247,13 @@ class KaggleClient:
         Returns:
             Final KernelStatus
         """
-        self.logger.info(f"👀 Monitoring kernel: {kernel_slug}")
-        self.logger.info(f"⏱️  Timeout: {timeout}s")
-        self.logger.info(f"🌐 URL: https://www.kaggle.com/code/{kernel_slug}")
+        print(f"[MONITOR] Monitoring kernel: {kernel_slug}")
+        print(f"[TIMEOUT] Timeout: {timeout}s")
+        print(f"[URL] https://www.kaggle.com/code/{kernel_slug}")
         
         # PROVEN PATTERN: Initial delay for Kaggle to index kernel
         initial_delay = 120  # 2 minutes
-        self.logger.info(f"⏳ Initial delay: {initial_delay}s (Kaggle indexing time)")
+        print(f"[DELAY] Waiting {initial_delay}s for Kaggle to process kernel...")
         time.sleep(initial_delay)
         
         # Adaptive intervals (exponential backoff)
@@ -275,27 +276,27 @@ class KaggleClient:
                 # Log status changes
                 if status.status != last_status:
                     elapsed = int(time.time() - start_time)
-                    self.logger.info(f"📊 [{elapsed}s] Status: {status.status}")
+                    print(f"[STATUS] Status: {status.status} (after {elapsed}s)")
                     last_status = status.status
                 
                 # Check for completion
                 if status.status == 'complete':
-                    self.logger.info(f"✅ Kernel completed successfully")
+                    print(f"[FINISHED] Kernel completed successfully")
                     status.session_complete = True
                     return status
                 
                 elif status.status == 'error':
-                    self.logger.error(f"❌ Kernel failed with error")
+                    print(f"[ERROR] Kernel failed with error")
                     return status
                 
                 elif status.status == 'cancelled':
-                    self.logger.warning(f"⚠️  Kernel was cancelled")
+                    print(f"[WARNING] Kernel was cancelled")
                     return status
                 
                 # Check for session marker in logs (if kernel has output)
                 if status.has_output:
                     if self._check_session_marker(kernel_slug, session_marker):
-                        self.logger.info(f"✅ Session marker detected: {session_marker}")
+                        print(f"[MARKER] Session marker detected: {session_marker}")
                         status.session_complete = True
                         return status
                 
@@ -307,15 +308,15 @@ class KaggleClient:
                 if "404" in error_msg or "Not Found" in error_msg:
                     if consecutive_errors <= 3:
                         # First few 404s are expected (kernel still indexing)
-                        self.logger.debug(f"Kernel still indexing (404 - attempt {consecutive_errors})")
+                        print(f"[DEBUG] Kernel still indexing (404 - attempt {consecutive_errors})")
                     else:
-                        self.logger.warning(f"❌ Kernel not found (attempt {consecutive_errors}/{max_consecutive_errors})")
+                        print(f"[ERROR] Kernel not found (attempt {consecutive_errors}/{max_consecutive_errors})")
                 else:
-                    self.logger.warning(f"⚠️  Status check error: {e}")
+                    print(f"[WARNING] Status check error: {e}")
                 
                 # Stop if too many consecutive errors
                 if consecutive_errors >= max_consecutive_errors:
-                    self.logger.error(f"❌ Too many consecutive errors ({consecutive_errors})")
+                    print(f"[ERROR] Too many consecutive errors ({consecutive_errors})")
                     return KernelStatus(
                         slug=kernel_slug,
                         status='error',
@@ -324,13 +325,13 @@ class KaggleClient:
             
             # Adaptive interval (exponential backoff)
             current_interval = min(current_interval * 1.5, max_interval)
-            self.logger.debug(f"⏳ Next check in {current_interval:.0f}s...")
+            print(f"[WAIT] Next check in {current_interval:.0f}s...")
             time.sleep(current_interval)
         
         # Timeout reached
         elapsed = time.time() - start_time
-        self.logger.error(f"❌ Kernel monitoring timeout after {elapsed:.0f}s")
-        self.logger.info(f"🌐 Check manually: https://www.kaggle.com/code/{kernel_slug}")
+        print(f"[TIMEOUT] Monitoring timeout after {elapsed:.0f}s")
+        print(f"[MANUAL] Manual check: https://www.kaggle.com/code/{kernel_slug}")
         
         # Try one final status check
         try:
