@@ -213,10 +213,19 @@ class KaggleClient:
         try:
             status_info = self.api.kernels_status(kernel_slug)
             
+            # Handle both dict and object responses
+            if isinstance(status_info, dict):
+                status = status_info.get('status', 'unknown')
+                has_output = status_info.get('hasOutput', False)
+            else:
+                # Object response - use getattr
+                status = getattr(status_info, 'status', 'unknown')
+                has_output = getattr(status_info, 'hasOutput', False)
+            
             return KernelStatus(
                 slug=kernel_slug,
-                status=status_info.get('status', 'unknown'),
-                has_output=status_info.get('hasOutput', False)
+                status=status,
+                has_output=has_output
             )
         except Exception as e:
             # PROVEN PATTERN: Re-raise 404/403 errors for silent handling in monitor loop
@@ -231,7 +240,7 @@ class KaggleClient:
                 raise
             else:
                 # Other errors - log and return error status
-                self.logger.warning(f"⚠️  Failed to get kernel status: {e}")
+                print(f"⚠️  Failed to get kernel status: {e}")
                 return KernelStatus(
                     slug=kernel_slug,
                     status='error',

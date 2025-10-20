@@ -1,0 +1,176 @@
+[{"stream_name":"stdout","time":0.57103402,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.571090916,"data":"🚀 ARZ-RL VALIDATION - KAGGLE GPU EXECUTION\n"}
+,{"stream_name":"stdout","time":0.57109586,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.571098547,"data":"Start time: 2025-10-20T15:28:47.001415\n"}
+,{"stream_name":"stdout","time":0.571101252,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":0.571103723,"data":"Working directory: /kaggle/working\n"}
+,{"stream_name":"stdout","time":0.57110609,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.571108558,"data":"\n"}
+,{"stream_name":"stdout","time":0.571110841,"data":"📦 PHASE 1: Cloning repository...\n"}
+,{"stream_name":"stdout","time":0.571113269,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.57111571,"data":"Branch: main\n"}
+,{"stream_name":"stderr","time":0.598970283,"data":"Cloning into '/kaggle/working/repo'...\n"}
+,{"stream_name":"stdout","time":11.112844531,"data":"✅ Repository cloned to: /kaggle/working/repo\n"}
+,{"stream_name":"stdout","time":11.112880987,"data":"✅ Working directory: /kaggle/working/repo\n"}
+,{"stream_name":"stdout","time":11.112886399,"data":"\n"}
+,{"stream_name":"stdout","time":11.112889961,"data":"🧪 PHASE 2: Running validation...\n"}
+,{"stream_name":"stdout","time":11.112901063,"data":"Script: validation_ch7_v2/scripts/niveau4_rl_performance/run_section_7_6.py\n"}
+,{"stream_name":"stdout","time":11.112904864,"data":"Quick mode: True\n"}
+,{"stream_name":"stdout","time":11.112908259,"data":"Device: gpu\n"}
+,{"stream_name":"stdout","time":11.112911626,"data":"Command: python validation_ch7_v2/scripts/niveau4_rl_performance/run_section_7_6.py --device gpu --quick\n"}
+,{"stream_name":"stdout","time":11.112915461,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":25.744202724,"data":"2025-10-20 15:29:12.174523: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:477] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n"}
+,{"stream_name":"stderr","time":25.933730648,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stderr","time":25.933761146,"data":"E0000 00:00:1760974152.364011      64 cuda_dnn.cc:8310] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n"}
+,{"stream_name":"stderr","time":25.984102257,"data":"E0000 00:00:1760974152.414481      64 cuda_blas.cc:1418] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"}
+,{"stream_name":"stdout","time":37.435970428,"data":"[WARNING] ARZ simulation not available - using synthetic comparison\n"}
+,{"stream_name":"stdout","time":37.436002797,"data":"[2025-10-20 15:29:23] [INFO ] ════════════════════════════════════════════════════════════════════════════════\n"}
+,{"stream_name":"stdout","time":37.436011329,"data":"[2025-10-20 15:29:23] [INFO ] 🚀 SECTION 7.6 - VALIDATION RL PERFORMANCE\n"}
+,{"stream_name":"stdout","time":37.43601708,"data":"[2025-10-20 15:29:23] [INFO ] ════════════════════════════════════════════════════════════════════════════════\n"}
+,{"stream_name":"stdout","time":37.436038434,"data":"[2025-10-20 15:29:23] [INFO ] Mode: QUICK TEST\n"}
+,{"stream_name":"stdout","time":37.436041498,"data":"[2025-10-20 15:29:23] [INFO ] Device: gpu\n"}
+,{"stream_name":"stdout","time":37.436044166,"data":"[2025-10-20 15:29:23] [INFO ] Timesteps: 5\n"}
+,{"stream_name":"stdout","time":37.436046593,"data":"[2025-10-20 15:29:23] [INFO ] Episodes: 1\n"}
+,{"stream_name":"stdout","time":37.436048948,"data":"[2025-10-20 15:29:23] [INFO ] Durée estimée: 5 minutes\n"}
+,{"stream_name":"stdout","time":37.436051538,"data":"[2025-10-20 15:29:23] [INFO ] \n"}
+,{"stream_name":"stdout","time":37.515223578,"data":"[2025-10-20 15:29:23] [INFO ] ✅ GPU détecté: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":37.515251511,"data":"[2025-10-20 15:29:23] [INFO ] ════════════════════════════════════════════════════════════════════════════════\n"}
+,{"stream_name":"stdout","time":37.515257312,"data":"[2025-10-20 15:29:23] [INFO ] PHASE 1/3: ENTRAÎNEMENT AGENT RL\n"}
+,{"stream_name":"stdout","time":37.515263972,"data":"[2025-10-20 15:29:23] [INFO ] ════════════════════════════════════════════════════════════════════════════════\n"}
+,{"stream_name":"stdout","time":37.515267558,"data":"[2025-10-20 15:29:23] [INFO ] Algorithme: DQN\n"}
+,{"stream_name":"stdout","time":37.515271553,"data":"[2025-10-20 15:29:23] [INFO ] Timesteps: 5\n"}
+,{"stream_name":"stdout","time":37.515275371,"data":"[2025-10-20 15:29:23] [INFO ] Device: gpu\n"}
+,{"stream_name":"stdout","time":37.515280982,"data":"[2025-10-20 15:29:23] [INFO ] Durée estimée: 5 minutes\n"}
+,{"stream_name":"stderr","time":37.640969634,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":37.640997757,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":38.836301023,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":38.836408437,"data":"  File \"/kaggle/working/repo/validation_ch7_v2/scripts/niveau4_rl_performance/rl_training.py\", line 98, in train_agent\n"}
+,{"stream_name":"stderr","time":38.836424588,"data":"    model = DQN(\n"}
+,{"stream_name":"stderr","time":38.836429067,"data":"            ^^^^\n"}
+,{"stream_name":"stderr","time":38.836432814,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/dqn/dqn.py\", line 104, in __init__\n"}
+,{"stream_name":"stderr","time":38.836459741,"data":"    super().__init__(\n"}
+,{"stream_name":"stderr","time":38.836474226,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/off_policy_algorithm.py\", line 110, in __init__\n"}
+,{"stream_name":"stderr","time":38.836479418,"data":"    super().__init__(\n"}
+,{"stream_name":"stderr","time":38.836483554,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py\", line 127, in __init__\n"}
+,{"stream_name":"stderr","time":38.836487945,"data":"    self.device = get_device(device)\n"}
+,{"stream_name":"stderr","time":38.836491704,"data":"                  ^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.836508183,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/utils.py\", line 151, in get_device\n"}
+,{"stream_name":"stderr","time":38.836513776,"data":"    device = th.device(device)\n"}
+,{"stream_name":"stderr","time":38.836516975,"data":"             ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.836523561999996,"data":"RuntimeError: Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu, mtia, privateuseone device type at start of device string: gpu\n"}
+,{"stream_name":"stdout","time":38.836698106,"data":"\n"}
+,{"stream_name":"stdout","time":38.836705861,"data":"[TRAINING] Starting REAL DQN training\n"}
+,{"stream_name":"stdout","time":38.83671036,"data":"  Config: lagos_master\n"}
+,{"stream_name":"stdout","time":38.836713953,"data":"  Total timesteps: 5\n"}
+,{"stream_name":"stdout","time":38.836717502,"data":"  Device: gpu\n"}
+,{"stream_name":"stdout","time":38.836720909,"data":"  Algorithm: DQN\n"}
+,{"stream_name":"stdout","time":38.836724296,"data":"\n"}
+,{"stream_name":"stdout","time":38.8367276,"data":"[ENV] Creating TrafficSignalEnvDirect environment...\n"}
+,{"stream_name":"stdout","time":38.836731259,"data":"Initializing simulation from scenario: /kaggle/working/repo/Code_RL/configs/env_lagos.yaml\n"}
+,{"stream_name":"stdout","time":38.83673504,"data":"Using device: gpu\n"}
+,{"stream_name":"stdout","time":38.836738477,"data":"DEBUG PARAMS: Reading K_m_kmh = 10.0\n"}
+,{"stream_name":"stdout","time":38.836741969,"data":"DEBUG PARAMS: Reading K_c_kmh = 15.0\n"}
+,{"stream_name":"stdout","time":38.836745502,"data":"DEBUG PARAMS: Assigned self.K_m = 2.7777777777777777\n"}
+,{"stream_name":"stdout","time":38.836748996,"data":"DEBUG PARAMS: Assigned self.K_c = 4.166666666666667\n"}
+,{"stream_name":"stdout","time":38.836754396,"data":"Parameters loaded for scenario: env_lagos\n"}
+,{"stream_name":"stdout","time":38.836758054,"data":"Grid initialized: Grid1D(N=200, xmin=0.0, xmax=20.0, dx=0.1000, ghost=2, N_total=204, R loaded=No)\n"}
+,{"stream_name":"stdout","time":38.836763492,"data":"  Loading road quality type: uniform\n"}
+,{"stream_name":"stdout","time":38.836767251,"data":"  Uniform road quality value: 1\n"}
+,{"stream_name":"stdout","time":38.836772039,"data":"Road quality loaded.\n"}
+,{"stream_name":"stdout","time":38.83677622,"data":"Initial state created.\n"}
+,{"stream_name":"stdout","time":38.836780154,"data":"Transferring initial state and road quality to GPU...\n"}
+,{"stream_name":"stdout","time":38.836784978,"data":"GPU data transfer complete.\n"}
+,{"stream_name":"stdout","time":38.836788687,"data":"  DEBUG BC Init: Calculated initial_equilibrium_state = [0.01, 10.0, 0.01, 10.0]\n"}
+,{"stream_name":"stdout","time":38.836792394,"data":"[DEBUG_BC_DISPATCHER] Entered apply_boundary_conditions. current_bc_params: \u003cclass 'dict'\u003e\n"}
+,{"stream_name":"stdout","time":38.836796574,"data":"[DEBUG_BC_DISPATCHER] Using current_bc_params (dynamic)\n"}
+,{"stream_name":"stdout","time":38.836800175,"data":"[DEBUG_BC_GPU] About to launch GPU kernel\n"}
+,{"stream_name":"stdout","time":38.836803859,"data":"[DEBUG_BC_GPU] inflow_L: [0.0, 0.0, 0.0, 0.0]\n"}
+,{"stream_name":"stdout","time":38.836807351,"data":"[DEBUG_BC_GPU] inflow_R: [0.0, 0.0, 0.0, 0.0]\n"}
+,{"stream_name":"stdout","time":38.836810872,"data":"[DEBUG_BC_GPU] left_type_code: 2, right_type_code: 2\n"}
+,{"stream_name":"stdout","time":38.83681439,"data":"Initial boundary conditions applied.\n"}
+,{"stream_name":"stdout","time":38.836817913,"data":"TrafficSignalEnvDirect initialized:\n"}
+,{"stream_name":"stdout","time":38.836828617,"data":"  Decision interval: 15.0s\n"}
+,{"stream_name":"stdout","time":38.836832267,"data":"  Observation segments: 6\n"}
+,{"stream_name":"stdout","time":38.836835804,"data":"  Observation space: (26,)\n"}
+,{"stream_name":"stdout","time":38.836839364,"data":"  Action space: 2\n"}
+,{"stream_name":"stdout","time":38.836844392,"data":"  Device: gpu\n"}
+,{"stream_name":"stdout","time":38.836850835999996,"data":"[ENV] ✅ Environment created:\n"}
+,{"stream_name":"stdout","time":38.836856977,"data":"       Observation space: (26,)\n"}
+,{"stream_name":"stdout","time":38.836860591,"data":"       Action space: 2\n"}
+,{"stream_name":"stdout","time":38.836864696,"data":"\n"}
+,{"stream_name":"stdout","time":38.836868791,"data":"[AGENT] Initializing DQN agent...\n"}
+,{"stream_name":"stdout","time":38.836873241,"data":"[ERROR] Training failed: Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu, mtia, privateuseone device type at start of device string: gpu\n"}
+,{"stream_name":"stdout","time":38.836878177,"data":"[2025-10-20 15:29:25] [ERROR] ❌ Échec entraînement: Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu, mtia, privateuseone device type at start of device string: gpu\n"}
+,{"stream_name":"stderr","time":38.836974497,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":38.837184557,"data":"  File \"/kaggle/working/repo/validation_ch7_v2/scripts/niveau4_rl_performance/run_section_7_6.py\", line 183, in phase_1_train_rl_agent\n"}
+,{"stream_name":"stderr","time":38.837192458,"data":"    model, training_history = train_rl_agent_for_validation(\n"}
+,{"stream_name":"stderr","time":38.837197112,"data":"                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.837201685,"data":"  File \"/kaggle/working/repo/validation_ch7_v2/scripts/niveau4_rl_performance/rl_training.py\", line 184, in train_rl_agent_for_validation\n"}
+,{"stream_name":"stderr","time":38.837206556,"data":"    return trainer.train_agent(total_timesteps=total_timesteps, use_mock=use_mock)\n"}
+,{"stream_name":"stderr","time":38.837210431,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.837214114,"data":"  File \"/kaggle/working/repo/validation_ch7_v2/scripts/niveau4_rl_performance/rl_training.py\", line 98, in train_agent\n"}
+,{"stream_name":"stderr","time":38.837218117,"data":"    model = DQN(\n"}
+,{"stream_name":"stderr","time":38.837221537,"data":"            ^^^^\n"}
+,{"stream_name":"stderr","time":38.837225018,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/dqn/dqn.py\", line 104, in __init__\n"}
+,{"stream_name":"stderr","time":38.837230195,"data":"    super().__init__(\n"}
+,{"stream_name":"stderr","time":38.837234383,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/off_policy_algorithm.py\", line 110, in __init__\n"}
+,{"stream_name":"stderr","time":38.837238856,"data":"    super().__init__(\n"}
+,{"stream_name":"stderr","time":38.837243158,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py\", line 127, in __init__\n"}
+,{"stream_name":"stderr","time":38.837248064,"data":"    self.device = get_device(device)\n"}
+,{"stream_name":"stderr","time":38.837252288,"data":"                  ^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.837256261,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/utils.py\", line 151, in get_device\n"}
+,{"stream_name":"stderr","time":38.837267556,"data":"    device = th.device(device)\n"}
+,{"stream_name":"stderr","time":38.837272256,"data":"             ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":38.837276515,"data":"[2025-10-20 15:29:25] [ERROR] ❌ VALIDATION ÉCHOUÉE: Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu, mtia, privateuseone device type at start of device string: gpu\n"}
+,{"stream_name":"stderr","time":38.837278829,"data":"RuntimeError: Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu, mtia, privateuseone device type at start of device string: gpu\n"}
+,{"stream_name":"stderr","time":38.83745065,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":38.837462859,"data":"  File \"/kaggle/working/repo/validation_ch7_v2/scripts/niveau4_rl_performance/run_section_7_6.py\", line 617, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":38.837868747,"data":"    sys.exit(main())\n"}
+,{"stream_name":"stderr","time":38.837875621,"data":"             ^^^^^^\n"}
+,{"stream_name":"stderr","time":38.837879756,"data":"  File \"/kaggle/working/repo/validation_ch7_v2/scripts/niveau4_rl_performance/run_section_7_6.py\", line 611, in main\n"}
+,{"stream_name":"stderr","time":38.838223347,"data":"    results = orchestrator.run_full_pipeline()\n"}
+,{"stream_name":"stderr","time":38.838230198,"data":"              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.838234767,"data":"  File \"/kaggle/working/repo/validation_ch7_v2/scripts/niveau4_rl_performance/run_section_7_6.py\", line 526, in run_full_pipeline\n"}
+,{"stream_name":"stderr","time":38.838594697,"data":"    model, training_history = self.phase_1_train_rl_agent()\n"}
+,{"stream_name":"stderr","time":38.838605459,"data":"                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.838611048,"data":"  File \"/kaggle/working/repo/validation_ch7_v2/scripts/niveau4_rl_performance/run_section_7_6.py\", line 183, in phase_1_train_rl_agent\n"}
+,{"stream_name":"stderr","time":38.838841423,"data":"    model, training_history = train_rl_agent_for_validation(\n"}
+,{"stream_name":"stderr","time":38.838848314,"data":"                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.838852081,"data":"  File \"/kaggle/working/repo/validation_ch7_v2/scripts/niveau4_rl_performance/rl_training.py\", line 184, in train_rl_agent_for_validation\n"}
+,{"stream_name":"stderr","time":38.838997152,"data":"    return trainer.train_agent(total_timesteps=total_timesteps, use_mock=use_mock)\n"}
+,{"stream_name":"stderr","time":38.839062598,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.839074594,"data":"  File \"/kaggle/working/repo/validation_ch7_v2/scripts/niveau4_rl_performance/rl_training.py\", line 98, in train_agent\n"}
+,{"stream_name":"stderr","time":38.83919136,"data":"    model = DQN(\n"}
+,{"stream_name":"stderr","time":38.83919818,"data":"            ^^^^\n"}
+,{"stream_name":"stderr","time":38.839202556000004,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/dqn/dqn.py\", line 104, in __init__\n"}
+,{"stream_name":"stderr","time":38.839307856,"data":"    super().__init__(\n"}
+,{"stream_name":"stderr","time":38.839315011,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/off_policy_algorithm.py\", line 110, in __init__\n"}
+,{"stream_name":"stderr","time":38.839389352,"data":"    super().__init__(\n"}
+,{"stream_name":"stderr","time":38.839404593,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/base_class.py\", line 127, in __init__\n"}
+,{"stream_name":"stderr","time":38.839510772,"data":"    self.device = get_device(device)\n"}
+,{"stream_name":"stderr","time":38.839534569,"data":"                  ^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.839541805,"data":"  File \"/usr/local/lib/python3.11/dist-packages/stable_baselines3/common/utils.py\", line 151, in get_device\n"}
+,{"stream_name":"stderr","time":38.839686317,"data":"    device = th.device(device)\n"}
+,{"stream_name":"stderr","time":38.839692033,"data":"             ^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":38.839695849,"data":"RuntimeError: Expected one of cpu, cuda, ipu, xpu, mkldnn, opengl, opencl, ideep, hip, ve, fpga, maia, xla, lazy, vulkan, mps, meta, hpu, mtia, privateuseone device type at start of device string: gpu\n"}
+,{"stream_name":"stdout","time":40.949971569,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":40.950022391,"data":"⚠️  Validation exited with code: 1\n"}
+,{"stream_name":"stdout","time":40.950066925,"data":"\n"}
+,{"stream_name":"stdout","time":40.950073623,"data":"📋 Copying results...\n"}
+,{"stream_name":"stdout","time":40.95057392,"data":"✅ Results copied to: /kaggle/working/validation_results\n"}
+,{"stream_name":"stdout","time":40.950604068,"data":"\n"}
+,{"stream_name":"stdout","time":40.950610055,"data":"🧹 PHASE 3: Cleanup...\n"}
+,{"stream_name":"stdout","time":41.040799127,"data":"✅ Repository cleaned up\n"}
+,{"stream_name":"stdout","time":41.040835033,"data":"\n"}
+,{"stream_name":"stdout","time":41.040841984,"data":"📁 Final outputs:\n"}
+,{"stream_name":"stdout","time":41.040852972,"data":"\n"}
+,{"stream_name":"stdout","time":41.040858854,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":41.040865044,"data":"✅ SESSION_COMPLETE\n"}
+,{"stream_name":"stdout","time":41.040869979,"data":"End time: 2025-10-20T15:29:27.471343\n"}
+,{"stream_name":"stdout","time":41.040874924,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":41.041162487,"data":"✅ Session summary written: /kaggle/working/session_summary.json\n"}
+,{"stream_name":"stderr","time":44.149393894,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":44.14942204,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":44.230301048,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":44.932346286,"data":"[NbConvertApp] Writing 294010 bytes to __results__.html\n"}
+]

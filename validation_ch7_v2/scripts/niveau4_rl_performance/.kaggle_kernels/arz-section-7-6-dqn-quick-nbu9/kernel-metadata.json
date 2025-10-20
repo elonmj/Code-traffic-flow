@@ -1,0 +1,13 @@
+{
+  "id": "joselonm/arz-section-7-6-dqn-quick-nbu9",
+  "title": "arz section 7 6 dqn quick nbu9",
+  "code_file": "script.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": []
+}

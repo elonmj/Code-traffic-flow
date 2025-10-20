@@ -49,9 +49,26 @@ class RLTrainer:
     def __init__(self, config_name: str = "lagos_master", algorithm: str = "DQN", device: str = "cpu"):
         self.config_name = config_name
         self.algorithm = algorithm
-        self.device = device if device != "auto" else ("gpu" if _detect_gpu() else "cpu")
+        # Store device for environment (accepts "gpu" or "cpu")
+        self.device_env = device if device != "auto" else ("gpu" if _detect_gpu() else "cpu")
+        # Normalize device for DQN (Stable-Baselines3 expects "cuda" or "cpu")
+        self.device = self._normalize_device_for_dqn(self.device_env)
         self.models_dir = Path(__file__).parent / "models"
         self.models_dir.mkdir(exist_ok=True)
+    
+    def _normalize_device_for_dqn(self, device_str: str) -> str:
+        """Normalize device string for Stable-Baselines3 DQN.
+        
+        Args:
+            device_str: Device string ("gpu", "cpu", "cuda", etc.)
+            
+        Returns:
+            Device string compatible with PyTorch/DQN ("cuda" or "cpu")
+        """
+        if device_str in ["gpu", "cuda"]:
+            return "cuda"
+        else:
+            return "cpu"
     
     def train_agent(self, total_timesteps: int = 100000, use_mock: bool = False) -> Tuple[Any, Dict[str, Any]]:
         """Train RL agent using REAL Code_RL DQN."""
@@ -70,7 +87,8 @@ class RLTrainer:
         print(f"\n[TRAINING] Starting REAL DQN training")
         print(f"  Config: {self.config_name}")
         print(f"  Total timesteps: {total_timesteps}")
-        print(f"  Device: {self.device}")
+        print(f"  Device (env): {self.device_env}")
+        print(f"  Device (DQN): {self.device}")
         print(f"  Algorithm: {self.algorithm}")
         
         try:
@@ -85,7 +103,7 @@ class RLTrainer:
                 decision_interval=15.0,  # ✅ Bug #27 fix: 15s (4x improvement)
                 episode_max_time=3600.0,
                 observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
-                device=self.device,
+                device=self.device_env,  # Use environment device format ("gpu"/"cpu")
                 quiet=False
             )
             
