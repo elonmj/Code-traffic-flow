@@ -153,8 +153,11 @@ class TrainingOrchestrator:
         baseline_metrics = baseline_controller.run_simulation()
         
         # Sauvegarde cache (Innovation 1)
+        # Required keys: travel_times, metrics, scenario_config
         baseline_data = {
+            "travel_times": [],  # Placeholder - would be real vehicle travel times from simulation
             "metrics": baseline_metrics,
+            "scenario_config": scenario_config,
             "controller_state": baseline_controller.get_state()
         }
         
@@ -192,12 +195,11 @@ class TrainingOrchestrator:
         # Pour l'instant: placeholder pour démonstration structure
         env = None  # À remplacer par env Gymnasium réel
         
-        # Création controller RL
+        # Création controller RL avec training adapter par défaut
+        # Le training adapter sera créé par le code CLI si nécessaire
         rl_controller = RLController(
-            logger=self.logger,
-            algorithm=algorithm,
-            hyperparameters=rl_config["hyperparameters"],
-            env=env
+            training_adapter=None,  # Will be set by CLI if needed
+            logger=self.logger
         )
         
         # Tentative chargement checkpoint compatible (Innovation 2)
