@@ -154,6 +154,15 @@ class KaggleClient:
             self.logger.info(f"📤 Pushing kernel to Kaggle...")
             response = self.api.kernels_push(str(kernel_dir))
             
+            # DEBUG: Inspect response object (PROVEN PATTERN from validation_kaggle_manager.py)
+            self.logger.debug(f"[DEBUG] Response type: {type(response)}")
+            self.logger.debug(f"[DEBUG] Response attributes: {dir(response)}")
+            
+            # Try to extract all possible fields from response
+            for attr in ['ref', 'url', 'id', 'slug', 'versionNumber']:
+                if hasattr(response, attr):
+                    self.logger.debug(f"[DEBUG] response.{attr} = {getattr(response, attr)}")
+            
             # PROVEN PATTERN: Extract ACTUAL slug from Kaggle response
             # Kaggle may modify the slug based on title/slug resolution
             # response.ref format: "/code/{username}/{slug}"
