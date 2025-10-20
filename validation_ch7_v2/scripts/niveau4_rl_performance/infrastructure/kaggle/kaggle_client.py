@@ -48,15 +48,40 @@ class KaggleClient:
         Initialize Kaggle client.
         
         Args:
-            credentials_path: Path to kaggle.json (default: ./kaggle.json)
+            credentials_path: Path to kaggle.json (searches standard locations if not provided)
         """
         if not KAGGLE_AVAILABLE:
             raise ImportError("Kaggle package not installed. Run: pip install kaggle")
         
         self.logger = logging.getLogger(__name__)
         
-        # Load credentials
-        creds_path = credentials_path or Path("kaggle.json")
+        # Load credentials from various locations
+        if credentials_path:
+            creds_path = Path(credentials_path)
+        else:
+            # Standard locations to search
+            search_paths = [
+                Path("kaggle.json"),  # Current directory
+                Path.home() / ".kaggle" / "kaggle.json",  # Standard Linux/Mac/Windows location
+                Path.cwd() / "kaggle.json",  # Working directory
+            ]
+            
+            creds_path = None
+            for path in search_paths:
+                if path.exists():
+                    creds_path = path
+                    self.logger.debug(f"Found credentials at: {path}")
+                    break
+            
+            if not creds_path:
+                raise FileNotFoundError(
+                    f"Kaggle credentials not found in standard locations:\n"
+                    f"  - {search_paths[0]}\n"
+                    f"  - {search_paths[1]}\n"
+                    f"  - {search_paths[2]}\n"
+                    f"Download from https://www.kaggle.com/settings and place kaggle.json"
+                )
+        
         if not creds_path.exists():
             raise FileNotFoundError(f"Kaggle credentials not found: {creds_path}")
         

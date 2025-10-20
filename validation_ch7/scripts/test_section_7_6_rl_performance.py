@@ -1211,7 +1211,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 save_freq=checkpoint_freq,
                 save_path=str(checkpoint_dir),
                 name_prefix=f"{scenario_type}_checkpoint_{config_hash}",  # ✅ Config-specific name
-                max_checkpoints=2,  # Keep only 2 most recent (Kaggle disk space)
+                max_checkpoints=3,  # Keep 2 most recent + 1 best model (Kaggle disk space efficient)
                 save_replay_buffer=True,  # DQN uses replay buffer
                 save_vecnormalize=True,
                 verbose=1
@@ -1241,7 +1241,7 @@ class RLPerformanceValidationTest(ValidationSection):
             )
             callbacks.append(eval_callback)
             
-            print(f"\n  [STRATEGY] Checkpoint: every {checkpoint_freq} steps, keep 2 latest + 1 best", flush=True)
+            print(f"\n  [STRATEGY] Checkpoint: every {checkpoint_freq} steps, keep 3 checkpoints (2 latest + 1 best)", flush=True)
             print(f"  [INFO] Training for {remaining_steps} timesteps (Code_RL design)...", flush=True)
             
             # ✅ MICROSCOPIC DEBUG: Mark training phase start with clear boundary
