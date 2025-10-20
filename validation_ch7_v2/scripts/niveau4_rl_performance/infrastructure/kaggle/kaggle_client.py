@@ -131,9 +131,13 @@ class KaggleClient:
             script_path = kernel_dir / "script.py"
             script_path.write_text(script_content, encoding='utf-8')
             
+            # Parse kernel slug - extract just the kernel name part (after username/)
+            # kernel_slug format: "username/kernel-name"
+            kernel_name = kernel_slug.split('/')[-1]
+            
             # Create metadata
             metadata = {
-                "id": kernel_slug,
+                "id": kernel_name,  # Use only kernel name, NOT full slug with username
                 "title": title,
                 "code_file": "script.py",
                 "language": "python",
