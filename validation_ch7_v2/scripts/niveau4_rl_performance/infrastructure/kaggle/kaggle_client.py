@@ -190,6 +190,9 @@ class KaggleClient:
             
         Returns:
             KernelStatus object
+            
+        Raises:
+            Exception: Re-raises 404/403 errors for proper handling in monitor loop
         """
         try:
             status_info = self.api.kernels_status(kernel_slug)
@@ -200,27 +203,18 @@ class KaggleClient:
                 has_output=status_info.get('hasOutput', False)
             )
         except Exception as e:
+            # PROVEN PATTERN: Re-raise 404/403 errors for silent handling in monitor loop
+            # The monitor loop has logic to handle these gracefully during indexing
             error_msg = str(e)
             
-            # Handle specific error cases
             if "403" in error_msg or "Forbidden" in error_msg:
-                # 403 Forbidden might mean kernel was just created and not yet indexed
-                self.logger.debug(f"Got 403 on status check (kernel might be initializing): {e}")
-                return KernelStatus(
-                    slug=kernel_slug,
-                    status='initializing',  # Assume kernel is still initializing
-                    error_message=f"Kernel initializing (403): {e}"
-                )
+                # Re-raise for monitor loop to handle
+                raise
             elif "404" in error_msg or "Not Found" in error_msg:
-                # 404 means kernel doesn't exist
-                self.logger.error(f"❌ Kernel not found: {kernel_slug}")
-                return KernelStatus(
-                    slug=kernel_slug,
-                    status='not_found',
-                    error_message=f"Kernel not found: {error_msg}"
-                )
+                # Re-raise for monitor loop to handle
+                raise
             else:
-                # Other errors
+                # Other errors - log and return error status
                 self.logger.warning(f"⚠️  Failed to get kernel status: {e}")
                 return KernelStatus(
                     slug=kernel_slug,
