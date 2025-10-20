@@ -155,26 +155,25 @@ class KaggleClient:
             response = self.api.kernels_push(str(kernel_dir))
             
             # DEBUG: Inspect response object (PROVEN PATTERN from validation_kaggle_manager.py)
-            self.logger.debug(f"[DEBUG] Response type: {type(response)}")
-            self.logger.debug(f"[DEBUG] Response attributes: {dir(response)}")
+            print(f"[DEBUG] Response type: {type(response)}")
+            print(f"[DEBUG] Response attributes: {dir(response)}")
             
             # Try to extract all possible fields from response
-            for attr in ['ref', 'url', 'id', 'slug', 'versionNumber']:
+            for attr in ['ref', 'url', 'id', 'slug', 'versionNumber', 'link']:
                 if hasattr(response, attr):
-                    self.logger.debug(f"[DEBUG] response.{attr} = {getattr(response, attr)}")
+                    val = getattr(response, attr)
+                    print(f"[DEBUG] response.{attr} = {val}")
             
             # PROVEN PATTERN: Extract ACTUAL slug from Kaggle response
             # Kaggle may modify the slug based on title/slug resolution
             # response.ref format: "/code/{username}/{slug}"
             if hasattr(response, 'ref') and response.ref:
                 actual_slug = response.ref.replace('/code/', '').strip('/')
-                self.logger.info(f"✅ Kernel created: {actual_slug}")
-                self.logger.debug(f"   (Requested: {kernel_slug}, Actual: {actual_slug})")
+                print(f"[SUCCESS] Extracted slug from response.ref: {actual_slug}")
                 return actual_slug
             else:
                 # Fallback to our generated slug
-                self.logger.info(f"✅ Kernel created: {kernel_slug}")
-                self.logger.warning("⚠️  No ref in response, using fallback slug")
+                print(f"[FALLBACK] No ref in response, using generated slug: {kernel_slug}")
                 return kernel_slug
             
         except Exception as e:
