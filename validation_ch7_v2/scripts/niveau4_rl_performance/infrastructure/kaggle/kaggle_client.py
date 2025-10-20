@@ -152,10 +152,21 @@ class KaggleClient:
             
             # Push kernel
             self.logger.info(f"📤 Pushing kernel to Kaggle...")
-            self.api.kernels_push(str(kernel_dir))
+            response = self.api.kernels_push(str(kernel_dir))
             
-            self.logger.info(f"✅ Kernel created: {kernel_slug}")
-            return kernel_slug
+            # PROVEN PATTERN: Extract ACTUAL slug from Kaggle response
+            # Kaggle may modify the slug based on title/slug resolution
+            # response.ref format: "/code/{username}/{slug}"
+            if hasattr(response, 'ref') and response.ref:
+                actual_slug = response.ref.replace('/code/', '').strip('/')
+                self.logger.info(f"✅ Kernel created: {actual_slug}")
+                self.logger.debug(f"   (Requested: {kernel_slug}, Actual: {actual_slug})")
+                return actual_slug
+            else:
+                # Fallback to our generated slug
+                self.logger.info(f"✅ Kernel created: {kernel_slug}")
+                self.logger.warning("⚠️  No ref in response, using fallback slug")
+                return kernel_slug
             
         except Exception as e:
             self.logger.error(f"❌ Kernel creation failed: {e}")
