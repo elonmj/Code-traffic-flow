@@ -159,10 +159,19 @@ class KaggleClient:
             print(f"[DEBUG] Response attributes: {dir(response)}")
             
             # Try to extract all possible fields from response
-            for attr in ['ref', 'url', 'id', 'slug', 'versionNumber', 'link']:
+            for attr in ['ref', 'url', 'id', 'slug', 'versionNumber', 'error', '_error']:
                 if hasattr(response, attr):
                     val = getattr(response, attr)
                     print(f"[DEBUG] response.{attr} = {val}")
+            
+            # Check if there's an error
+            if hasattr(response, 'error') and response.error:
+                print(f"[ERROR] Kernel creation error: {response.error}")
+                raise Exception(f"Kernel creation failed: {response.error}")
+            
+            if hasattr(response, '_error') and response._error:
+                print(f"[ERROR] Kernel creation error: {response._error}")
+                raise Exception(f"Kernel creation failed: {response._error}")
             
             # PROVEN PATTERN: Extract ACTUAL slug from Kaggle response
             # Kaggle may modify the slug based on title/slug resolution
@@ -172,8 +181,16 @@ class KaggleClient:
                 print(f"[SUCCESS] Extracted slug from response.ref: {actual_slug}")
                 return actual_slug
             else:
+                # Check if versionNumber is 0 (creation failed)
+                if hasattr(response, 'versionNumber') and response.versionNumber == 0:
+                    print(f"[ERROR] Kernel creation failed - versionNumber is 0, ref is empty")
+                    print(f"[ERROR] This means kernel was not created on Kaggle")
+                    print(f"[ERROR] Check metadata and script files in: {kernel_dir}")
+                    raise Exception(f"Kernel creation failed - response.ref is empty")
+                
                 # Fallback to our generated slug
                 print(f"[FALLBACK] No ref in response, using generated slug: {kernel_slug}")
+                print(f"[WARNING] versionNumber: {getattr(response, 'versionNumber', 'N/A')}")
                 return kernel_slug
             
         except Exception as e:
