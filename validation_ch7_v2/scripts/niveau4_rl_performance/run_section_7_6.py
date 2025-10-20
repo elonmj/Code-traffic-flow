@@ -78,7 +78,7 @@ class Section76Config:
     """Configuration pour Section 7.6 validation."""
     
     # Quick test mode (5 minutes on CPU)
-    QUICK_TIMESTEPS = 5
+    QUICK_TIMESTEPS = 100
     QUICK_EPISODES = 1
     QUICK_DURATION = "5 minutes"
     
