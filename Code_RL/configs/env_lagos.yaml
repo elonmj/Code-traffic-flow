@@ -1,3 +1,12 @@
+# Grid parameters (required by SimulationRunner)
+N: 200           # Number of cells in spatial grid
+xmin: 0.0        # Grid start (km)
+xmax: 20.0       # Grid end (km) - 20 km represents Victoria Island corridor
+
+# Simulation time parameters (required by SimulationRunner)
+t_final: 3600.0  # Total simulation time (seconds) = 1 hour
+output_dt: 15.0  # Output/decision timestep (seconds) - matches dt_decision
+
 environment:
   context: Victoria Island Lagos
   dt_decision: 15.0  # Changed from 10.0 (Bug #27 fix, 4x improvement validated)

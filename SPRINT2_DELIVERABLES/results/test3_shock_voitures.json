@@ -1,0 +1,10 @@
+{
+  "test_name": "test3_shock_voitures",
+  "vehicle_class": "voitures",
+  "wave_type": "shock",
+  "validation": {
+    "L2_error": 3.8103594912111135e-05,
+    "L2_passed": true,
+    "test_passed": true
+  }
+}

@@ -1,0 +1,101 @@
+﻿# Configuration Section 7.6 RL Performance Validation
+# Innovation 6: DRY Hyperparameters - Single Source of Truth
+# Innovation 8: Baseline Contexte Béninois
+
+# Scénarios de test
+scenarios:
+  - name: "low_traffic"
+    duration: 3600  # 1 heure
+    inflow_rate: 800  # véhicules/heure
+    network_file: "data/network_cotonou.xml"
+    
+  - name: "medium_traffic"
+    duration: 3600
+    inflow_rate: 1200
+    network_file: "data/network_cotonou.xml"
+    
+  - name: "high_traffic"
+    duration: 3600
+    inflow_rate: 1600
+    network_file: "data/network_cotonou.xml"
+    
+  - name: "peak_traffic"
+    duration: 3600
+    inflow_rate: 2000
+    network_file: "data/network_cotonou.xml"
+
+# Algorithmes RL avec hyperparamètres validés (source: Code_RL/src/rl/train_dqn.py)
+# ✅ CRITICAL: Use CODE_RL defaults (lr=1e-3, tau=1.0, target_update=1000)
+rl_algorithms:
+  dqn:
+    hyperparameters:
+      learning_rate: 0.001  # CODE_RL default (NOT 0.0001)
+      buffer_size: 50000    # CODE_RL default (NOT 100000)
+      learning_starts: 1000
+      batch_size: 32
+      tau: 1.0              # CODE_RL default (NOT 0.005)
+      gamma: 0.99
+      train_freq: 4
+      gradient_steps: 1
+      target_update_interval: 1000  # CODE_RL default
+      exploration_fraction: 0.1
+      exploration_initial_eps: 1.0
+      exploration_final_eps: 0.05
+    total_timesteps: 100000
+    
+  ppo:
+    hyperparameters:
+      learning_rate: 0.0003
+      n_steps: 2048
+      batch_size: 64
+      n_epochs: 10
+      gamma: 0.99
+      gae_lambda: 0.95
+      clip_range: 0.2
+      ent_coef: 0.0
+    total_timesteps: 100000
+
+# ARZ Scenario Configuration (for Code_RL environment)
+arz_scenario:
+  # Path to ARZ scenario YAML (Code_RL requirement)
+  config_path: "../../../Code_RL/configs/scenarios/scenario_cotonou.yml"
+  # Fallback if primary doesn't exist
+  fallback_config_path: "../../../Code_RL/data/test_scenario.yml"
+
+# Innovation 8: Baseline Contexte Béninois
+benin_context:
+  motos_proportion: 0.70  # 70% motos (mobilité urbaine africaine)
+  voitures_proportion: 0.30  # 30% voitures
+  infrastructure_quality: 0.60  # 60% qualité (routes partiellement dégradées)
+  max_speed_moto: 50  # km/h (prudence infrastructures)
+  max_speed_voiture: 60  # km/h (limitations infrastructures)
+
+# Cache configuration (Innovation 1 + 4)
+cache:
+  baseline_dir: "cache/baseline"
+  rl_dir: "cache/rl"
+  enable_cache: true
+
+# Checkpoint configuration (Innovation 2 + 5)
+checkpoints:
+  checkpoints_dir: "checkpoints"
+  keep_last: 3  # Innovation 5: Rotation (garde 3 derniers)
+  config_hash_length: 8  # Innovation 2: Longueur hash config
+
+# Logging configuration (Innovation 7)
+logging:
+  log_file: "logs/section_7_6_rl_performance.log"
+  log_level: "INFO"
+  enable_structured_logging: true
+
+# Quick Test Mode (validation locale rapide <5 min)
+quick_test:
+  enabled: true
+  scenarios:
+    - name: "quick_low_traffic"
+      duration: 300  # 5 minutes
+      inflow_rate: 800
+      network_file: "data/network_cotonou.xml"
+  
+  rl_overrides:
+    total_timesteps: 1000  # Réduit pour test rapide

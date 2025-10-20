@@ -1,0 +1,21 @@
+{
+  "test_name": "test1_shock_motos",
+  "vehicle_class": "motos",
+  "wave_type": "shock",
+  "description": "Simple shock wave validation - Foundation test for multiclass",
+  "initial_conditions": {
+    "left": {
+      "rho": 0.08,
+      "v_kmh": 40.0
+    },
+    "right": {
+      "rho": 0.02,
+      "v_kmh": 60.0
+    }
+  },
+  "validation": {
+    "L2_error": 4.275972988504333e-05,
+    "L2_passed": true,
+    "test_passed": true
+  }
+}

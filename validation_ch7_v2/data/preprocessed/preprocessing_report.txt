@@ -1,0 +1,53 @@
+======================================================================
+TOMTOM DATA PREPROCESSING REPORT
+======================================================================
+
+Input: donnees_trafic_75_segments (2).csv
+Output: validation_ch7_v2\data\preprocessed
+Date: 2025-10-17 01:01:01.523598
+
+======================================================================
+1. MULTICLASS CALIBRATION
+======================================================================
+Rows processed: 4270
+Motos fraction (mean): 55.82%
+Voitures fraction (mean): 44.18%
+Speed differential (mean): 1.32x
+
+======================================================================
+2. RUSH HOUR DEMAND
+======================================================================
+Time window: 17:00-18:00
+Base midday demand: 1799 veh/h
+Peak rush demand: 6398 veh/h
+Peak multiplier: 3.56x
+Peak factor: 2.5x
+
+======================================================================
+3. NETWORK TOPOLOGY
+======================================================================
+Segments: 4270
+Nodes: 60
+Total length: 1692750 m
+Average lanes: 2.5
+Total capacity: 17895487500 veh/h
+
+Street distribution:
+  - Akin Adesola Street: 1281 segments
+  - Adeola Odeku Street: 1159 segments
+  - Ahmadu Bello Way: 976 segments
+  - Saka Tinubu Street: 854 segments
+
+======================================================================
+OUTPUT FILES
+======================================================================
+✅ validation_ch7_v2\data\preprocessed\calibrated_multiclass.csv
+✅ validation_ch7_v2\data\preprocessed\rush_hour_demand.csv
+✅ validation_ch7_v2\data\preprocessed\rush_hour_demand.json
+✅ validation_ch7_v2\data\preprocessed\network_topology.csv
+✅ validation_ch7_v2\data\preprocessed\network_metadata.json
+✅ validation_ch7_v2\data\preprocessed\preprocessing_report.txt
+
+======================================================================
+✅ PREPROCESSING COMPLETE
+======================================================================

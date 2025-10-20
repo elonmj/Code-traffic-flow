@@ -1,0 +1,114 @@
+{
+  "speed_differential": {
+    "delta_v_kmh": 10.06463011985641,
+    "motos_mean_kmh": 59.85052860225852,
+    "cars_mean_kmh": 49.78589848240211,
+    "motos_median_kmh": 60.00000000000001,
+    "cars_median_kmh": 50.0,
+    "motos_std_kmh": 1.3566051657582656,
+    "cars_std_kmh": 1.669685727893656,
+    "sample_sizes": {
+      "motos": 1869,
+      "cars": 3210
+    }
+  },
+  "throughput_ratio": {
+    "throughput_ratio": 0.6666666666666666,
+    "Q_motos_veh_per_h": 529.4117647058823,
+    "Q_cars_veh_per_h": 794.1176470588235,
+    "time_window_h": 0.03777777777777778,
+    "unique_motos": 20,
+    "unique_cars": 30
+  },
+  "fundamental_diagrams": {
+    "motorcycle": {
+      "rho_mean": 0.035,
+      "rho_max": 0.04,
+      "Q_mean": 1038.9589851136247,
+      "Q_max": 1241.3793103448277,
+      "V_mean": 59.7487807117961,
+      "V_max": 60.000000000000014,
+      "data_points": {
+        "rho": [
+          0.02,
+          0.04,
+          0.04,
+          0.04
+        ],
+        "Q": [
+          1241.3793103448277,
+          1220.3389830508474,
+          847.0588235294117,
+          847.0588235294117
+        ],
+        "V": [
+          59.28170310543839,
+          59.713429983809014,
+          59.999989757936966,
+          60.000000000000014
+        ]
+      },
+      "n_segments": 4
+    },
+    "car": {
+      "rho_mean": 0.0525,
+      "rho_max": 0.06,
+      "Q_mean": 1449.4724025974026,
+      "Q_max": 1928.5714285714284,
+      "V_mean": 49.399898639987214,
+      "V_max": 50.0,
+      "data_points": {
+        "rho": [
+          0.03,
+          0.06,
+          0.06,
+          0.06
+        ],
+        "Q": [
+          1928.5714285714284,
+          1687.5,
+          1090.909090909091,
+          1090.909090909091
+        ],
+        "V": [
+          47.91422609474644,
+          49.68927817728087,
+          49.99609028792156,
+          50.0
+        ]
+      },
+      "n_segments": 4
+    }
+  },
+  "infiltration_rate": {
+    "infiltration_rate": 0.0,
+    "motos_in_car_zones": 0,
+    "total_motos": 70,
+    "n_car_zones": 0,
+    "n_total_segments": 4
+  },
+  "segregation_index": {
+    "segregation_index": 0.10559855773101094,
+    "position_separation_m": 50.19584286311124,
+    "motos_position_mean_m": 1188.3784619337357,
+    "cars_position_mean_m": 1238.574304796847,
+    "motos_position_std_m": 500.0203279147457,
+    "cars_position_std_m": 459.4422754867363
+  },
+  "statistical_summary": {
+    "ks_test": {
+      "statistic": 0.9925093632958801,
+      "p_value": 0.0,
+      "interpretation": "Distributions differ significantly"
+    },
+    "mann_whitney_u": {
+      "statistic": 5955248.0,
+      "p_value": 0.0,
+      "interpretation": "Motos significantly faster"
+    },
+    "sample_sizes": {
+      "motos": 1869,
+      "cars": 3210
+    }
+  }
+}

@@ -1,0 +1,55 @@
+# Base Configuration for ARZ-RL Validation System
+# Used as defaults for all sections
+
+version: "1.0"
+system: "ARZ-RL-Validation-CH7-V2"
+description: "Multi-layer validation system for ARZ-RL traffic control"
+
+# Global settings
+global:
+  device: "cpu"  # Override with --device flag
+  quick_test: false  # Override with --quick-test flag
+  verbose: true
+  seed: 42
+
+# Output configuration
+output:
+  base_dir: "outputs/"
+  format: "json"  # json, yaml
+  save_artifacts: true
+  save_figures: true
+  save_metrics: true
+
+# Logging configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_output: true
+  file_path: "debug.log"
+
+# Cache configuration
+cache:
+  enabled: true
+  base_dir: "cache/"
+  ttl_seconds: 3600  # Cache time-to-live
+
+# Checkpoint configuration
+checkpoint:
+  enabled: true
+  base_dir: "checkpoints/"
+  rotation_keep: 3  # Keep last 3 checkpoints
+  auto_archive: true
+
+# Scenarios (used by sections 7.5, 7.6, 7.7)
+scenarios:
+  - name: "traffic_light_control"
+    description: "Feu tricolore classique Bénin"
+    enabled: true
+  
+  - name: "ramp_metering"
+    description: "Gestion d'accès à voie rapide"
+    enabled: false  # Enable for future sections
+  
+  - name: "adaptive_speed_control"
+    description: "Contrôle de vitesse adaptatif"
+    enabled: false  # Enable for future sections

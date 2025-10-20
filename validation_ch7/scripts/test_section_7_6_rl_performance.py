@@ -1385,10 +1385,13 @@ class RLPerformanceValidationTest(ValidationSection):
             print("", flush=True)
             
             # ✅ BUG #30 FIX: Pass scenario_config_path and device to RLController
+            # ✅ BUG CRITICAL FIX: Pass SAME duration/control_interval as baseline for fair comparison!
             rl_controller = self.RLController(scenario_type, model_path, scenario_path, device)
             rl_states, _ = self.run_control_simulation(
                 rl_controller, 
                 scenario_path,
+                duration=baseline_duration,  # CRITICAL: Use same duration as baseline!
+                control_interval=control_interval,  # CRITICAL: Use same interval as baseline!
                 device=device,
                 controller_type='RL'
             )

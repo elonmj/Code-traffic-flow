@@ -1,0 +1,56 @@
+{
+  "speed_differential": {
+    "delta_v_predicted_kmh": 10.0,
+    "delta_v_observed_kmh": 1.7921545667447312,
+    "absolute_error_kmh": 8.207845433255269,
+    "relative_error": 0.8207845433255269,
+    "threshold": 0.1,
+    "passed": false,
+    "interpretation": "\u274c FAIL"
+  },
+  "throughput_ratio": {
+    "ratio_predicted": 1.5,
+    "ratio_observed": 0.6666666653087866,
+    "absolute_error": 0.8333333346912134,
+    "relative_error": 0.5555555564608089,
+    "threshold": 0.15,
+    "passed": false,
+    "interpretation": "\u274c FAIL"
+  },
+  "fundamental_diagrams": {
+    "motorcycles": {
+      "correlation": 0.9219083656222995,
+      "p_value": 1.1274764055136995e-89,
+      "n_points": 215
+    },
+    "cars": {
+      "correlation": 0.8470920972090118,
+      "p_value": 2.1445527193714805e-60,
+      "n_points": 215
+    },
+    "average_correlation": 0.8845002314156556,
+    "threshold": 0.7,
+    "passed": true,
+    "interpretation": "\u2705 PASS"
+  },
+  "infiltration_rate": {
+    "infiltration_rate_observed": 0.2910323965651834,
+    "expected_min": 0.5,
+    "expected_max": 0.8,
+    "passed": false,
+    "interpretation": "\u274c FAIL (expected 50-80%)"
+  },
+  "overall_validation": {
+    "status": "\u274c FAIL - Multiple criteria not met",
+    "n_passed": 1,
+    "n_total": 4,
+    "pass_rate": 0.25,
+    "tests": {
+      "speed_differential": "FAIL",
+      "throughput_ratio": "FAIL",
+      "fundamental_diagrams": "PASS",
+      "infiltration_rate": "FAIL"
+    },
+    "revendication_r2": "NOT VALIDATED \u274c"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "n_segments": 4270,
+  "n_nodes": 60,
+  "total_length_m": 1692750.0,
+  "avg_lanes": 2.5285714285714285,
+  "avg_capacity_veh_per_hour": 4190980.6791569088,
+  "total_network_capacity": 17895487500.0,
+  "street_distribution": {
+    "Akin Adesola Street": 1281,
+    "Adeola Odeku Street": 1159,
+    "Ahmadu Bello Way": 976,
+    "Saka Tinubu Street": 854
+  },
+  "construction_params": {
+    "min_freeflow": 30.0
+  }
+}

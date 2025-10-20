@@ -1,0 +1,10 @@
+{
+  "test_name": "test2_rarefaction_motos",
+  "vehicle_class": "motos",
+  "wave_type": "rarefaction",
+  "validation": {
+    "L2_error": 2.96282370969696e-05,
+    "L2_passed": true,
+    "test_passed": true
+  }
+}

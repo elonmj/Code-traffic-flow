@@ -1,0 +1,8 @@
+{
+  "test_name": "test4_rarefaction_voitures",
+  "validation": {
+    "L2_error": 2.9480086894134146e-05,
+    "L2_passed": true,
+    "test_passed": true
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-10-17T12:34:16.361607",
+  "data_source": "REAL Lagos TomTom Traffic Data",
+  "validation_status": "❌ FAIL - Multiple criteria not met",
+  "tests_passed": "1/4",
+  "revendication_R2": "NOT VALIDATED",
+  "individual_tests": {
+    "speed_differential": "❌ FAIL",
+    "throughput_ratio": "❌ FAIL",
+    "fundamental_diagrams": "✅ PASS",
+    "infiltration_rate": "❌ FAIL (expected 50-80%)"
+  },
+  "key_findings": {
+    "speed_differential_error_pct": 82.07845433255268,
+    "throughput_ratio_error_pct": 55.55555564608089,
+    "fd_correlation_avg": 0.8845002314156556,
+    "infiltration_rate_observed": "N/A"
+  },
+  "data_quality": {
+    "total_observations": "N/A",
+    "time_range": "N/A",
+    "unique_segments": "N/A"
+  }
+}
