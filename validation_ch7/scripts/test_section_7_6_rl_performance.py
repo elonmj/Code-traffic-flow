@@ -433,11 +433,23 @@ class RLPerformanceValidationTest(ValidationSection):
             - Action: Resume simulation from 3600s → 7200s (additive +240 steps)
             - NOT: Recalculate 0s → 7200s (wasteful)
         """
-        cached_duration = len(existing_states) * control_interval
-        extension_duration = target_duration - cached_duration
+        cached_steps = len(existing_states)
+        required_steps = int(target_duration / control_interval) + 1
+        missing_steps = required_steps - cached_steps
         
-        print(f"  [CACHE] ADDITIVE EXTENSION: {cached_duration}s → {target_duration}s (+{extension_duration}s)", flush=True)
-        self.debug_logger.info(f"[CACHE] Extending cache additively: {len(existing_states)} steps → target {int(target_duration/control_interval)+1} steps")
+        # Calculate extension duration: must extend enough to cover missing steps
+        if missing_steps <= 0:
+            # Already have enough steps, just return trimmed cache
+            print(f"  [CACHE] Already sufficient: {cached_steps} steps ≥ {required_steps} required", flush=True)
+            return existing_states[:required_steps]
+        
+        # Extend by exactly the missing steps to reach required count
+        extension_duration = missing_steps * control_interval
+        cached_duration = cached_steps * control_interval
+        target_duration_actual = cached_duration + extension_duration
+        
+        print(f"  [CACHE] ADDITIVE EXTENSION: {cached_duration}s ({cached_steps} steps) → {target_duration_actual}s ({required_steps} steps) [+{missing_steps} steps]", flush=True)
+        self.debug_logger.info(f"[CACHE] Extending cache additively: {cached_steps} steps → target {required_steps} steps (missing {missing_steps} steps = {extension_duration}s)")
         
         # ✅ IMPLEMENTED: Resume from cached final state (TRUE additive extension)
         print(f"  [CACHE] ✅ Resuming from cached state (TRUE additive extension)", flush=True)
@@ -464,10 +476,10 @@ class RLPerformanceValidationTest(ValidationSection):
         
         print(f"  [CACHE] ✅ Combined: {len(existing_states)} cached + {len(extension_states)} new = {len(extended_states)} total", flush=True)
         
-        # Save extended cache
+        # Save extended cache with the actual total duration (not the input target_duration)
         self._save_baseline_cache(
             scenario_type, scenario_path, extended_states, 
-            target_duration, control_interval, device
+            target_duration_actual, control_interval, device
         )
         
         return extended_states

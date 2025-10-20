@@ -57,7 +57,18 @@ def cli():
     default='dqn',
     help='Algorithme RL (défaut: dqn)'
 )
-def run(section: str, quick_test: bool, config_file: Path, algorithm: str):
+@click.option(
+    '--kaggle',
+    is_flag=True,
+    help='Exécute sur Kaggle GPU (sync Git automatique)'
+)
+@click.option(
+    '--device',
+    type=click.Choice(['cpu', 'gpu'], case_sensitive=False),
+    default='gpu',
+    help='Device pour exécution (défaut: gpu pour Kaggle)'
+)
+def run(section: str, quick_test: bool, config_file: Path, algorithm: str, kaggle: bool, device: str):
     """Exécute validation Section 7.6 RL Performance.
     
     Exemples:
@@ -69,13 +80,79 @@ def run(section: str, quick_test: bool, config_file: Path, algorithm: str):
         
         # Configuration custom
         python cli.py run --config-file my_config.yaml
+        
+        # Exécution sur Kaggle GPU (NEW!)
+        python cli.py run --kaggle --quick-test
+        python cli.py run --kaggle --device gpu
     """
     click.echo(f"🚀 Section 7.6 RL Performance Validation")
     click.echo(f"   Section: {section}")
     click.echo(f"   Mode: {'Quick Test' if quick_test else 'Full Validation'}")
     click.echo(f"   Algorithm: {algorithm.upper()}")
+    click.echo(f"   Device: {device.upper()}")
+    click.echo(f"   Platform: {'Kaggle GPU' if kaggle else 'Local'}")
     click.echo(f"   Config: {config_file}")
     click.echo()
+    
+    # === KAGGLE EXECUTION PATH ===
+    if kaggle:
+        click.echo("🌐 KAGGLE GPU EXECUTION MODE")
+        click.echo("=" * 80)
+        
+        try:
+            from infrastructure.kaggle import KaggleOrchestrator
+            
+            # Initialize Kaggle orchestrator
+            orchestrator = KaggleOrchestrator()
+            
+            # Execute on Kaggle
+            click.echo("\n📦 Step 1: Git synchronization...")
+            click.echo("   (Auto-commit and push changes)")
+            
+            click.echo("\n🔨 Step 2: Building Kaggle kernel script...")
+            
+            click.echo("\n🚀 Step 3: Creating kernel on Kaggle...")
+            
+            click.echo("\n⏳ Step 4: Monitoring execution...")
+            click.echo("   (This may take 15-60 minutes on GPU)")
+            
+            # Execute validation on Kaggle
+            result = orchestrator.execute_validation(
+                validation_name=f"section-7-6-{algorithm}-{'quick' if quick_test else 'full'}",
+                script_path="validation_ch7_v2/scripts/niveau4_rl_performance/run_section_7_6.py",
+                quick_mode=quick_test,
+                device=device,
+                auto_sync_git=True,
+                commit_message=f"Auto-commit: Section 7.6 validation ({algorithm}, {'quick' if quick_test else 'full'})",
+                monitor_timeout=7200,  # 2 hours
+                download_results=True
+            )
+            
+            # Display results
+            if result.success:
+                click.echo("\n✅ KAGGLE EXECUTION SUCCESSFUL!")
+                click.echo(f"   Kernel: {result.kernel_slug}")
+                click.echo(f"   Status: {result.status}")
+                if result.results_path:
+                    click.echo(f"   Results: {result.results_path}")
+            else:
+                click.echo("\n❌ KAGGLE EXECUTION FAILED", err=True)
+                click.echo(f"   Status: {result.status}")
+                if result.error_message:
+                    click.echo(f"   Error: {result.error_message}")
+                sys.exit(1)
+                
+        except ImportError as e:
+            click.echo(f"\n❌ Kaggle infrastructure not available: {e}", err=True)
+            click.echo("   Make sure infrastructure/kaggle/ module is installed")
+            sys.exit(1)
+        except Exception as e:
+            click.echo(f"\n❌ Kaggle execution failed: {str(e)}", err=True)
+            sys.exit(1)
+        
+        return  # Exit after Kaggle execution
+    
+    # === LOCAL EXECUTION PATH (existing code) ===
     
     try:
         # === DEPENDENCY INJECTION SETUP ===
@@ -222,12 +299,20 @@ def info():
     click.echo("   6. DRY Hyperparameters (YAML source unique)")
     click.echo("   7. Dual Logging (fichier JSON + console formatée)")
     click.echo("   8. Baseline Contexte Béninois (70% motos, infra 60%)")
+    click.echo("   9. Kaggle GPU Execution (clean DDD architecture)")
     click.echo()
     click.echo("🎯 Principes architecturaux:")
     click.echo("   - Clean Architecture (Domain → Infrastructure → Entry Points)")
     click.echo("   - SOLID Principles (SRP, OCP, LSP, ISP, DIP)")
     click.echo("   - Dependency Injection (testabilité maximale)")
     click.echo("   - Interface-based Design (flexibilité)")
+    click.echo()
+    click.echo("🌐 Kaggle GPU Execution:")
+    click.echo("   - Auto Git sync (commit + push)")
+    click.echo("   - Kernel script generation")
+    click.echo("   - Execution monitoring")
+    click.echo("   - Results download")
+    click.echo("   Usage: python cli.py run --kaggle --quick-test")
 
 
 if __name__ == '__main__':
