@@ -41,16 +41,53 @@ class GitSyncService:
         Initialize Git sync service.
         
         Args:
-            repo_path: Path to Git repository (default: current directory)
+            repo_path: Path to Git repository (auto-detects if not provided)
         """
         self.logger = logging.getLogger(__name__)
-        self.repo_path = repo_path or Path.cwd()
+        
+        # If no path provided, find Git repository root
+        if repo_path:
+            self.repo_path = Path(repo_path)
+        else:
+            self.repo_path = self._find_git_root()
         
         # Verify it's a Git repository
         if not (self.repo_path / ".git").exists():
             raise ValueError(f"Not a Git repository: {self.repo_path}")
         
         self.logger.info(f"✅ Git sync service initialized: {self.repo_path}")
+    
+    def _find_git_root(self) -> Path:
+        """
+        Find Git repository root by searching up directory tree.
+        
+        Returns:
+            Path to .git directory's parent (repository root)
+            
+        Raises:
+            ValueError: If no .git directory found
+        """
+        current = Path.cwd().resolve()
+        max_depth = 20  # Safety limit to prevent infinite loops
+        depth = 0
+        
+        while depth < max_depth:
+            if (current / ".git").exists():
+                self.logger.debug(f"Found Git root: {current}")
+                return current
+            
+            parent = current.parent
+            if parent == current:
+                # Reached filesystem root
+                break
+            
+            current = parent
+            depth += 1
+        
+        raise ValueError(
+            f"Git repository not found. Started from {Path.cwd()} "
+            f"and searched {max_depth} parent directories."
+        )
     
     def get_status(self) -> GitStatus:
         """
