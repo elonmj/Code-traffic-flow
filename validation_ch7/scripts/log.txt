@@ -648,3 +648,15 @@
 2025-10-20 11:58:11,966 - validation_kaggle_manager - INFO - 📦 Adding all changes...
 2025-10-20 11:58:12,047 - validation_kaggle_manager - INFO - 💾 Committing changes...
 2025-10-20 11:58:12,155 - validation_kaggle_manager - ERROR - ❌ Git commit failed: 
+2025-10-20 11:58:35,446 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-20 11:58:35,595 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-20 11:58:35,668 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-20 11:58:35,669 - validation_kaggle_manager - INFO -   M  alidation_ch7/scripts/log.txt (Modified (staged))
+2025-10-20 11:58:35,669 - validation_kaggle_manager - INFO -    M validation_ch7_v2/scripts/niveau4_rl_performance/infrastructure/kaggle/kaggle_orchestrator.py (Modified (unstaged))
+2025-10-20 11:58:35,670 - validation_kaggle_manager - INFO -   ?? and (Untracked)
+2025-10-20 11:58:35,670 - validation_kaggle_manager - INFO -   ?? examples (Untracked)
+2025-10-20 11:58:35,671 - validation_kaggle_manager - INFO -   ?? locations (Untracked)
+2025-10-20 11:58:35,671 - validation_kaggle_manager - INFO -   ?? patterns (Untracked)
+2025-10-20 11:58:35,671 - validation_kaggle_manager - INFO -   ?? usage (Untracked)
+2025-10-20 11:58:35,672 - validation_kaggle_manager - INFO -   ?? validation_ch7_v2/scripts/niveau4_rl_performance/.kaggle_kernels/arz-section-7-6-dqn-quick-20251020-115050/ (Untracked)
+2025-10-20 11:58:35,673 - validation_kaggle_manager - INFO - 📦 Adding all changes...

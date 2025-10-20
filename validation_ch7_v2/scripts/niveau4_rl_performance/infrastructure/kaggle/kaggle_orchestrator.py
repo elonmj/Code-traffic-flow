@@ -133,7 +133,16 @@ class KaggleOrchestrator:
             # Step 3: Create kernel
             self.logger.info("\\n📝 Step 3: Creating Kaggle kernel")
             kernel_slug = self._generate_kernel_slug(validation_name)
-            title = f"ARZ Validation - {validation_name}"
+            
+            # PROVEN PATTERN: Simple title that naturally slugifies to kernel_name
+            # Extract kernel name from full slug (remove username/)
+            kernel_name = kernel_slug.split('/')[-1]
+            
+            # Use kernel name as-is for title (with minor formatting)
+            # This ensures Kaggle's slugification produces EXACT kernel_name
+            # Example: "arz-section-7-6-a1b2" -> title: "arz section 7 6 a1b2"
+            # When Kaggle slugifies: "arz-section-7-6-a1b2" ✅ PERFECT MATCH
+            title = kernel_name.replace('-', ' ')
             
             kernel_slug = self.kaggle_client.create_kernel(
                 kernel_slug=kernel_slug,
@@ -196,7 +205,9 @@ class KaggleOrchestrator:
     
     def _generate_kernel_slug(self, validation_name: str) -> str:
         """
-        Generate unique kernel slug.
+        Generate unique kernel slug using proven pattern from validation_kaggle_manager.
+        
+        Pattern: Simple random suffix instead of timestamp (avoids slug/title issues)
         
         Args:
             validation_name: Validation identifier
@@ -204,11 +215,15 @@ class KaggleOrchestrator:
         Returns:
             Full kernel slug (username/kernel-name)
         """
-        # Sanitize name
+        import random
+        import string
+        
+        # Sanitize name (keep it simple)
         safe_name = validation_name.lower().replace("_", "-").replace(" ", "-")
         
-        # Add timestamp for uniqueness
-        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-        kernel_name = f"arz-{safe_name}-{timestamp}"
+        # Add short random suffix for uniqueness (PROVEN PATTERN)
+        # This avoids the timestamp complexity that causes slug/title mismatches
+        random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
+        kernel_name = f"arz-{safe_name}-{random_suffix}"
         
         return f"{self.kaggle_client.username}/{kernel_name}"

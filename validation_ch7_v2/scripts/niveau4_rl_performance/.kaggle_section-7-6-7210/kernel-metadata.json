@@ -1,0 +1,13 @@
+{
+  "id": "joselonm/section-7-6-7210",
+  "title": "Section 7 6",
+  "code_file": "script.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": []
+}

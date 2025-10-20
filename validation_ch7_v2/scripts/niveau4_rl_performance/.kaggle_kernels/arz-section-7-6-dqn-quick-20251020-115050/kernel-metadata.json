@@ -1,0 +1,13 @@
+{
+  "id": "joselonm/arz-section-7-6-dqn-quick-20251020-115050",
+  "title": "ARZ Validation - section-7-6-dqn-quick",
+  "code_file": "script.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": []
+}
