@@ -218,58 +218,117 @@ class KaggleClient:
         """
         Monitor kernel execution until completion or timeout.
         
+        PROVEN PATTERN from validation_kaggle_manager:
+        - Initial delay (120s) to let Kaggle index the kernel
+        - Adaptive exponential backoff (35s → 260s)
+        - Silent error handling during monitoring (404 is normal initially)
+        
         Args:
             kernel_slug: Full kernel slug
             timeout: Maximum wait time in seconds
-            poll_interval: Status check interval in seconds
+            poll_interval: Initial poll interval (will adapt exponentially)
             session_marker: Marker in logs indicating session completion
             
         Returns:
             Final KernelStatus
         """
         self.logger.info(f"👀 Monitoring kernel: {kernel_slug}")
-        self.logger.info(f"⏱️  Timeout: {timeout}s, Poll interval: {poll_interval}s")
+        self.logger.info(f"⏱️  Timeout: {timeout}s")
+        self.logger.info(f"🌐 URL: https://www.kaggle.com/code/{kernel_slug}")
+        
+        # PROVEN PATTERN: Initial delay for Kaggle to index kernel
+        initial_delay = 120  # 2 minutes
+        self.logger.info(f"⏳ Initial delay: {initial_delay}s (Kaggle indexing time)")
+        time.sleep(initial_delay)
+        
+        # Adaptive intervals (exponential backoff)
+        base_interval = 35  # Start with 35 seconds
+        max_interval = 260  # Cap at ~4 minutes
+        current_interval = base_interval
         
         start_time = time.time()
         last_status = None
+        consecutive_errors = 0
+        max_consecutive_errors = 10
         
         while (time.time() - start_time) < timeout:
-            status = self.get_kernel_status(kernel_slug)
-            
-            # Log status changes
-            if status.status != last_status:
-                elapsed = int(time.time() - start_time)
-                self.logger.info(f"📊 [{elapsed}s] Status: {status.status}")
-                last_status = status.status
-            
-            # Check for completion
-            if status.status == 'complete':
-                self.logger.info(f"✅ Kernel completed successfully")
-                status.session_complete = True
-                return status
-            
-            elif status.status == 'error':
-                self.logger.error(f"❌ Kernel failed with error")
-                return status
-            
-            elif status.status == 'cancelled':
-                self.logger.warning(f"⚠️  Kernel was cancelled")
-                return status
-            
-            # Check for session marker in logs
-            if status.has_output:
-                if self._check_session_marker(kernel_slug, session_marker):
-                    self.logger.info(f"✅ Session marker detected: {session_marker}")
+            try:
+                status = self.get_kernel_status(kernel_slug)
+                
+                # Reset error counter on successful status check
+                consecutive_errors = 0
+                
+                # Log status changes
+                if status.status != last_status:
+                    elapsed = int(time.time() - start_time)
+                    self.logger.info(f"📊 [{elapsed}s] Status: {status.status}")
+                    last_status = status.status
+                
+                # Check for completion
+                if status.status == 'complete':
+                    self.logger.info(f"✅ Kernel completed successfully")
                     status.session_complete = True
                     return status
+                
+                elif status.status == 'error':
+                    self.logger.error(f"❌ Kernel failed with error")
+                    return status
+                
+                elif status.status == 'cancelled':
+                    self.logger.warning(f"⚠️  Kernel was cancelled")
+                    return status
+                
+                # Check for session marker in logs (if kernel has output)
+                if status.has_output:
+                    if self._check_session_marker(kernel_slug, session_marker):
+                        self.logger.info(f"✅ Session marker detected: {session_marker}")
+                        status.session_complete = True
+                        return status
+                
+            except Exception as e:
+                # PROVEN PATTERN: Silent error handling (404 is normal during indexing)
+                consecutive_errors += 1
+                error_msg = str(e)
+                
+                if "404" in error_msg or "Not Found" in error_msg:
+                    if consecutive_errors <= 3:
+                        # First few 404s are expected (kernel still indexing)
+                        self.logger.debug(f"Kernel still indexing (404 - attempt {consecutive_errors})")
+                    else:
+                        self.logger.warning(f"❌ Kernel not found (attempt {consecutive_errors}/{max_consecutive_errors})")
+                else:
+                    self.logger.warning(f"⚠️  Status check error: {e}")
+                
+                # Stop if too many consecutive errors
+                if consecutive_errors >= max_consecutive_errors:
+                    self.logger.error(f"❌ Too many consecutive errors ({consecutive_errors})")
+                    return KernelStatus(
+                        slug=kernel_slug,
+                        status='error',
+                        error_message=f"Too many status check failures: {e}"
+                    )
             
-            time.sleep(poll_interval)
+            # Adaptive interval (exponential backoff)
+            current_interval = min(current_interval * 1.5, max_interval)
+            self.logger.debug(f"⏳ Next check in {current_interval:.0f}s...")
+            time.sleep(current_interval)
         
         # Timeout reached
-        self.logger.error(f"❌ Kernel monitoring timeout after {timeout}s")
-        status = self.get_kernel_status(kernel_slug)
-        status.error_message = f"Monitoring timeout after {timeout}s"
-        return status
+        elapsed = time.time() - start_time
+        self.logger.error(f"❌ Kernel monitoring timeout after {elapsed:.0f}s")
+        self.logger.info(f"🌐 Check manually: https://www.kaggle.com/code/{kernel_slug}")
+        
+        # Try one final status check
+        try:
+            status = self.get_kernel_status(kernel_slug)
+            status.error_message = f"Monitoring timeout after {elapsed:.0f}s"
+            return status
+        except:
+            return KernelStatus(
+                slug=kernel_slug,
+                status='timeout',
+                error_message=f"Monitoring timeout after {elapsed:.0f}s"
+            )
     
     def _check_session_marker(self, kernel_slug: str, marker: str) -> bool:
         """Check if session marker appears in kernel logs."""

@@ -660,3 +660,8 @@
 2025-10-20 11:58:35,671 - validation_kaggle_manager - INFO -   ?? usage (Untracked)
 2025-10-20 11:58:35,672 - validation_kaggle_manager - INFO -   ?? validation_ch7_v2/scripts/niveau4_rl_performance/.kaggle_kernels/arz-section-7-6-dqn-quick-20251020-115050/ (Untracked)
 2025-10-20 11:58:35,673 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-20 11:58:35,761 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-20 11:58:36,780 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-20 11:58:36,780 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-20 11:58:43,085 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-20 11:58:45,348 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-tpew
