@@ -180,12 +180,33 @@ class KaggleClient:
                 has_output=status_info.get('hasOutput', False)
             )
         except Exception as e:
-            self.logger.warning(f"⚠️  Failed to get kernel status: {e}")
-            return KernelStatus(
-                slug=kernel_slug,
-                status='error',
-                error_message=str(e)
-            )
+            error_msg = str(e)
+            
+            # Handle specific error cases
+            if "403" in error_msg or "Forbidden" in error_msg:
+                # 403 Forbidden might mean kernel was just created and not yet indexed
+                self.logger.debug(f"Got 403 on status check (kernel might be initializing): {e}")
+                return KernelStatus(
+                    slug=kernel_slug,
+                    status='initializing',  # Assume kernel is still initializing
+                    error_message=f"Kernel initializing (403): {e}"
+                )
+            elif "404" in error_msg or "Not Found" in error_msg:
+                # 404 means kernel doesn't exist
+                self.logger.error(f"❌ Kernel not found: {kernel_slug}")
+                return KernelStatus(
+                    slug=kernel_slug,
+                    status='not_found',
+                    error_message=f"Kernel not found: {error_msg}"
+                )
+            else:
+                # Other errors
+                self.logger.warning(f"⚠️  Failed to get kernel status: {e}")
+                return KernelStatus(
+                    slug=kernel_slug,
+                    status='error',
+                    error_message=str(e)
+                )
     
     def monitor_kernel(
         self,
