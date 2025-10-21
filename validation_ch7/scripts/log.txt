@@ -796,3 +796,14 @@
 2025-10-20 21:57:54,343 - validation_kaggle_manager - ERROR - ❌ Git commit failed: 
 2025-10-20 21:57:56,076 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-20 21:57:58,715 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-kiyt
+2025-10-20 22:01:20,694 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-20 22:01:21,311 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-20 22:01:27,907 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-20 22:01:27,912 - validation_kaggle_manager - INFO -   M  alidation_ch7/scripts/log.txt (Modified (staged))
+2025-10-20 22:01:27,913 - validation_kaggle_manager - INFO -    M validation_ch7_v2/scripts/niveau4_rl_performance/kaggle_results/repo (Modified (unstaged))
+2025-10-20 22:01:27,917 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-20 22:01:28,229 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-20 22:01:31,854 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-20 22:01:31,859 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-20 22:01:48,515 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-20 22:01:54,021 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-dane
