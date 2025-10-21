@@ -190,21 +190,28 @@ def apply_boundary_conditions(U_or_d_U, grid: Grid1D, params: ModelParameters, c
     n_phys = grid.N_physical
     N_total = grid.N_total
     
-    # DEBUG: Log parameter arrival (DISABLED for performance)
-    # print(f"[DEBUG_BC_DISPATCHER] Entered apply_boundary_conditions. current_bc_params: {type(current_bc_params)}")
+    # DEBUG: Log parameter arrival (PERIODIC: every 1000 steps)
+    _bc_log_step = getattr(apply_boundary_conditions, '_step', 0)
+    _bc_log_step += 1
+    apply_boundary_conditions._step = _bc_log_step
+    
+    _log_periodic = (_bc_log_step % 1000 == 0)  # Log every 1000 calls
+    if _log_periodic:
+        print(f"[PERIODIC:1000] BC_DISPATCHER [Call #{_bc_log_step}] current_bc_params: {type(current_bc_params)}")
     
    # Use current_bc_params if provided, otherwise default to params.boundary_conditions
     bc_config = current_bc_params if current_bc_params is not None else params.boundary_conditions
     
-    # DEBUG: Log which config being used (DISABLED for performance)
-    # if current_bc_params is not None:
-    #     print(f"[DEBUG_BC_DISPATCHER] Using current_bc_params (dynamic)")
-    #     if isinstance(current_bc_params, dict) and 'left' in current_bc_params:
-    #         left_bc = current_bc_params.get('left', {})
-    #         if isinstance(left_bc, dict) and 'state' in left_bc:
-    #             print(f"[DEBUG_BC_DISPATCHER] Left inflow: {left_bc['state']}")
-    # else:
-    #     print(f"[DEBUG_BC_DISPATCHER] Using params.boundary_conditions (static)")
+    # DEBUG: Log which config being used (PERIODIC)
+    if _log_periodic:
+        if current_bc_params is not None:
+            print(f"[PERIODIC:1000] BC_DISPATCHER Using current_bc_params (dynamic)")
+            if isinstance(current_bc_params, dict) and 'left' in current_bc_params:
+                left_bc = current_bc_params.get('left', {})
+                if isinstance(left_bc, dict) and 'state' in left_bc:
+                    print(f"[PERIODIC:1000] BC_DISPATCHER Left inflow: {left_bc['state']}")
+        else:
+            print(f"[PERIODIC:1000] BC_DISPATCHER Using params.boundary_conditions (static)")
 
 
     # --- Determine Device and Prepare ---
@@ -251,11 +258,12 @@ def apply_boundary_conditions(U_or_d_U, grid: Grid1D, params: ModelParameters, c
         threadsperblock = 64 # Can be tuned, but likely small enough
         blockspergrid = math.ceil(n_ghost / threadsperblock)
 
-        # DEBUG: Log what's being passed to GPU kernel (DISABLED for performance)
-        # print(f"[DEBUG_BC_GPU] About to launch GPU kernel")
-        # print(f"[DEBUG_BC_GPU] inflow_L: {inflow_L}")
-        # print(f"[DEBUG_BC_GPU] inflow_R: {inflow_R}")
-        # print(f"[DEBUG_BC_GPU] left_type_code: {left_type_code}, right_type_code: {right_type_code}")
+        # DEBUG: Log what's being passed to GPU kernel (PERIODIC: every 1000 calls)
+        if _log_periodic:
+            print(f"[PERIODIC:1000] BC_GPU [Call #{_bc_log_step}] About to launch kernel")
+            print(f"[PERIODIC:1000] BC_GPU Inflow.L: {inflow_L}")
+            print(f"[PERIODIC:1000] BC_GPU Inflow.R: {inflow_R}")
+            print(f"[PERIODIC:1000] BC_GPU BC Types: L={left_type_code}, R={right_type_code}")
 
         # Launch kernel
         # --- DEBUG PRINT: GPU Right Wall (Before Kernel) (Commented out) ---
