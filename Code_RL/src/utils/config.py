@@ -448,21 +448,32 @@ def create_scenario_config_with_lagos_data(
     w_c_initial = free_speed_c * g_initial  # ≈ 7.0 m/s
     # Flux_init ≈ 0.037 * 7.5 = 0.28 veh/s (very low, sustainable)
     
-    # Inflow: EXTREME demand (jam-level Lagos traffic approaching intersection)
-    # ✅ BUG #35 FIX ITERATION 3: Increase density to ensure v < 5 m/s threshold
-    # Previous: 0.8 × jam = 200 veh/km → Ve ≈ 9 m/s → v ≈ 5-6 m/s (ABOVE threshold!)
-    # New:      1.2 × jam = 300 veh/km → Ve ≈ 4 m/s → v ≈ 2-3 m/s (BELOW threshold ✅)
-    rho_m_inflow_veh_km = max_density_m * 1.2  # 300 veh/km (extreme/jam)
-    rho_c_inflow_veh_km = max_density_c * 0.8  # 96 veh/km (heavy)
-    rho_total_inflow = (rho_m_inflow_veh_km + rho_c_inflow_veh_km) / 1000.0  # 0.396 veh/m (107% jam!)
-    rho_total_inflow = min(rho_total_inflow, rho_jam * 0.95)  # Cap at 95% jam to avoid singularity
-    g_inflow = max(0.0, 1.0 - rho_total_inflow / rho_jam)  # ≈ 0.05 (near-jam)
-    w_m_inflow = V_creeping + (free_speed_m - V_creeping) * g_inflow  # ≈ 1.0 m/s (crawling!)
-    w_c_inflow = free_speed_c * g_inflow  # ≈ 0.4 m/s (crawling!)
-    # Flux_inflow ≈ 0.35 * 1.0 = 0.35 veh/s → q_inflow > q_init (0.28) AND sustainable ✅
-    # Velocities < 5 m/s → Queue detection WILL work! ✅
+    # Inflow: EQUILIBRIUM demand with realistic velocity modulation for traffic signals
+    # GREEN phase: Inflow at free speed (or near free speed) → unrestricted flow
+    # RED phase: Inflow reduced to 50% of green → causes congestion
+    # This allows RL agent to see meaningful difference between RED and GREEN phases
+    
+    # GREEN phase velocity = free speed
+    w_m_inflow_green = free_speed_m  # ≈ 8.9 m/s (free speed motorcycles)
+    w_c_inflow_green = free_speed_c  # ≈ 7.8 m/s (free speed cars)
+    
+    # Inflow density: medium-heavy (not jamming)
+    rho_m_inflow_veh_km = max_density_m * 0.8  # 200 veh/km (heavy Lagos traffic)
+    rho_c_inflow_veh_km = max_density_c * 0.8  # 96 veh/km (heavy Lagos traffic)
+    rho_total_inflow = (rho_m_inflow_veh_km + rho_c_inflow_veh_km) / 1000.0  # ≈ 0.296 veh/m
+    
+    # RED phase will be 50% of this (applied by set_traffic_signal_state)
+    # So: RED velocity = 4.45 m/s (50% of 8.9) → creates queuing
+    #     GREEN velocity = 8.9 m/s (full free speed) → clears queuing
+    # This gives RL agent clear signal to learn from!
+    
+    w_m_inflow = w_m_inflow_green  # Will be multiplied by 0.5 in RED phase
+    w_c_inflow = w_c_inflow_green  # Will be multiplied by 0.5 in RED phase
     
     # Base configuration
+    # BUG #31 FIX: Use NETWORK-BASED configuration instead of single-segment BC modulation
+    # This aligns with section4_modeles_reseaux.tex theoretical framework
+    # Network with proper node solver enables realistic queue formation via conservation laws
     config = {
         'scenario_name': f'{scenario_type}_lagos_real',
         'N': 100,
@@ -471,12 +482,68 @@ def create_scenario_config_with_lagos_data(
         't_final': duration,
         'output_dt': 60.0,
         'CFL': 0.4,
+        'road': {'quality_type': 'uniform', 'quality_value': 2},
+        'lagos_parameters': lagos_params,  # Include full Lagos params for reference
+        
+        # ⚠️ BUG #31: Enable NETWORK system with proper traffic light node
+        # This fixes zero-reward issue by enabling realistic queue formation
+        'network': {
+            'has_network': True,
+            'segments': [
+                {
+                    'id': 'upstream',
+                    'length': domain_length / 2,
+                    'cells': 50,
+                    'is_source': True,  # Can receive inflow boundary condition
+                    'is_sink': False
+                },
+                {
+                    'id': 'downstream',
+                    'length': domain_length / 2,
+                    'cells': 50,
+                    'is_source': False,
+                    'is_sink': True  # Can output as boundary condition
+                }
+            ],
+            'nodes': [
+                {
+                    'id': 'traffic_light_node_1',
+                    'position': domain_length / 2,  # Center of domain
+                    'segments': ['upstream', 'downstream'],
+                    'type': 'signalized_intersection',
+                    'traffic_lights': {
+                        'cycle_time': 120.0,  # 120s total cycle
+                        'phases': [
+                            {
+                                'duration': 60.0,  # RED phase: 60s
+                                'green_segments': []  # No outflow during RED
+                            },
+                            {
+                                'duration': 60.0,  # GREEN phase: 60s
+                                'green_segments': ['upstream']  # Allow outflow from upstream
+                            }
+                        ],
+                        'offset': 0.0
+                    },
+                    'max_queue_lengths': {
+                        'motorcycle': 200.0,
+                        'car': 200.0
+                    },
+                    'creeping': {
+                        'enabled': True,
+                        'speed_kmh': 5.0,
+                        'threshold': 50.0
+                    }
+                }
+            ]
+        },
+        
+        # Keep OLD single-segment BC for backward compatibility if network is disabled
+        # But network config above takes precedence when has_network=True
         'boundary_conditions': {
             'left': {'type': 'inflow', 'state': [rho_m_inflow_veh_km, w_m_inflow, rho_c_inflow_veh_km, w_c_inflow]},
             'right': {'type': 'outflow'}
-        },
-        'road': {'quality_type': 'uniform', 'quality_value': 2},
-        'lagos_parameters': lagos_params  # Include full Lagos params for reference
+        }
     }
     
     # Scenario-specific parameters

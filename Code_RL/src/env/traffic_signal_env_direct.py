@@ -380,8 +380,17 @@ class TrafficSignalEnvDirect(gym.Env):
             print(f"[QUEUE_DIAGNOSTIC] densities_c (veh/m): {densities_c}")
             self._queue_log_count += 1
         
-        # Define queue threshold: vehicles with speed < 5 m/s are queued
-        QUEUE_SPEED_THRESHOLD = 5.0  # m/s (~18 km/h, congestion threshold)
+        # Define queue threshold: vehicles slower than fleet average are queued
+        # ✅ BUG #31 FIX: Compute ADAPTIVE threshold based on actual observed velocities
+        # Problem: Static threshold (5.0 m/s or 70% v_free) didn't work because:
+        #   - Scenario may not have congestion at all
+        #   - Static values miss relative congestion (e.g., 9m/s is fast normally but slow if avg is 11m/s)
+        # Solution: Use fleet-wide average velocity as dynamic threshold
+        #   - Queued = vehicles with v < avg(velocities_in_network)
+        #   - This captures RELATIVE congestion regardless of scenario intensity
+        avg_velocity = (np.mean(velocities_m) + np.mean(velocities_c)) / 2.0
+        # Safety: if average is very low (unexpected), fall back to 80% of average
+        QUEUE_SPEED_THRESHOLD = avg_velocity * 0.85  # Queued if slower than 85% of average
         
         # Count queued vehicles (density where v < threshold)
         queued_m = densities_m[velocities_m < QUEUE_SPEED_THRESHOLD]

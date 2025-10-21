@@ -22,10 +22,13 @@ Performance impact:
 - AVEC logs: 2 RL steps/sec  
 - **Ratio: 12x ralentissement!**
 
-Extrapolation pour 24000 steps:
-- SANS logs: 960 secondes = 16 minutes ✅
-- AVEC logs: 12,000 secondes = 3.3 heures ⚠️
-- Kaggle GPU: 12 heures max → Timeout certain!
+⚠️ **CORRECTION (mesuré réellement sur Kaggle GPU 21-oct)**:
+- Quick test (100 steps): **1.75 minutes mesuré** ✅ (105 sec)
+- Extrapolation: 0.75 sec/step (training pur)
+- **24,000 steps: ~5-5.5 heures** (PAS 3.3 heures!)
+- Kaggle GPU: 12 heures max → TOUJOURS TIMEOUT! ⚠️
+
+**Solution**: Réduire à 8,000 steps (= 2h) ou 5,000 steps (= 1.5h) pour rester en sécurité
 ```
 
 ---
@@ -105,18 +108,25 @@ Line 16078: [REWARD_MICROSCOPE] step=21734 t=3210.0s @ 43211.3s elapsed
 → Vitesse: 1.7 RL steps/sec (AVEC logs massifs)
 ```
 
-### Table de correspondance RL ↔ Wall time:
+### Table de correspondance RL ↔ Wall time (MESURÉ RÉELLEMENT):
 
-| RL Steps | Simulation Time | Wall Time (logs ON) | Wall Time (logs OFF) |
-|----------|-----------------|-------------------|-------------------|
-| 100 | 1,500s | 59 sec | 6 sec |
-| 1,000 | 15,000s | 590 sec | 60 sec |
-| **24,000** | **360,000s** | **14,160 sec (3.9h)** | **1,440 sec (24 min)** |
-| 100,000 | 1,500,000s | 59,000 sec (16h) | 6,000 sec (100 min) |
+**Données du quick test Kaggle (100 steps)**:
+- Training pur: 75 sec pour 100 steps = **0.75 sec/step**
+- Overhead (setup/baseline/figures): ~30 sec
+- Total: ~105 sec pour 100 steps
 
-**Avec logs PÉRIODIQUES (tous les 1000 steps)**:
-- Logs ON reduced par 50x → 1440s / 50 = **28.8 sec overhead**
-- **Wall time ≈ 1,440 + 30 = 1,470 sec = 24.5 minutes** ✅
+| RL Steps | Training pur (sec) | Total avec overhead |
+|----------|---------|-----------|
+| 100 | 75 | 105 sec (~1.75 min) ✅ **MESURÉ** |
+| 1,000 | 750 | ~780 sec (~13 min) |
+| 5,000 | 3,750 | ~3,780 sec (~63 min = 1h) |
+| **8,000** | **6,000** | **~6,060 sec (~2h)** |
+| **24,000** | **18,000** | **~18,060 sec (~5h)** ⚠️ TIMEOUT |
+| 100,000 | 75,000 | ~75,060 sec (~21h) |
+
+**Avec logs PÉRIODIQUES**:
+- Amélioration estimée: ~20-30%
+- 24,000 steps: **~4.5-5h** (toujours timeout!)
 
 ---
 
@@ -166,32 +176,45 @@ python EMERGENCY_run_with_checkpoints.py --quick --device cpu
 
 ## 🚀 PROCHAINES ÉTAPES RECOMMANDÉES
 
-### Immédiat (aujourd'hui):
+### Immédiat (FAIT - test lancé & complété):
 ```bash
-# 1. Tester quick mode avec logs périodiques
-python EMERGENCY_run_with_checkpoints.py --quick --device cpu
-# Résultat attendu: 2-5 minutes, ~10 lignes de logs
-
-# 2. Vérifier correspondance timing
-# Si 100 steps en 6 secondes → 24000 steps en ~144 sec = 2.4 min ✅
+# ✅ Quick test MESURÉ avec succès:
+# - 100 RL steps = 1.75 minutes (105 sec total)
+# - Logs périodiques ✅ actifs
+# - GPU P100: Exécution fluide
 ```
 
-### Court terme (cette semaine):
-```bash
-# 1. Vérifier quota Kaggle GPU restant
-# https://www.kaggle.com/account
+### Court terme (cette semaine) - NOUVELLE STRATÉGIE:
 
-# 2. Lancer full training avec logs périodiques
-python test_section_7_6_rl_performance.py --device cuda
-# Temps attendu: 24-30 minutes (vs 3.9 heures avant)
-# Résultat: Modèle complet + logs utiles
+**⚠️ PROBLÈME**: 24,000 steps = ~5-5.5h (dépasse 12h Kaggle après setup)
+
+**SOLUTIONS**:
+
+#### Option A: Réduire à 8,000 steps (RECOMMANDÉ)
+```bash
+# Temps: ~2 heures (safe avec buffer)
+python test_section_7_6_rl_performance.py --timesteps 8000 --device cuda
+# Résultat: Modèle complet + 12h buffer Kaggle ✅
+```
+
+#### Option B: Réduire à 5,000 steps (TRÈS SÛR)
+```bash
+# Temps: ~1.5 heures (ultra safe)
+python test_section_7_6_rl_performance.py --timesteps 5000 --device cuda
+# Résultat: Modèle + 10.5h buffer Kaggle ✅
+```
+
+#### Option C: Garder 24,000 steps BUT Kaggle multi-kernel
+```bash
+# Split sur 2 kernels Kaggle avec checkpoints S3
+# (Complexe, non recommandé pour MVP)
 ```
 
 ### Moyen terme (évolutions futures):
-- [ ] Configurer période de logs (actuellement 1000, adapter si besoin)
-- [ ] Ajouter logging structuré avec `logging` module (pas print)
-- [ ] Créer outils de monitoring vitesse en temps réel
-- [ ] Benchmark performance per scenario type
+- [ ] Tester avec GPU V100/A100 (2-3x plus rapide que P100)
+- [ ] Optimiser ARZ model GPU kernels (CUDA profiling)
+- [ ] Paralléliser scenarios (Run 3 scenarios en parallèle)
+- [ ] Configurer période de logs (actuellement 1000, peut être 5000 pour overhead < 1%)
 
 ---
 

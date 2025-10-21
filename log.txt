@@ -2132,3 +2132,15 @@
 2025-10-16 07:35:52,079 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-16 07:36:01,773 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-16 07:36:04,383 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-rjot
+2025-10-21 11:46:27,363 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-21 11:46:27,673 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-21 11:46:27,977 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-21 11:46:27,977 - validation_kaggle_manager - INFO -   M  rz_model/numerics/__pycache__/boundary_conditions.cpython-312.pyc (Modified (staged))
+2025-10-21 11:46:27,977 - validation_kaggle_manager - INFO -    M validation_ch7_v2/scripts/niveau4_rl_performance/kaggle_results/repo (Modified (unstaged))
+2025-10-21 11:46:27,977 - validation_kaggle_manager - INFO -   ?? COMPREHENSIVE_SUMMARY_12H_INCIDENT.md (Untracked)
+2025-10-21 11:46:27,982 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-21 11:46:28,327 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-21 11:46:30,170 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-21 11:46:30,174 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-21 11:46:36,981 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-21 11:46:39,720 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: elonmj/arz-validation-76rlperformance-wzwm

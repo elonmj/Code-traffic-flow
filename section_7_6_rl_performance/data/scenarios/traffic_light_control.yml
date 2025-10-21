@@ -4,9 +4,9 @@ boundary_conditions:
   left:
     state:
     - 300.0
-    - 1.014444444444445
+    - 30.0
     - 96.0
-    - 0.38888888888888923
+    - 28.0
     type: inflow
   right:
     type: outflow

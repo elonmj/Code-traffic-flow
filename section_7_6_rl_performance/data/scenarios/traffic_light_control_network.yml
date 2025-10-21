@@ -1,0 +1,123 @@
+# ✅ BUG #31 FIXED: Network-Based Traffic Light Control Scenario
+# 
+# This scenario uses the proper ARZ NETWORK model with node_solver for traffic light control.
+# Instead of hacking boundary conditions, we use:
+# - Two segments: upstream (inflow) and downstream (outflow)
+# - Signalized intersection node at the boundary
+# - Traffic light phases that modify outflow capacity (RED=0, GREEN=1.0)
+# - Natural queue formation via ARZ conservation laws
+#
+# Theory: section4_modeles_reseaux.tex - "Cadre Unifié de Modélisation des Nœuds"
+# Implementation: node_solver.py handles traffic light effects correctly
+
+CFL: 0.4
+N: 100  # Per segment (total cells = 200)
+
+# ⚠️ ENABLE NETWORK SYSTEM
+network:
+  has_network: true
+  
+  # Two-segment network: upstream (source) and downstream (sink)
+  segments:
+    - id: "upstream"
+      length: 500.0
+      cells: 50
+      is_source: true   # Can receive inflow boundary condition
+      is_sink: false
+      
+    - id: "downstream"
+      length: 500.0
+      cells: 50
+      is_source: false
+      is_sink: true    # Can output outflow
+  
+  # Signalized intersection node at domain center
+  nodes:
+    - id: "traffic_light_intersection_1"
+      position: 500.0  # Center of domain (boundary between segments)
+      segments: ["upstream", "downstream"]
+      type: "signalized_intersection"
+      
+      # Traffic light configuration
+      traffic_lights:
+        cycle_time: 120.0  # Total cycle duration (seconds)
+        offset: 0.0
+        
+        # Two phases: RED (blocks outflow) and GREEN (allows outflow)
+        phases:
+          - duration: 60.0
+            green_segments: []  # RED PHASE: Empty list = no outflow allowed
+            yellow_segments: []
+            
+          - duration: 60.0
+            green_segments: ["upstream"]  # GREEN PHASE: upstream can discharge
+            yellow_segments: []
+      
+      # Queue management
+      max_queue_lengths:
+        motorcycle: 200.0  # meters
+        car: 200.0
+      
+      # Creeping behavior (slow movement when stopped)
+      creeping:
+        enabled: true
+        speed_kmh: 5.0     # Creep at 5 km/h during RED
+        threshold: 50.0    # Activate creep when queue > 50m
+
+# ⚠️ Boundary conditions now applied to SOURCE segment (upstream)
+boundary_conditions:
+  # Source segment (upstream) receives inflow
+  upstream:
+    left:
+      type: inflow
+      state: [300.0, 30.0, 96.0, 28.0]  # [rho_m, w_m, rho_c, w_c]
+    right:
+      type: node_coupling  # Connected to traffic light node
+  
+  # Sink segment (downstream) outputs to outflow
+  downstream:
+    left:
+      type: node_coupling  # Connected to traffic light node
+    right:
+      type: outflow
+
+# Initial conditions: uniform light traffic
+initial_conditions:
+  type: uniform
+  state: [25.0, 8.06, 12.0, 7.0]  # [rho_m, w_m, rho_c, w_c]
+
+# Lagos traffic parameters (REAL data)
+lagos_parameters:
+  context: Victoria Island Lagos
+  creeping_rate: 0.6
+  free_speed_average: 30.0
+  free_speed_cars: 28.0
+  free_speed_motorcycles: 32.0
+  gap_filling_rate: 0.8
+  max_density_cars: 120.0
+  max_density_motorcycles: 250.0
+  max_density_total: 370.0
+  signal_compliance: 0.7
+  vehicle_mix_buses: 0.15
+  vehicle_mix_cars: 0.45
+  vehicle_mix_motorcycles: 0.35
+  vehicle_mix_trucks: 0.05
+
+# ARZ Model parameters (Lagos-calibrated)
+parameters:
+  V0_c: 7.777777777777778    # Car free speed (m/s)
+  V0_m: 8.88888888888889     # Motorcycle free speed (m/s)
+  tau_c: 1.2                 # Car relaxation time (s)
+  tau_m: 1.0                 # Motorcycle relaxation time (s)
+
+# Road quality (uniform good road)
+road:
+  quality_type: uniform
+  quality_value: 2
+
+# Simulation parameters
+scenario_name: traffic_light_control_network_lagos
+t_final: 600.0   # 10 minutes simulation
+output_dt: 60.0  # Log every 60 seconds
+xmin: 0.0
+xmax: 1000.0

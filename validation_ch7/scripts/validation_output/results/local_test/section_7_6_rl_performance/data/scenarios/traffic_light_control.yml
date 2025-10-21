@@ -3,10 +3,10 @@ N: 100
 boundary_conditions:
   left:
     state:
-    - 200.0
-    - 8.88888888888889
+    - 300.0
+    - 1.014444444444445
     - 96.0
-    - 7.777777777777778
+    - 0.38888888888888923
     type: inflow
   right:
     type: outflow
