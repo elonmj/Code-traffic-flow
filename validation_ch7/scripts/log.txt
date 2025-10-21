@@ -807,3 +807,15 @@
 2025-10-20 22:01:31,859 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
 2025-10-20 22:01:48,515 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-10-20 22:01:54,021 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-dane
+2025-10-21 07:32:53,665 - validation_kaggle_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-10-21 07:32:53,781 - validation_kaggle_manager - INFO - 📍 Current branch: main
+2025-10-21 07:32:53,886 - validation_kaggle_manager - INFO - 📝 Detected local changes:
+2025-10-21 07:32:53,886 - validation_kaggle_manager - INFO -   M  alidation_ch7/scripts/log.txt (Modified (staged))
+2025-10-21 07:32:53,886 - validation_kaggle_manager - INFO -    M validation_ch7_v2/scripts/niveau4_rl_performance/kaggle_results/repo (Modified (unstaged))
+2025-10-21 07:32:53,886 - validation_kaggle_manager - INFO -    M validation_ch7_v2/scripts/niveau4_rl_performance/run_section_7_6.py (Modified (unstaged))
+2025-10-21 07:32:53,886 - validation_kaggle_manager - INFO - 📦 Adding all changes...
+2025-10-21 07:32:53,954 - validation_kaggle_manager - INFO - 💾 Committing changes...
+2025-10-21 07:32:54,886 - validation_kaggle_manager - INFO - ✅ Changes committed successfully
+2025-10-21 07:32:54,886 - validation_kaggle_manager - INFO - 📤 Pushing to remote branch: main
+2025-10-21 07:32:59,747 - validation_kaggle_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-10-21 07:33:01,506 - validation_kaggle_manager - INFO - [SUCCESS] Validation kernel uploaded: joselonm/arz-validation-76rlperformance-fmfn

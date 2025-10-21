@@ -9,3 +9,10 @@ ecoles.md
 
 **/.copilot-tracking/*
 .copilot-tracking/
+
+
+#ignorer tout ce qui est git
+.git/
+**/.git/*
+**/.github/*
+.github/
