@@ -74,6 +74,19 @@ class ModelParameters:
         self.rho_eq_m: Optional[float] = 0.01               # Equilibrium density motorcycles (veh/m)
         self.rho_eq_c: Optional[float] = 0.01               # Equilibrium density cars (veh/m)
 
+        # Behavioral coupling parameters (θ_k) - Kolb et al. (2018), Göttlich et al. (2021)
+        # Controls memory preservation of w variable through junctions
+        # θ ≈ 0: Strong adaptation (vehicles reset behavior)
+        # θ ≈ 1: Weak adaptation (vehicles preserve behavior)
+        self.theta_moto_insertion: Optional[float] = None       # Roundabout entry
+        self.theta_moto_circulation: Optional[float] = None     # Roundabout circulation
+        self.theta_moto_signalized: Optional[float] = None      # Traffic light (green)
+        self.theta_car_signalized: Optional[float] = None       # Traffic light (green)
+        self.theta_moto_priority: Optional[float] = None        # Priority road through
+        self.theta_car_priority: Optional[float] = None         # Priority road through
+        self.theta_moto_secondary: Optional[float] = None       # Stop/yield entry
+        self.theta_car_secondary: Optional[float] = None        # Stop/yield entry
+
     def load_from_yaml(self, base_config_path, scenario_config_path=None):
         """
         Loads parameters from base YAML and optionally merges a scenario YAML.
@@ -235,6 +248,18 @@ class ModelParameters:
         self.rho_eq_m = config.get('rho_eq_m', 0.01)
         self.rho_eq_c = config.get('rho_eq_c', 0.01)
 
+        # Load behavioral coupling parameters (θ_k)
+        if 'behavioral_coupling' in config:
+            bc = config['behavioral_coupling']
+            self.theta_moto_insertion = float(bc.get('theta_moto_insertion', 0.2))
+            self.theta_moto_circulation = float(bc.get('theta_moto_circulation', 0.8))
+            self.theta_moto_signalized = float(bc.get('theta_moto_signalized', 0.8))
+            self.theta_car_signalized = float(bc.get('theta_car_signalized', 0.5))
+            self.theta_moto_priority = float(bc.get('theta_moto_priority', 0.9))
+            self.theta_car_priority = float(bc.get('theta_car_priority', 0.9))
+            self.theta_moto_secondary = float(bc.get('theta_moto_secondary', 0.1))
+            self.theta_car_secondary = float(bc.get('theta_car_secondary', 0.1))
+
         # --- Validation (Optional but recommended) ---
         self._validate_parameters()
 
@@ -247,6 +272,22 @@ class ModelParameters:
             raise ValueError("Jam density rho_jam must be positive.")
         if not (0 <= self.alpha < 1):
              raise ValueError("Alpha must be in the range [0, 1).")
+        
+        # Validate behavioral coupling parameters (θ_k ∈ [0,1])
+        theta_params = [
+            ('theta_moto_insertion', self.theta_moto_insertion),
+            ('theta_moto_circulation', self.theta_moto_circulation),
+            ('theta_moto_signalized', self.theta_moto_signalized),
+            ('theta_car_signalized', self.theta_car_signalized),
+            ('theta_moto_priority', self.theta_moto_priority),
+            ('theta_car_priority', self.theta_car_priority),
+            ('theta_moto_secondary', self.theta_moto_secondary),
+            ('theta_car_secondary', self.theta_car_secondary)
+        ]
+        
+        for name, value in theta_params:
+            if value is not None and not (0.0 <= value <= 1.0):
+                raise ValueError(f"{name} must be in [0,1], got {value}")
         # ... add more checks as needed
 
     def __str__(self):

@@ -538,8 +538,9 @@ def create_scenario_config_with_lagos_data(
             ]
         },
         
-        # Keep OLD single-segment BC for backward compatibility if network is disabled
-        # But network config above takes precedence when has_network=True
+        # ⚠️ DEPRECATED: Old single-segment boundary conditions 
+        # (kept only for backward compatibility - will be removed in v2.0)
+        # Use network-based configuration above instead (has_network=True)
         'boundary_conditions': {
             'left': {'type': 'inflow', 'state': [rho_m_inflow_veh_km, w_m_inflow, rho_c_inflow_veh_km, w_c_inflow]},
             'right': {'type': 'outflow'}

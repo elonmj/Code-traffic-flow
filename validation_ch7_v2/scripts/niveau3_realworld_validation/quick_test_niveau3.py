@@ -29,6 +29,7 @@ import time
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
+from arz_simulator import ARZSimulatorForValidation
 from tomtom_trajectory_loader import TomTomTrajectoryLoader
 from feature_extractor import FeatureExtractor
 from validation_comparison import ValidationComparator
@@ -59,6 +60,22 @@ def main():
     observed_metrics_path = "../../data/validation_results/realworld_tests/observed_metrics.json"
     comparison_results_path = "../../data/validation_results/realworld_tests/comparison_results.json"
     predicted_metrics_path = "../../SPRINT3_DELIVERABLES/results/fundamental_diagrams.json"
+    
+    # Step 0: Generate predictions using ARZ simulator (NEW)
+    print("\n" + "=" * 80)
+    print("STEP 0: GENERATING PREDICTIONS (ARZ SIMULATOR)")
+    print("=" * 80)
+    
+    try:
+        simulator = ARZSimulatorForValidation(scenario_name='minimal_test')
+        predictions = simulator.run_simulation(duration_seconds=300, dt=0.1, dx=10.0)
+        print(f"\n✅ Predictions generated successfully")
+        print(f"   Speed differential: {predictions['speed_differential']:.2f} km/h")
+        print(f"   Throughput ratio: {predictions['throughput_ratio']:.3f}")
+        print(f"   Segments analyzed: {len(predictions['fundamental_diagrams'])}")
+    except Exception as e:
+        logger.warning(f"⚠️  Simulator failed: {e}. Using file-based predictions as fallback.")
+        predictions = None
     
     # Step 1: Load trajectories
     print("\n" + "=" * 80)
@@ -97,7 +114,20 @@ def main():
     print("STEP 3: VALIDATION COMPARISON (THEORY vs OBSERVED)")
     print("=" * 80)
     
-    comparator = ValidationComparator(predicted_metrics_path, observed_metrics_path)
+    # Use simulator predictions if available, otherwise fall back to file-based
+    if predictions is not None:
+        logger.info("✅ Using simulator predictions for comparison")
+        comparator = ValidationComparator(
+            predicted_metrics_dict=predictions,
+            observed_metrics_path=observed_metrics_path
+        )
+    else:
+        logger.info("⚠️  Using file-based predictions for comparison (simulator fallback)")
+        comparator = ValidationComparator(
+            predicted_metrics_path=predicted_metrics_path,
+            observed_metrics_path=observed_metrics_path
+        )
+    
     comparison_results = comparator.compare_all()
     
     # Save comparison results

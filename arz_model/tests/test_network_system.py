@@ -198,5 +198,130 @@ class TestIntersectionCreation(unittest.TestCase):
         self.assertEqual(intersection.max_queue_lengths['motorcycle'], 80.0)
 
 
+class TestBehavioralCoupling(unittest.TestCase):
+    """Test cases for θ_k behavioral coupling (thesis contribution)."""
+
+    def setUp(self):
+        """Set up test fixtures with θ_k parameters."""
+        self.params = ModelParameters()
+        # Set θ_k values
+        self.params.theta_moto_insertion = 0.2
+        self.params.theta_moto_circulation = 0.8
+        self.params.theta_moto_signalized = 0.8
+        self.params.theta_car_signalized = 0.5
+        self.params.theta_moto_priority = 0.9
+        self.params.theta_car_priority = 0.9
+        self.params.theta_moto_secondary = 0.1
+        self.params.theta_car_secondary = 0.1
+        
+        # Set physical parameters
+        self.params.gamma_m = 1.5
+        self.params.gamma_c = 2.0
+        self.params.K_m = 10.0 / 3.6  # Convert km/h to m/s
+        self.params.K_c = 15.0 / 3.6
+        self.params.rho_jam = 250.0 / 1000.0  # Convert veh/km to veh/m
+        self.params.epsilon = 1e-10
+        self.params.Vmax_c = {3: 35.0 / 3.6}  # Urban default in m/s
+
+    def test_get_coupling_parameter_green_light(self):
+        """Test θ_k selection for green light (signalized intersection)."""
+        from ..core.node_solver import _get_coupling_parameter
+        
+        # Create intersection with traffic lights
+        phases = [Phase(duration=30.0, green_segments=['seg1'], yellow_segments=[])]
+        traffic_lights = TrafficLightController(cycle_time=60.0, phases=phases)
+        node = Intersection(
+            node_id='test', position=0.0, segments=['seg1', 'seg2'],
+            traffic_lights=traffic_lights
+        )
+        
+        # Green light - motorcycles should have higher θ than cars
+        theta_moto = _get_coupling_parameter(node, 'seg1', 'motorcycle', self.params, time=0.0)
+        theta_car = _get_coupling_parameter(node, 'seg1', 'car', self.params, time=0.0)
+        
+        self.assertEqual(theta_moto, 0.8)  # theta_moto_signalized
+        self.assertEqual(theta_car, 0.5)   # theta_car_signalized
+        self.assertGreater(theta_moto, theta_car, "Motos should preserve more memory than cars")
+
+    def test_get_coupling_parameter_red_light(self):
+        """Test θ_k=0 for red light (complete behavioral reset)."""
+        from ..core.node_solver import _get_coupling_parameter
+        
+        # Create intersection with traffic lights
+        phases = [Phase(duration=30.0, green_segments=['seg1'], yellow_segments=[])]
+        traffic_lights = TrafficLightController(cycle_time=60.0, phases=phases)
+        node = Intersection(
+            node_id='test', position=0.0, segments=['seg1', 'seg2'],
+            traffic_lights=traffic_lights
+        )
+        
+        # Red light (seg2 not in green) - should give θ=0
+        theta_moto = _get_coupling_parameter(node, 'seg2', 'motorcycle', self.params, time=0.0)
+        theta_car = _get_coupling_parameter(node, 'seg2', 'car', self.params, time=0.0)
+        
+        self.assertEqual(theta_moto, 0.0, "Red light should reset motorcycle behavior")
+        self.assertEqual(theta_car, 0.0, "Red light should reset car behavior")
+
+    def test_apply_behavioral_coupling_theta_zero(self):
+        """Test behavioral coupling with θ=0 (complete reset to equilibrium)."""
+        from ..core.node_solver import _apply_behavioral_coupling
+        
+        # Incoming state: high w value
+        U_in = np.array([0.05, 15.0, 0.03, 12.0])  # [ρ_m, w_m, ρ_c, w_c]
+        # Outgoing state: equilibrium conditions
+        U_out = np.array([0.02, 8.0, 0.01, 6.0])
+        
+        theta_k = 0.0  # Complete reset
+        
+        # Apply coupling for motorcycles
+        U_coupled = _apply_behavioral_coupling(U_in, U_out, theta_k, self.params, 'motorcycle')
+        
+        # With θ=0, w should reset to equilibrium (w_eq_out)
+        # The exact value depends on V_e + p calculation, but should NOT preserve w_in
+        self.assertNotEqual(U_coupled[1], U_in[1], "θ=0 should not preserve incoming w")
+        self.assertEqual(U_coupled[0], U_out[0], "Density should be preserved")
+
+    def test_apply_behavioral_coupling_theta_one(self):
+        """Test behavioral coupling with θ=1 (perfect memory preservation)."""
+        from ..core.node_solver import _apply_behavioral_coupling
+        
+        # Incoming state
+        U_in = np.array([0.05, 15.0, 0.03, 12.0])
+        # Outgoing state (different w)
+        U_out = np.array([0.05, 8.0, 0.03, 6.0])  # Same ρ to simplify
+        
+        theta_k = 1.0  # Perfect preservation
+        
+        # Apply coupling for motorcycles
+        U_coupled = _apply_behavioral_coupling(U_in, U_out, theta_k, self.params, 'motorcycle')
+        
+        # With θ=1, w should be influenced by incoming w
+        # w_out = w_eq_out + 1.0 * (w_in - w_eq_in)
+        # Since ρ same, w_eq should be same, so w_out ≈ w_in
+        self.assertNotEqual(U_coupled[1], U_out[1], "θ=1 should modify outgoing w")
+
+    def test_coupling_motorcycle_vs_car_difference(self):
+        """Test that motorcycles preserve more memory than cars at green lights."""
+        from ..core.node_solver import _get_coupling_parameter
+        
+        # Signalized intersection with green light
+        phases = [Phase(duration=30.0, green_segments=['seg1'], yellow_segments=[])]
+        traffic_lights = TrafficLightController(cycle_time=60.0, phases=phases)
+        node = Intersection(
+            node_id='test', position=0.0, segments=['seg1', 'seg2'],
+            traffic_lights=traffic_lights
+        )
+        
+        # Green light - compare θ values
+        theta_moto = _get_coupling_parameter(node, 'seg1', 'motorcycle', self.params, time=0.0)
+        theta_car = _get_coupling_parameter(node, 'seg1', 'car', self.params, time=0.0)
+        
+        # Thesis hypothesis: motos preserve more aggressive behavior
+        self.assertGreater(theta_moto, theta_car,
+                          "Motorcycles should have higher θ (more memory) than cars at green lights")
+        self.assertGreaterEqual(theta_moto, 0.7, "Moto θ should be ≥0.7")
+        self.assertLessEqual(theta_car, 0.6, "Car θ should be ≤0.6")
+
+
 if __name__ == '__main__':
     unittest.main()

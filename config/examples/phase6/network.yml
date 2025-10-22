@@ -1,0 +1,114 @@
+# Network Topology Configuration - Phase 6 Pragmatic
+# Example: Heterogeneous 3-segment network (arterial + residential)
+
+network:
+  name: "Victoria_Island_Corridor"
+  description: "3-segment arterial with residential feeder"
+  
+  # Segments: Road sections with local parameter overrides
+  segments:
+    seg_main_1:
+      x_min: 0.0
+      x_max: 500.0
+      N: 50
+      start_node: "entry_point"
+      end_node: "junction_1"
+      road_type: "arterial"
+      
+      # Local parameter overrides for arterial road
+      parameters:
+        V0_c: 13.89  # 50 km/h free-flow speed (m/s)
+        V0_m: 15.28  # 55 km/h for motorcycles
+        tau_c: 1.0   # Relaxation time (s)
+        tau_m: 0.9
+        
+    seg_main_2:
+      x_min: 500.0
+      x_max: 1000.0
+      N: 50
+      start_node: "junction_1"
+      end_node: "junction_2"
+      road_type: "arterial"
+      
+      # Same parameters as seg_main_1 (arterial continuation)
+      parameters:
+        V0_c: 13.89
+        V0_m: 15.28
+        tau_c: 1.0
+        tau_m: 0.9
+        
+    seg_residential:
+      x_min: 0.0
+      x_max: 300.0
+      N: 30
+      start_node: "entry_residential"
+      end_node: "junction_2"
+      road_type: "residential"
+      
+      # Lower speeds for residential area
+      parameters:
+        V0_c: 5.56   # 20 km/h residential speed limit (m/s)
+        V0_m: 6.94   # 25 km/h for motorcycles
+        tau_c: 1.5   # Longer relaxation (more cautious)
+        tau_m: 1.3
+        
+  # Nodes: Junctions and boundary points
+  nodes:
+    entry_point:
+      type: "boundary"
+      position: [0.0, 0.0]
+      description: "Main arterial entry"
+      
+    entry_residential:
+      type: "boundary"
+      position: [-300.0, 100.0]
+      description: "Residential feeder entry"
+      
+    junction_1:
+      type: "signalized"
+      position: [500.0, 0.0]
+      incoming_segments: ["seg_main_1"]
+      outgoing_segments: ["seg_main_2"]
+      description: "Mid-corridor junction"
+      
+    junction_2:
+      type: "signalized"
+      position: [1000.0, 0.0]
+      incoming_segments: ["seg_main_2", "seg_residential"]
+      outgoing_segments: []
+      description: "Merging junction (arterial + residential)"
+      
+    exit:
+      type: "boundary"
+      position: [1000.0, 0.0]
+      description: "Network exit"
+      
+  # Links: Connections between segments via nodes
+  # Note: Links connect SEGMENTS to SEGMENTS through junction nodes
+  links:
+    - from_segment: "seg_main_1"
+      from_node: "entry_point"
+      to_segment: "seg_main_2"
+      to_node: "junction_1"
+      via_node: "junction_1"
+      coupling_type: "behavioral"
+      description: "Arterial continuation"
+      
+    - from_segment: "seg_residential"
+      from_node: "entry_residential"
+      to_segment: "seg_main_2"
+      to_node: "junction_2"
+      via_node: "junction_2"
+      coupling_type: "behavioral"
+      description: "Residential merge into arterial"
+
+# Metadata
+metadata:
+  created: "2025-10-21"
+  phase: "Phase 6 Pragmatic Implementation"
+  purpose: "Demonstrate heterogeneous network with arterial + residential speeds"
+  
+# Notes:
+# - V0_c arterial (13.89 m/s = 50 km/h) vs residential (5.56 m/s = 20 km/h)
+# - This demonstrates the critical need for ParameterManager
+# - Boundary conditions remain in Python (not over-engineered in YAML)

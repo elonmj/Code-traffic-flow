@@ -1,0 +1,98 @@
+# Traffic Control Configuration - Phase 6 Pragmatic
+# Separate from topology for reusability (can test different signal plans)
+
+traffic_control:
+  # Traffic light configurations by junction
+  traffic_lights:
+    junction_1:
+      cycle_time: 60.0  # Total cycle duration (seconds)
+      offset: 0.0       # Phase offset for coordination
+      
+      phases:
+        # Phase 0: Main arterial green
+        - id: 0
+          duration: 25.0
+          green_segments: ["seg_main_1"]
+          yellow_segments: []
+          description: "Arterial flow through junction"
+          
+        # Phase 1: Yellow transition
+        - id: 1
+          duration: 5.0
+          green_segments: []
+          yellow_segments: ["seg_main_1"]
+          description: "Yellow warning"
+          
+        # Phase 2: Arterial continuation green
+        - id: 2
+          duration: 25.0
+          green_segments: ["seg_main_2"]
+          yellow_segments: []
+          description: "Continue arterial flow"
+          
+        # Phase 3: All red clearance
+        - id: 3
+          duration: 5.0
+          green_segments: []
+          yellow_segments: ["seg_main_2"]
+          description: "Clear intersection"
+          
+    junction_2:
+      cycle_time: 90.0  # Longer cycle for merging junction
+      offset: 15.0      # Coordinated with junction_1 (green wave)
+      
+      phases:
+        # Phase 0: Main arterial priority (longer green)
+        - id: 0
+          duration: 40.0
+          green_segments: ["seg_main_2"]
+          yellow_segments: []
+          description: "Arterial main flow"
+          
+        # Phase 1: Yellow transition
+        - id: 1
+          duration: 5.0
+          green_segments: []
+          yellow_segments: ["seg_main_2"]
+          description: "Yellow warning arterial"
+          
+        # Phase 2: Residential feeder green (shorter)
+        - id: 2
+          duration: 35.0
+          green_segments: ["seg_residential"]
+          yellow_segments: []
+          description: "Residential merge opportunity"
+          
+        # Phase 3: Yellow transition
+        - id: 3
+          duration: 5.0
+          green_segments: []
+          yellow_segments: ["seg_residential"]
+          description: "Yellow warning residential"
+          
+        # Phase 4: All red clearance
+        - id: 4
+          duration: 5.0
+          green_segments: []
+          yellow_segments: []
+          description: "Clear intersection before next cycle"
+
+# Coordination strategy
+coordination:
+  strategy: "green_wave"
+  description: "Junction 2 offset (15s) allows arterial platoon from junction 1"
+  target_speed: 50  # km/h arterial speed
+  distance_j1_j2: 500  # meters between junctions
+  expected_travel_time: 36  # seconds at 50 km/h
+
+# Metadata
+metadata:
+  created: "2025-10-21"
+  phase: "Phase 6 Pragmatic Implementation"
+  purpose: "Demonstrate traffic signal configuration separate from topology"
+  
+# Notes:
+# - junction_2 has longer green for arterial (40s vs 35s for residential)
+# - This prioritizes main corridor flow
+# - Offset (15s) creates green wave coordination
+# - Can easily test different timing plans by editing this file only

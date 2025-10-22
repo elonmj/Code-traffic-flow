@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from collections import defaultdict
 
 from ..data.group_manager import SegmentInfo
+from ...core.parameter_manager import ParameterManager
 # TODO: Import when core modules are available
 # from ..core.intersection import Intersection
 # from ..core.traffic_lights import TrafficLightController
@@ -59,12 +60,86 @@ class NetworkBuilder:
     - RoadSegment objects for each road piece
     - NetworkNode objects for intersections
     - Intersection objects for traffic flow resolution
+    - ParameterManager for heterogeneous parameters (Phase 6 integration)
+    
+    Architecture:
+        NetworkBuilder + ParameterManager → NetworkGrid (direct, no YAML intermediate)
     """
 
-    def __init__(self):
+    def __init__(self, global_params: Optional[Dict[str, float]] = None):
+        """
+        Initialize NetworkBuilder with integrated ParameterManager.
+        
+        Args:
+            global_params: Global default parameters. If None, uses standard ARZ defaults.
+        """
         self.segments: Dict[str, RoadSegment] = {}
         self.nodes: Dict[str, NetworkNode] = {}
         self.intersections: List[Intersection] = []
+        
+        # Phase 6 Integration: ParameterManager for heterogeneous parameters
+        if global_params is None:
+            global_params = {
+                'V0_c': 13.89,      # 50 km/h default
+                'V0_m': 15.28,      # 55 km/h default
+                'tau_c': 18.0,      # Relaxation time cars (s)
+                'tau_m': 20.0,      # Relaxation time motorcycles (s)
+                'rho_max_c': 200.0, # Max density cars (veh/km)
+                'rho_max_m': 150.0  # Max density motorcycles (veh/km)
+            }
+        
+        self.parameter_manager = ParameterManager(global_params=global_params)
+    
+    def set_segment_params(
+        self,
+        segment_id: str,
+        parameters: Dict[str, float]
+    ) -> None:
+        """
+        Set local parameters for a segment (overrides global defaults).
+        
+        This method applies calibrated or custom parameters to specific segments,
+        enabling heterogeneous networks (e.g., arterial vs residential speeds).
+        
+        Args:
+            segment_id: Segment identifier (e.g., 'seg_arterial_1')
+            parameters: Dictionary of parameter overrides
+                       e.g., {'V0_c': 16.67, 'tau_c': 15.0}
+        
+        Example:
+            >>> builder.set_segment_params('seg_main_1', {
+            ...     'V0_c': 16.67,  # 60 km/h for arterial
+            ...     'tau_c': 15.0   # Lower relaxation for high-speed
+            ... })
+        """
+        for param_name, value in parameters.items():
+            self.parameter_manager.set_local(segment_id, param_name, value)
+    
+    def get_segment_params(
+        self,
+        segment_id: str
+    ) -> Dict[str, float]:
+        """
+        Get effective parameters for a segment (local overrides or global defaults).
+        
+        Returns complete set of ARZ parameters for the specified segment,
+        combining local overrides with global defaults.
+        
+        Args:
+            segment_id: Segment identifier
+            
+        Returns:
+            Dictionary with all ARZ parameters for this segment
+            
+        Example:
+            >>> params = builder.get_segment_params('seg_main_1')
+            >>> print(params['V0_c'])  # 16.67 (if set) or 13.89 (global default)
+        """
+        param_names = ['V0_c', 'V0_m', 'tau_c', 'tau_m', 'rho_max_c', 'rho_max_m']
+        return {
+            name: self.parameter_manager.get(segment_id, name)
+            for name in param_names
+        }
 
     def build_from_csv(self, corridor_file: str) -> Dict[str, Any]:
         """
@@ -252,30 +327,3 @@ class NetworkBuilder:
             'highway_type_distribution': highway_types,
             'avg_segment_length_m': total_length / len(self.segments) if self.segments else 0
         }
-
-    def export_network_graph(self, output_file: str):
-        """Export network as graph for visualization"""
-        # TODO: Uncomment when networkx is available
-        # import networkx as nx
-
-        # G = nx.DiGraph()
-
-        # # Add nodes
-        # for node_id in self.nodes:
-        #     G.add_node(node_id)
-
-        # # Add edges
-        # for segment in self.segments.values():
-        #     G.add_edge(
-        #         segment.start_node,
-        #         segment.end_node,
-        #         segment_id=segment.segment_id,
-        #         name=segment.name,
-        #         length=segment.length,
-        #         highway_type=segment.highway_type
-        #     )
-
-        # # Export to GraphML
-        # nx.write_graphml(G, output_file)
-
-        print(f"Network export to {output_file} - TODO: Implement when networkx available")

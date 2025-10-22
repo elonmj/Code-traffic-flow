@@ -48,21 +48,48 @@ class ValidationComparator:
         comparison_results (Dict): Comparison results and tests
     """
     
-    def __init__(self, predicted_metrics_path: str, observed_metrics_path: str):
+    def __init__(self, predicted_metrics_path: str = None, observed_metrics_path: str = None, 
+                 predicted_metrics_dict: Dict = None):
         """
         Initialize comparator with predicted and observed metrics.
         
+        Can be initialized in two ways:
+        
+        1. From JSON files (original):
+            comparator = ValidationComparator(
+                predicted_metrics_path="SPRINT3_DELIVERABLES/results/fundamental_diagrams.json",
+                observed_metrics_path="data/validation_results/realworld_tests/observed_metrics.json"
+            )
+        
+        2. From simulator predictions dict (new):
+            predictions = simulator.run_simulation()  # Returns dict with predictions
+            comparator = ValidationComparator(
+                predicted_metrics_dict=predictions,
+                observed_metrics_path="data/validation_results/realworld_tests/observed_metrics.json"
+            )
+        
         Args:
-            predicted_metrics_path: Path to SPRINT 3 results JSON
+            predicted_metrics_path: Path to SPRINT 3 results JSON (or None if using dict)
             observed_metrics_path: Path to SPRINT 4 observed metrics JSON
+            predicted_metrics_dict: Dict from ARZSimulatorForValidation (alternative to JSON file)
         """
-        self.predicted = self._load_json(predicted_metrics_path)
+        # Handle predicted metrics (either from file or dict)
+        if predicted_metrics_dict is not None:
+            self.predicted = predicted_metrics_dict
+            logger.info("Initialized ValidationComparator")
+            logger.info(f"  Predicted metrics from: ARZSimulatorForValidation (dict)")
+            logger.info(f"  Observed metrics from: {observed_metrics_path}")
+        elif predicted_metrics_path is not None:
+            self.predicted = self._load_json(predicted_metrics_path)
+            logger.info("Initialized ValidationComparator")
+            logger.info(f"  Predicted metrics from: {predicted_metrics_path}")
+            logger.info(f"  Observed metrics from: {observed_metrics_path}")
+        else:
+            raise ValueError("Must provide either predicted_metrics_path or predicted_metrics_dict")
+        
+        # Load observed metrics
         self.observed = self._load_json(observed_metrics_path)
         self.comparison_results = {}
-        
-        logger.info("Initialized ValidationComparator")
-        logger.info(f"  Predicted metrics from: {predicted_metrics_path}")
-        logger.info(f"  Observed metrics from: {observed_metrics_path}")
     
     def _load_json(self, path: str) -> Dict:
         """Load JSON file."""
@@ -107,16 +134,25 @@ class ValidationComparator:
         """
         Compare speed differential: |Δv_obs - Δv_pred| / Δv_pred < 10%.
         
+        Supports both file-based (JSON) and simulator-based (dict) predictions.
+        
         Returns:
             Dict with comparison results
         """
         logger.info("\n1. Speed Differential Validation:")
         
-        # Extract values
-        # Predicted from SPRINT 3 gap_filling or interweaving tests
-        delta_v_pred = 10.0  # Target from SPRINT 3 (conservative baseline)
+        # Extract predicted value (from simulator or file)
+        if 'speed_differential' in self.predicted:
+            # New: From ARZSimulatorForValidation.run_simulation()
+            delta_v_pred = self.predicted['speed_differential']
+        elif 'calibration' in self.predicted:
+            # Legacy: From SPRINT3 JSON file
+            delta_v_pred = self.predicted['calibration'].get('speed_differential', 10.0)
+        else:
+            # Fallback: Conservative baseline
+            delta_v_pred = 10.0  # km/h
         
-        # Observed from SPRINT 4
+        # Extract observed value
         if 'speed_differential' in self.observed:
             delta_v_obs = self.observed['speed_differential']['delta_v_kmh']
         else:
@@ -153,18 +189,25 @@ class ValidationComparator:
         """
         Compare throughput ratio: |ratio_obs - ratio_pred| / ratio_pred < 15%.
         
+        Supports both file-based (JSON) and simulator-based (dict) predictions.
+        
         Returns:
             Dict with comparison results
         """
         logger.info("\n2. Throughput Ratio Validation:")
         
-        # Predicted from SPRINT 3 fundamental diagrams
-        if 'calibration' in self.predicted:
-            ratio_pred = self.predicted['calibration']['throughput_ratio']
+        # Extract predicted value (from simulator or file)
+        if 'throughput_ratio' in self.predicted:
+            # New: From ARZSimulatorForValidation.run_simulation()
+            ratio_pred = self.predicted['throughput_ratio']
+        elif 'calibration' in self.predicted:
+            # Legacy: From SPRINT3 JSON file
+            ratio_pred = self.predicted['calibration'].get('throughput_ratio', 1.50)
         else:
-            ratio_pred = 1.50  # SPRINT 3 validated value
+            # Fallback: SPRINT 3 validated value
+            ratio_pred = 1.50
         
-        # Observed from SPRINT 4
+        # Extract observed value
         if 'throughput_ratio' in self.observed:
             ratio_obs = self.observed['throughput_ratio']['throughput_ratio']
         else:

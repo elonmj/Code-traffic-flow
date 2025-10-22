@@ -1277,3 +1277,30 @@ class CalibrationRunner:
 
         self.logger.info(f"📈 Calibration metrics calculated - RMSE: {metrics.get('rmse', 0):.2f} km/h")
         return metrics
+    
+    def apply_calibrated_params(
+        self,
+        calibrated_params: Dict[str, Dict[str, float]]
+    ) -> None:
+        """
+        Apply calibrated parameters directly to NetworkBuilder's ParameterManager.
+        
+        This method integrates calibration results with Phase 6 architecture,
+        enabling direct NetworkGrid creation without YAML intermediate.
+        
+        Args:
+            calibrated_params: Dict mapping segment_id → parameter dict
+                              e.g., {'seg_1': {'V0_c': 13.89, 'tau_c': 18.0}}
+        
+        Example:
+            >>> calibrated = calibration_runner.calibrate()
+            >>> calibration_runner.apply_calibrated_params(calibrated['parameters'])
+            >>> grid = NetworkGrid.from_network_builder(calibration_runner.network_builder)
+        """
+        for segment_id, params in calibrated_params.items():
+            if segment_id in self.network_builder.segments:
+                self.network_builder.set_segment_params(segment_id, params)
+                self.logger.debug(f"Applied params to {segment_id}: {params}")
+        
+        self.logger.info(f"✅ Applied calibrated parameters to {len(calibrated_params)} segments")
+

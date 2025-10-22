@@ -1,26 +1,26 @@
 {
   "speed_differential": {
-    "delta_v_predicted_kmh": 10.0,
-    "delta_v_observed_kmh": 10.06463011985641,
-    "absolute_error_kmh": 0.06463011985641032,
-    "relative_error": 0.006463011985641032,
+    "delta_v_predicted_kmh": 13.080031493283421,
+    "delta_v_observed_kmh": 10.076416799815519,
+    "absolute_error_kmh": 3.0036146934679024,
+    "relative_error": 0.22963359797797542,
     "threshold": 0.1,
-    "passed": true,
-    "interpretation": "\u2705 PASS"
+    "passed": false,
+    "interpretation": "\u274c FAIL"
   },
   "throughput_ratio": {
-    "ratio_predicted": 1.5,
+    "ratio_predicted": 0.19316464460711544,
     "ratio_observed": 0.6666666666666666,
-    "absolute_error": 0.8333333333333334,
-    "relative_error": 0.5555555555555556,
+    "absolute_error": 0.47350202205955116,
+    "relative_error": 2.451287206427574,
     "threshold": 0.15,
     "passed": false,
     "interpretation": "\u274c FAIL"
   },
   "fundamental_diagrams": {
     "motorcycles": {
-      "correlation": -0.8164965809277261,
-      "p_value": 0.1835034190722738,
+      "correlation": -0.2721655269759087,
+      "p_value": 0.7278344730240913,
       "n_points": 4
     },
     "cars": {
@@ -28,13 +28,13 @@
       "p_value": 0.1835034190722738,
       "n_points": 4
     },
-    "average_correlation": -0.8164965809277261,
+    "average_correlation": -0.5443310539518174,
     "threshold": 0.7,
     "passed": false,
     "interpretation": "\u274c FAIL"
   },
   "infiltration_rate": {
-    "infiltration_rate_observed": 0.0,
+    "infiltration_rate_observed": 0.11764705882352941,
     "expected_min": 0.5,
     "expected_max": 0.8,
     "passed": false,
@@ -42,11 +42,11 @@
   },
   "overall_validation": {
     "status": "\u274c FAIL - Multiple criteria not met",
-    "n_passed": 1,
+    "n_passed": 0,
     "n_total": 4,
-    "pass_rate": 0.25,
+    "pass_rate": 0.0,
     "tests": {
-      "speed_differential": "PASS",
+      "speed_differential": "FAIL",
       "throughput_ratio": "FAIL",
       "fundamental_diagrams": "FAIL",
       "infiltration_rate": "FAIL"

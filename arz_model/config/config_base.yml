@@ -65,3 +65,23 @@ ode_rtol: 1.0e-6
 ode_atol: 1.0e-6
 # Small epsilon for numerical stability
 epsilon: 1.0e-10
+
+# Behavioral Coupling Parameters (θ_k) - Junction Transitions
+# Based on: Kolb et al. (2018), thesis Chapter 2 Section 4
+# Formula: w_out = w_eq + θ_k * (w_in - w_eq)
+# θ ≈ 0: Strong behavioral adaptation (reset to equilibrium)
+# θ ≈ 1: Weak behavioral adaptation (preserve upstream behavior)
+behavioral_coupling:
+  # Roundabouts (θ_insertion ≈ 0.2, θ_circulation ≈ 0.8)
+  theta_moto_insertion: 0.2        # Strong adaptation on entry (vehicles yield)
+  theta_moto_circulation: 0.8      # Weak adaptation in flow (maintaining speed)
+  
+  # Signalized intersections (θ_moto ∈ [0.7,0.9], θ_car ∈ [0.4,0.6])
+  theta_moto_signalized: 0.8       # Motos: aggressive acceleration through green
+  theta_car_signalized: 0.5        # Cars: moderate acceleration through green
+  
+  # Priority roads (θ_principal ≈ 0.9, θ_secondary ≈ 0.1)
+  theta_moto_priority: 0.9         # Through traffic (minimal disruption)
+  theta_car_priority: 0.9          # Through traffic (minimal disruption)
+  theta_moto_secondary: 0.1        # Stop/yield (strong behavioral reset)
+  theta_car_secondary: 0.1         # Stop/yield (strong behavioral reset)
