@@ -643,6 +643,13 @@ class RLPerformanceValidationTest(ValidationSection):
         Upstream -> [Signal Junction (RL)] -> Downstream
         """
         network_data = {
+            # Paramètres de grille globaux (pour SimulationRunner legacy)
+            'N': 100,  # Total cells (upstream 50 + downstream 50)
+            'xmin': 0.0,
+            'xmax': 1000.0,
+            # Paramètres de temps (pour SimulationRunner)
+            't_final': 3600.0,  # 1 heure de simulation
+            'output_dt': 60.0,  # Sortie toutes les 60 secondes
             'network': {
                 'name': 'Traffic_Light_Control',
                 'description': 'Single signalized intersection with RL control',
@@ -765,6 +772,13 @@ class RLPerformanceValidationTest(ValidationSection):
         Scénario: Highway mainline + on-ramp avec dosage RL.
         """
         network_data = {
+            # Paramètres de grille globaux (pour SimulationRunner legacy)
+            'N': 130,  # highway_upstream 50 + on_ramp 30 + highway_downstream 50
+            'xmin': 0.0,
+            'xmax': 1300.0,  # Approximation pour 3 segments
+            # Paramètres de temps
+            't_final': 3600.0,
+            'output_dt': 60.0,
             'network': {
                 'name': 'Ramp_Metering_Control',
                 'description': 'Highway with RL-controlled on-ramp metering',
@@ -898,6 +912,13 @@ class RLPerformanceValidationTest(ValidationSection):
         Scénario: 3 zones avec limites de vitesse variables contrôlées par RL.
         """
         network_data = {
+            # Paramètres de grille globaux (pour SimulationRunner legacy)
+            'N': 100,  # zone_1 (33) + zone_2 (33) + zone_3 (34)
+            'xmin': 0.0,
+            'xmax': 1000.0,
+            # Paramètres de temps
+            't_final': 3600.0,
+            'output_dt': 60.0,
             'network': {
                 'name': 'Adaptive_Speed_Control',
                 'description': 'Highway with RL-controlled variable speed limits (VSL)',
