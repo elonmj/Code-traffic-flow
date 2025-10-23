@@ -1,0 +1,15 @@
+traffic_control:
+  ramp_meters:
+    merge_junction:
+      cycle_time: 30.0
+      control_mode: rl_agent
+      max_release_rate: 1.0
+      phases:
+      - id: 0
+        duration: 15.0
+        release_rate: 0.5
+        description: Moderate release
+      - id: 1
+        duration: 15.0
+        release_rate: 0.0
+        description: Ramp hold

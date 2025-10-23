@@ -396,6 +396,287 @@ class ExperimentTracker:
         return pd.DataFrame(summary_data)
 
 
+def _generate_signalized_network_lagos(vmax_m: float, vmax_c: float,
+                                       theta_m: float, theta_c: float,
+                                       duration: float, domain_length: float) -> tuple:
+    """Generate NetworkConfig for signalized intersection with Lagos parameters."""
+    from datetime import datetime
+    
+    network_data = {
+        # Legacy parameters for SimulationRunner
+        'N': 100,
+        'xmin': 0.0,
+        'xmax': domain_length,
+        't_final': duration,
+        'output_dt': 60.0,
+        # NetworkConfig structure
+        'network': {
+            'name': 'Traffic_Light_Control_Lagos',
+            'description': 'Signalized intersection with REAL Lagos traffic data',
+            'segments': {
+                'upstream': {
+                    'x_min': 0.0,
+                    'x_max': domain_length / 2,
+                    'N': 50,
+                    'start_node': 'entry',
+                    'end_node': 'signal_junction',
+                    'road_type': 'urban_arterial',
+                    'parameters': {
+                        'V0_m': vmax_m,  # Lagos free speed (m/s)
+                        'V0_c': vmax_c,
+                        'tau_m': 5.0,
+                        'tau_c': 10.0
+                    }
+                },
+                'downstream': {
+                    'x_min': domain_length / 2,
+                    'x_max': domain_length,
+                    'N': 50,
+                    'start_node': 'signal_junction',
+                    'end_node': 'exit',
+                    'road_type': 'urban_arterial',
+                    'parameters': {
+                        'V0_m': vmax_m,
+                        'V0_c': vmax_c,
+                        'tau_m': 5.0,
+                        'tau_c': 10.0
+                    }
+                }
+            },
+            'nodes': {
+                'entry': {
+                    'type': 'boundary',
+                    'position': [0.0, 0.0],
+                    'description': 'Network entry - Lagos traffic inflow'
+                },
+                'signal_junction': {
+                    'type': 'signalized',
+                    'position': [domain_length / 2, 0.0],
+                    'incoming_segments': ['upstream'],
+                    'outgoing_segments': ['downstream'],
+                    'description': 'RL-controlled traffic signal'
+                },
+                'exit': {
+                    'type': 'boundary',
+                    'position': [domain_length, 0.0],
+                    'description': 'Network exit'
+                }
+            },
+            'links': [
+                {
+                    'from_segment': 'upstream',
+                    'to_segment': 'downstream',
+                    'via_node': 'signal_junction',
+                    'coupling_type': 'signalized',
+                    'theta_m': theta_m,
+                    'theta_c': theta_c,
+                    'description': 'Behavioral coupling (config_base.yml)'
+                }
+            ]
+        },
+        'metadata': {
+            'created': datetime.now().isoformat(),
+            'scenario_type': 'traffic_light_control',
+            'data_source': 'Lagos Victoria Island (REAL)'
+        }
+    }
+    
+    traffic_data = {
+        'traffic_control': {
+            'traffic_lights': {
+                'signal_junction': {
+                    'cycle_time': 120.0,
+                    'offset': 0.0,
+                    'control_mode': 'rl_agent',
+                    'phases': [
+                        {'id': 0, 'duration': 60.0, 'green_segments': ['upstream'], 'description': 'Green (RL-controlled)'},
+                        {'id': 1, 'duration': 5.0, 'yellow_segments': ['upstream'], 'description': 'Yellow transition'},
+                        {'id': 2, 'duration': 50.0, 'description': 'Red phase'},
+                        {'id': 3, 'duration': 5.0, 'description': 'All-red clearance'}
+                    ]
+                }
+            }
+        }
+    }
+    
+    return network_data, traffic_data
+
+
+def _generate_ramp_network_lagos(vmax_m: float, vmax_c: float,
+                                 theta_priority: float, theta_secondary: float,
+                                 duration: float, domain_length: float) -> tuple:
+    """Generate NetworkConfig for ramp metering with Lagos parameters."""
+    from datetime import datetime
+    
+    network_data = {
+        'N': 130,
+        'xmin': 0.0,
+        'xmax': domain_length * 1.3,
+        't_final': duration,
+        'output_dt': 60.0,
+        'network': {
+            'name': 'Ramp_Metering_Lagos',
+            'description': 'Highway ramp metering with Lagos traffic data',
+            'segments': {
+                'highway_upstream': {
+                    'x_min': 0.0,
+                    'x_max': domain_length / 2,
+                    'N': 50,
+                    'start_node': 'highway_entry',
+                    'end_node': 'merge_junction',
+                    'road_type': 'highway',
+                    'parameters': {
+                        'V0_m': vmax_m * 1.5,  # Highway speed (+50%)
+                        'V0_c': vmax_c * 1.5,
+                        'tau_m': 3.0,
+                        'tau_c': 5.0
+                    }
+                },
+                'on_ramp': {
+                    'x_min': 0.0,
+                    'x_max': 300.0,
+                    'N': 30,
+                    'start_node': 'ramp_entry',
+                    'end_node': 'merge_junction',
+                    'road_type': 'ramp',
+                    'parameters': {
+                        'V0_m': vmax_m,
+                        'V0_c': vmax_c,
+                        'tau_m': 5.0,
+                        'tau_c': 10.0
+                    }
+                },
+                'highway_downstream': {
+                    'x_min': domain_length / 2,
+                    'x_max': domain_length,
+                    'N': 50,
+                    'start_node': 'merge_junction',
+                    'end_node': 'highway_exit',
+                    'road_type': 'highway',
+                    'parameters': {
+                        'V0_m': vmax_m * 1.5,
+                        'V0_c': vmax_c * 1.5,
+                        'tau_m': 3.0,
+                        'tau_c': 5.0
+                    }
+                }
+            },
+            'nodes': {
+                'highway_entry': {'type': 'boundary', 'position': [0.0, 0.0]},
+                'ramp_entry': {'type': 'boundary', 'position': [0.0, -200.0]},
+                'merge_junction': {
+                    'type': 'merge',
+                    'position': [domain_length / 2, 0.0],
+                    'incoming_segments': ['highway_upstream', 'on_ramp'],
+                    'outgoing_segments': ['highway_downstream']
+                },
+                'highway_exit': {'type': 'boundary', 'position': [domain_length, 0.0]}
+            },
+            'links': [
+                {'from_segment': 'highway_upstream', 'to_segment': 'highway_downstream',
+                 'via_node': 'merge_junction', 'coupling_type': 'priority',
+                 'theta_m': theta_priority, 'theta_c': theta_priority},
+                {'from_segment': 'on_ramp', 'to_segment': 'highway_downstream',
+                 'via_node': 'merge_junction', 'coupling_type': 'secondary',
+                 'theta_m': theta_secondary, 'theta_c': theta_secondary}
+            ]
+        },
+        'metadata': {'created': datetime.now().isoformat(), 'scenario_type': 'ramp_metering', 'data_source': 'Lagos'}
+    }
+    
+    traffic_data = {
+        'traffic_control': {
+            'ramp_meters': {
+                'merge_junction': {
+                    'cycle_time': 30.0,
+                    'control_mode': 'rl_agent',
+                    'max_release_rate': 1.0,
+                    'phases': [
+                        {'id': 0, 'duration': 15.0, 'release_rate': 0.5, 'description': 'Moderate release'},
+                        {'id': 1, 'duration': 15.0, 'release_rate': 0.0, 'description': 'Ramp hold'}
+                    ]
+                }
+            }
+        }
+    }
+    
+    return network_data, traffic_data
+
+
+def _generate_speed_control_network_lagos(vmax_m: float, vmax_c: float,
+                                          duration: float, domain_length: float) -> tuple:
+    """Generate NetworkConfig for variable speed limits with Lagos parameters."""
+    from datetime import datetime
+    
+    network_data = {
+        'N': 100,
+        'xmin': 0.0,
+        'xmax': domain_length,
+        't_final': duration,
+        'output_dt': 60.0,
+        'network': {
+            'name': 'Adaptive_Speed_Control_Lagos',
+            'description': 'Variable speed limits (VSL) with Lagos traffic data',
+            'segments': {
+                'zone_1': {
+                    'x_min': 0.0,
+                    'x_max': domain_length / 3,
+                    'N': 33,
+                    'start_node': 'entry',
+                    'end_node': 'vsl_zone_2',
+                    'road_type': 'highway',
+                    'parameters': {'V0_m': vmax_m * 1.5, 'V0_c': vmax_c * 1.5, 'tau_m': 3.0, 'tau_c': 5.0}
+                },
+                'zone_2': {
+                    'x_min': domain_length / 3,
+                    'x_max': 2 * domain_length / 3,
+                    'N': 33,
+                    'start_node': 'vsl_zone_2',
+                    'end_node': 'vsl_zone_3',
+                    'road_type': 'highway',
+                    'parameters': {'V0_m': vmax_m * 1.5, 'V0_c': vmax_c * 1.5, 'tau_m': 3.0, 'tau_c': 5.0}
+                },
+                'zone_3': {
+                    'x_min': 2 * domain_length / 3,
+                    'x_max': domain_length,
+                    'N': 34,
+                    'start_node': 'vsl_zone_3',
+                    'end_node': 'exit',
+                    'road_type': 'highway',
+                    'parameters': {'V0_m': vmax_m * 1.5, 'V0_c': vmax_c * 1.5, 'tau_m': 3.0, 'tau_c': 5.0}
+                }
+            },
+            'nodes': {
+                'entry': {'type': 'boundary', 'position': [0.0, 0.0]},
+                'vsl_zone_2': {'type': 'vsl_boundary', 'position': [domain_length / 3, 0.0]},
+                'vsl_zone_3': {'type': 'vsl_boundary', 'position': [2 * domain_length / 3, 0.0]},
+                'exit': {'type': 'boundary', 'position': [domain_length, 0.0]}
+            },
+            'links': [
+                {'from_segment': 'zone_1', 'to_segment': 'zone_2', 'via_node': 'vsl_zone_2', 'coupling_type': 'continuous'},
+                {'from_segment': 'zone_2', 'to_segment': 'zone_3', 'via_node': 'vsl_zone_3', 'coupling_type': 'continuous'}
+            ]
+        },
+        'metadata': {'created': datetime.now().isoformat(), 'scenario_type': 'adaptive_speed_control', 'data_source': 'Lagos'}
+    }
+    
+    traffic_data = {
+        'traffic_control': {
+            'vsl_zones': {
+                f'zone_{i}': {
+                    'control_mode': 'rl_agent',
+                    'default_speed_limit_kmh': vmax_m * 1.5 * 3.6,
+                    'min_speed_limit_kmh': vmax_m * 0.5 * 3.6,
+                    'max_speed_limit_kmh': vmax_m * 2.0 * 3.6,
+                    'update_interval': 30.0
+                } for i in [1, 2, 3]
+            }
+        }
+    }
+    
+    return network_data, traffic_data
+
+
 def create_scenario_config_with_lagos_data(
     scenario_type: str,
     output_path: Optional[Path] = None,
@@ -405,9 +686,12 @@ def create_scenario_config_with_lagos_data(
 ) -> Dict[str, Any]:
     """Create scenario configuration using REAL Lagos traffic data.
     
+    **UPDATED**: Generates NetworkConfig-compatible YAML (network.yml + traffic_control.yml)
+    Uses config_base.yml behavioral_coupling parameters (θ_k) for realistic junction physics.
+    
     Args:
         scenario_type: Type of scenario ('traffic_light_control', 'ramp_metering', 'adaptive_speed_control')
-        output_path: Optional path to save YAML config
+        output_path: Path to save network.yml (traffic_control.yml will be {output_path}_traffic_control.yml)
         config_dir: Path to configs directory for Lagos data
         duration: Simulation duration in seconds (default: 600s = 10 minutes)
         domain_length: Road domain length in meters (default: 1000m = 1km)
@@ -415,8 +699,73 @@ def create_scenario_config_with_lagos_data(
     Returns:
         Dictionary with scenario configuration using real Lagos parameters
     """
+    import yaml
+    from pathlib import Path as PathlibPath
+    from datetime import datetime
+    
     # Load REAL Lagos traffic parameters
     lagos_params = load_lagos_traffic_params(config_dir)
+    
+    # Extract real parameters
+    max_density_m = lagos_params['max_density_motorcycles']  # 250 veh/km (REAL)
+    max_density_c = lagos_params['max_density_cars']  # 120 veh/km (REAL)
+    free_speed_m_kmh = lagos_params['free_speed_motorcycles']  # 32 km/h (REAL)
+    free_speed_c_kmh = lagos_params['free_speed_cars']  # 28 km/h (REAL)
+    
+    # Convert speeds to m/s
+    free_speed_m = free_speed_m_kmh / 3.6  # ~8.9 m/s
+    free_speed_c = free_speed_c_kmh / 3.6  # ~7.8 m/s
+    
+    # Load config_base.yml for behavioral_coupling θ_k
+    project_root = PathlibPath(__file__).parent.parent.parent.parent
+    config_base_path = project_root / "arz_model" / "config" / "config_base.yml"
+    with open(config_base_path) as f:
+        base_config = yaml.safe_load(f)
+    
+    theta_moto_signal = base_config['behavioral_coupling']['theta_moto_signalized']
+    theta_car_signal = base_config['behavioral_coupling']['theta_car_signalized']
+    theta_moto_priority = base_config['behavioral_coupling']['theta_moto_priority']
+    theta_moto_secondary = base_config['behavioral_coupling']['theta_moto_secondary']
+    
+    # Generate NetworkConfig YAML based on scenario type
+    if scenario_type == 'traffic_light_control':
+        network_data, traffic_data = _generate_signalized_network_lagos(
+            free_speed_m, free_speed_c, theta_moto_signal, theta_car_signal, duration, domain_length
+        )
+    elif scenario_type == 'ramp_metering':
+        network_data, traffic_data = _generate_ramp_network_lagos(
+            free_speed_m, free_speed_c, theta_moto_priority, theta_moto_secondary, duration, domain_length
+        )
+    elif scenario_type == 'adaptive_speed_control':
+        network_data, traffic_data = _generate_speed_control_network_lagos(
+            free_speed_m, free_speed_c, duration, domain_length
+        )
+    else:
+        raise ValueError(f"Unknown scenario type: {scenario_type}")
+    
+    # Save NetworkConfig files if output path provided
+    if output_path:
+        output_path = PathlibPath(output_path)
+        network_path = output_path
+        traffic_path = output_path.parent / f"{output_path.stem}_traffic_control.yml"
+        
+        with open(network_path, 'w') as f:
+            yaml.dump(network_data, f, default_flow_style=False, sort_keys=False)
+        
+        with open(traffic_path, 'w') as f:
+            yaml.dump(traffic_data, f, default_flow_style=False, sort_keys=False)
+        
+        print(f"[LAGOS CONFIG] Saved NetworkConfig:")
+        print(f"  - Network: {network_path}")
+        print(f"  - Traffic: {traffic_path}")
+    
+    # Return combined config (for backward compatibility)
+    combined_config = {
+        **network_data,
+        'traffic_control': traffic_data['traffic_control'],
+        'lagos_parameters': lagos_params
+    }
+    return combined_config
     
     # Extract real parameters
     max_density_m = lagos_params['max_density_motorcycles']  # 250 veh/km (REAL)
