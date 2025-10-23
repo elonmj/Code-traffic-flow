@@ -54,6 +54,12 @@ from stable_baselines3.common.callbacks import EvalCallback
 sys.path.append(str(code_rl_path / "src" / "rl"))
 from callbacks import RotatingCheckpointCallback, TrainingProgressCallback
 
+# ✅ Import Code_RL config utilities (DRY principle - Don't Repeat Yourself)
+from Code_RL.src.utils.config import (
+    load_lagos_traffic_params,
+    create_scenario_config_with_lagos_data
+)
+
 # ✅ CODE_RL HYPERPARAMETERS (source of truth from train_dqn.py)
 # These match Code_RL/src/rl/train_dqn.py line 151-167
 CODE_RL_HYPERPARAMETERS = {
@@ -70,6 +76,9 @@ CODE_RL_HYPERPARAMETERS = {
     "exploration_initial_eps": 1.0,
     "exploration_final_eps": 0.05
 }
+
+# Définir le chemin vers les configurations de Code_RL
+CODE_RL_CONFIG_DIR = code_rl_path / "configs"
 
 
 class RLPerformanceValidationTest(ValidationSection):
@@ -582,468 +591,34 @@ class RLPerformanceValidationTest(ValidationSection):
             print(f"  [CACHE RL] Error loading cache: {e}", flush=True)
             return None
     
-    def _create_scenario_config(self, scenario_type: str) -> tuple[Path, Path]:
-        """Génère les configs NetworkConfig (network.yml + traffic_control.yml) pour chaque scénario RL.
+    def _create_scenario_config(self, scenario_type: str) -> Path:
+        """✅ ORCHESTRATOR: Calls Code_RL to create scenario with REAL Lagos data.
         
-        Utilise config_base.yml pour les paramètres physiques et behavioral_coupling θ_k.
-        
-        Returns:
-            (network_path, traffic_control_path): Chemins vers les 2 fichiers YAML générés
+        Validation's role: Orchestrate, not duplicate.
+        Code_RL owns: Data loading, scenario creation, traffic parameters.
+        Validation owns: Testing, comparison, metrics calculation.
         """
-        network_path = self.scenarios_dir / f"{scenario_type}_network.yml"
-        traffic_path = self.scenarios_dir / f"{scenario_type}_traffic_control.yml"
+        scenario_path = self.scenarios_dir / f"{scenario_type}.yml"
         
-        # Charger config_base.yml pour avoir les paramètres réalistes
-        config_base_path = project_root / "arz_model" / "config" / "config_base.yml"
-        with open(config_base_path) as f:
-            base_config = yaml.safe_load(f)
+        # ✅ Call Code_RL function (DRY principle - Don't Repeat Yourself)
+        config = create_scenario_config_with_lagos_data(
+            scenario_type=scenario_type,
+            output_path=scenario_path,
+            config_dir=str(CODE_RL_CONFIG_DIR),
+            duration=600.0,  # 10 minutes
+            domain_length=1000.0  # 1km
+        )
         
-        # Paramètres physiques de config_base.yml
-        vmax_m = base_config['Vmax_kmh']['m'][3]  # Route catégorie 3 (urbain)
-        vmax_c = base_config['Vmax_kmh']['c'][3]
-        theta_moto_signal = base_config['behavioral_coupling']['theta_moto_signalized']
-        theta_car_signal = base_config['behavioral_coupling']['theta_car_signalized']
-        theta_moto_priority = base_config['behavioral_coupling']['theta_moto_priority']
-        theta_car_priority = base_config['behavioral_coupling']['theta_car_priority']
-        theta_moto_secondary = base_config['behavioral_coupling']['theta_moto_secondary']
+        # Log for validation tracking
+        lagos_params = config.get('lagos_parameters', {})
+        self.debug_logger.info(f"[SCENARIO] Created using Code_RL: {scenario_path.name}")
+        self.debug_logger.info(f"  Context: {lagos_params.get('context', 'Victoria Island Lagos')}")
+        self.debug_logger.info(f"  Max densities: {lagos_params.get('max_density_motorcycles', 250):.0f}/{lagos_params.get('max_density_cars', 120):.0f} veh/km")
+        self.debug_logger.info(f"  Free speeds: {lagos_params.get('free_speed_motorcycles', 32):.0f}/{lagos_params.get('free_speed_cars', 28):.0f} km/h")
         
-        # Génération selon le type de scénario
-        if scenario_type == 'traffic_light_control':
-            network_data, traffic_data = self._generate_signalized_network(
-                vmax_m, vmax_c, theta_moto_signal, theta_car_signal
-            )
-        elif scenario_type == 'ramp_metering':
-            network_data, traffic_data = self._generate_ramp_network(
-                vmax_m, vmax_c, theta_moto_priority, theta_moto_secondary
-            )
-        elif scenario_type == 'adaptive_speed_control':
-            network_data, traffic_data = self._generate_speed_control_network(
-                vmax_m, vmax_c
-            )
-        else:
-            raise ValueError(f"Scenario type inconnu: {scenario_type}")
+        print(f"  [SCENARIO] ✅ Created via Code_RL with REAL Lagos data", flush=True)
         
-        # Écrire les fichiers YAML
-        with open(network_path, 'w') as f:
-            yaml.dump(network_data, f, default_flow_style=False, sort_keys=False)
-        
-        with open(traffic_path, 'w') as f:
-            yaml.dump(traffic_data, f, default_flow_style=False, sort_keys=False)
-        
-        self.debug_logger.info(f"[SCENARIO] Créé NetworkConfig: {network_path.name} + {traffic_path.name}")
-        print(f"  [SCENARIO] ✅ Généré network + traffic control YAML", flush=True)
-        
-        return network_path, traffic_path
-    
-    def _generate_signalized_network(self, vmax_m: float, vmax_c: float, 
-                                     theta_m: float, theta_c: float) -> tuple[dict, dict]:
-        """Génère un réseau avec intersection signalisée (feu de circulation).
-        
-        Scénario: Intersection unique contrôlée par RL.
-        Upstream -> [Signal Junction (RL)] -> Downstream
-        """
-        network_data = {
-            # Paramètres de grille globaux (pour SimulationRunner legacy)
-            'N': 100,  # Total cells (upstream 50 + downstream 50)
-            'xmin': 0.0,
-            'xmax': 1000.0,
-            # Paramètres de temps (pour SimulationRunner)
-            't_final': 3600.0,  # 1 heure de simulation
-            'output_dt': 60.0,  # Sortie toutes les 60 secondes
-            'network': {
-                'name': 'Traffic_Light_Control',
-                'description': 'Single signalized intersection with RL control',
-                'segments': {
-                    'upstream': {
-                        'x_min': 0.0,
-                        'x_max': 500.0,
-                        'N': 50,
-                        'start_node': 'entry',
-                        'end_node': 'signal_junction',
-                        'road_type': 'urban_arterial',
-                        'parameters': {
-                            'V0_m': vmax_m / 3.6,  # km/h -> m/s
-                            'V0_c': vmax_c / 3.6,
-                            'tau_m': 5.0,
-                            'tau_c': 10.0
-                        }
-                    },
-                    'downstream': {
-                        'x_min': 500.0,
-                        'x_max': 1000.0,
-                        'N': 50,
-                        'start_node': 'signal_junction',
-                        'end_node': 'exit',
-                        'road_type': 'urban_arterial',
-                        'parameters': {
-                            'V0_m': vmax_m / 3.6,
-                            'V0_c': vmax_c / 3.6,
-                            'tau_m': 5.0,
-                            'tau_c': 10.0
-                        }
-                    }
-                },
-                'nodes': {
-                    'entry': {
-                        'type': 'boundary',
-                        'position': [0.0, 0.0],
-                        'description': 'Network entry point'
-                    },
-                    'signal_junction': {
-                        'type': 'signalized',
-                        'position': [500.0, 0.0],
-                        'incoming_segments': ['upstream'],
-                        'outgoing_segments': ['downstream'],
-                        'description': 'RL-controlled traffic signal'
-                    },
-                    'exit': {
-                        'type': 'boundary',
-                        'position': [1000.0, 0.0],
-                        'description': 'Network exit point'
-                    }
-                },
-                'links': [
-                    {
-                        'from_segment': 'upstream',
-                        'to_segment': 'downstream',
-                        'via_node': 'signal_junction',
-                        'coupling_type': 'signalized',
-                        'theta_m': theta_m,
-                        'theta_c': theta_c,
-                        'description': 'Behavioral coupling through signalized junction'
-                    }
-                ]
-            },
-            'metadata': {
-                'created': datetime.now().isoformat(),
-                'scenario_type': 'traffic_light_control',
-                'purpose': 'RL agent performance validation'
-            }
-        }
-        
-        traffic_data = {
-            'traffic_control': {
-                'traffic_lights': {
-                    'signal_junction': {
-                        'cycle_time': 120.0,  # 2 minutes total cycle
-                        'offset': 0.0,
-                        'control_mode': 'rl_agent',  # RL contrôle les phases
-                        'phases': [
-                            {
-                                'id': 0,
-                                'duration': 60.0,  # Default green (RL peut override)
-                                'green_segments': ['upstream'],
-                                'yellow_segments': [],
-                                'description': 'Green phase (RL-controlled)'
-                            },
-                            {
-                                'id': 1,
-                                'duration': 5.0,
-                                'green_segments': [],
-                                'yellow_segments': ['upstream'],
-                                'description': 'Yellow transition'
-                            },
-                            {
-                                'id': 2,
-                                'duration': 50.0,
-                                'green_segments': [],
-                                'yellow_segments': [],
-                                'description': 'Red phase'
-                            },
-                            {
-                                'id': 3,
-                                'duration': 5.0,
-                                'green_segments': [],
-                                'yellow_segments': [],
-                                'description': 'All-red clearance'
-                            }
-                        ]
-                    }
-                }
-            }
-        }
-        
-        return network_data, traffic_data
-    
-    def _generate_ramp_network(self, vmax_m: float, vmax_c: float,
-                               theta_priority: float, theta_secondary: float) -> tuple[dict, dict]:
-        """Génère un réseau autoroute avec rampe d'accès contrôlée (ramp metering).
-        
-        Scénario: Highway mainline + on-ramp avec dosage RL.
-        """
-        network_data = {
-            # Paramètres de grille globaux (pour SimulationRunner legacy)
-            'N': 130,  # highway_upstream 50 + on_ramp 30 + highway_downstream 50
-            'xmin': 0.0,
-            'xmax': 1300.0,  # Approximation pour 3 segments
-            # Paramètres de temps
-            't_final': 3600.0,
-            'output_dt': 60.0,
-            'network': {
-                'name': 'Ramp_Metering_Control',
-                'description': 'Highway with RL-controlled on-ramp metering',
-                'segments': {
-                    'highway_upstream': {
-                        'x_min': 0.0,
-                        'x_max': 500.0,
-                        'N': 50,
-                        'start_node': 'highway_entry',
-                        'end_node': 'merge_junction',
-                        'road_type': 'highway',
-                        'parameters': {
-                            'V0_m': (vmax_m * 1.5) / 3.6,  # Highway speed (+50%)
-                            'V0_c': (vmax_c * 1.5) / 3.6,
-                            'tau_m': 3.0,  # Faster relaxation on highway
-                            'tau_c': 5.0
-                        }
-                    },
-                    'on_ramp': {
-                        'x_min': 0.0,
-                        'x_max': 300.0,
-                        'N': 30,
-                        'start_node': 'ramp_entry',
-                        'end_node': 'merge_junction',
-                        'road_type': 'ramp',
-                        'parameters': {
-                            'V0_m': vmax_m / 3.6,  # Lower speed on ramp
-                            'V0_c': vmax_c / 3.6,
-                            'tau_m': 5.0,
-                            'tau_c': 10.0
-                        }
-                    },
-                    'highway_downstream': {
-                        'x_min': 500.0,
-                        'x_max': 1000.0,
-                        'N': 50,
-                        'start_node': 'merge_junction',
-                        'end_node': 'highway_exit',
-                        'road_type': 'highway',
-                        'parameters': {
-                            'V0_m': (vmax_m * 1.5) / 3.6,
-                            'V0_c': (vmax_c * 1.5) / 3.6,
-                            'tau_m': 3.0,
-                            'tau_c': 5.0
-                        }
-                    }
-                },
-                'nodes': {
-                    'highway_entry': {
-                        'type': 'boundary',
-                        'position': [0.0, 0.0],
-                        'description': 'Highway mainline entry'
-                    },
-                    'ramp_entry': {
-                        'type': 'boundary',
-                        'position': [0.0, -200.0],
-                        'description': 'On-ramp entry (RL metering point)'
-                    },
-                    'merge_junction': {
-                        'type': 'merge',
-                        'position': [500.0, 0.0],
-                        'incoming_segments': ['highway_upstream', 'on_ramp'],
-                        'outgoing_segments': ['highway_downstream'],
-                        'description': 'Ramp merge point'
-                    },
-                    'highway_exit': {
-                        'type': 'boundary',
-                        'position': [1000.0, 0.0],
-                        'description': 'Highway exit'
-                    }
-                },
-                'links': [
-                    {
-                        'from_segment': 'highway_upstream',
-                        'to_segment': 'highway_downstream',
-                        'via_node': 'merge_junction',
-                        'coupling_type': 'priority',
-                        'theta_m': theta_priority,
-                        'theta_c': theta_priority,
-                        'description': 'Highway through traffic (priority)'
-                    },
-                    {
-                        'from_segment': 'on_ramp',
-                        'to_segment': 'highway_downstream',
-                        'via_node': 'merge_junction',
-                        'coupling_type': 'secondary',
-                        'theta_m': theta_secondary,
-                        'theta_c': theta_secondary,
-                        'description': 'Ramp merging traffic (yield/secondary)'
-                    }
-                ]
-            },
-            'metadata': {
-                'created': datetime.now().isoformat(),
-                'scenario_type': 'ramp_metering',
-                'purpose': 'RL ramp metering validation'
-            }
-        }
-        
-        traffic_data = {
-            'traffic_control': {
-                'ramp_meters': {
-                    'merge_junction': {
-                        'cycle_time': 30.0,  # Ramp metering cycle
-                        'control_mode': 'rl_agent',
-                        'max_release_rate': 1.0,  # RL contrôle le débit
-                        'phases': [
-                            {
-                                'id': 0,
-                                'duration': 15.0,
-                                'release_rate': 0.5,  # Default (RL peut override)
-                                'description': 'Moderate ramp release'
-                            },
-                            {
-                                'id': 1,
-                                'duration': 15.0,
-                                'release_rate': 0.0,
-                                'description': 'Ramp hold (red light)'
-                            }
-                        ]
-                    }
-                }
-            }
-        }
-        
-        return network_data, traffic_data
-    
-    def _generate_speed_control_network(self, vmax_m: float, vmax_c: float) -> tuple[dict, dict]:
-        """Génère un réseau autoroute avec contrôle de vitesse adaptatif (VSL).
-        
-        Scénario: 3 zones avec limites de vitesse variables contrôlées par RL.
-        """
-        network_data = {
-            # Paramètres de grille globaux (pour SimulationRunner legacy)
-            'N': 100,  # zone_1 (33) + zone_2 (33) + zone_3 (34)
-            'xmin': 0.0,
-            'xmax': 1000.0,
-            # Paramètres de temps
-            't_final': 3600.0,
-            'output_dt': 60.0,
-            'network': {
-                'name': 'Adaptive_Speed_Control',
-                'description': 'Highway with RL-controlled variable speed limits (VSL)',
-                'segments': {
-                    'zone_1': {
-                        'x_min': 0.0,
-                        'x_max': 333.3,
-                        'N': 33,
-                        'start_node': 'entry',
-                        'end_node': 'vsl_zone_2',
-                        'road_type': 'highway',
-                        'parameters': {
-                            'V0_m': (vmax_m * 1.5) / 3.6,
-                            'V0_c': (vmax_c * 1.5) / 3.6,
-                            'tau_m': 3.0,
-                            'tau_c': 5.0
-                        }
-                    },
-                    'zone_2': {
-                        'x_min': 333.3,
-                        'x_max': 666.6,
-                        'N': 33,
-                        'start_node': 'vsl_zone_2',
-                        'end_node': 'vsl_zone_3',
-                        'road_type': 'highway',
-                        'parameters': {
-                            'V0_m': (vmax_m * 1.5) / 3.6,
-                            'V0_c': (vmax_c * 1.5) / 3.6,
-                            'tau_m': 3.0,
-                            'tau_c': 5.0
-                        }
-                    },
-                    'zone_3': {
-                        'x_min': 666.6,
-                        'x_max': 1000.0,
-                        'N': 34,
-                        'start_node': 'vsl_zone_3',
-                        'end_node': 'exit',
-                        'road_type': 'highway',
-                        'parameters': {
-                            'V0_m': (vmax_m * 1.5) / 3.6,
-                            'V0_c': (vmax_c * 1.5) / 3.6,
-                            'tau_m': 3.0,
-                            'tau_c': 5.0
-                        }
-                    }
-                },
-                'nodes': {
-                    'entry': {
-                        'type': 'boundary',
-                        'position': [0.0, 0.0],
-                        'description': 'Highway entry'
-                    },
-                    'vsl_zone_2': {
-                        'type': 'vsl_boundary',
-                        'position': [333.3, 0.0],
-                        'description': 'VSL zone 1-2 transition'
-                    },
-                    'vsl_zone_3': {
-                        'type': 'vsl_boundary',
-                        'position': [666.6, 0.0],
-                        'description': 'VSL zone 2-3 transition'
-                    },
-                    'exit': {
-                        'type': 'boundary',
-                        'position': [1000.0, 0.0],
-                        'description': 'Highway exit'
-                    }
-                },
-                'links': [
-                    {
-                        'from_segment': 'zone_1',
-                        'to_segment': 'zone_2',
-                        'via_node': 'vsl_zone_2',
-                        'coupling_type': 'continuous',
-                        'description': 'Zone 1 -> Zone 2 transition'
-                    },
-                    {
-                        'from_segment': 'zone_2',
-                        'to_segment': 'zone_3',
-                        'via_node': 'vsl_zone_3',
-                        'coupling_type': 'continuous',
-                        'description': 'Zone 2 -> Zone 3 transition'
-                    }
-                ]
-            },
-            'metadata': {
-                'created': datetime.now().isoformat(),
-                'scenario_type': 'adaptive_speed_control',
-                'purpose': 'RL variable speed limit validation'
-            }
-        }
-        
-        traffic_data = {
-            'traffic_control': {
-                'vsl_zones': {
-                    'zone_1': {
-                        'control_mode': 'rl_agent',
-                        'default_speed_limit_kmh': vmax_m * 1.5,
-                        'min_speed_limit_kmh': vmax_m * 0.5,
-                        'max_speed_limit_kmh': vmax_m * 2.0,
-                        'update_interval': 30.0,  # RL met à jour toutes les 30s
-                        'description': 'RL-controlled speed limit zone 1'
-                    },
-                    'zone_2': {
-                        'control_mode': 'rl_agent',
-                        'default_speed_limit_kmh': vmax_m * 1.5,
-                        'min_speed_limit_kmh': vmax_m * 0.5,
-                        'max_speed_limit_kmh': vmax_m * 2.0,
-                        'update_interval': 30.0,
-                        'description': 'RL-controlled speed limit zone 2'
-                    },
-                    'zone_3': {
-                        'control_mode': 'rl_agent',
-                        'default_speed_limit_kmh': vmax_m * 1.5,
-                        'min_speed_limit_kmh': vmax_m * 0.5,
-                        'max_speed_limit_kmh': vmax_m * 2.0,
-                        'update_interval': 30.0,
-                        'description': 'RL-controlled speed limit zone 3'
-                    }
-                }
-            }
-        }
-        
-        return network_data, traffic_data
+        return scenario_path
 
     class BaselineController:
         """Contrôleur de référence (baseline) simple, basé sur des règles."""
@@ -1515,9 +1090,7 @@ class RLPerformanceValidationTest(ValidationSection):
         checkpoint_dir = self._get_checkpoint_dir()
         
         # Create scenario configuration (validation-specific)
-        # Retourne (network_path, traffic_control_path) - on utilise network_path
-        network_path, traffic_path = self._create_scenario_config(scenario_type)
-        scenario_path = network_path  # Pour compatibilité avec environnement
+        scenario_path = self._create_scenario_config(scenario_type)
         
         # ✅ CHECK SOPHISTICATED RL CACHE (config-specific, validation-specific)
         print(f"  [CACHE RL] Checking intelligent cache system...", flush=True)
@@ -1735,9 +1308,7 @@ class RLPerformanceValidationTest(ValidationSection):
         self.debug_logger.info("="*80)
         
         try:
-            # Générer network + traffic control configs
-            network_path, traffic_path = self._create_scenario_config(scenario_type)
-            scenario_path = network_path  # Pour compatibilité
+            scenario_path = self._create_scenario_config(scenario_type)
 
             # --- Baseline controller evaluation with INTELLIGENT CACHING ---
             # ✅ BASELINE CACHE OPTIMIZATION: Baseline (fixed-time 60s) never changes
