@@ -242,7 +242,19 @@ class TrafficSignalEnvDirect(gym.Env):
         #   - Previous env logic: 1 (toggle), 0 (maintain) → phase desynchronization
         #   - New logic: Action directly specifies desired phase → perfect alignment
         # Evidence from kernel czlc: Phase stayed GREEN when should be RED, causing drainage
-        self.current_phase = int(action)
+        
+        # ✅ BUG #37 FIX: Properly discretize continuous actions from RL agents
+        # Problem: int(action) truncates all 0 ≤ action < 1 to phase 0
+        #   - RL agents output continuous actions like 0.3, 0.7, 0.95
+        #   - int(0.3) = 0, int(0.7) = 0, int(0.95) = 0 (phase stays RED)
+        #   - Phase locked at RED → queue builds → delta_queue constant → reward = 0.0 ALWAYS
+        #   - RL agent can't learn with zero reward signal
+        # Solution: Use round() to discretize fairly around 0.5 threshold
+        #   - round(0.3) = 0 (RED)
+        #   - round(0.7) = 1 (GREEN)
+        #   - round(0.95) = 1 (GREEN)
+        #   - Phase transitions properly → queue changes → reward varies → learning possible
+        self.current_phase = round(float(action))
         
         # ✅ BUG #6 FIX PRESERVED: ALWAYS synchronize BC with current phase
         # This ensures boundary conditions match controller intent

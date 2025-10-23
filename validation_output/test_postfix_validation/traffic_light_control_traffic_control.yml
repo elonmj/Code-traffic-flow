@@ -1,0 +1,23 @@
+traffic_control:
+  traffic_lights:
+    signal_junction:
+      cycle_time: 120.0
+      offset: 0.0
+      control_mode: rl_agent
+      phases:
+      - id: 0
+        duration: 60.0
+        green_segments:
+        - upstream
+        description: Green (RL-controlled)
+      - id: 1
+        duration: 5.0
+        yellow_segments:
+        - upstream
+        description: Yellow transition
+      - id: 2
+        duration: 50.0
+        description: Red phase
+      - id: 3
+        duration: 5.0
+        description: All-red clearance
