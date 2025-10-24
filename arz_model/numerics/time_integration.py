@@ -21,7 +21,7 @@ except ImportError as e:
 
 # --- WENO-Based Spatial Discretization ---
 
-def calculate_spatial_discretization_weno(U: np.ndarray, grid: Grid1D, params: ModelParameters) -> np.ndarray:
+def calculate_spatial_discretization_weno(U: np.ndarray, grid: Grid1D, params: ModelParameters, current_bc_params: dict | None = None) -> np.ndarray:
     """
     Calcule la discrétisation spatiale L(U) = -dF/dx en utilisant la reconstruction WENO5.
     
@@ -35,13 +35,14 @@ def calculate_spatial_discretization_weno(U: np.ndarray, grid: Grid1D, params: M
         U (np.ndarray): État conservé (4, N_total) incluant les cellules fantômes
         grid (Grid1D): Objet grille
         params (ModelParameters): Paramètres du modèle
+        current_bc_params (dict | None): Mise à jour des paramètres BC (pour inflow dynamique). Defaults to None.
         
     Returns:
         np.ndarray: Discrétisation spatiale L(U) = -dF/dx (4, N_total)
     """
     # 0. Application des conditions aux limites sur l'état d'entrée
     U_bc = np.copy(U)
-    boundary_conditions.apply_boundary_conditions(U_bc, grid, params)
+    boundary_conditions.apply_boundary_conditions(U_bc, grid, params, current_bc_params)
     
     # 1. Conversion vers les variables primitives
     P = conserved_to_primitives_arr(
@@ -449,18 +450,18 @@ def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelPara
         # Dynamic solver selection based on spatial_scheme and time_scheme
         if params.spatial_scheme == 'first_order' and params.time_scheme == 'euler':
             # Use SSP-RK3 as fallback for simple first-order Euler
-            U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params)
+            U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params, current_bc_params)
         elif params.spatial_scheme == 'first_order' and params.time_scheme == 'ssprk3':
             # Phase 4.2: First-order spatial + SSP-RK3 temporal (CPU et GPU)
             if params.device == 'gpu':
-                U_ss = solve_hyperbolic_step_ssprk3_gpu(U_star, dt, grid, params)
+                U_ss = solve_hyperbolic_step_ssprk3_gpu(U_star, dt, grid, params, current_bc_params)
             else:
-                U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params)
+                U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params, current_bc_params)
         elif params.spatial_scheme == 'weno5' and params.time_scheme == 'euler':
             # Use SSP-RK3 as fallback for WENO5 + Euler
-            U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params)
+            U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params, current_bc_params)
         elif params.spatial_scheme == 'weno5' and params.time_scheme == 'ssprk3':
-            U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params)
+            U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params, current_bc_params)
         else:
             raise ValueError(f"Unsupported scheme combination: spatial_scheme='{params.spatial_scheme}', time_scheme='{params.time_scheme}'. "
                            f"Supported combinations: (first_order, euler), (first_order, ssprk3), (weno5, euler), (weno5, ssprk3)")
@@ -475,7 +476,7 @@ def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelPara
 
 # --- SSP-RK3 Time Integration ---
 
-def solve_hyperbolic_step_ssprk3(U_in: np.ndarray, dt_hyp: float, grid: Grid1D, params: ModelParameters) -> np.ndarray:
+def solve_hyperbolic_step_ssprk3(U_in: np.ndarray, dt_hyp: float, grid: Grid1D, params: ModelParameters, current_bc_params: dict | None = None) -> np.ndarray:
     """
     Résout l'étape hyperbolique dU/dt + dF/dx = 0 en utilisant le schéma SSP-RK3.
     
@@ -495,6 +496,7 @@ def solve_hyperbolic_step_ssprk3(U_in: np.ndarray, dt_hyp: float, grid: Grid1D, 
         dt_hyp (float): Pas de temps hyperbolique
         grid (Grid1D): Objet grille
         params (ModelParameters): Paramètres du modèle
+        current_bc_params (dict | None): Mise à jour des paramètres BC (pour inflow dynamique). Defaults to None.
 
     Returns:
         np.ndarray: État mis à jour après SSP-RK3
@@ -502,9 +504,9 @@ def solve_hyperbolic_step_ssprk3(U_in: np.ndarray, dt_hyp: float, grid: Grid1D, 
     
     # Choisir la fonction de discrétisation spatiale selon le schéma
     if params.spatial_scheme == 'first_order':
-        compute_L = lambda U: -compute_flux_divergence_first_order(U, grid, params)
+        compute_L = lambda U: -compute_flux_divergence_first_order(U, grid, params, current_bc_params)
     elif params.spatial_scheme == 'weno5':
-        compute_L = lambda U: calculate_spatial_discretization_weno(U, grid, params)
+        compute_L = lambda U: calculate_spatial_discretization_weno(U, grid, params, current_bc_params)
     else:
         raise ValueError(f"Unsupported spatial_scheme '{params.spatial_scheme}' for SSP-RK3")
     
@@ -574,7 +576,7 @@ def apply_temporal_update_ssprk3(U_in: np.ndarray, L_U: np.ndarray, dt: float, g
     return U_out
 
 
-def compute_flux_divergence_first_order(U: np.ndarray, grid: Grid1D, params: ModelParameters) -> np.ndarray:
+def compute_flux_divergence_first_order(U: np.ndarray, grid: Grid1D, params: ModelParameters, current_bc_params: dict | None = None) -> np.ndarray:
     """
     Calcule la divergence des flux -dF/dx pour le schéma du premier ordre.
     
@@ -582,13 +584,14 @@ def compute_flux_divergence_first_order(U: np.ndarray, grid: Grid1D, params: Mod
         U (np.ndarray): État conservé (4, N_total)
         grid (Grid1D): Objet grille
         params (ModelParameters): Paramètres du modèle
+        current_bc_params (dict | None): Mise à jour des paramètres BC (pour inflow dynamique). Defaults to None.
         
     Returns:
         np.ndarray: Divergence des flux dF/dx (4, N_total)
     """
     # Application des conditions aux limites
     U_bc = np.copy(U)
-    boundary_conditions.apply_boundary_conditions(U_bc, grid, params)
+    boundary_conditions.apply_boundary_conditions(U_bc, grid, params, current_bc_params)
     
     fluxes = np.zeros((4, grid.N_total))
     g = grid.num_ghost_cells

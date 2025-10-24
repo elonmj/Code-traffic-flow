@@ -402,6 +402,31 @@ def _generate_signalized_network_lagos(vmax_m: float, vmax_c: float,
     """Generate NetworkConfig for signalized intersection with Lagos parameters."""
     from datetime import datetime
     
+    # ===== INITIAL CONDITIONS & BOUNDARY CONDITIONS (CRITICAL FOR SIMULATIONS) =====
+    # Initial state: VERY CONGESTED traffic (to see RED vs GREEN effect even if BC isn't working perfectly)
+    # BUG FIX: Light initial conditions (0.01 veh/m) made RED/GREEN indistinguishable
+    # With no congestion, blocking inflow creates no observable backpressure
+    # Solution: Start with HEAVY traffic so RED control creates visible queueing
+    # Using even higher density now (70% of jam) to ensure observable differences
+    
+    rho_jam_veh_km = 250 + 120  # Max motorcycles + cars (370 veh/km)
+    rho_jam = rho_jam_veh_km / 1000.0
+    V_creeping = 0.6
+    
+    rho_m_initial_veh_km = 250 * 0.7  # 175 veh/km (heavy - 70% of max)
+    rho_c_initial_veh_km = 120 * 0.7  # 84 veh/km (heavy - 70% of max)
+    rho_total_initial = (rho_m_initial_veh_km + rho_c_initial_veh_km) / 1000.0  # 0.259 veh/m
+    g_initial = max(0.0, 1.0 - rho_total_initial / rho_jam)  # ≈ 0.3 (very congested)
+    w_m_initial = V_creeping + (vmax_m - V_creeping) * g_initial  # ≈ 2.88 m/s
+    w_c_initial = vmax_c * g_initial  # ≈ 2.33 m/s
+    
+    # Inflow: GREEN allows full flow, RED blocks (applied via set_traffic_signal_state)
+    w_m_inflow = vmax_m  # FREE speed (will be modulated by RED phase)
+    w_c_inflow = vmax_c
+    rho_m_inflow_veh_km = 250 * 0.8  # 200 veh/km (heavy Lagos traffic)
+    rho_c_inflow_veh_km = 120 * 0.8  # 96 veh/km (heavy Lagos traffic)
+    
+    # ===== NETWORK STRUCTURE =====
     network_data = {
         # Legacy parameters for SimulationRunner
         'N': 100,
@@ -409,6 +434,16 @@ def _generate_signalized_network_lagos(vmax_m: float, vmax_c: float,
         'xmax': domain_length,
         't_final': duration,
         'output_dt': 60.0,
+        # Initial conditions
+        'initial_conditions': {
+            'type': 'uniform',
+            'state': [rho_m_initial_veh_km, w_m_initial, rho_c_initial_veh_km, w_c_initial]
+        },
+        # Boundary conditions (used by default, overridden by set_traffic_signal_state)
+        'boundary_conditions': {
+            'left': {'type': 'inflow', 'state': [rho_m_inflow_veh_km, w_m_inflow, rho_c_inflow_veh_km, w_c_inflow]},
+            'right': {'type': 'outflow'}
+        },
         # NetworkConfig structure
         'network': {
             'name': 'Traffic_Light_Control_Lagos',
@@ -788,14 +823,17 @@ def create_scenario_config_with_lagos_data(
     rho_jam = rho_jam_veh_km / 1000.0  # Convert to veh/m
     V_creeping = 0.6  # Default creeping speed (m/s)
     
-    # Initial state: LIGHT traffic (road starts relatively empty)
-    rho_m_initial_veh_km = max_density_m * 0.1  # 25 veh/km (light)
-    rho_c_initial_veh_km = max_density_c * 0.1  # 12 veh/km (light)
-    rho_total_initial = (rho_m_initial_veh_km + rho_c_initial_veh_km) / 1000.0  # 0.037 veh/m
-    g_initial = max(0.0, 1.0 - rho_total_initial / rho_jam)  # ≈ 0.9 (nearly free)
-    w_m_initial = V_creeping + (free_speed_m - V_creeping) * g_initial  # ≈ 8.1 m/s
-    w_c_initial = free_speed_c * g_initial  # ≈ 7.0 m/s
-    # Flux_init ≈ 0.037 * 7.5 = 0.28 veh/s (very low, sustainable)
+    # Initial state: CONGESTED traffic (to see RED vs GREEN effect)
+    # BUG FIX: Light initial conditions (0.01 veh/m) made RED/GREEN indistinguishable
+    # With no congestion, blocking inflow creates no observable backpressure
+    # Solution: Start with MEDIUM-HEAVY traffic so RED control creates visible queueing
+    rho_m_initial_veh_km = max_density_m * 0.5  # 125 veh/km (medium-heavy)
+    rho_c_initial_veh_km = max_density_c * 0.5  # 60 veh/km (medium-heavy)
+    rho_total_initial = (rho_m_initial_veh_km + rho_c_initial_veh_km) / 1000.0  # 0.185 veh/m
+    g_initial = max(0.0, 1.0 - rho_total_initial / rho_jam)  # ≈ 0.5 (congested)
+    w_m_initial = V_creeping + (free_speed_m - V_creeping) * g_initial  # ≈ 4.75 m/s
+    w_c_initial = free_speed_c * g_initial  # ≈ 4.35 m/s
+    # Flux_init ≈ 0.185 * 4.55 = 0.84 veh/s (high, will be restricted by RED light)
     
     # Inflow: EQUILIBRIUM demand with realistic velocity modulation for traffic signals
     # GREEN phase: Inflow at free speed (or near free speed) → unrestricted flow
