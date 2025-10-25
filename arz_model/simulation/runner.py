@@ -45,6 +45,11 @@ class SimulationRunner:
         self.params = ModelParameters()
         self.params.load_from_yaml(base_config_path, scenario_config_path) # Load base and scenario
 
+        # ✅ ARCHITECTURAL FIX (2025-10-24): Load V0 overrides from network config if present
+        # This allows scenarios with network segments to specify V0_m/V0_c per segment
+        # For single-segment scenarios (like RL traffic light), use first segment's V0 parameters
+        self._load_network_v0_overrides(scenario_config_path)
+
         # Apply overrides if provided
         if override_params:
             if not self.quiet:
@@ -268,6 +273,85 @@ class SimulationRunner:
 
         else:
             raise ValueError(f"Unsupported road quality type: '{quality_type}'")
+
+    def _load_network_v0_overrides(self, scenario_config_path: str):
+        """
+        Load V0_m/V0_c overrides from scenario config if present.
+        
+        For scenarios with network config (e.g., RL traffic light control), reads
+        V0 parameters from the global 'parameters' section of the scenario YAML.
+        This allows scenarios to specify Lagos speeds (32 km/h, 28 km/h) without
+        modifying config_base.yml.
+        
+        Architectural Note (2025-10-24):
+            This bridges the gap between NetworkGrid (multi-segment) and SimulationRunner
+            (single-segment). For RL environments, the scenario has network config but
+            SimulationRunner treats it as a single domain. We extract V0 from the global
+            parameters section to honor the scenario's intended speeds.
+            
+        Supports two config formats:
+            1. Global parameters: config['parameters']['V0_m'] (Lagos format)
+            2. Segment parameters: config['network']['segments'][0]['parameters']['V0_m'] (NetworkGrid format)
+        """
+        if not os.path.exists(scenario_config_path):
+            return  # Scenario file doesn't exist, skip
+        
+        try:
+            with open(scenario_config_path, 'r') as f:
+                scenario_config = yaml.safe_load(f)
+            
+            V0_m = None
+            V0_c = None
+            source = None
+            
+            # Strategy 1: Check global 'parameters' section (Lagos config format)
+            if 'parameters' in scenario_config:
+                params = scenario_config['parameters']
+                V0_m = params.get('V0_m')
+                V0_c = params.get('V0_c')
+                if V0_m is not None or V0_c is not None:
+                    source = "global parameters"
+            
+            # Strategy 2: Check network.segments[0].parameters (NetworkGrid format)
+            if V0_m is None and V0_c is None:
+                if 'network' in scenario_config:
+                    network_config = scenario_config['network']
+                    if 'segments' in network_config:
+                        segments = network_config['segments']
+                        
+                        # Handle both list and dict formats
+                        if isinstance(segments, list) and len(segments) > 0:
+                            first_segment = segments[0]
+                            if 'parameters' in first_segment:
+                                V0_m = first_segment['parameters'].get('V0_m')
+                                V0_c = first_segment['parameters'].get('V0_c')
+                                source = f"segment '{first_segment.get('id', '0')}'"
+                        elif isinstance(segments, dict) and len(segments) > 0:
+                            first_segment_id = list(segments.keys())[0]
+                            first_segment = segments[first_segment_id]
+                            if 'parameters' in first_segment:
+                                V0_m = first_segment['parameters'].get('V0_m')
+                                V0_c = first_segment['parameters'].get('V0_c')
+                                source = f"segment '{first_segment_id}'"
+            
+            # Apply overrides if found
+            if V0_m is not None or V0_c is not None:
+                if V0_m is not None:
+                    self.params._V0_m_override = float(V0_m)
+                if V0_c is not None:
+                    self.params._V0_c_override = float(V0_c)
+                
+                if not self.quiet:
+                    print(f"[NETWORK V0 OVERRIDE] Loaded from {source}:")
+                    if V0_m is not None:
+                        print(f"  V0_m = {V0_m:.3f} m/s ({V0_m*3.6:.1f} km/h)")
+                    if V0_c is not None:
+                        print(f"  V0_c = {V0_c:.3f} m/s ({V0_c*3.6:.1f} km/h)")
+        
+        except Exception as e:
+            if not self.quiet:
+                print(f"Warning: Could not load network V0 overrides: {e}")
+            # Don't fail - just continue without overrides
 
 
     def _create_initial_state(self) -> np.ndarray:
@@ -728,14 +812,32 @@ class SimulationRunner:
             print(f"  DEBUG set_traffic_signal_state: Using {state_source} = {base_state}")
         
         if phase_id == 0:
-            # Red phase: Congested inflow (traffic backs up)
-            # Reduce velocity by 50% to model queue formation upstream of signal
+            # ✅ CRITICAL FIX (2025-10-24): Red phase MUST maintain inflow with CREEPING velocity
+            # 
+            # CONCEPTUAL ERROR CORRECTED:
+            #   BEFORE: phase_id=0 → state=[0,0,0,0] → NO vehicles arrive
+            #   PROBLEM: Removes traffic instead of creating queue!
+            #   AFTER: phase_id=0 → state=[rho, V_creeping*rho, ...] → Vehicles arrive slowly
+            #   RESULT: Queue forms upstream (realistic traffic signal behavior)
+            # 
+            # Physics rationale:
+            #   - Red light doesn't STOP vehicles from arriving at the intersection
+            #   - Red light forces vehicles to SLOW DOWN and queue upstream
+            #   - Inflow continues at V_creeping (~0.1 m/s), creating congestion wave
+            #   - This generates the learning signal for RL agent!
             if base_state:
+                # Extract base densities
+                rho_m_base = base_state[0]
+                rho_c_base = base_state[2]
+                
+                # Use V_creeping for momentum (models slow arrival rate at red light)
+                V_creeping = self.params.V_creeping  # ~0.1 m/s from config_base.yml
+                
                 red_state = [
-                    base_state[0],           # rho_m (maintain density)
-                    base_state[1] * 0.5,     # w_m (reduce velocity 50%)
-                    base_state[2],           # rho_c (maintain density)
-                    base_state[3] * 0.5      # w_c (reduce velocity 50%)
+                    rho_m_base,                      # rho_m = base density (vehicles CONTINUE arriving)
+                    rho_m_base * V_creeping,         # w_m = rho * V_creeping (SLOW inflow)
+                    rho_c_base,                      # rho_c = base density
+                    rho_c_base * V_creeping          # w_c = rho * V_creeping
                 ]
                 bc_config = {'type': 'inflow', 'state': red_state}
             else:

@@ -3,6 +3,23 @@ xmin: 0.0
 xmax: 1000.0
 t_final: 600.0
 output_dt: 60.0
+initial_conditions:
+  type: uniform
+  state:
+  - 212.5
+  - 1.8433333333333337
+  - 102.0
+  - 1.1666666666666667
+boundary_conditions:
+  left:
+    type: inflow
+    state:
+    - 212.5
+    - 8.88888888888889
+    - 102.0
+    - 7.777777777777778
+  right:
+    type: outflow
 network:
   name: Traffic_Light_Control_Lagos
   description: Signalized intersection with REAL Lagos traffic data
@@ -63,6 +80,6 @@ network:
     theta_c: 0.5
     description: Behavioral coupling (config_base.yml)
 metadata:
-  created: '2025-10-23T17:00:21.095389'
+  created: '2025-10-24T23:35:12.668729'
   scenario_type: traffic_light_control
   data_source: Lagos Victoria Island (REAL)

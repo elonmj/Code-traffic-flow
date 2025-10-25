@@ -98,6 +98,53 @@ class TrafficSignalEnvDirect(gym.Env):
         
         # Normalization parameters (from calibration)
         # Separated by vehicle class (Chapter 6, Section 6.2.1)
+        # ✅ FIX: Load V0 free-flow speeds from scenario config if available
+        if normalization_params is None:
+            # Try to read V0_m/V0_c from scenario config for accurate normalization
+            import yaml
+            from pathlib import Path
+            try:
+                scenario_path = Path(scenario_config_path)
+                if scenario_path.exists():
+                    with open(scenario_path, 'r') as f:
+                        scenario_cfg = yaml.safe_load(f)
+                    
+                    v0_m_ms = None
+                    v0_c_ms = None
+                    
+                    # Strategy 1: Read V0 from global parameters section (old Lagos format)
+                    if 'parameters' in scenario_cfg:
+                        params = scenario_cfg['parameters']
+                        v0_m_ms = params.get('V0_m')  # m/s
+                        v0_c_ms = params.get('V0_c')  # m/s
+                    
+                    # Strategy 2: Read from network.segments (new NetworkConfig format)
+                    if (v0_m_ms is None or v0_c_ms is None) and 'network' in scenario_cfg:
+                        network = scenario_cfg['network']
+                        if 'segments' in network and isinstance(network['segments'], dict):
+                            # Get first segment's V0 parameters
+                            first_seg_name = list(network['segments'].keys())[0]
+                            first_seg = network['segments'][first_seg_name]
+                            if 'parameters' in first_seg:
+                                seg_params = first_seg['parameters']
+                                v0_m_ms = seg_params.get('V0_m')
+                                v0_c_ms = seg_params.get('V0_c')
+                        
+                        if v0_m_ms is not None and v0_c_ms is not None:
+                            # Use scenario V0 values for normalization
+                            normalization_params = {
+                                'rho_max_motorcycles': 300.0,  # veh/km (West African context)
+                                'rho_max_cars': 150.0,         # veh/km
+                                'v_free_motorcycles': v0_m_ms * 3.6,  # Convert m/s → km/h
+                                'v_free_cars': v0_c_ms * 3.6          # Convert m/s → km/h
+                            }
+                            if not quiet:
+                                print(f"[NORMALIZATION] Using scenario V0 speeds: v_m={v0_m_ms*3.6:.1f} km/h, v_c={v0_c_ms*3.6:.1f} km/h")
+            except Exception as e:
+                if not quiet:
+                    print(f"[NORMALIZATION] Could not load V0 from scenario: {e}")
+        
+        # Fallback to default if still None
         if normalization_params is None:
             normalization_params = {
                 'rho_max_motorcycles': 300.0,  # veh/km (West African context)
@@ -105,6 +152,7 @@ class TrafficSignalEnvDirect(gym.Env):
                 'v_free_motorcycles': 40.0,    # km/h (urban free flow)
                 'v_free_cars': 50.0            # km/h
             }
+        
         # Convert to SI units (veh/m, m/s) and store per-class values
         self.rho_max_m = normalization_params.get('rho_max_motorcycles', 300.0) / 1000.0  # veh/m
         self.rho_max_c = normalization_params.get('rho_max_cars', 150.0) / 1000.0         # veh/m
@@ -392,17 +440,25 @@ class TrafficSignalEnvDirect(gym.Env):
             print(f"[QUEUE_DIAGNOSTIC] densities_c (veh/m): {densities_c}")
             self._queue_log_count += 1
         
-        # Define queue threshold: vehicles slower than fleet average are queued
-        # ✅ BUG #31 FIX: Compute ADAPTIVE threshold based on actual observed velocities
-        # Problem: Static threshold (5.0 m/s or 70% v_free) didn't work because:
-        #   - Scenario may not have congestion at all
-        #   - Static values miss relative congestion (e.g., 9m/s is fast normally but slow if avg is 11m/s)
-        # Solution: Use fleet-wide average velocity as dynamic threshold
-        #   - Queued = vehicles with v < avg(velocities_in_network)
-        #   - This captures RELATIVE congestion regardless of scenario intensity
-        avg_velocity = (np.mean(velocities_m) + np.mean(velocities_c)) / 2.0
-        # Safety: if average is very low (unexpected), fall back to 80% of average
-        QUEUE_SPEED_THRESHOLD = avg_velocity * 0.85  # Queued if slower than 85% of average
+        # Define queue threshold: vehicles slower than expected speed are queued
+        # ✅ CRITICAL FIX (2025-10-24): Use ABSOLUTE threshold based on congestion physics
+        #
+        # Previous approach: QUEUE_SPEED_THRESHOLD = avg_velocity * 0.85
+        # Problem: If ALL vehicles move at V0 (8.889 m/s), threshold = 7.56 m/s
+        #          → NO vehicles slower than 85% of uniform flow → queue_length = 0 always!
+        #
+        # New approach: Use PHYSICAL congestion threshold
+        #   - Free flow: v ≈ V0 (8.889 m/s for Lagos)
+        #   - Congestion: v < 0.5 * V0 (< 4.4 m/s indicates traffic slowdown)
+        #   - Severe queue: v < 0.3 * V0 (< 2.7 m/s indicates stopped/creeping traffic)
+        #
+        # Why 50% of V0? Physics basis:
+        #   - Ve = V_creeping + (V0 - V_creeping) * (1 - rho/rho_jam)
+        #   - At 50% jam density: Ve ≈ 0.5 * V0 (transition to congested flow)
+        #   - Below this, vehicles experience significant queueing
+        QUEUE_SPEED_THRESHOLD = self.v_free_m * 0.5  # Congested if slower than 50% of free speed
+        # For Lagos: 8.889 * 0.5 = 4.44 m/s threshold (16 km/h)
+        # This captures realistic congestion (speeds < 16 km/h in 32 km/h zone)
         
         # Count queued vehicles (density where v < threshold)
         queued_m = densities_m[velocities_m < QUEUE_SPEED_THRESHOLD]
@@ -410,7 +466,9 @@ class TrafficSignalEnvDirect(gym.Env):
         
         # 🔍 BUG #35 DIAGNOSTIC: Log threshold check results
         if self._queue_log_count <= 5 or self.episode_step % 10 == 0:
-            print(f"[QUEUE_DIAGNOSTIC] Threshold: {QUEUE_SPEED_THRESHOLD} m/s")
+            print(f"[QUEUE_DIAGNOSTIC] Threshold: {QUEUE_SPEED_THRESHOLD:.2f} m/s ({QUEUE_SPEED_THRESHOLD*3.6:.1f} km/h)")
+            print(f"[QUEUE_DIAGNOSTIC] v_free_m={self.v_free_m:.2f} m/s → Threshold=0.5*v_free_m")
+            print(f"[QUEUE_DIAGNOSTIC] velocities_m: {velocities_m}")
             print(f"[QUEUE_DIAGNOSTIC] Below threshold (m): {velocities_m < QUEUE_SPEED_THRESHOLD}")
             print(f"[QUEUE_DIAGNOSTIC] Below threshold (c): {velocities_c < QUEUE_SPEED_THRESHOLD}")
             print(f"[QUEUE_DIAGNOSTIC] queued_m densities: {queued_m} (sum={np.sum(queued_m):.4f})")

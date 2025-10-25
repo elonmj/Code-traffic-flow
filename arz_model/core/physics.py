@@ -115,15 +115,28 @@ def _calculate_pressure_cuda(rho_m_i, rho_c_i, alpha, rho_jam, epsilon, K_m, gam
 # other kernels.
 
 
-def calculate_equilibrium_speed(rho_m: np.ndarray, rho_c: np.ndarray, R_local: np.ndarray, params: ModelParameters) -> tuple[np.ndarray, np.ndarray]:
+def calculate_equilibrium_speed(rho_m: np.ndarray, rho_c: np.ndarray, R_local: np.ndarray, params: ModelParameters, 
+                              V0_m_override: float = None, V0_c_override: float = None) -> tuple[np.ndarray, np.ndarray]:
     """
     Calculates the equilibrium speeds for motorcycles (m) and cars (c).
+    
+    ARCHITECTURAL NOTE (2025-10-24):
+        This function now supports segment-specific speed overrides via V0_m_override and V0_c_override.
+        When provided, these values REPLACE the Vmax[R] lookup, enabling heterogeneous networks
+        where different segments have different speed limits (e.g., Lagos arterial = 32 km/h,
+        highway = 80 km/h) regardless of road quality R.
+        
+        Use case: NetworkGrid with ParameterManager for per-segment parameters.
 
     Args:
         rho_m: Density of motorcycles (veh/m).
         rho_c: Density of cars (veh/m).
         R_local: Array of local road quality indices for each cell.
         params: ModelParameters object.
+        V0_m_override: Optional override for motorcycle free-flow speed (m/s).
+                       If provided, replaces Vmax_m[R_local] calculation.
+        V0_c_override: Optional override for car free-flow speed (m/s).
+                       If provided, replaces Vmax_c[R_local] calculation.
 
     Returns:
         A tuple (Ve_m, Ve_c) containing equilibrium speeds (m/s).
@@ -140,16 +153,31 @@ def calculate_equilibrium_speed(rho_m: np.ndarray, rho_c: np.ndarray, R_local: n
     # Calculate reduction factor g, ensuring it's between 0 and 1
     g = np.maximum(0.0, 1.0 - rho_total / params.rho_jam)
 
-    # Get Vmax based on local road quality R_local
-    # Use np.vectorize or direct array indexing if R_local is an array of indices
-    try:
-        Vmax_m_local = np.array([params.Vmax_m[int(r)] for r in R_local])
-        Vmax_c_local = np.array([params.Vmax_c[int(r)] for r in R_local])
-    except KeyError as e:
-        raise ValueError(f"Invalid road category index found in R_local: {e}. Valid keys: {list(params.Vmax_m.keys())}") from e
-    except TypeError: # Handle scalar R_local
-         Vmax_m_local = params.Vmax_m[int(R_local)]
-         Vmax_c_local = params.Vmax_c[int(R_local)]
+    # Determine Vmax values: Use overrides if provided, else fall back to Vmax[R]
+    if V0_m_override is not None:
+        # Use segment-specific override (scalar, broadcast to array if needed)
+        Vmax_m_local = V0_m_override if np.isscalar(rho_m) else np.full_like(rho_m, V0_m_override)
+    else:
+        # Get Vmax based on local road quality R_local
+        # Use np.vectorize or direct array indexing if R_local is an array of indices
+        try:
+            Vmax_m_local = np.array([params.Vmax_m[int(r)] for r in R_local])
+        except KeyError as e:
+            raise ValueError(f"Invalid road category index found in R_local: {e}. Valid keys: {list(params.Vmax_m.keys())}") from e
+        except TypeError: # Handle scalar R_local
+             Vmax_m_local = params.Vmax_m[int(R_local)]
+    
+    if V0_c_override is not None:
+        # Use segment-specific override (scalar, broadcast to array if needed)
+        Vmax_c_local = V0_c_override if np.isscalar(rho_c) else np.full_like(rho_c, V0_c_override)
+    else:
+        # Get Vmax based on local road quality R_local
+        try:
+            Vmax_c_local = np.array([params.Vmax_c[int(r)] for r in R_local])
+        except KeyError as e:
+            raise ValueError(f"Invalid road category index found in R_local: {e}. Valid keys: {list(params.Vmax_c.keys())}") from e
+        except TypeError: # Handle scalar R_local
+             Vmax_c_local = params.Vmax_c[int(R_local)]
 
 
     Ve_m = params.V_creeping + (Vmax_m_local - params.V_creeping) * g

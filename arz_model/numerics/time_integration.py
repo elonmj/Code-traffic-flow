@@ -160,8 +160,16 @@ def _ode_rhs(t: float, y: np.ndarray, cell_index: int, grid: Grid1D, params: Mod
     rho_m_calc = np.maximum(rho_m, 0.0)
     rho_c_calc = np.maximum(rho_c, 0.0)
 
+    # Check for segment-specific V0 overrides (set by NetworkGrid for heterogeneous networks)
+    V0_m_override = getattr(params, '_V0_m_override', None)
+    V0_c_override = getattr(params, '_V0_c_override', None)
+
     # Calculate equilibrium speeds and relaxation times (these are not Numba-fied yet)
-    Ve_m, Ve_c = physics.calculate_equilibrium_speed(rho_m_calc, rho_c_calc, R_local, params)
+    Ve_m, Ve_c = physics.calculate_equilibrium_speed(
+        rho_m_calc, rho_c_calc, R_local, params,
+        V0_m_override=V0_m_override,
+        V0_c_override=V0_c_override
+    )
     tau_m, tau_c = physics.calculate_relaxation_time(rho_m_calc, rho_c_calc, params)
 
     # Calculate the source term.

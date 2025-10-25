@@ -79,7 +79,9 @@ class NetworkGrid:
         N: int,
         start_node: Optional[str] = None,
         end_node: Optional[str] = None,
-        initial_condition: Optional[np.ndarray] = None
+        initial_condition: Optional[np.ndarray] = None,
+        V0_m: Optional[float] = None,
+        V0_c: Optional[float] = None
     ) -> Grid1D:
         """
         Add road segment to network.
@@ -92,6 +94,8 @@ class NetworkGrid:
             start_node: Optional upstream node ID
             end_node: Optional downstream node ID
             initial_condition: Optional initial state U0 (4, N)
+            V0_m: Optional motorcycle free-flow speed override (m/s)
+            V0_c: Optional car free-flow speed override (m/s)
             
         Returns:
             Created Grid1D segment
@@ -102,6 +106,11 @@ class NetworkGrid:
         Academic Note:
             Each segment represents a "road" I_i from Garavello & Piccoli (2005),
             characterized by length L_i = xmax - xmin and discretization Δx = L_i/N.
+            
+        Architectural Note (2025-10-24):
+            V0_m and V0_c parameters enable heterogeneous networks where segments
+            have different speed limits (e.g., Lagos arterial = 32 km/h, highway = 80 km/h).
+            These override the global Vmax[R] calculation in physics.py.
         """
         if segment_id in self.segments:
             raise ValueError(f"Segment {segment_id} already exists")
@@ -128,11 +137,19 @@ class NetworkGrid:
             'U': U,
             'segment_id': segment_id,
             'start_node': start_node,
-            'end_node': end_node
+            'end_node': end_node,
+            'V0_m': V0_m,  # Store speed override
+            'V0_c': V0_c   # Store speed override
         }
         
         self.segments[segment_id] = segment
-        logger.info(f"Added segment {segment_id}: [{xmin:.1f}, {xmax:.1f}] with {N} cells")
+        
+        # Log with speed info if provided
+        speed_info = ""
+        if V0_m is not None or V0_c is not None:
+            speed_info = f" [V0_m={V0_m:.2f}, V0_c={V0_c:.2f}]" if V0_m and V0_c else ""
+        
+        logger.info(f"Added segment {segment_id}: [{xmin:.1f}, {xmax:.1f}] with {N} cells{speed_info}")
         return segment
         
     def add_node(
@@ -305,6 +322,10 @@ class NetworkGrid:
             This implements the splitting scheme from Garavello & Piccoli (2005):
             1. Evolution step: Solve PDE on each segment
             2. Coupling step: Apply junction boundary conditions
+            
+        Architectural Note (2025-10-24):
+            Supports heterogeneous segments with different V0_m/V0_c parameters.
+            Segment-specific speeds are passed to physics calculations via params attributes.
         """
         if not self._initialized:
             raise RuntimeError("Network not initialized. Call initialize() first.")
@@ -316,14 +337,42 @@ class NetworkGrid:
             grid = segment['grid']
             U = segment['U']
             
-            # Apply Strang splitting on this segment
-            if self.params.device == 'cpu':
-                U_new = strang_splitting_step(U, dt, grid, self.params)
-                segment['U'] = U_new
-            else:
-                # GPU path would require d_R (road quality array)
-                # For now, network mode only supports CPU
-                raise NotImplementedError("NetworkGrid GPU mode not yet implemented")
+            # Get segment-specific parameters if available
+            V0_m_override = segment.get('V0_m')
+            V0_c_override = segment.get('V0_c')
+            
+            # Temporarily add V0 overrides to params for this segment
+            # This allows calculate_equilibrium_speed to use segment-specific values
+            original_V0_m = getattr(self.params, '_V0_m_override', None)
+            original_V0_c = getattr(self.params, '_V0_c_override', None)
+            
+            if V0_m_override is not None:
+                self.params._V0_m_override = V0_m_override
+            if V0_c_override is not None:
+                self.params._V0_c_override = V0_c_override
+            
+            try:
+                # Apply Strang splitting on this segment
+                if self.params.device == 'cpu':
+                    U_new = strang_splitting_step(U, dt, grid, self.params)
+                    segment['U'] = U_new
+                else:
+                    # GPU path would require d_R (road quality array)
+                    # For now, network mode only supports CPU
+                    raise NotImplementedError("NetworkGrid GPU mode not yet implemented")
+            finally:
+                # Restore original override values
+                if original_V0_m is not None:
+                    self.params._V0_m_override = original_V0_m
+                else:
+                    if hasattr(self.params, '_V0_m_override'):
+                        delattr(self.params, '_V0_m_override')
+                
+                if original_V0_c is not None:
+                    self.params._V0_c_override = original_V0_c
+                else:
+                    if hasattr(self.params, '_V0_c_override'):
+                        delattr(self.params, '_V0_c_override')
             
         # Step 2: Resolve node coupling (flux distribution + θ_k)
         self._resolve_node_coupling(current_time)
@@ -504,20 +553,33 @@ class NetworkGrid:
         # Add all segments with local parameter overrides
         for seg_id, seg_cfg in net_data['segments'].items():
             
+            # Extract V0 parameters if present
+            V0_m = None
+            V0_c = None
+            
             # Apply local parameter overrides to ParameterManager
             if param_manager and 'parameters' in seg_cfg:
                 local_params = seg_cfg['parameters']
                 param_manager.set_local_dict(seg_id, local_params)
+                
+                # Extract V0 values for direct use in add_segment
+                V0_m = local_params.get('V0_m')
+                V0_c = local_params.get('V0_c')
+                
                 logger.info(f"Applied {len(local_params)} local overrides to {seg_id}")
+                if V0_m is not None or V0_c is not None:
+                    logger.info(f"  → Speed overrides: V0_m={V0_m}, V0_c={V0_c}")
             
-            # Create segment
+            # Create segment with V0 overrides
             network.add_segment(
                 segment_id=seg_id,
                 xmin=seg_cfg['x_min'],
                 xmax=seg_cfg['x_max'],
                 N=seg_cfg['N'],
                 start_node=seg_cfg.get('start_node'),
-                end_node=seg_cfg.get('end_node')
+                end_node=seg_cfg.get('end_node'),
+                V0_m=V0_m,
+                V0_c=V0_c
             )
         
         # Add all nodes (skip boundary nodes - they're just metadata)

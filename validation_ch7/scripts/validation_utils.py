@@ -69,17 +69,26 @@ class ValidationSection:
           Lors de l'upload Kaggle, le manager copie depuis validation_output/
     """
     
-    def __init__(self, section_name: str, output_base: str = "validation_output/results/local_test"):
+    def __init__(self, section_name: str, output_base: str = None):
         """
         Initialise l'architecture standard pour une section
         
         Args:
             section_name: Nom de la section (ex: "section_7_3_analytical")
-            output_base: Dossier racine (défaut: "validation_output/results/local_test")
+            output_base: Dossier racine (défaut: None = utilise project_root/validation_output/results/local_test)
                         En production Kaggle: "validation_output/results/{kernel_slug}"
         """
         self.section_name = section_name
-        self.output_dir = Path(output_base) / section_name
+        
+        # ✅ FIX: Toujours utiliser validation_output à la RACINE du projet
+        # Ne PAS créer validation_ch7/scripts/validation_output/
+        if output_base is None:
+            project_root = Path(__file__).parent.parent.parent  # Remonte à la racine
+            output_base = project_root / "validation_output" / "results" / "local_test"
+        else:
+            output_base = Path(output_base)
+        
+        self.output_dir = output_base / section_name
         
         # Structure organisée par TYPE de contenu
         self.figures_dir = self.output_dir / "figures"

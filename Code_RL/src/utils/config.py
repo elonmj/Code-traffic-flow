@@ -407,24 +407,27 @@ def _generate_signalized_network_lagos(vmax_m: float, vmax_c: float,
     # BUG FIX: Light initial conditions (0.01 veh/m) made RED/GREEN indistinguishable
     # With no congestion, blocking inflow creates no observable backpressure
     # Solution: Start with HEAVY traffic so RED control creates visible queueing
-    # Using even higher density now (70% of jam) to ensure observable differences
+    # ✅ CRITICAL FIX (2025-10-24): Increased to 85% of max to force congestion detection
+    # Previous 70% wasn't creating enough queue signal for RL learning
     
     rho_jam_veh_km = 250 + 120  # Max motorcycles + cars (370 veh/km)
     rho_jam = rho_jam_veh_km / 1000.0
     V_creeping = 0.6
     
-    rho_m_initial_veh_km = 250 * 0.7  # 175 veh/km (heavy - 70% of max)
-    rho_c_initial_veh_km = 120 * 0.7  # 84 veh/km (heavy - 70% of max)
-    rho_total_initial = (rho_m_initial_veh_km + rho_c_initial_veh_km) / 1000.0  # 0.259 veh/m
-    g_initial = max(0.0, 1.0 - rho_total_initial / rho_jam)  # ≈ 0.3 (very congested)
-    w_m_initial = V_creeping + (vmax_m - V_creeping) * g_initial  # ≈ 2.88 m/s
-    w_c_initial = vmax_c * g_initial  # ≈ 2.33 m/s
+    rho_m_initial_veh_km = 250 * 0.85  # 212.5 veh/km (heavy - 85% of max) ✅ INCREASED
+    rho_c_initial_veh_km = 120 * 0.85  # 102 veh/km (heavy - 85% of max) ✅ INCREASED
+    rho_total_initial = (rho_m_initial_veh_km + rho_c_initial_veh_km) / 1000.0  # 0.315 veh/m
+    g_initial = max(0.0, 1.0 - rho_total_initial / rho_jam)  # ≈ 0.15 (very congested!)
+    w_m_initial = V_creeping + (vmax_m - V_creeping) * g_initial  # ≈ 1.84 m/s (slow!)
+    w_c_initial = vmax_c * g_initial  # ≈ 1.17 m/s (slow!)
     
-    # Inflow: GREEN allows full flow, RED blocks (applied via set_traffic_signal_state)
-    w_m_inflow = vmax_m  # FREE speed (will be modulated by RED phase)
+    # Inflow: GREEN allows full flow, RED uses creeping (applied via set_traffic_signal_state)
+    # ✅ CRITICAL: With runner.py fix, RED phase now maintains inflow at V_creeping
+    # This creates queue formation upstream (realistic traffic signal behavior)
+    w_m_inflow = vmax_m  # FREE speed (will be modulated by RED phase to V_creeping)
     w_c_inflow = vmax_c
-    rho_m_inflow_veh_km = 250 * 0.8  # 200 veh/km (heavy Lagos traffic)
-    rho_c_inflow_veh_km = 120 * 0.8  # 96 veh/km (heavy Lagos traffic)
+    rho_m_inflow_veh_km = 250 * 0.85  # 212.5 veh/km (heavy Lagos traffic) ✅ INCREASED
+    rho_c_inflow_veh_km = 120 * 0.85  # 102 veh/km (heavy Lagos traffic) ✅ INCREASED
     
     # ===== NETWORK STRUCTURE =====
     network_data = {
