@@ -280,7 +280,7 @@ def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, curre
     1. Application des conditions aux limites
     2. Conversion conservées → primitives 
     3. Reconstruction WENO5 des variables primitives
-    4. Calcul des flux via le solveur de Riemann
+    4. Calcul des flux via le solveur de Riemann (avec support jonction)
     5. Calcul de la divergence des flux L(U) = -dF/dx
     
     Args:
@@ -296,36 +296,19 @@ def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, curre
     N_physical = grid.N_physical
     n_ghost = grid.num_ghost_cells
     
-    # DEBUG: Log parameter arrival
-    print(f"[DEBUG_WENO_GPU_NATIVE] Entered function. current_bc_params type: {type(current_bc_params)}")
-    if current_bc_params is not None:
-        print(f"[DEBUG_WENO_GPU_NATIVE] current_bc_params keys: {current_bc_params.keys() if isinstance(current_bc_params, dict) else 'not dict'}")
-        if isinstance(current_bc_params, dict) and 'left' in current_bc_params:
-            left_bc = current_bc_params.get('left', {})
-            if isinstance(left_bc, dict) and 'state' in left_bc:
-                print(f"[DEBUG_WENO_GPU_NATIVE] left inflow state: {left_bc['state']}")
-    else:
-        print(f"[DEBUG_WENO_GPU_NATIVE] current_bc_params IS NONE!")
+    # Extract junction blocking factor if present (Bug #8 fix)
+    light_factor = 1.0  # Default: normal flow
+    if hasattr(grid, 'junction_at_right') and grid.junction_at_right is not None:
+        junction_info = grid.junction_at_right
+        if junction_info.is_junction:
+            light_factor = junction_info.light_factor
     
     # 0. Appliquer les conditions aux limites sur GPU
     d_U_bc = cuda.device_array_like(d_U_in)
     d_U_bc[:] = d_U_in[:]
     
-    # DEBUG: Before dispatcher call
-    print(f"[DEBUG_WENO_GPU_NATIVE] About to call dispatcher with current_bc_params={'NOT NONE' if current_bc_params is not None else 'NONE'}")
-    
     # Utiliser le dispatcher des conditions aux limites (passe current_bc_params si fourni)
     boundary_conditions.apply_boundary_conditions(d_U_bc, grid, params, current_bc_params)
-    
-    print(f"[DEBUG_WENO_GPU_NATIVE] Returned from dispatcher")
-    
-    # ✅ DEBUG ULTRA-DEEP: Check ghost cell values after BC application
-    U_bc_check = d_U_bc.copy_to_host()
-    print(f"[DEBUG_BC_RESULT] Ghost cells after BC application:")
-    print(f"  Left ghost (motorcycle density): {U_bc_check[0, :n_ghost]}")
-    print(f"  Left ghost (motorcycle momentum): {U_bc_check[1, :n_ghost]}")
-    print(f"  First 3 physical cells (motorcycle density): {U_bc_check[0, n_ghost:n_ghost+3]}")
-    print(f"  First physical cell index: {n_ghost}, value: {U_bc_check[0, n_ghost]}")
     
     # 1. Conversion conservées → primitives (utiliser la version CPU temporairement)
     U_bc_cpu = d_U_bc.copy_to_host()
@@ -356,19 +339,13 @@ def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, curre
     n_interfaces = N_physical + 1
     blockspergrid_flux = (n_interfaces + threadsperblock - 1) // threadsperblock
     
-    # ✅ DEBUG: Check primitives before flux calculation
-    print(f"[DEBUG_PRIMITIVES] P_left first 3 values (rho_m): {d_P_left[0, :n_ghost+3].copy_to_host()}")
-    print(f"[DEBUG_PRIMITIVES] P_right first 3 values (rho_m): {d_P_right[0, :n_ghost+3].copy_to_host()}")
-    
     _compute_weno_fluxes_kernel[blockspergrid_flux, threadsperblock](
         d_P_left, d_P_right, d_fluxes, 
         params.alpha, params.rho_jam, params.epsilon,
         params.K_m, params.gamma_m, params.K_c, params.gamma_c,
+        light_factor,  # Junction blocking factor
         n_ghost, N_physical
     )
-    
-    # ✅ DEBUG: Check fluxes after calculation
-    print(f"[DEBUG_FLUXES] d_fluxes[0, :5] (rho_m fluxes at first interfaces): {d_fluxes[0, :5].copy_to_host()}")
     
     # 4. Calcul de la divergence des flux L(U) = -dF/dx
     d_L_U = cuda.device_array_like(d_U_in)
@@ -384,9 +361,13 @@ def calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, curre
 @cuda.jit
 def _compute_weno_fluxes_kernel(d_P_left, d_P_right, d_fluxes, 
                                alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c,
+                               light_factor,
                                num_ghost_cells, N_physical):
     """
-    Kernel pour calculer les flux WENO aux interfaces.
+    Kernel pour calculer les flux WENO aux interfaces avec support de blocage de jonction.
+    
+    Args:
+        light_factor: Facteur de réduction de flux pour jonctions (1.0 = normal, 0.01 = RED)
     """
     idx = cuda.grid(1)
     N_interfaces = N_physical + 1
@@ -419,10 +400,15 @@ def _compute_weno_fluxes_kernel(d_P_left, d_P_right, d_fluxes,
             flux = cuda.local.array(4, dtype=float64)
             _central_upwind_flux_gpu_device(U_L, U_R, flux, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
             
-            d_fluxes[0, j] = flux[0]
-            d_fluxes[1, j] = flux[1] 
-            d_fluxes[2, j] = flux[2]
-            d_fluxes[3, j] = flux[3]
+            # Apply junction blocking (Bug #8 fix: block flux at rightmost interface during RED)
+            # Only apply to rightmost interface (j == num_ghost_cells + N_physical - 1)
+            is_rightmost = (j == num_ghost_cells + N_physical - 1)
+            reduction_factor = light_factor if is_rightmost else 1.0
+            
+            d_fluxes[0, j] = flux[0] * reduction_factor
+            d_fluxes[1, j] = flux[1] * reduction_factor
+            d_fluxes[2, j] = flux[2] * reduction_factor
+            d_fluxes[3, j] = flux[3] * reduction_factor
 
 
 @cuda.jit

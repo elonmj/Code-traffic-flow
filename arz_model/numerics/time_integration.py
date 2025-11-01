@@ -5,6 +5,7 @@ from ..grid.grid1d import Grid1D
 from ..core.parameters import ModelParameters
 from ..core import physics
 import math # Import math for ceil
+import warnings
 from . import riemann_solvers # Import the riemann solver module
 from . import boundary_conditions
 from .reconstruction.weno import reconstruct_weno5
@@ -19,6 +20,137 @@ except ImportError as e:
     print(f"Warning: GPU implementations not available: {e}")
     GPU_AVAILABLE = False
 
+
+# --- Physical State Bounds Enforcement ---
+
+def apply_physical_state_bounds(U: np.ndarray, grid: Grid1D, params: ModelParameters, rho_max: float = 1.0, v_max: float = 50.0) -> np.ndarray:
+    """
+    Enforces physical bounds on the state vector to prevent numerical explosion.
+    
+    This is a safety net applied after time integration to catch any extreme values
+    that might arise from numerical instabilities (WENO oscillations, CFL violations, etc.).
+    
+    Bounds applied:
+    - Density: 0 ≤ rho ≤ rho_max (vehicles/m)
+    - Velocity magnitude: |v| ≤ v_max (m/s)
+    - Momentum w is adjusted to maintain bounded velocity: w = rho*v + p
+    
+    Args:
+        U: State array (4, N_total)
+        grid: Grid object
+        params: Model parameters
+        rho_max: Maximum density (veh/m). Default 1.0 = jam density
+        v_max: Maximum velocity magnitude (m/s). Default 50.0 m/s = 180 km/h
+        
+    Returns:
+        Bounded state array
+    """
+    U_bounded = U.copy()
+    g = grid.num_ghost_cells
+    N = grid.N_physical
+    
+    # Process physical cells only (ghost cells handled by BC)
+    for j in range(g, g + N):
+        rho_m = U_bounded[0, j]
+        w_m = U_bounded[1, j]
+        rho_c = U_bounded[2, j]
+        w_c = U_bounded[3, j]
+        
+        # 1. Clamp densities to [0, rho_max]
+        rho_m = max(0.0, min(rho_m, rho_max))
+        rho_c = max(0.0, min(rho_c, rho_max))
+        
+        # 2. Calculate pressures and velocities
+        if rho_m > params.epsilon:
+            p_m, _ = physics.calculate_pressure(
+                np.array([rho_m]), np.array([rho_c]),
+                params.alpha, params.rho_jam, params.epsilon,
+                params.K_m, params.gamma_m, params.K_c, params.gamma_c
+            )
+            p_m = p_m[0]
+            v_m = w_m - p_m
+            
+            # 3. Clamp velocity and reconstruct momentum
+            v_m = max(-v_max, min(v_m, v_max))
+            w_m = v_m + p_m
+        else:
+            # Near-vacuum state: set velocity to zero
+            w_m = 0.0
+        
+        # Same for cars
+        if rho_c > params.epsilon:
+            _, p_c = physics.calculate_pressure(
+                np.array([rho_m]), np.array([rho_c]),
+                params.alpha, params.rho_jam, params.epsilon,
+                params.K_m, params.gamma_m, params.K_c, params.gamma_c
+            )
+            p_c = p_c[0]
+            v_c = w_c - p_c
+            v_c = max(-v_max, min(v_c, v_max))
+            w_c = v_c + p_c
+        else:
+            w_c = 0.0
+        
+        # Write back bounded values
+        U_bounded[0, j] = rho_m
+        U_bounded[1, j] = w_m
+        U_bounded[2, j] = rho_c
+        U_bounded[3, j] = w_c
+    
+    return U_bounded
+
+
+# --- CFL Condition Check ---
+
+def check_cfl_condition(U: np.ndarray, grid: Grid1D, params: ModelParameters, dt: float, CFL_max: float = 0.9) -> tuple[bool, float]:
+    """
+    Checks if the CFL (Courant-Friedrichs-Lewy) condition is satisfied for stability.
+    
+    CFL condition: dt ≤ CFL_max * dx / λ_max
+    where λ_max is the maximum wave speed (eigenvalue magnitude).
+    
+    Args:
+        U: State array (4, N_total)
+        grid: Grid object
+        params: Model parameters
+        dt: Current timestep
+        CFL_max: Maximum allowed CFL number (default 0.9 for SSP-RK3)
+        
+    Returns:
+        (is_stable, CFL_number) - Boolean indicating stability and actual CFL number
+    """
+    g = grid.num_ghost_cells
+    N = grid.N_physical
+    
+    # Extract physical cells only
+    U_phys = U[:, g:g+N]
+    rho_m = U_phys[0, :]
+    w_m = U_phys[1, :]
+    rho_c = U_phys[2, :]
+    w_c = U_phys[3, :]
+    
+    # Calculate pressures and velocities
+    p_m, p_c = physics.calculate_pressure(
+        rho_m, rho_c, params.alpha, params.rho_jam, params.epsilon,
+        params.K_m, params.gamma_m, params.K_c, params.gamma_c
+    )
+    v_m, v_c = physics.calculate_physical_velocity(w_m, w_c, p_m, p_c)
+    
+    # Calculate all eigenvalues
+    eigenvalues = physics.calculate_eigenvalues(rho_m, v_m, rho_c, v_c, params)
+    
+    # Find maximum absolute eigenvalue (wave speed)
+    lambda_max = 0.0
+    for lambda_arr in eigenvalues:
+        lambda_max = max(lambda_max, np.max(np.abs(lambda_arr)))
+    
+    # CFL number: dt * λ_max / dx
+    CFL = dt * lambda_max / grid.dx if lambda_max > 0 else 0.0
+    
+    is_stable = CFL <= CFL_max
+    
+    return is_stable, CFL
+
 # --- WENO-Based Spatial Discretization ---
 
 def calculate_spatial_discretization_weno(U: np.ndarray, grid: Grid1D, params: ModelParameters, current_bc_params: dict | None = None) -> np.ndarray:
@@ -31,24 +163,49 @@ def calculate_spatial_discretization_weno(U: np.ndarray, grid: Grid1D, params: M
     3. Le calcul des flux via le solveur de Riemann Central-Upwind
     4. Le calcul de la dérivée spatiale du flux
     
+    Junction-aware: If grid.junction_at_right is set, the flux at the rightmost 
+    cell interface (exit boundary) is computed with junction blocking metadata,
+    enabling traffic signal control in multi-segment networks.
+    
     Args:
         U (np.ndarray): État conservé (4, N_total) incluant les cellules fantômes
-        grid (Grid1D): Objet grille
+        grid (Grid1D): Objet grille (may have junction_at_right attribute set)
         params (ModelParameters): Paramètres du modèle
         current_bc_params (dict | None): Mise à jour des paramètres BC (pour inflow dynamique). Defaults to None.
         
     Returns:
         np.ndarray: Discrétisation spatiale L(U) = -dF/dx (4, N_total)
     """
+    # DEBUG: Track call count and confirm we reach BC call
+    if not hasattr(calculate_spatial_discretization_weno, '_call_count'):
+        calculate_spatial_discretization_weno._call_count = 0
+    calculate_spatial_discretization_weno._call_count += 1
+    call_count = calculate_spatial_discretization_weno._call_count
+    
+    if call_count <= 5:
+        print(f"[WENO #{call_count}] About to call apply_BC: current_bc_params={current_bc_params is not None}, params.BC exists={hasattr(params, 'boundary_conditions')}")
+    
     # 0. Application des conditions aux limites sur l'état d'entrée
     U_bc = np.copy(U)
     boundary_conditions.apply_boundary_conditions(U_bc, grid, params, current_bc_params)
+    
+    # DEBUG: Check ghost cell values after BC application
+    if call_count <= 3:
+        g = grid.num_ghost_cells
+        print(f"[WENO INPUT #{call_count}] Ghost cells U_bc[:, 0:{g}]:")
+        print(f"  {U_bc[:, :g]}")
     
     # 1. Conversion vers les variables primitives
     P = conserved_to_primitives_arr(
         U_bc, params.alpha, params.rho_jam, params.epsilon,
         params.K_m, params.gamma_m, params.K_c, params.gamma_c
     )
+    
+    # DEBUG: Check primitive variables after conversion
+    if call_count <= 3:
+        print(f"[PRIMITIVES #{call_count}] Ghost cells P[:, 0:{g}]:")
+        print(f"  {P[:, :g]}")
+        print(f"  Physical cell P[:, {g}] = {P[:, g]}")
     
     # 2. Reconstruction WENO5 pour chaque variable primitive
     N_total = U.shape[1]
@@ -57,6 +214,15 @@ def calculate_spatial_discretization_weno(U: np.ndarray, grid: Grid1D, params: M
     
     for var_idx in range(4):  # Pour chaque variable (rho_m, v_m, rho_c, v_c)
         P_left[var_idx, :], P_right[var_idx, :] = reconstruct_weno5(P[var_idx, :])
+    
+    # DEBUG: Check WENO reconstruction at boundary
+    if call_count <= 3:
+        print(f"[WENO RECON #{call_count}] At interface {g-0.5} (between ghost j={g-1} and ghost j={g}):")
+        print(f"  P_left[0, {g}] (rho_m, from ghost {g})={P_left[0, g]:.6f}")
+        print(f"  P_right[0, {g-1}] (rho_m, from ghost {g-1})={P_right[0, g-1]:.6f}")
+        print(f"[WENO RECON #{call_count}] At interface {g+0.5} (between ghost j={g} and physical j={g+1}):")
+        print(f"  P_left[0, {g+1}] (rho_m, from physical)={P_left[0, g+1]:.6f}")
+        print(f"  P_right[0, {g}] (rho_m, from ghost)={P_right[0, g]:.6f}")
     
     # 3. Conversion des reconstructions primitives vers conservées pour le calcul de flux
     # Note: Dans notre sémantique WENO, P_left[i+1] et P_right[i] correspondent à l'interface i+1/2
@@ -72,20 +238,79 @@ def calculate_spatial_discretization_weno(U: np.ndarray, grid: Grid1D, params: M
             # Reconstruction droite à l'interface j+1/2  
             P_R = P_right[:, j]
             
+            # Apply positivity limiter with momentum consistency
+            # WENO reconstruction can produce negative densities at sharp gradients
+            # Critical: When clamping density, must also adjust momentum to prevent velocity explosion
+            v_max_physical = 50.0  # Maximum realistic traffic velocity (m/s)
+            
+            # Left state consistency
+            if P_L[0] < params.epsilon:
+                # Density too small - clamp and scale momentum
+                rho_old = P_L[0]
+                P_L[0] = params.epsilon
+                # Cap velocity to prevent explosion: v = w - p
+                # Approximate: w_safe = rho * v_max + p ≈ rho * v_max (p << rho*v for small rho)
+                w_m_max = P_L[0] * v_max_physical
+                w_c_max = P_L[0] * v_max_physical
+                P_L[1] = np.clip(P_L[1], -w_m_max, w_m_max)  # v_m bounded
+            if P_L[2] < params.epsilon:
+                P_L[2] = params.epsilon
+                w_c_max = P_L[2] * v_max_physical
+                P_L[3] = np.clip(P_L[3], -w_c_max, w_c_max)  # v_c bounded
+            
+            # Right state consistency
+            if P_R[0] < params.epsilon:
+                rho_old = P_R[0]
+                P_R[0] = params.epsilon
+                w_m_max = P_R[0] * v_max_physical
+                w_c_max = P_R[0] * v_max_physical
+                P_R[1] = np.clip(P_R[1], -w_m_max, w_m_max)
+            if P_R[2] < params.epsilon:
+                P_R[2] = params.epsilon
+                w_c_max = P_R[2] * v_max_physical
+                P_R[3] = np.clip(P_R[3], -w_c_max, w_c_max)
+            
             # Conversion vers variables conservées pour le flux
             U_L = primitives_to_conserved_single(P_L, params)
             U_R = primitives_to_conserved_single(P_R, params)
             
-            # Calcul du flux Central-Upwind
-            fluxes[:, j] = riemann_solvers.central_upwind_flux(U_L, U_R, params)
+            # Check if this is the junction interface (rightmost physical cell)
+            junction_info = None
+            if j == g + N - 1 and hasattr(grid, 'junction_at_right') and grid.junction_at_right is not None:
+                junction_info = grid.junction_at_right
+            
+            # DEBUG: Log Riemann states at left boundary
+            if j == g and call_count <= 3:
+                print(f"[RIEMANN #{call_count}] j={j} (interface {j+0.5}):")
+                print(f"  U_L={U_L}")
+                print(f"  U_R={U_R}")
+            
+            # Calcul du flux Central-Upwind (junction-aware if at exit boundary)
+            fluxes[:, j] = riemann_solvers.central_upwind_flux(U_L, U_R, params, junction_info)
+            
+            # DEBUG: Log computed flux
+            if j == g and call_count <= 3:
+                print(f"  flux={fluxes[:, j]}")
     
     # 4. Calcul de la discrétisation spatiale L(U) = -dF/dx
     L_U = np.zeros_like(U)
+    
+    # DEBUG: Log first physical cell flux for boundary analysis
+    if not hasattr(calculate_spatial_discretization_weno, '_flux_log_count'):
+        calculate_spatial_discretization_weno._flux_log_count = 0
+    calculate_spatial_discretization_weno._flux_log_count += 1
     
     for j in range(g, g + N):  # Cellules physiques seulement
         flux_right = fluxes[:, j]      # F_{j+1/2}
         flux_left = fluxes[:, j - 1]   # F_{j-1/2}
         L_U[:, j] = -(flux_right - flux_left) / grid.dx
+        
+        # Log first physical cell
+        if j == g and calculate_spatial_discretization_weno._flux_log_count <= 5:
+            print(f"[FLUX #{calculate_spatial_discretization_weno._flux_log_count}] First physical cell j={j}:")
+            print(f"  flux_left[0] (rho_m flux from ghost)={flux_left[0]:.6f}")
+            print(f"  flux_right[0] (rho_m flux to next)={flux_right[0]:.6f}")
+            print(f"  L_U[0,{j}] (rho_m rate)={L_U[0,j]:.6f}")
     
     return L_U
 
@@ -171,6 +396,16 @@ def _ode_rhs(t: float, y: np.ndarray, cell_index: int, grid: Grid1D, params: Mod
         V0_c_override=V0_c_override
     )
     tau_m, tau_c = physics.calculate_relaxation_time(rho_m_calc, rho_c_calc, params)
+    
+    # DEBUG: Print equilibrium speed calculation
+    # DEBUG: Temporarily disabled to reduce output noise
+    # if cell_index == 5:  # Only print for one cell
+    #     rho_total = rho_m_calc + rho_c_calc
+    #     g_factor = max(0.0, 1.0 - rho_total / params.rho_jam)
+    #     Vmax_m_R = params.Vmax_m.get(int(R_local), 'MISSING')
+    #     print(f"[DEBUG ODE cell={cell_index}] rho_m={rho_m_calc:.4f}, rho_c={rho_c_calc:.4f}, rho_total={rho_total:.4f}")
+    #     print(f"  R={R_local}, Vmax_m[R]={Vmax_m_R}, g={g_factor:.4f}, Ve_m={Ve_m:.4f}, V0_override={V0_m_override}")
+    #     print(f"  w_m={y[1]:.4f}, IC was w_m=0.7112")
 
     # Calculate the source term.
     # Note: This function (_ode_rhs) is called by scipy.integrate.solve_ivp
@@ -192,6 +427,19 @@ def _ode_rhs(t: float, y: np.ndarray, cell_index: int, grid: Grid1D, params: Mod
         # Epsilon
         params.epsilon
     )
+    
+    if cell_index == 5:
+        # Calculate pressure and velocity manually to debug
+        p_m_calc, p_c_calc = physics.calculate_pressure(
+            rho_m_calc, rho_c_calc,
+            params.alpha, params.rho_jam, params.epsilon,
+            params.K_m, params.gamma_m, params.K_c, params.gamma_c
+        )
+        v_m_calc = y[1] - p_m_calc  # v_m = w_m - p_m
+        print(f"  p_m={p_m_calc:.4f}, v_m_calc={v_m_calc:.4f}")
+        print(f"  Sm_expected = (Ve_m - v_m)/tau = ({Ve_m:.4f} - {v_m_calc:.4f})/{tau_m:.4f} = {(Ve_m - v_m_calc)/tau_m:.4f}")
+        print(f"  source[1]={source[1]:.4f} (Sm actual)")
+    
     return source
 
 
@@ -208,9 +456,11 @@ def solve_ode_step_cpu(U_in: np.ndarray, dt_ode: float, grid: Grid1D, params: Mo
     Returns:
         np.ndarray: Output state array after the ODE step. Shape (4, N_total).
     """
-    U_out = np.copy(U_in) # Start with the input state
+    U_out = np.copy(U_in) # Start with the input state (preserves ghost cells)
 
-    for j in range(grid.N_total):
+    # ODE solver should only operate on PHYSICAL cells, not ghost cells
+    # Ghost cells are managed by boundary conditions
+    for j in range(grid.num_ghost_cells, grid.num_ghost_cells + grid.N_physical):
         # Define the RHS function specific to this cell index j
         rhs_func = lambda t, y: _ode_rhs(t, y, j, grid, params)
 
@@ -410,6 +660,26 @@ def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelPara
     Returns:
         np.ndarray or cuda.devicearray.DeviceNDArray: State array at time n+1 (same type as input).
     """
+    # DEBUG: Confirm Strang splitting is called
+    if hasattr(params, 'boundary_conditions') and params.boundary_conditions is not None:
+        bc_keys = list(params.boundary_conditions.keys()) if isinstance(params.boundary_conditions, dict) else "NON-DICT"
+        # Show full BC for left if it exists
+        left_bc = params.boundary_conditions.get('left') if isinstance(params.boundary_conditions, dict) else None
+        print(f"[STRANG] BC keys: {bc_keys}, left={left_bc}")
+    else:
+        print(f"[STRANG] BC=None")
+    
+    # CFL stability check (CPU path only, for now)
+    if params.device == 'cpu' and not cuda.is_cuda_array(U_or_d_U_n):
+        is_stable, CFL = check_cfl_condition(U_or_d_U_n, grid, params, dt, CFL_max=0.9)
+        if not is_stable:
+            warnings.warn(
+                f"CFL condition violated! CFL={CFL:.3f} > 0.9. "
+                f"Consider reducing timestep dt={dt:.6f} or increasing grid resolution dx={grid.dx:.3f}.",
+                RuntimeWarning,
+                stacklevel=2
+            )
+    
     if params.device == 'gpu':
         # --- GPU Path ---
         if not cuda.is_cuda_array(U_or_d_U_n):
@@ -476,6 +746,10 @@ def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelPara
 
         # Step 3: Solve ODEs for dt/2
         U_np1 = solve_ode_step_cpu(U_ss, dt / 2.0, grid, params)
+        
+        # CRITICAL: Apply physical bounds to prevent state explosion
+        # This is a last-resort safety net to catch any numerical instabilities
+        U_np1 = apply_physical_state_bounds(U_np1, grid, params)
 
         return U_np1
 
@@ -509,6 +783,13 @@ def solve_hyperbolic_step_ssprk3(U_in: np.ndarray, dt_hyp: float, grid: Grid1D, 
     Returns:
         np.ndarray: État mis à jour après SSP-RK3
     """
+    # DEBUG: Confirm SSP-RK3 is called
+    if not hasattr(solve_hyperbolic_step_ssprk3, '_call_count'):
+        solve_hyperbolic_step_ssprk3._call_count = 0
+    solve_hyperbolic_step_ssprk3._call_count += 1
+    
+    if solve_hyperbolic_step_ssprk3._call_count <= 5:
+        print(f"[SSP-RK3 #{solve_hyperbolic_step_ssprk3._call_count}] spatial_scheme={params.spatial_scheme}, current_bc_params={current_bc_params is not None}")
     
     # Choisir la fonction de discrétisation spatiale selon le schéma
     if params.spatial_scheme == 'first_order':
@@ -609,7 +890,13 @@ def compute_flux_divergence_first_order(U: np.ndarray, grid: Grid1D, params: Mod
     for j in range(g - 1, g + N):  # F_{j+1/2} pour j=g-1..g+N-1
         U_L = U_bc[:, j]
         U_R = U_bc[:, j + 1]
-        fluxes[:, j] = riemann_solvers.central_upwind_flux(U_L, U_R, params)
+        
+        # Check if this is the junction interface (rightmost physical cell)
+        junction_info = None
+        if j == g + N - 1 and hasattr(grid, 'junction_at_right') and grid.junction_at_right is not None:
+            junction_info = grid.junction_at_right
+        
+        fluxes[:, j] = riemann_solvers.central_upwind_flux(U_L, U_R, params, junction_info)
     
     # Calcul de la divergence dF/dx
     flux_div = np.zeros_like(U)
@@ -820,13 +1107,6 @@ def calculate_spatial_discretization_weno_gpu(d_U_in: cuda.devicearray.DeviceNDA
     """
     if not GPU_AVAILABLE:
         raise RuntimeError("GPU WENO implementation not available. Check GPU imports.")
-    
-    # DEBUG: Log parameter passing
-    print(f"[DEBUG_SPATIAL_DISCRETIZATION_WENO_GPU] current_bc_params type: {type(current_bc_params)}")
-    if current_bc_params is not None:
-        print(f"[DEBUG_SPATIAL_DISCRETIZATION_WENO_GPU] Passing to native with current_bc_params")
-    else:
-        print(f"[DEBUG_SPATIAL_DISCRETIZATION_WENO_GPU] current_bc_params is NONE!")
     
     # Utiliser l'implémentation GPU native complète
     try:

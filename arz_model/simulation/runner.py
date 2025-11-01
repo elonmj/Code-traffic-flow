@@ -5,6 +5,7 @@ import os
 import yaml # To load road quality if defined directly in scenario
 from tqdm import tqdm # For progress bar
 from numba import cuda # Import cuda for device arrays
+from typing import Union, Optional
 
 from ..analysis import metrics
 from ..io import data_manager
@@ -13,43 +14,274 @@ from ..grid.grid1d import Grid1D
 from ..numerics import boundary_conditions, cfl, time_integration
 from . import initial_conditions # Import the initial conditions module
 
+# NEW: Import Pydantic config system
+try:
+    from ..config import SimulationConfig
+    from ..config.network_simulation_config import NetworkSimulationConfig
+    PYDANTIC_AVAILABLE = True
+except ImportError:
+    PYDANTIC_AVAILABLE = False
+    SimulationConfig = None
+    NetworkSimulationConfig = None
+
 class SimulationRunner:
     """
     Orchestrates the execution of a single simulation scenario.
+
+    Supports two initialization modes:
+    1. NEW (Pydantic): Pass SimulationConfig directly
+    2. LEGACY (YAML): Pass scenario/base config paths (backward compatible)
 
     Initializes the grid, parameters, and initial state, then runs the
     time loop, applying numerical methods and storing results.
     """
 
-    def __init__(self, scenario_config_path: str,
+    def __init__(self, 
+                 config: Union['SimulationConfig', str, None] = None,
+                 scenario_config_path: Optional[str] = None,
                  base_config_path: str = 'config/config_base.yml',
                  override_params: dict = None,
                  quiet: bool = False,
-                 device: str = 'cpu'): # Add device parameter
+                 device: Optional[str] = None):
         """
         Initializes the simulation runner.
 
+        NEW USAGE (Pydantic):
+            runner = SimulationRunner(config=ConfigBuilder.section_7_6())
+        
+        LEGACY USAGE (YAML - backward compatible):
+            runner = SimulationRunner(scenario_config_path='scenarios/test.yml')
+
         Args:
-            scenario_config_path (str): Path to the scenario-specific YAML configuration file.
-            base_config_path (str): Path to the base YAML configuration file.
-            override_params (dict, optional): Dictionary of parameters to override
-                                              values loaded from config files. Defaults to None.
-            quiet (bool, optional): If True, suppress most print statements. Defaults to False.
+            config: NEW - SimulationConfig object (Pydantic)
+            scenario_config_path: LEGACY - Path to scenario YAML file
+            base_config_path: LEGACY - Path to base YAML file
+            override_params: LEGACY - Dict of parameter overrides
+            quiet: Suppress print statements
+            device: Override device ('cpu' or 'gpu')
         """
+        # ====================================================================
+        # DETECT INITIALIZATION MODE
+        # ====================================================================
+        
+        # Case 1: NEW MODE - Pydantic NetworkSimulationConfig (multi-segment network)
+        if PYDANTIC_AVAILABLE and NetworkSimulationConfig and isinstance(config, NetworkSimulationConfig):
+            self._init_from_network_config(config, quiet, device)
+            return
+        
+        # Case 2: NEW MODE - Pydantic SimulationConfig (single Grid1D)
+        if PYDANTIC_AVAILABLE and isinstance(config, SimulationConfig):
+            self._init_from_pydantic(config, quiet, device)
+            return
+        
+        # Case 3: LEGACY MODE - scenario_config_path provided (backward compatible)
+        if scenario_config_path is not None:
+            # Convert string in first arg to scenario_config_path for backward compat
+            if isinstance(config, str):
+                scenario_config_path = config
+                config = None
+            self._init_from_yaml(scenario_config_path, base_config_path, override_params, quiet, device)
+            return
+        
+        # Case 4: ERROR - No valid initialization mode
+        raise ValueError(
+            "SimulationRunner requires either:\n"
+            "  1. NEW (Network): config=NetworkSimulationConfig(...)\n"
+            "  2. NEW (Grid1D): config=SimulationConfig(...)\n"
+            "  3. LEGACY: scenario_config_path='path/to/scenario.yml'"
+        )
+    
+    def _init_from_pydantic(self, config: 'SimulationConfig', quiet: bool, device: Optional[str]):
+        """Initialize from Pydantic SimulationConfig (NEW MODE)"""
+        self.config = config
+        self.quiet = quiet if quiet is not None else config.quiet
+        self.device = device if device is not None else config.device
+        
+        if not self.quiet:
+            print(f"✅ Initializing simulation with Pydantic config")
+            print(f"   Using device: {self.device}")
+        
+        # Create legacy params object for backward compatibility
+        # TODO Phase 3: Remove this after extracting classes
+        self.params = self._create_legacy_params_from_config(config)
+        self.params.device = self.device
+        
+        # Continue with common initialization
+        self._common_initialization()
+    
+    def _init_from_network_config(self, config: 'NetworkSimulationConfig', quiet: bool, device: Optional[str]):
+        """Initialize from Pydantic NetworkSimulationConfig (NEW MODE - multi-segment)"""
+        self.config = config
+        self.quiet = quiet if quiet is not None else False
+        self.device = device if device is not None else 'cpu'
+        
+        if not self.quiet:
+            print(f"✅ Initializing NETWORK simulation with Pydantic config")
+            print(f"   Segments: {len(config.segments)}")
+            print(f"   Nodes: {len(config.nodes)}")
+            print(f"   Using device: {self.device}")
+        
+        # Import NetworkGridSimulator
+        from ..network.network_simulator import NetworkGridSimulator
+        from ..core.parameters import ModelParameters
+        
+        # Create model parameters with defaults (Pydantic approach)
+        params = ModelParameters()
+        
+        # Set default physics parameters (from literature/calibration)
+        # These match the defaults in PhysicsConfig and _create_legacy_params_from_config
+        params.rho_jam = 0.2  # veh/m (200 veh/km)
+        params.gamma_m = 2.0
+        params.gamma_c = 2.0
+        params.K_m = 20.0 / 3.6  # m/s (20 km/h)
+        params.K_c = 20.0 / 3.6  # m/s
+        params.tau_m = 1.0  # s
+        params.tau_c = 1.0  # s
+        params.V_creeping = 0.1  # m/s
+        params.epsilon = 1e-10
+        params.alpha = 0.5  # Calibrated mixing parameter
+        
+        # Velocity tables (default to 50 km/h for all road qualities)
+        params.Vmax_m = {i: 50.0 / 3.6 for i in range(1, 11)}  # m/s
+        params.Vmax_c = {i: 50.0 / 3.6 for i in range(1, 11)}  # m/s
+        
+        # Numerical parameters
+        params.cfl_number = 0.9
+        params.ghost_cells = 2
+        params.num_ghost_cells = 2
+        params.spatial_scheme = 'first_order'
+        params.time_scheme = 'euler'
+        params.ode_solver = 'RK45'
+        params.ode_rtol = 1e-6
+        params.ode_atol = 1e-8
+        
+        # Override with global_params from NetworkSimulationConfig
+        if config.global_params:
+            for key, value in config.global_params.items():
+                if hasattr(params, key):
+                    setattr(params, key, value)
+            if not self.quiet:
+                print(f"   Applied {len(config.global_params)} global_params overrides")
+        
+        # ✅ FIX (2025-10-29): Transfer boundary_conditions from config to params
+        if config.boundary_conditions is not None:
+            params.boundary_conditions = self._convert_bc_to_legacy(config.boundary_conditions)
+            if not self.quiet:
+                print(f"   ✅ Boundary conditions transferred: left={config.boundary_conditions.left.type}, right={config.boundary_conditions.right.type}")
+        else:
+            # No BC = CLOSED network (warning!)
+            params.boundary_conditions = {}
+            if not self.quiet:
+                print(f"   ⚠️  WARNING: No boundary conditions (CLOSED network)")
+        
+        # Set device
+        params.device = self.device
+        
+        # Remove ODE solver overrides (already set above with defaults)
+        # These lines are no longer needed as defaults are set in the main params initialization
+        
+        # Build scenario config dict for NetworkGridSimulator
+        scenario_config = {
+            'segments': [
+                {
+                    'id': seg_id,
+                    'xmin': seg.x_min,
+                    'xmax': seg.x_max,
+                    'N': seg.N,
+                    'start_node': seg.start_node,  # ✅ FIX: Include node info for BC detection
+                    'end_node': seg.end_node       # ✅ FIX: Essential for boundary detection
+                }
+                for seg_id, seg in config.segments.items()
+            ],
+            'nodes': [
+                {
+                    'id': node_id,
+                    'type': node.type,
+                    'position': node.position,
+                    'incoming': node.incoming_segments or [],
+                    'outgoing': node.outgoing_segments or [],
+                    'traffic_light_config': node.traffic_light_config  # ✅ FIX: Pass traffic light config
+                }
+                for node_id, node in config.nodes.items()
+                if node.type != 'boundary'  # Exclude boundary placeholders
+            ],
+            'links': [
+                {
+                    'from': link.from_segment,
+                    'to': link.to_segment,
+                    'via': link.via_node
+                }
+                for link in config.links
+            ]
+        }
+        
+        # Add initial conditions from global_params if present
+        # NetworkGridSimulator.reset() expects: scenario_config['initial_conditions']
+        # Format: {seg_id: {'rho_m': val, 'rho_c': val, 'v_m': val, 'v_c': val}}
+        if config.global_params:
+            # Extract IC values (if present)
+            rho_m_init = config.global_params.get('rho_m_init', 0.02)  # Default 0.02 veh/m
+            rho_c_init = config.global_params.get('rho_c_init', 0.01)  # Default 0.01 veh/m
+            v_m_init = config.global_params.get('V0_m', 8.89)  # Default to free-flow speed
+            v_c_init = config.global_params.get('V0_c', 13.89)
+            
+            # Apply IC to all segments uniformly
+            initial_conditions = {}
+            for seg_id in config.segments.keys():
+                initial_conditions[seg_id] = {
+                    'rho_m': rho_m_init,
+                    'rho_c': rho_c_init,
+                    'v_m': v_m_init,
+                    'v_c': v_c_init
+                }
+            
+            scenario_config['initial_conditions'] = initial_conditions
+            
+            if not self.quiet:
+                print(f"   Initial conditions: ρ_m={rho_m_init:.4f}, ρ_c={rho_c_init:.4f}, "
+                      f"v_m={v_m_init:.2f}, v_c={v_c_init:.2f}")
+                print(f"   Applied IC to {len(initial_conditions)} segments")
+                print(f"   scenario_config keys: {list(scenario_config.keys())}")
+        
+        # Create NetworkGridSimulator
+        self.network_simulator = NetworkGridSimulator(
+            params=params,
+            scenario_config=scenario_config,
+            dt_sim=config.dt
+        )
+        
+        # Store reference to params for compatibility
+        self.params = params
+        
+        # For API compatibility with Grid1D mode, expose similar attributes
+        self.is_network_mode = True
+        self.t = 0.0  # Will be updated by network_simulator
+        
+        if not self.quiet:
+            print(f"✅ NetworkGridSimulator created")
+            print(f"   Decision interval: {config.decision_interval}s")
+        
+        # DON'T call _common_initialization() - NetworkGrid has different initialization
+    
+    def _init_from_yaml(self, scenario_config_path: str, base_config_path: str,
+                       override_params: dict, quiet: bool, device: Optional[str]):
+        """Initialize from YAML files (LEGACY MODE - backward compatible)"""
         self.quiet = quiet
-        self.device = device # Store the device parameter
+        self.device = device if device is not None else 'cpu'
+        
         if not self.quiet:
             print(f"Initializing simulation from scenario: {scenario_config_path}")
-            print(f"Using device: {self.device}") # Indicate which device is being used
+            print(f"Using device: {self.device}")
+        
         # Load parameters
         self.params = ModelParameters()
-        self.params.load_from_yaml(base_config_path, scenario_config_path) # Load base and scenario
-
+        self.params.load_from_yaml(base_config_path, scenario_config_path)
+        
         # ✅ ARCHITECTURAL FIX (2025-10-24): Load V0 overrides from network config if present
         # This allows scenarios with network segments to specify V0_m/V0_c per segment
         # For single-segment scenarios (like RL traffic light), use first segment's V0 parameters
         self._load_network_v0_overrides(scenario_config_path)
-
+        
         # Apply overrides if provided
         if override_params:
             if not self.quiet:
@@ -63,17 +295,158 @@ class SimulationRunner:
                     # For now, just warn if the key doesn't exist directly
                     if not self.quiet:
                         print(f"Warning: Override key '{key}' not found as a direct attribute of ModelParameters.")
-            # Re-validate after overrides if necessary
-            # self.params._validate_parameters()
-
+        
         # --- Add the device setting to the parameters object ---
-        # This makes it accessible to functions like time_integration
         self.params.device = self.device
         # -------------------------------------------------------
-
+        
         if not self.quiet:
-            print(f"Parameters loaded for scenario: {self.params.scenario_name}")
-
+            print(f"Parameters loaded for scenario: {getattr(self.params, 'scenario_name', 'unknown')}")
+        
+        # Continue with common initialization
+        self._common_initialization()
+    
+    def _create_legacy_params_from_config(self, config: 'SimulationConfig') -> ModelParameters:
+        """
+        Create legacy ModelParameters from Pydantic SimulationConfig
+        
+        This is a temporary adapter for Phase 2. Will be removed in Phase 3.
+        """
+        params = ModelParameters()
+        
+        # Grid parameters
+        params.N = config.grid.N
+        params.xmin = config.grid.xmin
+        params.xmax = config.grid.xmax
+        params.ghost_cells = config.grid.ghost_cells
+        
+        # Time parameters
+        params.t_final = config.t_final
+        params.output_dt = config.output_dt
+        params.cfl_number = config.cfl_number
+        params.max_iterations = config.max_iterations
+        
+        # Physics parameters
+        params.lambda_m = config.physics.lambda_m
+        params.lambda_c = config.physics.lambda_c
+        params.V_max_m = config.physics.V_max_m
+        params.V_max_c = config.physics.V_max_c
+        params.alpha = config.physics.alpha
+        
+        # Road quality (default to uniform quality from physics config)
+        params.road = {
+            'quality_type': 'uniform',
+            'quality_value': config.physics.default_road_quality
+        }
+        
+        # Additional required physics parameters (use defaults from literature)
+        params.rho_jam = 0.2  # veh/m (200 veh/km) - typical jam density
+        params.gamma_m = 2.0  # Pressure exponent motorcycles
+        params.gamma_c = 2.0  # Pressure exponent cars
+        params.K_m = 20.0 / 3.6  # m/s (20 km/h converted)
+        params.K_c = 20.0 / 3.6  # m/s
+        params.tau_m = 1.0 / config.physics.lambda_m  # Relaxation time = 1/lambda
+        params.tau_c = 1.0 / config.physics.lambda_c
+        params.V_creeping = 0.1  # m/s (slow creep speed)
+        params.epsilon = 1e-10  # Small number for numerical stability
+        
+        # Velocity tables (simplified - use single value for all road qualities)
+        params.Vmax_m = {i: config.physics.V_max_m / 3.6 for i in range(1, 11)}  # Convert km/h to m/s
+        params.Vmax_c = {i: config.physics.V_max_c / 3.6 for i in range(1, 11)}
+        
+        # Numerical parameters
+        params.spatial_scheme = 'first_order'
+        params.time_scheme = 'euler'
+        params.ode_solver = 'RK45'  # Use scipy's RK45 method
+        params.ode_rtol = 1e-6
+        params.ode_atol = 1e-8
+        
+        # Convert Pydantic IC config to legacy dict format
+        params.initial_conditions = self._convert_ic_to_legacy(config.initial_conditions)
+        
+        # Convert Pydantic BC config to legacy dict format
+        params.boundary_conditions = self._convert_bc_to_legacy(config.boundary_conditions)
+        
+        # Network system
+        params.has_network = config.has_network
+        
+        # Device
+        params.device = config.device
+        
+        # Scenario name (for logging)
+        params.scenario_name = "pydantic_config"
+        
+        return params
+    
+    def _convert_ic_to_legacy(self, ic_config) -> dict:
+        """Convert Pydantic IC config to legacy dict format"""
+        ic_type = str(ic_config.type).replace('ICType.', '').lower()
+        
+        if ic_type == 'uniform_equilibrium':
+            return {
+                'type': 'uniform_equilibrium',
+                'rho_m': ic_config.rho_m,
+                'rho_c': ic_config.rho_c,
+                'R_val': ic_config.R_val
+            }
+        elif ic_type == 'uniform':
+            return {
+                'type': 'uniform',
+                'rho_m': ic_config.rho_m,
+                'w_m': ic_config.w_m,
+                'rho_c': ic_config.rho_c,
+                'w_c': ic_config.w_c
+            }
+        elif ic_type == 'riemann':
+            return {
+                'type': 'riemann',
+                'x_discontinuity': ic_config.x_discontinuity,
+                'rho_m_left': ic_config.rho_m_left,
+                'w_m_left': ic_config.w_m_left,
+                'rho_c_left': ic_config.rho_c_left,
+                'w_c_left': ic_config.w_c_left,
+                'rho_m_right': ic_config.rho_m_right,
+                'w_m_right': ic_config.w_m_right,
+                'rho_c_right': ic_config.rho_c_right,
+                'w_c_right': ic_config.w_c_right
+            }
+        else:
+            raise ValueError(f"Unsupported IC type for legacy conversion: {ic_type}")
+    
+    def _convert_bc_to_legacy(self, bc_config) -> dict:
+        """Convert Pydantic BC config to legacy dict format"""
+        legacy_bc = {}
+        
+        # Convert left BC
+        left_type = str(bc_config.left.type).replace('BCType.', '').lower()
+        legacy_bc['left'] = {'type': left_type}
+        if hasattr(bc_config.left, 'state'):
+            legacy_bc['left']['state'] = bc_config.left.state.to_array()
+            if hasattr(bc_config.left, 'schedule') and bc_config.left.schedule:
+                legacy_bc['left']['schedule'] = [
+                    {'time': item.time, 'phase_id': item.phase_id}
+                    for item in bc_config.left.schedule
+                ]
+        
+        # Convert right BC
+        right_type = str(bc_config.right.type).replace('BCType.', '').lower()
+        legacy_bc['right'] = {'type': right_type}
+        if hasattr(bc_config.right, 'state'):
+            legacy_bc['right']['state'] = bc_config.right.state.to_array()
+        
+        # Traffic signal phases (for RL control)
+        if bc_config.traffic_signal_phases:
+            legacy_bc['traffic_signal_phases'] = {}
+            for side, phases in bc_config.traffic_signal_phases.items():
+                legacy_bc['traffic_signal_phases'][side] = {
+                    phase_id: state.to_array()
+                    for phase_id, state in phases.items()
+                }
+        
+        return legacy_bc
+    
+    def _common_initialization(self):
+        """Common initialization logic for both Pydantic and YAML modes"""
         # Validate required scenario parameters
         if self.params.N is None or self.params.xmin is None or self.params.xmax is None:
             raise ValueError("Grid parameters (N, xmin, xmax) must be defined in the configuration.")
@@ -83,6 +456,7 @@ class SimulationRunner:
              raise ValueError("Initial conditions must be defined in the configuration.")
         if not self.params.boundary_conditions:
              raise ValueError("Boundary conditions must be defined in the configuration.")
+        
         # Initialize grid
         self.grid = Grid1D(
             N=self.params.N,
@@ -179,7 +553,7 @@ class SimulationRunner:
         else:
             self.nodes = None
             self.network_coupling = None
-
+    
     def _initialize_network(self):
         """Initialize the network nodes and coupling system."""
         from ..core.intersection import create_intersection_from_config
@@ -358,11 +732,16 @@ class SimulationRunner:
         """ Creates the initial state array U based on config. """
         ic_config = self.params.initial_conditions
         ic_type = ic_config.get('type', '').lower()
-        self.initial_equilibrium_state = None # Initialize attribute
         
-        # ✅ BUG #15 FIX: Store INFLOW boundary state for traffic signal control
-        # Traffic signal should modulate the INFLOW (boundary condition), not the IC
-        # Extract left boundary inflow state if available
+        # 🔥 ARCHITECTURAL FIX: REMOVE IC→BC COUPLING
+        # Initial conditions define domain state at t=0 ONLY
+        # Boundary conditions are COMPLETELY INDEPENDENT
+        # DO NOT store any "equilibrium state" for BC reuse
+        # self.initial_equilibrium_state = None  # ❌ REMOVED - was causing IC→BC coupling
+        
+        # ✅ ARCHITECTURAL FIX: Extract BC state for traffic signal control
+        # Traffic signal modulates BOUNDARY CONDITIONS, not initial conditions
+        # This must come from BC config ONLY, never from IC
         self.traffic_signal_base_state = None
         bc_config = self.params.boundary_conditions
         if bc_config and 'left' in bc_config:
@@ -370,17 +749,16 @@ class SimulationRunner:
             if left_bc.get('type') == 'inflow' and 'state' in left_bc:
                 self.traffic_signal_base_state = left_bc['state']  # [rho_m, w_m, rho_c, w_c]
                 if not self.quiet:
-                    print(f"  DEBUG BUG #15: Stored traffic_signal_base_state = {self.traffic_signal_base_state}")
+                    print(f"  ✅ ARCHITECTURE: traffic_signal_base_state from BC = {self.traffic_signal_base_state}")
 
         if ic_type == 'uniform':
             state_vals = ic_config.get('state')
             if state_vals is None or len(state_vals) != 4:
                 raise ValueError("Uniform IC requires 'state': [rho_m, w_m, rho_c, w_c]")
             U_init = initial_conditions.uniform_state(self.grid, *state_vals)
-            # BUG #12 FIX: Store uniform IC state for traffic signal boundary conditions
-            # Traffic signal needs base_state for phase transitions (red/green)
-            # NOTE: This is used as FALLBACK if traffic_signal_base_state not available
-            self.initial_equilibrium_state = state_vals  # [rho_m, w_m, rho_c, w_c]
+            # 🔥 ARCHITECTURAL FIX: Do NOT store IC state for BC use
+            # IC is for t=0 ONLY - BC are independent
+            # self.initial_equilibrium_state = state_vals  # ❌ REMOVED - caused IC→BC coupling
         elif ic_type == 'uniform_equilibrium':
             rho_m = ic_config.get('rho_m')
             rho_c = ic_config.get('rho_c')
@@ -396,8 +774,9 @@ class SimulationRunner:
             U_init, eq_state_vector = initial_conditions.uniform_state_from_equilibrium(
                 self.grid, rho_m_si, rho_c_si, R_val, self.params
             )
-            # Store the equilibrium state vector for potential BC use
-            self.initial_equilibrium_state = eq_state_vector
+            # 🔥 ARCHITECTURAL FIX: Do NOT store IC equilibrium state for BC use
+            # IC is for t=0 ONLY - BC are independent
+            # self.initial_equilibrium_state = eq_state_vector  # ❌ REMOVED - caused IC→BC coupling
         elif ic_type == 'riemann':
             U_L = ic_config.get('U_L')
             U_R = ic_config.get('U_R')
@@ -405,9 +784,9 @@ class SimulationRunner:
             if U_L is None or U_R is None or split_pos is None:
                 raise ValueError("Riemann IC requires 'U_L', 'U_R', 'split_pos'.")
             U_init = initial_conditions.riemann_problem(self.grid, U_L, U_R, split_pos)
-            # Store U_L as equilibrium state for inflow BC (traffic signal control)
-            # This allows green phase to impose the high-density left state
-            self.initial_equilibrium_state = U_L
+            # 🔥 ARCHITECTURAL FIX: Do NOT store IC Riemann state for BC use
+            # IC is for t=0 ONLY - BC are independent
+            # self.initial_equilibrium_state = U_L  # ❌ REMOVED - caused IC→BC coupling
         elif ic_type == 'density_hump':
              bg_state = ic_config.get('background_state')
              center = ic_config.get('center')
@@ -450,19 +829,47 @@ class SimulationRunner:
         # Make a working copy of BC params from the main params object
         self.current_bc_params = copy.deepcopy(self.params.boundary_conditions)
 
-        # --- Reuse initial equilibrium state for inflow BC if applicable ---
-        if self.initial_equilibrium_state is not None:
+        # 🔥 ARCHITECTURAL FIX: BC MUST be explicitly configured - NO IC fallback
+        # ========================================================================
+        # Validate that inflow BCs have explicit state configuration
+        # This enforces separation between IC (t=0) and BC (all t)
+        
+        # Validate left boundary
+        if self.current_bc_params.get('left', {}).get('type') == 'inflow':
+            if 'state' not in self.current_bc_params['left'] or self.current_bc_params['left']['state'] is None:
+                raise ValueError(
+                    "❌ ARCHITECTURAL ERROR: Inflow BC requires explicit 'state' configuration.\n"
+                    "Boundary conditions must be independently specified, not derived from initial conditions.\n"
+                    "\n"
+                    "Add to your YAML config:\n"
+                    "  boundary_conditions:\n"
+                    "    left:\n"
+                    "      type: inflow\n"
+                    "      state: [rho_m, w_m, rho_c, w_c]  # Example: [0.150, 8.0, 0.120, 6.0]\n"
+                    "\n"
+                    "IC (initial_conditions) defines domain at t=0.\n"
+                    "BC (boundary_conditions) defines flux for all t≥0.\n"
+                    "These are INDEPENDENT concepts."
+                )
             if not self.quiet:
-                print(f"  DEBUG BC Init: Calculated initial_equilibrium_state = {self.initial_equilibrium_state}") # Debug print
-
-            if self.current_bc_params.get('left', {}).get('type') == 'inflow':
-                if 'state' not in self.current_bc_params['left'] or self.current_bc_params['left']['state'] is None:
-                    self.current_bc_params['left']['state'] = self.initial_equilibrium_state
-                    if not self.quiet:
-                        print("  Populated left inflow BC state from initial equilibrium.")
-                        print(f"  DEBUG BC Init: Final left inflow BC state = {self.current_bc_params['left']['state']}") # Debug print
-            # Could add similar logic for right BC if needed
-        # --------------------------------------------------------------------
+                print(f"  ✅ ARCHITECTURE: Left inflow BC explicitly configured: {self.current_bc_params['left']['state']}")
+        
+        # Validate right boundary (if using inflow)
+        if self.current_bc_params.get('right', {}).get('type') == 'inflow':
+            if 'state' not in self.current_bc_params['right'] or self.current_bc_params['right']['state'] is None:
+                raise ValueError(
+                    "❌ ARCHITECTURAL ERROR: Inflow BC requires explicit 'state' configuration.\n"
+                    "Boundary conditions must be independently specified, not derived from initial conditions.\n"
+                    "\n"
+                    "Add to your YAML config:\n"
+                    "  boundary_conditions:\n"
+                    "    right:\n"
+                    "      type: inflow\n"
+                    "      state: [rho_m, w_m, rho_c, w_c]  # Example: [0.150, 8.0, 0.120, 6.0]\n"
+                )
+            if not self.quiet:
+                print(f"  ✅ ARCHITECTURE: Right inflow BC explicitly configured: {self.current_bc_params['right']['state']}")
+        # ========================================================================
 
         # --- Parse schedules for time-dependent BCs ---
         if self.current_bc_params.get('left', {}).get('type') == 'time_dependent':
@@ -552,6 +959,28 @@ class SimulationRunner:
         Returns:
             tuple[list[float], list[np.ndarray]]: List of times and list of corresponding state arrays (physical cells only).
         """
+        # NetworkGrid mode: delegate to network_simulator
+        if hasattr(self, 'is_network_mode') and self.is_network_mode:
+            t_final = t_final if t_final is not None else 3600.0  # Default 1 hour
+            
+            # Calculate total time to advance
+            dt_to_advance = t_final - self.current_time
+            if dt_to_advance <= 0:
+                return [], []
+            
+            # Calculate number of simulation timesteps needed
+            n_steps = int(dt_to_advance / self.network_simulator.dt_sim)
+            
+            # Advance simulation
+            state, timestamp = self.network_simulator.step(
+                dt=self.network_simulator.dt_sim,
+                repeat_k=n_steps
+            )
+            
+            # Return minimal results (environment doesn't use them)
+            return [timestamp], [state]
+        
+        # Grid1D mode: original implementation
         t_final = t_final if t_final is not None else self.params.t_final
         output_dt = output_dt if output_dt is not None else self.params.output_dt
 
@@ -800,16 +1229,29 @@ class SimulationRunner:
         # Phase 0 = red (reduced velocity inflow - models queue formation)
         # Phase 1 = green (normal inflow - free flow)
         
-        # ✅ BUG #15 FIX: Use INFLOW BC state (traffic_signal_base_state), not IC state
-        # Traffic signal modulates the INFLOW boundary, which may differ from initial conditions
+        # ✅ ARCHITECTURAL FIX: Use INFLOW BC state (traffic_signal_base_state) ONLY
+        # Traffic signal modulates the INFLOW boundary, which is INDEPENDENT of initial conditions
         # Example: IC = light congestion (40 veh/km), Inflow = heavy demand (120 veh/km)
-        # Fallback to initial_equilibrium_state if traffic_signal_base_state not set
-        base_state = self.traffic_signal_base_state if hasattr(self, 'traffic_signal_base_state') and self.traffic_signal_base_state else self.initial_equilibrium_state
+        # 
+        # 🔥 NO FALLBACK to IC - traffic signal REQUIRES explicit BC configuration
+        if not hasattr(self, 'traffic_signal_base_state') or self.traffic_signal_base_state is None:
+            raise RuntimeError(
+                "❌ ARCHITECTURAL ERROR: Traffic signal control requires explicit inflow BC configuration.\n"
+                "Traffic signals modulate BOUNDARY CONDITIONS, not initial conditions.\n"
+                "\n"
+                "Add to your YAML config:\n"
+                "  boundary_conditions:\n"
+                "    left:\n"
+                "      type: inflow\n"
+                "      state: [rho_m, w_m, rho_c, w_c]  # Example: [0.150, 8.0, 0.120, 6.0]\n"
+                "\n"
+                "This state will be modulated by traffic signal phases (red/green)."
+            )
         
-        # DEBUG: Log which base state is being used
+        base_state = self.traffic_signal_base_state
+        
         if not self.quiet:
-            state_source = "traffic_signal_base_state" if (hasattr(self, 'traffic_signal_base_state') and self.traffic_signal_base_state) else "initial_equilibrium_state"
-            print(f"  DEBUG set_traffic_signal_state: Using {state_source} = {base_state}")
+            print(f"  ✅ ARCHITECTURE: Traffic signal using BC state = {base_state}")
         
         if phase_id == 0:
             # ✅ CRITICAL FIX (2025-10-24): Red phase MUST maintain inflow with CREEPING velocity
@@ -851,17 +1293,14 @@ class SimulationRunner:
         else:
             # For phase_id > 1, treat as variations
             # Default to reduced inflow (like red phase)
-            if hasattr(self, 'initial_equilibrium_state'):
-                base_state = self.initial_equilibrium_state
-                reduced_state = [
-                    base_state[0],
-                    base_state[1] * 0.5,
-                    base_state[2],
-                    base_state[3] * 0.5
-                ]
-                bc_config = {'type': 'inflow', 'state': reduced_state}
-            else:
-                bc_config = {'type': 'inflow', 'state': None}
+            # 🔥 ARCHITECTURAL FIX: Use BC state only, no IC fallback
+            reduced_state = [
+                base_state[0],
+                base_state[1] * 0.5,
+                base_state[2],
+                base_state[3] * 0.5
+            ]
+            bc_config = {'type': 'inflow', 'state': reduced_state}
         
         # Update current boundary condition parameters
         if not hasattr(self, 'current_bc_params'):
@@ -953,4 +1392,87 @@ class SimulationRunner:
             'v_m': v_m,
             'v_c': v_c
         }
+
+    # ========================================================================
+    # UNIFIED API FOR GRID1D AND NETWORKGRID
+    # ========================================================================
+    
+    def initialize_simulation(self):
+        """
+        Initialize simulation - handles both Grid1D and NetworkGrid modes.
+        
+        For Grid1D: Already initialized in __init__
+        For NetworkGrid: Calls network_simulator.reset()
+        """
+        if hasattr(self, 'is_network_mode') and self.is_network_mode:
+            # NetworkGrid mode: initialize network
+            initial_state, timestamp = self.network_simulator.reset()
+            self.network = self.network_simulator.network
+            self.t = timestamp
+            if not self.quiet:
+                print(f"✅ NetworkGrid initialized at t={timestamp}s")
+        else:
+            # Grid1D mode: already initialized in _common_initialization()
+            pass
+    
+    @property
+    def grid(self):
+        """Access grid - returns Grid1D for single-segment mode"""
+        if hasattr(self, '_grid'):
+            return self._grid
+        return None
+    
+    @grid.setter
+    def grid(self, value):
+        """Set grid"""
+        self._grid = value
+    
+    @property
+    def network(self):
+        """Access network - returns NetworkGrid for multi-segment mode"""
+        if hasattr(self, 'is_network_mode') and self.is_network_mode:
+            return self.network_simulator.network
+        return None
+    
+    @network.setter
+    def network(self, value):
+        """Set network (for NetworkGrid mode)"""
+        self._network = value
+    
+    @property
+    def current_time(self):
+        """Get current simulation time - unified API"""
+        if hasattr(self, 'is_network_mode') and self.is_network_mode:
+            return self.network_simulator.current_time
+        return self.t
+    
+    def reset(self):
+        """Reset simulation - NetworkGrid API compatibility"""
+        if hasattr(self, 'is_network_mode') and self.is_network_mode:
+            return self.network_simulator.reset()
+        else:
+            raise NotImplementedError("reset() only available in NetworkGrid mode")
+    
+    def step(self, dt: float, repeat_k: int = 1):
+        """Step simulation - NetworkGrid API compatibility"""
+        if hasattr(self, 'is_network_mode') and self.is_network_mode:
+            result = self.network_simulator.step(dt, repeat_k)
+            self.t = self.network_simulator.current_time
+            return result
+        else:
+            raise NotImplementedError("step() only available in NetworkGrid mode. Use run() for Grid1D")
+    
+    def set_signal(self, signal_plan: dict):
+        """Set traffic signal - NetworkGrid API"""
+        if hasattr(self, 'is_network_mode') and self.is_network_mode:
+            return self.network_simulator.set_signal(signal_plan)
+        else:
+            raise NotImplementedError("set_signal() only available in NetworkGrid mode")
+    
+    @property
+    def dt_sim(self):
+        """Get simulation timestep - unified API"""
+        if hasattr(self, 'is_network_mode') and self.is_network_mode:
+            return self.network_simulator.dt_sim
+        return None  # Grid1D uses adaptive timestep
 

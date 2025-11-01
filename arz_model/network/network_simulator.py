@@ -74,6 +74,12 @@ class NetworkGridSimulator:
         self.scenario_config = scenario_config
         self.dt_sim = dt_sim
         
+        print(f"[DEBUG] NetworkGridSimulator.__init__: scenario_config keys = {list(scenario_config.keys())}")
+        if 'initial_conditions' in scenario_config:
+            print(f"[DEBUG]   IC present with {len(scenario_config['initial_conditions'])} segments")
+        else:
+            print(f"[DEBUG]   NO IC in scenario_config!")
+        
         # Simulation state
         self.network: Optional[NetworkGrid] = None
         self.current_time: float = 0.0
@@ -258,18 +264,33 @@ class NetworkGridSimulator:
                 segment_id=seg_cfg['id'],
                 xmin=seg_cfg.get('xmin', 0),
                 xmax=seg_cfg.get('xmax', 100),
-                N=seg_cfg.get('N', 20)
+                N=seg_cfg.get('N', 20),
+                start_node=seg_cfg.get('start_node'),  # ✅ FIX: Pass node info for BC detection
+                end_node=seg_cfg.get('end_node')       # ✅ FIX: Essential for boundary detection
             )
             self.observed_segment_ids.append(seg_cfg['id'])
         
         # Nodes
         for node_cfg in config.get('nodes', []):
+            # ✅ FIX: Create TrafficLightController from config if present
+            traffic_lights = None
+            tl_config = node_cfg.get('traffic_light_config')
+            print(f"[NODE_TL_DEBUG] node={node_cfg['id']}, traffic_light_config present: {tl_config is not None}")
+            if tl_config is not None:
+                print(f"[NODE_TL_DEBUG]   config keys: {list(tl_config.keys())}")
+                if 'phases' in tl_config:
+                    print(f"[NODE_TL_DEBUG]   phases: {tl_config['phases']}")
+                from ..core.traffic_lights import create_traffic_light_from_config
+                traffic_lights = create_traffic_light_from_config(tl_config)
+                print(f"[NODE_TL_DEBUG]   Created traffic_lights: {traffic_lights is not None}")
+            
             self.network.add_node(
                 node_id=node_cfg['id'],
                 position=tuple(node_cfg.get('position', [0, 0])),
                 incoming_segments=node_cfg.get('incoming', []),
                 outgoing_segments=node_cfg.get('outgoing', []),
-                node_type=node_cfg.get('type', 'unsignalized')
+                node_type=node_cfg.get('type', 'unsignalized'),
+                traffic_lights=traffic_lights  # ✅ FIX: Pass traffic light controller
             )
         
         # Links
@@ -282,27 +303,61 @@ class NetworkGridSimulator:
     
     def _apply_initial_conditions(self, ic_config: Dict[str, Any]):
         """Apply initial traffic conditions to segments."""
+        from ..core.physics import calculate_pressure
+        
+        print(f"[DEBUG] _apply_initial_conditions called with {len(ic_config)} segments")
         for seg_id, ic in ic_config.items():
             if seg_id in self.network.segments:
                 segment = self.network.segments[seg_id]
                 U = segment['U']
                 
-                # Set densities
+                print(f"[DEBUG]   Applying IC to segment {seg_id}: rho_m={ic.get('rho_m', 'N/A')}, "
+                      f"v_m={ic.get('v_m', 'N/A')}")
+                
+                # Set densities first
                 if 'rho_m' in ic:
                     U[0, :] = ic['rho_m']
                 if 'rho_c' in ic:
                     U[2, :] = ic['rho_c']
                 
-                # Set velocities (convert to momentum)
-                if 'w_m' in ic:
-                    U[1, :] = U[0, :] * ic['w_m']  # rho_m * v_m
-                elif 'v_m' in ic:
-                    U[1, :] = U[0, :] * ic['v_m']
+                # For ARZ model, w = v + p (Lagrangian variable)
+                # We must calculate pressure first before setting momentum
+                if 'v_m' in ic or 'w_m' in ic:
+                    # Calculate pressure using current densities
+                    p_m, p_c = calculate_pressure(
+                        U[0, :], U[2, :],
+                        self.params.alpha, self.params.rho_jam, self.params.epsilon,
+                        self.params.K_m, self.params.gamma_m,
+                        self.params.K_c, self.params.gamma_c
+                    )
+                    
+                    if 'w_m' in ic:
+                        # w_m provided directly (already in Lagrangian form)
+                        U[1, :] = ic['w_m']
+                    elif 'v_m' in ic:
+                        # Convert physical velocity to Lagrangian momentum
+                        # w_m = v_m + p_m (ARZ model definition)
+                        U[1, :] = ic['v_m'] + p_m
+                        print(f"[DEBUG]   Converted v_m={ic['v_m']:.4f} -> w_m={U[1,5]:.4f} (added p_m={p_m[5]:.4f})")
                 
-                if 'w_c' in ic:
-                    U[3, :] = U[2, :] * ic['w_c']  # rho_c * v_c
-                elif 'v_c' in ic:
-                    U[3, :] = U[2, :] * ic['v_c']
+                if 'v_c' in ic or 'w_c' in ic:
+                    if 'w_c' in ic:
+                        U[3, :] = ic['w_c']
+                    elif 'v_c' in ic:
+                        # Same for cars: w_c = v_c + p_c
+                        if 'v_m' not in ic and 'w_m' not in ic:  # Calculate p if not done yet
+                            p_m, p_c = calculate_pressure(
+                                U[0, :], U[2, :],
+                                self.params.alpha, self.params.rho_jam, self.params.epsilon,
+                                self.params.K_m, self.params.gamma_m,
+                                self.params.K_c, self.params.gamma_c
+                            )
+                        U[3, :] = ic['v_c'] + p_c
+                        print(f"[DEBUG]   Converted v_c={ic['v_c']:.4f} -> w_c={U[3,5]:.4f} (added p_c={p_c[5]:.4f})")
+                
+                print(f"[DEBUG]   After IC: U[0,5]={U[0,5]:.4f}, U[1,5]={U[1,5]:.4f}")
+            else:
+                print(f"[DEBUG]   Segment {seg_id} not found in network, skipping IC")
     
     def _build_state(self, timestamp: float) -> SimulationState:
         """
@@ -314,11 +369,16 @@ class NetworkGridSimulator:
         network_state = self.network.get_network_state()
         branches = {}
         
+        print(f"[DEBUG] _build_state: observed_segment_ids = {self.observed_segment_ids}")
+        print(f"[DEBUG]   network_state keys = {list(network_state.keys())}")
+        
         for seg_id in self.observed_segment_ids:
             if seg_id not in network_state:
+                print(f"[DEBUG]   WARNING: {seg_id} not in network_state!")
                 continue
             
             U = network_state[seg_id]  # Direct array: (4, N_total)
+            print(f"[DEBUG]   Processing {seg_id}: U.shape={U.shape}, U[0,5]={U[0,5]:.4f}, U[1,5]={U[1,5]:.4f}")
             
             # Extract state variables
             rho_m = U[0, :]

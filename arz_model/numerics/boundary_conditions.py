@@ -195,12 +195,24 @@ def apply_boundary_conditions(U_or_d_U, grid: Grid1D, params: ModelParameters, c
     _bc_log_step += 1
     apply_boundary_conditions._step = _bc_log_step
     
+    # DEBUG: Confirm function is being called at all
+    if _bc_log_step <= 10:
+        print(f"[BC ENTRY #{_bc_log_step}] current_bc_params={current_bc_params is not None}, params.BC={hasattr(params, 'boundary_conditions') and params.boundary_conditions is not None}")
+    
     _log_periodic = (_bc_log_step % 1000 == 0)  # Log every 1000 calls
     if _log_periodic:
         print(f"[PERIODIC:1000] BC_DISPATCHER [Call #{_bc_log_step}] current_bc_params: {type(current_bc_params)}")
     
    # Use current_bc_params if provided, otherwise default to params.boundary_conditions
     bc_config = current_bc_params if current_bc_params is not None else params.boundary_conditions
+    
+    # ✅ FIX: Handle None BC config (NetworkGrid sets params.boundary_conditions=None during segment evolution)
+    # In network mode, ghost cells are managed externally by junction coupling
+    if bc_config is None:
+        # No BC to apply - ghost cells are already set by network coupling
+        if _bc_log_step <= 3:
+            print(f"[BC PHYSICS] Step {_bc_log_step}: bc_config is None - returning")
+        return
     
     # DEBUG: Log which config being used (PERIODIC)
     if _log_periodic:
@@ -222,14 +234,27 @@ def apply_boundary_conditions(U_or_d_U, grid: Grid1D, params: ModelParameters, c
          raise TypeError("Device is 'cpu' but input array is a Numba CUDA device array.")
 
     # --- Get BC Types and Inflow States ---
+    # DEBUG: Show bc_config structure
+    if _bc_log_step <= 20:
+        print(f"[BC TYPE PARSE #{_bc_log_step}] bc_config keys={list(bc_config.keys()) if isinstance(bc_config, dict) else 'NOT-DICT'}")
+    
     left_bc = bc_config.get('left', {'type': 'outflow'})
     right_bc = bc_config.get('right', {'type': 'outflow'})
+    
+    # DEBUG: Show extracted BC
+    if _bc_log_step <= 20:
+        print(f"[BC TYPE PARSE #{_bc_log_step}] left_bc={left_bc}, right_bc={right_bc}")
+    
     left_type_str = left_bc.get('type', 'outflow').lower()
     right_type_str = right_bc.get('type', 'outflow').lower()
-
+    
     type_map = {'inflow': 0, 'outflow': 1, 'periodic': 2, 'wall': 3, 'wall_capped_reflection': 4} # Added wall types
     left_type_code = type_map.get(left_type_str)
     right_type_code = type_map.get(right_type_str)
+    
+    # DEBUG: Show what BC type physics solver sees
+    if _bc_log_step <= 20:
+        print(f"[BC TYPE FINAL #{_bc_log_step}] left_type_str='{left_type_str}', code={left_type_code}")
 
     if left_type_code is None: raise ValueError(f"Unknown left boundary condition type: {left_type_str}")
     if right_type_code is None: raise ValueError(f"Unknown right boundary condition type: {right_type_str}")
@@ -238,10 +263,19 @@ def apply_boundary_conditions(U_or_d_U, grid: Grid1D, params: ModelParameters, c
     inflow_L = [0.0] * 4
     inflow_R = [0.0] * 4
     if left_type_code == 0:
+        print(f"[BC INFLOW BLOCK ENTERED #{_bc_log_step}]")  # FIRST LINE - NO CONDITION
+        # DEBUG: Confirm 'state' field exists
+        if _bc_log_step <= 20:
+            print(f"[BC PARSE #{_bc_log_step}] left_bc keys={list(left_bc.keys())}, type={left_bc.get('type')}")
+        
         inflow_L_state = left_bc.get('state')
         if inflow_L_state is None or len(inflow_L_state) != 4:
-            raise ValueError("Left inflow BC requires a 'state' list/array of length 4.")
+            raise ValueError(f"Left inflow BC requires a 'state' list/array of length 4. Got: {inflow_L_state}")
         inflow_L = list(inflow_L_state) # Ensure it's a list of floats
+        
+        # DEBUG: Show parsed inflow values
+        if _bc_log_step <= 5:
+            print(f"[BC PARSE #{_bc_log_step}] Parsed inflow_L={inflow_L}")
     if right_type_code == 0:
         inflow_R_state = right_bc.get('state')
         if inflow_R_state is None or len(inflow_R_state) != 4:
@@ -318,11 +352,19 @@ def apply_boundary_conditions(U_or_d_U, grid: Grid1D, params: ModelParameters, c
 
         # Left Boundary
         if left_type_code == 0: # Inflow (Modified: Impose full state [rho_m, w_m, rho_c, w_c])
+            # DEBUG: Log inflow values BEFORE application
+            if _bc_log_step <= 20:
+                print(f"[BC INFLOW #{_bc_log_step}] inflow_L={inflow_L}, n_ghost={n_ghost}")
+            
             first_physical_cell_state = U[:, n_ghost:n_ghost+1]
             U[0, 0:n_ghost] = inflow_L[0] # Impose rho_m
             U[1, 0:n_ghost] = inflow_L[1] # Impose w_m (FIXED: was extrapolated)
             U[2, 0:n_ghost] = inflow_L[2] # Impose rho_c
             U[3, 0:n_ghost] = inflow_L[3] # Impose w_c (FIXED: was extrapolated)
+            
+            # DEBUG: Log ghost cell values after BC application
+            if _bc_log_step <= 20:
+                print(f"[BC APPLIED #{_bc_log_step}] Ghost[0:3]={U[:, 0:n_ghost]}")
         elif left_type_code == 1: # Outflow
             first_physical_cell_state = U[:, n_ghost:n_ghost+1]
             U[:, 0:n_ghost] = first_physical_cell_state

@@ -1,4 +1,12 @@
 import numpy as np
+from typing import Optional
+
+# Import for junction-aware flux blocking
+try:
+    from ..network.junction_info import JunctionInfo
+except ImportError:
+    # Handle case where network module is not yet available
+    JunctionInfo = None
 
 class Grid1D:
     """
@@ -16,6 +24,8 @@ class Grid1D:
         _cell_centers (np.ndarray): Array of cell center coordinates (including ghosts).
         _cell_interfaces (np.ndarray): Array of cell interface coordinates (including ghosts).
         road_quality (np.ndarray | None): Array storing road quality index R for each physical cell.
+        junction_at_right (JunctionInfo | None): Junction metadata for flux blocking at right boundary.
+            Set by NetworkGrid during multi-segment evolution to enable traffic signal blocking.
     """
 
     def __init__(self, N: int, xmin: float, xmax: float, num_ghost_cells: int):
@@ -65,6 +75,10 @@ class Grid1D:
 
         # Initialize road quality array for physical cells
         self.road_quality: np.ndarray | None = None # Shape (N_physical,)
+        
+        # Junction metadata for multi-segment networks with traffic signals
+        # Set by NetworkGrid._prepare_junction_info() before segment evolution
+        self.junction_at_right: Optional['JunctionInfo'] = None
         
         # GPU configuration for CUDA kernels
         self.threads_per_block = 256

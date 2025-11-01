@@ -26,35 +26,42 @@ logger = logging.getLogger(__name__)
 
 class NetworkGrid:
     """
-    Central coordinator for multi-segment traffic networks.
+    Multi-segment network coordinator for ARZ traffic flow model.
     
-    This class manages the complete network infrastructure and orchestrates
-    simulation following professional simulator patterns (SUMO, CityFlow).
-    It implements conservation laws at junctions (Garavello & Piccoli 2005).
+    This class manages a network of interconnected road segments with junctions,
+    traffic lights, and segment coupling. The architecture follows industry-standard
+    patterns from SUMO and CityFlow traffic simulators.
     
-    Architecture:
-        - Segments: Individual road sections (Grid1D/SegmentGrid instances)
-        - Nodes: Junctions connecting segments (Node wrappers around Intersection)
-        - Links: Directed connections between segments through nodes
+    Architecture Pattern:
+        - Segments store direct references to end_node (like SUMO's MSEdge.to_junction)
+        - Junction discovery via segment iteration (not link iteration)
+        - Traffic light flux blocking via junction-aware Riemann solver
         
-    Simulation Flow:
-        1. step(dt): Advance all segments one timestep
-        2. _resolve_node_coupling(): Apply θ_k coupling at junctions
-        3. _update_traffic_lights(): Progress traffic light phases
+    Key Components:
+        - segments: Dict[str, segment_data] with 'U' (state) and 'grid' (Grid1D)
+        - nodes: Dict[str, Node] with traffic lights and junction logic
+        - links: List[Link] for routing (NOT for junction discovery)
         
-    Attributes:
-        segments: Dictionary {segment_id: SegmentGrid} of road segments
-        nodes: Dictionary {node_id: Node} of junctions
-        links: List of Link objects connecting segments
-        params: Model parameters (shared across network)
-        graph: NetworkX DiGraph for topology analysis
+    Junction Architecture:
+        When a segment has end_node pointing to a signalized junction:
+        1. segment['end_node'] → node_id (direct reference)
+        2. node.traffic_lights → TrafficLightController
+        3. segment['grid'].junction_at_right → JunctionInfo(light_factor=...)
+        4. Riemann solver applies light_factor to flux at segment boundary
         
-    Academic Note:
-        This implements the "network" concept from Garavello & Piccoli (2005),
-        where the complete system consists of:
-        - I: Set of road segments (edges)
-        - J: Set of junctions (vertices)  
-        - Conservation law: ∑_i f_i^in = ∑_j f_j^out at each junction
+    References:
+        - SUMO: eclipse-sumo/sumo (MSEdge.to_junction pattern)
+        - CityFlow: cityflow-project/CityFlow (Road.end_intersection pattern)
+        - Research: .copilot-tracking/research/20251029-junction-flux-blocking-research.md
+        
+    Example:
+        >>> params = ModelParameters(...)
+        >>> network = NetworkGrid(params)
+        >>> network.add_segment('seg_0', x_start=0, x_end=100, N=50,
+        ...                     end_node='node_1')
+        >>> network.add_node('node_1', traffic_lights=...)
+        >>> network.initialize()
+        >>> network.step(dt=0.1, current_time=0)
     """
     
     def __init__(self, params: ModelParameters):
@@ -116,7 +123,8 @@ class NetworkGrid:
             raise ValueError(f"Segment {segment_id} already exists")
             
         # Create segment grid (Grid1D signature: N, xmin, xmax, num_ghost_cells)
-        grid = Grid1D(N, xmin, xmax, num_ghost_cells=2)
+        # Use num_ghost_cells from params for WENO5 compatibility (requires ≥3)
+        grid = Grid1D(N, xmin, xmax, num_ghost_cells=self.params.ghost_cells)
         
         # Initialize road quality (uniform quality = 2 by default)
         grid.road_quality = np.full(grid.N_total, 2.0)  # Default: good road quality
@@ -141,6 +149,8 @@ class NetworkGrid:
             'V0_m': V0_m,  # Store speed override
             'V0_c': V0_c   # Store speed override
         }
+        
+        print(f"[ADD_SEGMENT] {segment_id}: start_node={start_node}, end_node={end_node}")
         
         self.segments[segment_id] = segment
         
@@ -301,6 +311,129 @@ class NetworkGrid:
         self._initialized = True
         logger.info(f"Network initialized: {len(self.segments)} segments, "
                    f"{len(self.nodes)} nodes, {len(self.links)} links")
+    
+    def _prepare_junction_info(self, current_time: float):
+        """
+        Set junction information for segments with traffic-light-controlled junctions.
+        
+        This method implements the industry-standard segment→junction architecture
+        pattern used by SUMO and CityFlow traffic simulators:
+        
+        - **SUMO Pattern**: MSEdge stores direct myToJunction pointer
+          (src/microsim/MSEdge.h:383-428)
+        - **CityFlow Pattern**: Road stores direct endIntersection pointer
+          (src/roadnet/roadnet.h:173-212)
+        
+        The method iterates directly on segments and checks their end_node attribute,
+        rather than iterating on links (which would miss segments without explicit
+        Link objects).
+        
+        Architecture:
+            for segment in segments:
+                if segment.end_node has traffic_light:
+                    segment.junction_at_right = JunctionInfo(...)
+        
+        This replaces failed ghost cell modification. Instead of post-processing
+        ghost cells, we set junction metadata BEFORE evolution so the numerical
+        flux calculation can apply blocking DURING computation.
+        
+        Args:
+            current_time: Simulation time for traffic light state lookup
+            
+        Implementation Notes:
+            - Segments without end_node remain with junction_at_right = None
+            - light_factor: 1.0 (GREEN - full flow), 0.05 (RED - 95% blocked)
+            - Independent of links list (single source of truth: segment['end_node'])
+            
+        References:
+            - Research: .copilot-tracking/research/20251029-junction-flux-blocking-research.md
+            - SUMO: eclipse-sumo/sumo repository (MSEdge class)
+            - CityFlow: cityflow-project/CityFlow repository (Road class)
+            - Daganzo (1995): The cell transmission model, part II: Network traffic
+        """
+        from ..network.junction_info import JunctionInfo
+        
+        # Clear any existing junction info first
+        for segment in self.segments.values():
+            if hasattr(segment['grid'], 'junction_at_right'):
+                segment['grid'].junction_at_right = None
+        
+        # ✅ Iterate on SEGMENTS (direct - like SUMO/CityFlow)
+        # This pattern matches SUMO's MSEdge.to_junction and CityFlow's Road.end_intersection
+        for seg_id, segment in self.segments.items():
+            end_node_id = segment.get('end_node')
+            
+            # Check if segment has outgoing junction
+            if end_node_id is not None:
+                node = self.nodes[end_node_id]
+                
+                # Check if junction has traffic light
+                if node.traffic_lights is not None:
+                    # Get current traffic light state
+                    green_segments = node.traffic_lights.get_current_green_segments(current_time)
+                    
+                    # Calculate light_factor: 1.0 for GREEN, red_light_factor for RED
+                    if seg_id in green_segments:
+                        light_factor = 1.0  # GREEN - full flow
+                    else:
+                        light_factor = self.params.red_light_factor  # RED - blocked flow
+                    
+                    # Create junction info
+                    junction_info = JunctionInfo(
+                        is_junction=True,
+                        light_factor=light_factor,
+                        node_id=node.node_id
+                    )
+                    
+                    # Set on segment grid
+                    segment['grid'].junction_at_right = junction_info
+                    
+                    logger.debug(
+                        f"Junction info: {seg_id} → {node.node_id}, "
+                        f"factor={light_factor:.2f}"
+                    )
+        
+        # Validation logging (DEBUG level)
+        if logger.isEnabledFor(logging.DEBUG):
+            # Count segments by junction status
+            segments_with_junctions = sum(
+                1 for seg in self.segments.values() 
+                if hasattr(seg['grid'], 'junction_at_right') 
+                and seg['grid'].junction_at_right is not None
+            )
+            segments_with_end_node = sum(
+                1 for seg in self.segments.values() 
+                if seg.get('end_node') is not None
+            )
+            
+            logger.debug(
+                f"Junction info summary: {segments_with_junctions} segments with junction_info, "
+                f"{segments_with_end_node} segments with end_node"
+            )
+            
+            # Verify all segments with traffic lights were processed
+            segments_with_lights = sum(
+                1 for seg in self.segments.values()
+                if seg.get('end_node') is not None
+                and self.nodes[seg['end_node']].traffic_lights is not None
+            )
+            
+            if segments_with_junctions != segments_with_lights:
+                logger.warning(
+                    f"Junction info mismatch: {segments_with_junctions} processed, "
+                    f"{segments_with_lights} expected"
+                )
+    
+    def _clear_junction_info(self):
+        """
+        Clear junction metadata from all segment grids after evolution.
+        
+        This ensures junction info is fresh each timestep and doesn't persist
+        incorrectly if traffic light states change.
+        """
+        for segment in self.segments.values():
+            if hasattr(segment['grid'], 'junction_at_right'):
+                segment['grid'].junction_at_right = None
                    
     def step(self, dt: float, current_time: float = 0.0):
         """
@@ -327,13 +460,32 @@ class NetworkGrid:
             Supports heterogeneous segments with different V0_m/V0_c parameters.
             Segment-specific speeds are passed to physics calculations via params attributes.
         """
+        # CRITICAL DEBUG: Trace execution flow
+        print(f"[STEP.A] Entry")
+        
         if not self._initialized:
+            print(f"[STEP.B] Not initialized!")
             raise RuntimeError("Network not initialized. Call initialize() first.")
+        
+        print(f"[STEP.C] Initialized, segments={len(self.segments)}")
+        
+        print(f"[STEP.D] About to prepare junction info")
             
+        # Step 0.5: Set junction metadata BEFORE segment evolution
+        # NEW APPROACH: Instead of modifying ghost cells (which only affects WENO reconstruction),
+        # we set junction info that the Riemann solver uses to block flux DURING calculation
+        self._prepare_junction_info(current_time)
+        
+        print(f"[STEP.E] Junction info prepared, about to evolve segments")
+        
         # Step 1: Evolve each segment independently (PDE dynamics)
+        # Segments will use junction_at_right metadata during flux calculation
         from ..numerics.time_integration import strang_splitting_step
         
+        print(f"[STEP.F] Imported strang_splitting, entering for loop over {len(self.segments)} segments")
+        
         for seg_id, segment in self.segments.items():
+            print(f"[FOR-LOOP.ENTRY] seg_id={seg_id}")  # FIRST line in loop body
             grid = segment['grid']
             U = segment['U']
             
@@ -352,15 +504,32 @@ class NetworkGrid:
                 self.params._V0_c_override = V0_c_override
             
             try:
+                # ✅ NEW APPROACH: Pass segment-specific BC to physics solver
+                # Extract BC for this specific segment from network-level config
+                saved_bc = self.params.boundary_conditions
+                segment_bc = self._get_segment_bc(seg_id, saved_bc)
+                logger.debug(f"[BC SEGMENT] {seg_id}: segment_bc={segment_bc}")
+                self.params.boundary_conditions = segment_bc  # Use segment-specific BC
+                
                 # Apply Strang splitting on this segment
+                # Device should be set by caller (SimulationRunner or TrafficSignalEnvDirect)
                 if self.params.device == 'cpu':
+                    # DEBUG: Check mass before/after physics step
+                    rho_before = U[0, grid.num_ghost_cells:grid.num_ghost_cells+5].mean()
+                    print(f"[PRE-STRANG] {seg_id}: BC={segment_bc is not None}, calling strang_splitting_step")
                     U_new = strang_splitting_step(U, dt, grid, self.params)
+                    print(f"[POST-STRANG] {seg_id}: strang_splitting returned")
+                    rho_after = U_new[0, grid.num_ghost_cells:grid.num_ghost_cells+5].mean()
+                    if segment_bc is not None and abs(rho_after - rho_before) > 1e-6:
+                        logger.debug(f"[PHYSICS STEP] {seg_id}: ρ_mean[0:5] {rho_before:.6f} → {rho_after:.6f} (Δ={rho_after-rho_before:.6f})")
                     segment['U'] = U_new
                 else:
                     # GPU path would require d_R (road quality array)
                     # For now, network mode only supports CPU
                     raise NotImplementedError("NetworkGrid GPU mode not yet implemented")
             finally:
+                # Restore global BC config
+                self.params.boundary_conditions = saved_bc
                 # Restore original override values
                 if original_V0_m is not None:
                     self.params._V0_m_override = original_V0_m
@@ -373,31 +542,367 @@ class NetworkGrid:
                 else:
                     if hasattr(self.params, '_V0_c_override'):
                         delattr(self.params, '_V0_c_override')
+        
+        # Step 1.5: Clear junction metadata after evolution
+        # Ensures fresh junction info each timestep
+        self._clear_junction_info()
             
-        # Step 2: Resolve node coupling (flux distribution + θ_k)
+        # Step 2: Apply behavioral coupling (θ_k memory transmission)
+        # This implements thesis Section 4.2.2: Phenomenological coupling
+        # Applies AFTER flux resolution to model driver adaptation
         self._resolve_node_coupling(current_time)
         
-        # Step 3: Update traffic lights
+        # Step 3: Update traffic lights for next cycle
         self._update_traffic_lights(dt)
         
+    def _is_boundary_segment(self, segment: Dict) -> Tuple[bool, bool]:
+        """
+        Check if segment has external boundaries.
+        
+        Args:
+            segment: Segment dictionary with 'start_node' and 'end_node'
+            
+        Returns:
+            (has_left_boundary, has_right_boundary) tuple
+            - has_left_boundary: True if start_node is None (upstream network boundary)
+            - has_right_boundary: True if end_node is None (downstream network boundary)
+        """
+        has_left_boundary = segment.get('start_node') is None
+        has_right_boundary = segment.get('end_node') is None
+        return has_left_boundary, has_right_boundary
+    
+    def _get_segment_bc(self, seg_id: str, bc_config: Optional[Dict] = None) -> Optional[Dict]:
+        """
+        Extract boundary condition config for a specific segment in physics solver format.
+        
+        Converts network-level BC specification to segment-level BC dict that
+        the physics solver expects: {'left': {...}, 'right': {...}}
+        
+        Args:
+            seg_id: Segment identifier
+            bc_config: Network-level BC configuration (if None, uses self.params.boundary_conditions)
+            
+        Returns:
+            BC dict in physics solver format or None if no BC for this segment
+            
+        Example:
+            Network BC: {'seg_0': {'left': {'type': 'inflow', 'rho_m': 0.05, 'v_m': 10.0}}}
+            Returns: {'left': {'type': 'inflow', 'state': [0.05, 0.5, 0., 0.]}}
+        """
+        if bc_config is None:
+            bc_config = self.params.boundary_conditions
+        
+        if bc_config is None:
+            return None
+        segment = self.segments.get(seg_id)
+        if segment is None:
+            return None
+        
+        grid = segment['grid']
+        has_left_bc, has_right_bc = self._is_boundary_segment(segment)
+        
+        # Build physics solver BC dict
+        solver_bc = {}
+        
+        # Check for segment-specific BC first
+        if seg_id in bc_config and isinstance(bc_config[seg_id], dict):
+            segment_bc = bc_config[seg_id]
+            
+            if has_left_bc and 'left' in segment_bc:
+                left_bc = segment_bc['left']
+                # Convert to state vector format if needed
+                try:
+                    state = self._parse_bc_state(left_bc)
+                    solver_bc['left'] = {
+                        'type': left_bc.get('type', 'outflow'),
+                        'state': state.tolist()
+                    }
+                    print(f"[BC CONVERSION] {seg_id} left: type={left_bc.get('type')}, state={solver_bc['left']['state']}")
+                except (ValueError, KeyError) as e:
+                    print(f"[BC CONVERSION ERROR] {seg_id} left BC parse failed: {e}")
+                    pass  # Skip invalid BC
+            
+            if has_right_bc and 'right' in segment_bc:
+                right_bc = segment_bc['right']
+                try:
+                    state = self._parse_bc_state(right_bc)
+                    solver_bc['right'] = {
+                        'type': right_bc.get('type', 'outflow'),
+                        'state': state.tolist()
+                    }
+                except (ValueError, KeyError):
+                    pass  # Skip invalid BC
+        
+        # Fallback to network-wide BC
+        if has_left_bc and 'left' not in solver_bc and 'left' in bc_config and isinstance(bc_config.get('left'), dict):
+            left_bc = bc_config['left']
+            try:
+                state = self._parse_bc_state(left_bc)
+                solver_bc['left'] = {
+                    'type': left_bc.get('type', 'outflow'),
+                    'state': state.tolist()
+                }
+            except (ValueError, KeyError):
+                pass
+        
+        if has_right_bc and 'right' not in solver_bc and 'right' in bc_config and isinstance(bc_config.get('right'), dict):
+            right_bc = bc_config['right']
+            try:
+                state = self._parse_bc_state(right_bc)
+                solver_bc['right'] = {
+                    'type': right_bc.get('type', 'outflow'),
+                    'state': state.tolist()
+                }
+            except (ValueError, KeyError):
+                pass
+        
+        return solver_bc if solver_bc else None
+    
+    def _parse_bc_state(self, bc_spec: dict) -> np.ndarray:
+        """Parse boundary condition state from various formats.
+        
+        Supports:
+        - Direct state vector: {'state': [rho_m, w_m, rho_c, w_c]}
+        - Velocity format: {'rho_m': 0.05, 'v_m': 10.0, 'rho_c': 0.03, 'v_c': 10.0}
+        
+        Args:
+            bc_spec: Boundary condition specification dictionary
+            
+        Returns:
+            State vector [rho_m, w_m, rho_c, w_c]
+            
+        Raises:
+            ValueError: If format is invalid or required fields missing
+        """
+        if 'state' in bc_spec:
+            state = bc_spec['state']
+            if len(state) != 4:
+                raise ValueError(f"BC state must have 4 components, got {len(state)}")
+            return np.array(state)
+        
+        elif 'rho_m' in bc_spec and 'v_m' in bc_spec:
+            rho_m = bc_spec['rho_m']
+            v_m = bc_spec['v_m']
+            rho_c = bc_spec.get('rho_c', 0.0)
+            v_c = bc_spec.get('v_c', 0.0)
+            
+            # Convert velocity to Lagrangian momentum: w = v + p(rho)
+            # Calculate pressure from density
+            from ..core import physics
+            rho_m_arr = np.array([rho_m])
+            rho_c_arr = np.array([rho_c])
+            p_m, p_c = physics.calculate_pressure(
+                rho_m_arr, rho_c_arr,
+                self.params.alpha, self.params.rho_jam, self.params.epsilon,
+                self.params.K_m, self.params.gamma_m,
+                self.params.K_c, self.params.gamma_c
+            )
+            
+            # Lagrangian momentum: w = v + p
+            w_m = v_m + p_m[0]
+            w_c = v_c + p_c[0]
+            
+            print(f"[BC V→W CONVERSION] rho_m={rho_m:.4f}, v_m={v_m:.4f}, p_m={p_m[0]:.4f} → w_m={w_m:.4f}")
+            
+            return np.array([rho_m, w_m, rho_c, w_c])
+        
+        else:
+            raise ValueError(f"Invalid BC state format. Must have 'state' or 'rho_m'/'v_m': {bc_spec}")
+    
+    def _validate_bc_format(self, bc_config: dict) -> None:
+        """Validate boundary condition format.
+        
+        Detects:
+        - Network-wide format: {'left': {...}, 'right': {...}}
+        - Segment-specific format: {'seg_0': {'left': {...}}}
+        - Mixed format (logs warning)
+        
+        Args:
+            bc_config: Boundary condition configuration dictionary
+            
+        Raises:
+            ValueError: If bc_config is not a dictionary
+        """
+        if not isinstance(bc_config, dict):
+            raise ValueError("boundary_conditions must be dict")
+        
+        # Check formats
+        has_network_wide = 'left' in bc_config or 'right' in bc_config
+        segment_keys = [k for k in bc_config.keys() if k in self.segments]
+        has_segment_specific = len(segment_keys) > 0
+        
+        if has_network_wide and has_segment_specific:
+            logger.warning(
+                f"Mixed BC format detected. Network-wide: {has_network_wide}, "
+                f"Segment-specific: {segment_keys}. "
+                f"Segment-specific BCs will override network-wide for those segments."
+            )
+        
+        # Validate segment-specific format
+        for seg_key in segment_keys:
+            seg_bc = bc_config[seg_key]
+            if not isinstance(seg_bc, dict):
+                raise ValueError(f"Segment BC '{seg_key}' must be dict, got {type(seg_bc)}")
+            if 'left' not in seg_bc and 'right' not in seg_bc:
+                logger.warning(f"Segment BC '{seg_key}' has no 'left' or 'right' specification")
+    
+    def _apply_network_boundary_conditions(self):
+        """
+        Apply external boundary conditions to segments with network boundaries.
+        
+        Supports two BC specification formats:
+        
+        1. Network-wide format (backward compatible):
+           boundary_conditions = {
+               'left': {'type': 'inflow', 'state': [0.05, 0.5, 0.03, 0.3]},
+               'right': {'type': 'outflow'}
+           }
+           Applied to all boundary segments.
+        
+        2. Segment-specific format (new):
+           boundary_conditions = {
+               'seg_0': {'left': {'type': 'inflow', 'state': [...]}},
+               'seg_1': {'right': {'type': 'outflow'}}
+           }
+           Applied to individual segments, overriding network-wide if present.
+        
+        Precedence: segment-specific > network-wide > None
+        
+        State Formats:
+        - State vector: {'state': [rho_m, w_m, rho_c, w_c]}
+        - Velocity components: {'rho_m': 0.05, 'v_m': 10.0, 'rho_c': 0.03, 'v_c': 10.0}
+        
+        Internal junctions are handled by _resolve_node_coupling() separately.
+        
+        References:
+        - CTM hierarchical configuration (Daganzo 1994)
+        - METANET segment-level BC (Papageorgiou et al. 1990)
+        - Network LWR formulation (Garavello & Piccoli 2005)
+        """
+        # Check if boundary conditions are defined
+        if not hasattr(self.params, 'boundary_conditions') or self.params.boundary_conditions is None:
+            # No BC defined - network is closed (only IC evolution)
+            # This is VALID for some scenarios (e.g., pure network equilibrium studies)
+            logger.warning("[BC CHECK] No boundary_conditions defined on self.params")
+            return
+        
+        bc_config = self.params.boundary_conditions
+        logger.debug(f"[BC CONFIG READ] bc_config type={type(bc_config)}, keys={list(bc_config.keys()) if isinstance(bc_config, dict) else 'N/A'}")
+        
+        # Validate BC format
+        self._validate_bc_format(bc_config)
+        
+        # Detect BC format for logging
+        has_network_wide = 'left' in bc_config or 'right' in bc_config
+        segment_keys = [k for k in bc_config.keys() if k in self.segments]
+        has_segment_specific = len(segment_keys) > 0
+        
+        if has_segment_specific:
+            logger.debug(f"Segment-specific BC detected for: {segment_keys}")
+        if has_network_wide:
+            logger.debug(f"Network-wide BC detected: left={'left' in bc_config}, right={'right' in bc_config}")
+        
+        # Process each segment
+        for seg_id, segment in self.segments.items():
+            logger.debug(f"[BC LOOP] Processing seg_id={seg_id}")
+            has_left_bc, has_right_bc = self._is_boundary_segment(segment)
+            logger.debug(f"[BC LOOP] {seg_id}: has_left_bc={has_left_bc}, has_right_bc={has_right_bc}")
+            
+            # Skip segments with no external boundaries
+            if not has_left_bc and not has_right_bc:
+                logger.debug(f"[BC LOOP] {seg_id}: No external boundaries, skipping")
+                continue
+            
+            grid = segment['grid']
+            U = segment['U']
+            logger.debug(f"[BC LOOP] {seg_id}: U.shape={U.shape}")
+            
+            # HYBRID PARSING: Check segment-specific first, fall back to network-wide
+            logger.debug(f"[BC HYBRID CHECK] seg_id='{seg_id}' in bc_config={seg_id in bc_config}")
+            if seg_id in bc_config:
+                logger.debug(f"[BC HYBRID CHECK] bc_config['{seg_id}']={bc_config[seg_id]}, is_dict={isinstance(bc_config[seg_id], dict)}")
+            
+            if seg_id in bc_config and isinstance(bc_config[seg_id], dict):
+                # Segment-specific format: {'seg_0': {'left': {...}}}
+                segment_bc = bc_config[seg_id]
+                left_bc = segment_bc.get('left') if has_left_bc else None
+                right_bc = segment_bc.get('right') if has_right_bc else None
+                logger.debug(f"[BC HYBRID] Using segment-specific BC for {seg_id}: left_bc={left_bc}, right_bc={right_bc}")
+            else:
+                # Network-wide format: {'left': {...}, 'right': {...}}
+                left_bc = bc_config.get('left') if has_left_bc else None
+                right_bc = bc_config.get('right') if has_right_bc else None
+                if left_bc or right_bc:
+                    logger.debug(f"[BC HYBRID] Using network-wide BC for {seg_id}: left_bc={left_bc}, right_bc={right_bc}")
+            
+            # Apply left boundary condition (upstream)
+            if left_bc:
+                logger.debug(f"Applying left BC to {seg_id}: {left_bc.get('type', 'unknown')}")
+                bc_type = left_bc.get('type', 'outflow').lower()
+                
+                if bc_type == 'inflow':
+                    # Parse BC state (supports both vector and velocity formats)
+                    try:
+                        inflow_state = self._parse_bc_state(left_bc)
+                        logger.debug(f"[BC PARSE] {seg_id} left inflow_state: {inflow_state}")
+                        
+                        # Apply to ghost cells [0:2]
+                        U[0, :2] = inflow_state[0]  # rho_m
+                        U[1, :2] = inflow_state[1]  # w_m
+                        U[2, :2] = inflow_state[2]  # rho_c
+                        U[3, :2] = inflow_state[3]  # w_c
+                        
+                        logger.debug(f"[BC APPLIED] {seg_id} left ghost cells U[:,:2]=\n{U[:,:2]}")
+                    except Exception as e:
+                        logger.error(f"Failed to parse left BC for {seg_id}: {e}")
+                
+                elif bc_type == 'outflow':
+                    # Free outflow (copy from physical domain)
+                    U[:, :2] = U[:, 2:4]  # Copy from first physical cells
+            
+            # Apply right boundary condition (downstream)
+            if right_bc:
+                logger.debug(f"Applying right BC to {seg_id}: {right_bc.get('type', 'unknown')}")
+                bc_type = right_bc.get('type', 'outflow').lower()
+                
+                if bc_type == 'inflow':
+                    # Parse BC state (supports both vector and velocity formats)
+                    try:
+                        inflow_state = self._parse_bc_state(right_bc)
+                        logger.debug(f"[BC PARSE] {seg_id} right inflow_state: {inflow_state}")
+                        
+                        U[0, -2:] = inflow_state[0]  # rho_m
+                        U[1, -2:] = inflow_state[1]  # w_m
+                        U[2, -2:] = inflow_state[2]  # rho_c
+                        U[3, -2:] = inflow_state[3]  # w_c
+                        
+                        logger.debug(f"[BC APPLIED] {seg_id} right ghost cells U[:,-2:]=\n{U[:,-2:]}")
+                    except Exception as e:
+                        logger.error(f"Failed to parse right BC for {seg_id}: {e}")
+                
+                elif bc_type == 'outflow':
+                    # Free outflow (copy from physical domain) - STANDARD
+                    U[:, -2:] = U[:, -4:-2]  # Copy from last physical cells
+    
     def _resolve_node_coupling(self, current_time: float):
         """
-        Apply junction coupling at all nodes.
+        Step 2 of junction coupling: Apply behavioral coupling (θ_k).
         
-        This implements the two-step coupling from thesis:
-        1. Flux resolution: Distribute fluxes conserving mass
-        2. Behavioral coupling: Apply θ_k to boundary conditions
+        This implements the phenomenological behavioral transmission following
+        Kolb et al. (2018). Applies AFTER flux resolution to model driver
+        memory/adaptation at junctions.
         
         Args:
             current_time: Current simulation time (for traffic lights)
         
         Academic Note:
-            Step 1 follows Daganzo (1995) supply-demand paradigm.
-            Step 2 follows Kolb et al. (2018) phenomenological coupling.
+            This is SEPARATE from flux resolution (physical blocking).
+            θ_k models driver behavior/memory, not physical flow capacity.
+            
+        Academic Reference:
+            - Kolb et al. (2018): Phenomenological ARZ coupling
+            - Thesis Section 4.2.2: "Behavioral Transmission via θ_k Coupling"
         """
-        # TODO Phase 5.3: Add flux resolution step before θ_k coupling
-        # For now, we only apply θ_k behavioral coupling
-        
         for link in self.links:
             # Get upstream segment exit state
             from_seg = self.segments[link.from_segment]

@@ -50,36 +50,48 @@ def _calculate_outgoing_flux(node: Intersection, segment_id: str, U_in: np.ndarr
                            green_segments: List[str], dt: float,
                            params: ModelParameters) -> np.ndarray:
     """
-    Calcule le flux sortant pour un segment spécifique.
+    Calculate outgoing flux for a specific segment at a junction.
+    
+    Note: Junction flux blocking is now handled by the junction-aware Riemann solver
+    (Bug #8 fix in riemann_solvers.py). This function provides state transmission for
+    behavioral coupling (θ_k) and queue management, NOT physical flux blocking.
+    
+    Args:
+        node: Intersection node
+        segment_id: Segment identifier
+        U_in: Incoming conserved state [rho_m, w_m, rho_c, w_c]
+        green_segments: List of segments with green light
+        dt: Timestep size
+        params: Model parameters
+        
+    Returns:
+        U_out: Outgoing conserved state [rho_m, w_m, rho_c, w_c]
+        
+    Academic Reference:
+        - Kolb et al. (2018): Behavioral coupling via θ_k parameter
+        - Note: Physical flux blocking handled by junction-aware Riemann solver
     """
-    # Extraire les densités et vitesses
+    # Extract densities and momenta
     rho_m, w_m, rho_c, w_c = U_in
 
-    # Calculer les vitesses physiques
+    # Calculate physical velocities
     p_m, p_c = _calculate_pressures(rho_m, rho_c, params)
     v_m, v_c = _calculate_velocities(w_m, w_c, p_m, p_c)
 
-    # Vérifier si le segment a le feu vert
-    has_green_light = segment_id in green_segments
-
-    # Facteur de réduction si feu rouge
-    light_factor = 1.0 if has_green_light else params.red_light_factor
-
-    # Vérifier les files d'attente au nœud
+    # Check queue effects at the node
     queue_factor = _calculate_queue_factor(node, segment_id)
 
-    # Calculer les flux avec réduction
-    flux_m = rho_m * v_m * light_factor * queue_factor
-    flux_c = rho_c * v_c * light_factor * queue_factor
-
-    # Créer le vecteur de flux sortant
-    # Note: Pour les nœuds, on impose directement les densités et vitesses
-    # plutôt que de calculer un vrai flux numérique
+    # Apply queue reduction to velocities (behavioral effect)
+    # Note: Physical flux blocking is handled by Riemann solver, not here
+    w_m_out = w_m * queue_factor
+    w_c_out = w_c * queue_factor
+    
+    # Create outgoing state vector (densities unchanged, velocities adjusted for queues)
     U_out = np.array([
-        rho_m,  # Densité moto conservée
-        w_m * light_factor * queue_factor,  # Vitesse moto réduite
-        rho_c,  # Densité voiture conservée
-        w_c * light_factor * queue_factor   # Vitesse voiture réduite
+        rho_m,      # Density (unchanged - flux blocking handled by Riemann solver)
+        w_m_out,    # Velocity (adjusted for queue effects)
+        rho_c,      # Density (unchanged)
+        w_c_out     # Velocity (adjusted for queue effects)
     ])
 
     return U_out
@@ -155,9 +167,11 @@ def _get_coupling_parameter(node: Intersection,
             # Green light: moderate memory (acceleration scenario)
             # Motos accelerate more aggressively than cars
             if vehicle_class == 'motorcycle':
-                return params.theta_moto_signalized  # Default: 0.8
+                # ✅ FIX: Use default 0.8 if params.theta_moto_signalized is None
+                return params.theta_moto_signalized if params.theta_moto_signalized is not None else 0.8
             else:
-                return params.theta_car_signalized   # Default: 0.5
+                # ✅ FIX: Use default 0.5 if params.theta_car_signalized is None
+                return params.theta_car_signalized if params.theta_car_signalized is not None else 0.5
         else:
             # Red light: complete behavioral reset (vehicles stopped)
             return 0.0
@@ -167,15 +181,19 @@ def _get_coupling_parameter(node: Intersection,
     if hasattr(node, 'priority_segments') and segment_id in node.priority_segments:
         # Priority road: minimal behavioral disruption
         if vehicle_class == 'motorcycle':
-            return params.theta_moto_priority     # Default: 0.9
+            # ✅ FIX: Use default 0.9 if params.theta_moto_priority is None
+            return params.theta_moto_priority if params.theta_moto_priority is not None else 0.9
         else:
-            return params.theta_car_priority      # Default: 0.9
+            # ✅ FIX: Use default 0.9 if params.theta_car_priority is None
+            return params.theta_car_priority if params.theta_car_priority is not None else 0.9
     else:
         # Secondary road (stop/yield): strong behavioral reset
         if vehicle_class == 'motorcycle':
-            return params.theta_moto_secondary    # Default: 0.1
+            # ✅ FIX: Use default 0.1 if params.theta_moto_secondary is None
+            return params.theta_moto_secondary if params.theta_moto_secondary is not None else 0.1
         else:
-            return params.theta_car_secondary     # Default: 0.1
+            # ✅ FIX: Use default 0.1 if params.theta_car_secondary is None
+            return params.theta_car_secondary if params.theta_car_secondary is not None else 0.1
 
 
 def _apply_behavioral_coupling(U_in: np.ndarray,

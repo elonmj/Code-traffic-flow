@@ -28,17 +28,79 @@ from signals.controller import create_signal_controller
 from env.traffic_signal_env import TrafficSignalEnv, EnvironmentConfig
 from utils.config import (
     load_configs, load_config, validate_config_consistency, setup_logging,
-    ExperimentTracker, save_training_results
+    ExperimentTracker, save_training_results, RLConfigBuilder
 )
 
 
-def create_custom_dqn_policy():
-    """Create custom DQN policy network"""
-    return "MlpPolicy"  # Use built-in MLP policy
+def create_environment_pydantic(rl_config: 'RLConfigBuilder', use_mock: bool = False) -> TrafficSignalEnv:
+    """
+    Create traffic signal environment from Pydantic configs (NEW).
+    
+    Args:
+        rl_config: RLConfigBuilder instance with Pydantic configs
+        use_mock: If True, use mock simulator instead of real ARZ
+    
+    Returns:
+        TrafficSignalEnv instance
+    """
+    # Create endpoint client
+    endpoint_params = rl_config.endpoint_params.copy()
+    if use_mock:
+        endpoint_params["protocol"] = "mock"
+    
+    endpoint_config = EndpointConfig(**endpoint_params)
+    endpoint_client = create_endpoint_client(endpoint_config)
+    
+    # Create signal controller
+    signal_controller = create_signal_controller(rl_config.signal_params)
+    
+    # Create environment config from RL parameters
+    env_params = rl_config.rl_env_params
+    env_config = EnvironmentConfig(
+        dt_decision=env_params["dt_decision"],
+        episode_length=env_params["episode_length"],
+        max_steps=env_params["max_steps"],
+        rho_max_motorcycles=env_params["normalization"]["rho_max_motorcycles"],
+        rho_max_cars=env_params["normalization"]["rho_max_cars"],
+        v_free_motorcycles=env_params["normalization"]["v_free_motorcycles"],
+        v_free_cars=env_params["normalization"]["v_free_cars"],
+        queue_max=env_params["normalization"]["queue_max"],
+        phase_time_max=env_params["normalization"]["phase_time_max"],
+        w_wait_time=env_params["reward"]["w_wait_time"],
+        w_queue_length=env_params["reward"]["w_queue_length"],
+        w_stops=env_params["reward"]["w_stops"],
+        w_switch_penalty=env_params["reward"]["w_switch_penalty"],
+        w_throughput=env_params["reward"]["w_throughput"],
+        reward_clip=tuple(env_params["reward"]["reward_clip"]),
+        stop_speed_threshold=env_params["reward"]["stop_speed_threshold"],
+        ewma_alpha=env_params["observation"]["ewma_alpha"],
+        include_phase_timing=env_params["observation"]["include_phase_timing"],
+        include_queues=env_params["observation"]["include_queues"]
+    )
+    
+    # Extract branch IDs from ARZ config (if available)
+    # For now, use default branch IDs - this will be updated when we integrate
+    # with full network configuration
+    branch_ids = ["branch_0", "branch_1", "branch_2", "branch_3"]
+    
+    # Create environment
+    env = TrafficSignalEnv(
+        endpoint_client=endpoint_client,
+        signal_controller=signal_controller,
+        config=env_config,
+        branch_ids=branch_ids
+    )
+    
+    return env
 
 
 def create_environment(configs: dict, use_mock: bool = False) -> TrafficSignalEnv:
-    """Create traffic signal environment from configs"""
+    """
+    Create traffic signal environment from configs (LEGACY - YAML-based).
+    
+    DEPRECATED: Use create_environment_pydantic() for new code.
+    This function is preserved for backward compatibility.
+    """
     
     # Create endpoint client
     # Handle nested config structure
@@ -146,6 +208,11 @@ def find_latest_checkpoint(checkpoint_dir: str, name_prefix: str) -> tuple[str, 
     checkpoint_path = os.path.join(checkpoint_dir, latest_checkpoint[0])
     
     return checkpoint_path, latest_checkpoint[1]
+
+
+def create_custom_dqn_policy():
+    """Create custom DQN policy network"""
+    return "MlpPolicy"  # Use built-in MLP policy
 
 
 def train_dqn_agent(
@@ -530,6 +597,9 @@ def main():
         parser.add_argument("--use-mock", action="store_true", help="Use mock ARZ simulator")
         parser.add_argument("--seed", type=int, default=42, help="Random seed")
         parser.add_argument("--no-baseline", action="store_true", help="Skip baseline comparison")
+        parser.add_argument("--use-pydantic", action="store_true", help="Use Pydantic configs instead of YAML")
+        parser.add_argument("--scenario", type=str, default="lagos", help="Scenario for Pydantic mode (simple, lagos, riemann)")
+        parser.add_argument("--grid-size", type=int, default=200, help="Grid size N for Pydantic mode")
         
         args = parser.parse_args()
         config_dir = args.config_dir
@@ -541,36 +611,64 @@ def main():
         use_mock = args.use_mock
         seed = args.seed
         no_baseline = args.no_baseline
+        use_pydantic = args.use_pydantic
+        scenario = args.scenario
+        grid_size = args.grid_size
     
     # Setup logging
     setup_logging(level="INFO")
-    
-    # Load configurations based on selected config set
-    print(f"Loading {config_set} configurations...")
-    if config_set == "lagos":
-        # Load Lagos-specific configurations
-        configs = {}
-        configs["endpoint"] = load_config(os.path.join(config_dir, "endpoint.yaml"))
-        configs["network"] = load_config(os.path.join(config_dir, "network_real.yaml"))
-        configs["env"] = load_config(os.path.join(config_dir, "env_lagos.yaml"))
-        configs["signals"] = load_config(os.path.join(config_dir, "signals_lagos.yaml"))
-        print("   ✓ Using Lagos Victoria Island configuration set")
-    else:
-        # Load default configurations
-        configs = load_configs(config_dir)
-        print("   ✓ Using default configuration set")
-    
-    if not validate_config_consistency(configs):
-        print("Configuration validation failed!")
-        return 1
     
     # Set random seed
     np.random.seed(seed)
     torch.manual_seed(seed)
     
-    # Create environment
-    print("Creating environment...")
-    env = create_environment(configs, use_mock=use_mock)
+    # Create environment using Pydantic or YAML configs
+    if not is_kaggle and use_pydantic:
+        # NEW: Use Pydantic configuration system
+        print(f"✨ Using Pydantic configuration system (scenario: {scenario})")
+        print(f"   Grid size: N={grid_size}")
+        print(f"   Episode length: {timesteps * 15.0 / 1000.0:.0f}s")  # Approximate
+        
+        rl_config = RLConfigBuilder.for_training(
+            scenario=scenario,
+            N=grid_size,
+            episode_length=3600.0,  # 1 hour episodes
+            device="cpu",  # Will auto-detect GPU in future
+            dt_decision=15.0
+        )
+        
+        print("Creating environment with Pydantic configs...")
+        env = create_environment_pydantic(rl_config, use_mock=use_mock)
+        
+        configs = rl_config.to_legacy_dict()  # For experiment tracking
+        
+    else:
+        # LEGACY: Use YAML configuration system
+        print(f"⚠️  Using legacy YAML configuration system")
+        if not is_kaggle:
+            print(f"   💡 Tip: Use --use-pydantic flag to use new Pydantic configs")
+        
+        # Load configurations based on selected config set
+        print(f"Loading {config_set} configurations...")
+        if config_set == "lagos":
+            # Load Lagos-specific configurations
+            configs = {}
+            configs["endpoint"] = load_config(os.path.join(config_dir, "endpoint.yaml"))
+            configs["network"] = load_config(os.path.join(config_dir, "network_real.yaml"))
+            configs["env"] = load_config(os.path.join(config_dir, "env_lagos.yaml"))
+            configs["signals"] = load_config(os.path.join(config_dir, "signals_lagos.yaml"))
+            print("   ✓ Using Lagos Victoria Island configuration set")
+        else:
+            # Load default configurations
+            configs = load_configs(config_dir)
+            print("   ✓ Using default configuration set")
+        
+        if not validate_config_consistency(configs):
+            print("Configuration validation failed!")
+            return 1
+        
+        print("Creating environment with YAML configs...")
+        env = create_environment(configs, use_mock=use_mock)
     
     # Initialize experiment tracker
     tracker = ExperimentTracker(output_dir)

@@ -10,7 +10,7 @@ Performance: ~0.2-0.6ms per step (100-200x faster than server-based coupling)
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
-from typing import Dict, Tuple, Optional, Any
+from typing import Dict, Tuple, Optional, Any, List
 import os
 import sys
 
@@ -45,7 +45,8 @@ class TrafficSignalEnvDirect(gym.Env):
     metadata = {'render_modes': []}
     
     def __init__(self,
-                 scenario_config_path: str,
+                 scenario_config_path: str = None,
+                 simulation_config = None,  # NEW: Accept Pydantic SimulationConfig
                  base_config_path: str = None,
                  decision_interval: float = 15.0,  # Changed from 10.0 (Bug #27 validation, 4x improvement)
                  observation_segments: Dict[str, list] = None,
@@ -58,7 +59,8 @@ class TrafficSignalEnvDirect(gym.Env):
         Initialize the traffic signal environment with direct simulator coupling.
         
         Args:
-            scenario_config_path: Path to ARZ scenario YAML config
+            scenario_config_path: Path to ARZ scenario YAML config (DEPRECATED, use simulation_config)
+            simulation_config: Pydantic SimulationConfig object (NEW, preferred)
             base_config_path: Path to ARZ base config (default: arz_model/config/config_base.yml)
             decision_interval: Time between agent decisions in seconds (default: 15.0)
                               Justification: Bug #27 investigation showed 4x improvement (593 → 2361 episode reward)
@@ -73,10 +75,19 @@ class TrafficSignalEnvDirect(gym.Env):
             episode_max_time: Maximum simulation time per episode in seconds
             quiet: Suppress simulator output
             device: 'cpu' or 'gpu' for simulation backend
+            
+        Note:
+            You must provide either scenario_config_path (legacy) OR simulation_config (new).
+            If both provided, simulation_config takes precedence.
         """
         super().__init__()
         
+        # Validate configuration inputs
+        if simulation_config is None and scenario_config_path is None:
+            raise ValueError("Must provide either simulation_config (Pydantic) or scenario_config_path (YAML)")
+        
         # Store configuration
+        self.simulation_config = simulation_config
         self.scenario_config_path = scenario_config_path
         self.base_config_path = base_config_path or os.path.join(
             os.path.dirname(__file__), '../../../arz_model/config/config_base.yml'
@@ -205,13 +216,177 @@ class TrafficSignalEnvDirect(gym.Env):
             print(f"  Device: {self.device}")
     
     def _initialize_simulator(self):
-        """Initialize ARZ simulator with direct instantiation (MuJoCo pattern)."""
-        self.runner = SimulationRunner(
-            scenario_config_path=self.scenario_config_path,
-            base_config_path=self.base_config_path,
-            quiet=self.quiet,
-            device=self.device
-        )
+        """
+        Initialize simulator (Grid1D or NetworkGrid).
+        
+        Detects configuration type and creates appropriate simulator through SimulationRunner:
+        - SimulationConfig (grid=GridConfig) → SimulationRunner → Grid1D
+        - NetworkSimulationConfig (segments/nodes/links) → SimulationRunner → NetworkGrid
+        
+        This enables seamless scaling from single-segment (20m) to multi-segment (400m-15km).
+        """
+        if self.simulation_config is not None:
+            # NEW: Pydantic config mode
+            # SimulationRunner handles BOTH SimulationConfig and NetworkSimulationConfig
+            if not self.quiet:
+                from arz_model.config.network_simulation_config import NetworkSimulationConfig
+                if isinstance(self.simulation_config, NetworkSimulationConfig):
+                    print("🌐 Initializing NetworkGrid simulation (multi-segment)")
+                    print(f"   Segments: {len(self.simulation_config.segments)}")
+                    print(f"   Nodes: {len(self.simulation_config.nodes)}")
+                else:
+                    print("📏 Initializing Grid1D simulation (single segment)")
+            
+            # Create SimulationRunner (handles both types!)
+            self.runner = SimulationRunner(
+                config=self.simulation_config,
+                quiet=self.quiet,
+                device=self.device
+            )
+            
+            # Initialize simulation
+            self.runner.initialize_simulation()
+            
+            if not self.quiet:
+                print(f"✅ Simulation initialized")
+                print(f"   Decision interval: {self.decision_interval}s")
+        
+        else:
+            # ============================================================
+            # LEGACY: YAML config mode
+            # ============================================================
+            if not self.quiet:
+                print("📄 Initializing from YAML (legacy mode)")
+            
+            self.runner = SimulationRunner(
+                scenario_config_path=self.scenario_config_path,
+                base_config_path=self.base_config_path,
+                quiet=self.quiet,
+                device=self.device
+            )
+            
+            # Initialize YAML-based simulation
+            self.runner.initialize_simulation()
+            
+            if not self.quiet:
+                print(f"✅ YAML config initialized")
+        
+        # Store grid/network reference for observation extraction
+        if hasattr(self.runner, 'grid'):
+            # Single segment mode
+            self.grid = self.runner.grid
+        elif hasattr(self.runner, 'network'):
+            # Network mode
+            self.network = self.runner.network
+            if not self.quiet:
+                print(f"   Network segments available for observation:")
+                for seg_id in list(self.network.segments.keys())[:5]:
+                    print(f"      - {seg_id}")
+                if len(self.network.segments) > 5:
+                    print(f"      ... and {len(self.network.segments) - 5} more")
+
+    @property
+    def _current_time(self) -> float:
+        """Get current simulation time - uses SimulationRunner unified API."""
+        return self.runner.current_time
+
+    def _extract_network_observations(self, segment_ids: List[str]) -> Dict[str, np.ndarray]:
+        """
+        Extract observations from NetworkGrid segments.
+        
+        Args:
+            segment_ids: List of segment IDs or indices to observe
+            
+        Returns:
+            Dictionary with keys: 'rho_m', 'v_m', 'rho_c', 'v_c' (averaged values per segment)
+        """
+        n_segments = len(segment_ids)
+        rho_m = np.zeros(n_segments, dtype=np.float32)
+        v_m = np.zeros(n_segments, dtype=np.float32)
+        rho_c = np.zeros(n_segments, dtype=np.float32)
+        v_c = np.zeros(n_segments, dtype=np.float32)
+        
+        # NetworkGrid uses segment IDs like 'seg_0', 'seg_1'
+        # But observation_segments may contain indices (for Grid1D compatibility)
+        # Convert indices to segment IDs if needed
+        network_seg_ids = []
+        for seg in segment_ids:
+            if isinstance(seg, (int, np.integer)):
+                # It's an index - map to segment ID
+                # Assume segments are named 'seg_0', 'seg_1', etc.
+                network_seg_ids.append(f'seg_{seg % len(self.runner.network.segments)}')
+            else:
+                network_seg_ids.append(seg)
+        
+        for i, seg_id in enumerate(network_seg_ids):
+            if seg_id in self.runner.network.segments:
+                segment = self.runner.network.segments[seg_id]
+                # segment is a dict: {'grid': Grid1D, 'U': np.ndarray, ...}
+                U = segment['U']  # State array (4, N_total)
+                
+                # Average over physical cells (exclude ghost cells at indices 0,1 and -2,-1)
+                rho_m[i] = np.mean(U[0, 2:-2])  # Motorcycles density
+                rho_c[i] = np.mean(U[2, 2:-2])  # Cars density
+                
+                # For ARZ model: v = w - p (Lagrangian variables)
+                # Must calculate pressure to get physical velocity
+                from arz_model.core.physics import calculate_pressure, calculate_physical_velocity
+                
+                # Extract momentum averages
+                w_m_avg = np.mean(U[1, 2:-2])
+                w_c_avg = np.mean(U[3, 2:-2])
+                
+                # Calculate pressure at average densities
+                p_m_val, p_c_val = calculate_pressure(
+                    np.array([rho_m[i]]), np.array([rho_c[i]]),
+                    self.runner.params.alpha, self.runner.params.rho_jam, self.runner.params.epsilon,
+                    self.runner.params.K_m, self.runner.params.gamma_m,
+                    self.runner.params.K_c, self.runner.params.gamma_c
+                )
+                
+                # Physical velocity: v = w - p
+                v_m_calc, v_c_calc = calculate_physical_velocity(
+                    np.array([w_m_avg]), np.array([w_c_avg]),
+                    p_m_val, p_c_val
+                )
+                
+                v_m[i] = float(v_m_calc[0])
+                v_c[i] = float(v_c_calc[0])
+        
+        return {
+            'rho_m': rho_m,
+            'v_m': v_m,
+            'rho_c': rho_c,
+            'v_c': v_c
+        }
+
+    def _set_signal_state(self, node_id: str, phase_id: int) -> None:
+        """
+        Set traffic signal state - uses SimulationRunner unified API.
+        
+        Args:
+            node_id: Node identifier (e.g., 'left' for Grid1D, 'node_1' for NetworkGrid)
+            phase_id: Phase identifier (0=red, 1=green)
+        """
+        # Check if NetworkGrid mode
+        if hasattr(self.runner, 'is_network_mode') and self.runner.is_network_mode:
+            # NetworkGridSimulator API: set_signal(signal_plan: Dict)
+            if phase_id == 0:
+                green_times = [5.0, 25.0]  # [main, cross] - RED phase
+            else:
+                green_times = [25.0, 5.0]  # [main, cross] - GREEN phase
+            
+            signal_plan = {
+                'node_id': node_id,
+                'phase_id': phase_id,
+                'green_times': green_times,
+                'yellow_time': 3.0,
+                'all_red_time': 2.0
+            }
+            self.runner.set_signal(signal_plan)
+        else:
+            # Grid1D API: set_traffic_signal_state()
+            self.runner.set_traffic_signal_state(node_id, phase_id)
     
     def reset(self, seed: Optional[int] = None, options: Optional[Dict] = None) -> Tuple[np.ndarray, Dict]:
         """
@@ -232,7 +407,7 @@ class TrafficSignalEnvDirect(gym.Env):
         if hasattr(self, 'episode_step') and self.episode_step > 0 and not self.quiet:
             print(f"\n{'='*80}")
             print(f"[EPISODE END] Steps: {self.episode_step} | "
-                  f"Duration: {self.runner.t:.1f}s | "
+                  f"Duration: {self._current_time:.1f}s | "
                   f"Total Reward: {self.total_reward:.2f} | "
                   f"Avg Reward/Step: {self.total_reward/max(1, self.episode_step):.3f}")
             print(f"{'='*80}\n")
@@ -251,7 +426,19 @@ class TrafficSignalEnvDirect(gym.Env):
             delattr(self, 'previous_queue_length')
         
         # Set initial traffic signal state
-        self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
+        # For Grid1D: node_id='left', For NetworkGrid: node_id='node_1' (first controlled node)
+        if hasattr(self, 'network') and self.network is not None:
+            # NetworkGrid mode: use first controlled node
+            controlled_nodes = self.simulation_config.controlled_nodes
+            if controlled_nodes:
+                node_id = controlled_nodes[0]
+            else:
+                node_id = 'node_1'  # Default fallback
+        else:
+            # Grid1D mode: use 'left' boundary
+            node_id = 'left'
+        
+        self._set_signal_state(node_id, self.current_phase)
         
         # Build initial observation
         observation = self._build_observation()
@@ -260,7 +447,7 @@ class TrafficSignalEnvDirect(gym.Env):
         # Info dict
         info = {
             'episode_step': self.episode_step,
-            'simulation_time': self.runner.t,
+            'simulation_time': self._current_time,
             'current_phase': self.current_phase
         }
         
@@ -306,12 +493,32 @@ class TrafficSignalEnvDirect(gym.Env):
         
         # ✅ BUG #6 FIX PRESERVED: ALWAYS synchronize BC with current phase
         # This ensures boundary conditions match controller intent
-        self.runner.set_traffic_signal_state('left', phase_id=self.current_phase)
+        # For Grid1D: node_id='left', For NetworkGrid: node_id='node_1' (first controlled node)
+        if hasattr(self, 'network') and self.network is not None:
+            # NetworkGrid mode: use first controlled node
+            controlled_nodes = self.simulation_config.controlled_nodes
+            if controlled_nodes:
+                node_id = controlled_nodes[0]
+            else:
+                node_id = 'node_1'  # Default fallback
+        else:
+            # Grid1D mode: use 'left' boundary
+            node_id = 'left'
+        
+        self._set_signal_state(node_id, self.current_phase)
         
         # Advance simulation by decision_interval
         # This executes multiple internal simulation steps (Δt_sim << Δt_dec)
-        target_time = self.runner.t + self.decision_interval
-        self.runner.run(t_final=target_time, output_dt=self.decision_interval)
+        from arz_model.network.network_simulator import NetworkGridSimulator
+        if isinstance(self.runner, NetworkGridSimulator):
+            # NetworkGridSimulator: step(dt, repeat_k)
+            # Calculate how many timesteps needed
+            n_steps = int(self.decision_interval / self.runner.dt_sim)
+            self.runner.step(dt=self.runner.dt_sim, repeat_k=n_steps)
+        else:
+            # SimulationRunner: run(t_final, output_dt)
+            target_time = self._current_time + self.decision_interval
+            self.runner.run(t_final=target_time, output_dt=self.decision_interval)
         
         # Build new observation
         observation = self._build_observation()
@@ -326,21 +533,21 @@ class TrafficSignalEnvDirect(gym.Env):
         
         # ✅ LOGGING: Step progress (every 10 steps for Bug #20 debugging)
         if self.episode_step % 10 == 0 and not self.quiet:
-            print(f"[STEP {self.episode_step:>4d}] t={self.runner.t:>7.1f}s | "
+            print(f"[STEP {self.episode_step:>4d}] t={self._current_time:>7.1f}s | "
                   f"phase={self.current_phase} | reward={reward:>7.2f} | "
                   f"total_reward={self.total_reward:>8.2f}", flush=True)
         
         # Check termination conditions
         terminated = False  # No explicit goal state
-        truncated = self.runner.t >= self.episode_max_time
+        truncated = self._current_time >= self.episode_max_time
         
         if not self.quiet and truncated:
-            print(f"DEBUG: Truncation - runner.t={self.runner.t}, episode_max_time={self.episode_max_time}")
+            print(f"DEBUG: Truncation - runner.t={self._current_time}, episode_max_time={self.episode_max_time}")
         
         # Build info dict
         info = {
             'episode_step': self.episode_step,
-            'simulation_time': self.runner.t,
+            'simulation_time': self._current_time,
             'current_phase': self.current_phase,
             'phase_changed': (action == 1),
             'total_reward': self.total_reward
@@ -364,8 +571,16 @@ class TrafficSignalEnvDirect(gym.Env):
             self.observation_segments['downstream']
         )
         
-        # Extract raw observations from simulator
-        raw_obs = self.runner.get_segment_observations(all_segments)
+        # Extract raw observations from simulator (unified API)
+        if hasattr(self.runner, 'is_network_mode') and self.runner.is_network_mode:
+            # NetworkGrid mode: extract from network segments
+            print(f"[DEBUG] _build_observation: Using NetworkGrid mode, all_segments={all_segments}")
+            raw_obs = self._extract_network_observations(all_segments)
+            print(f"[DEBUG]   raw_obs: rho_m={raw_obs['rho_m']}, v_m={raw_obs['v_m']}")
+        else:
+            # Grid1D mode: use SimulationRunner API
+            print(f"[DEBUG] _build_observation: Using Grid1D mode")
+            raw_obs = self.runner.get_segment_observations(all_segments)
         
         # Normalize densities and velocities (class-specific, Chapter 6)
         rho_m_norm = raw_obs['rho_m'] / self.rho_max_m
@@ -418,7 +633,15 @@ class TrafficSignalEnvDirect(gym.Env):
             Scientific Reports 14:14116. Nature Portfolio.
         """
         n_segments = self.n_segments
-        dx = self.runner.grid.dx
+        
+        # Get dx (cell size) - different for Grid1D vs NetworkGrid
+        if hasattr(self.runner, 'is_network_mode') and self.runner.is_network_mode:
+            # NetworkGrid: use first segment's grid dx
+            first_seg_dict = list(self.runner.network_simulator.network.segments.values())[0]
+            dx = first_seg_dict['grid'].dx
+        else:
+            # Grid1D: use runner's grid dx
+            dx = self.runner.grid.dx
         
         # Extract and denormalize densities and velocities
         densities_m = observation[0::4][:n_segments] * self.rho_max_m
@@ -430,7 +653,7 @@ class TrafficSignalEnvDirect(gym.Env):
         if not hasattr(self, '_queue_log_count'):
             self._queue_log_count = 0
         if self._queue_log_count < 5 or self.episode_step % 10 == 0:  # First 5 steps + every 10th
-            print(f"[QUEUE_DIAGNOSTIC] ===== Step {self.episode_step} t={self.runner.t:.1f}s =====")
+            print(f"[QUEUE_DIAGNOSTIC] ===== Step {self.episode_step} t={self._current_time:.1f}s =====")
             print(f"[QUEUE_DIAGNOSTIC] Observation shape: {observation.shape}, n_segments: {n_segments}")
             print(f"[QUEUE_DIAGNOSTIC] Normalized obs[0:4]: {observation[:4]} (rho_m, v_m, rho_c, v_c)")
             print(f"[QUEUE_DIAGNOSTIC] Denorm factors: rho_max_m={self.rho_max_m:.3f}, v_free_m={self.v_free_m:.2f}")
@@ -539,7 +762,7 @@ class TrafficSignalEnvDirect(gym.Env):
         # Create detailed log entry with searchable patterns
         log_entry = (
             f"[REWARD_MICROSCOPE] step={self.reward_log_count} "
-            f"t={self.runner.t:.1f}s "
+            f"t={self._current_time:.1f}s "
             f"phase={self.current_phase} "
             f"prev_phase={prev_phase} "
             f"phase_changed={phase_changed} "

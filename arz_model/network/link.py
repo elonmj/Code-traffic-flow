@@ -123,6 +123,19 @@ class Link:
             time
         )
         
+        # DEBUG: Afficher θ_k pour diagnostiquer les feux rouges (limité aux 3 premiers pas)
+        if time < 0.3:  # Afficher seulement les 3 premiers pas (0.0s, 0.1s, 0.2s)
+            try:
+                if self.via_node.intersection.traffic_lights is not None:
+                    green_segs = self.via_node.intersection.traffic_lights.get_current_green_segments(time)
+                    print(f"[COUPLING_DEBUG] time={repr(time)}, link={repr(self.link_id)}, theta_k={repr(theta_k)}, to_seg={repr(self.to_segment)}, green_segs={repr(green_segs)}")
+                else:
+                    print(f"[COUPLING_DEBUG] time={repr(time)}, link={repr(self.link_id)}, theta_k={repr(theta_k)}, to_seg={repr(self.to_segment)}, TL=NULL")
+            except Exception as e:
+                import traceback
+                print(f"[COUPLING_DEBUG_ERROR] error: {e}")
+                traceback.print_exc()
+        
         # Step 2: Apply behavioral coupling
         U_coupled = _apply_behavioral_coupling(
             U_in,

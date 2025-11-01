@@ -2,6 +2,7 @@ import numpy as np
 import numba # Import numba itself
 from numba import cuda, float64 # Keep float64 import for convenience elsewhere? Or remove if not used.
 import math # Import math for CUDA device functions
+from typing import Optional
 from ..core.parameters import ModelParameters
 from ..core import physics # Import the physics module itself
 # Import specific CUDA device functions from physics
@@ -11,7 +12,18 @@ from ..core.physics import (
     _calculate_eigenvalues_cuda
 )
 
-def central_upwind_flux(U_L: np.ndarray, U_R: np.ndarray, params: ModelParameters) -> np.ndarray:
+# Import for junction-aware flux blocking
+try:
+    from ..network.junction_info import JunctionInfo
+except ImportError:
+    JunctionInfo = None
+
+def central_upwind_flux(
+    U_L: np.ndarray, 
+    U_R: np.ndarray, 
+    params: ModelParameters,
+    junction_info: Optional['JunctionInfo'] = None
+) -> np.ndarray:
     """
     Calculates the numerical flux at the interface between states U_L and U_R
     using the first-order Central-Upwind scheme (Kurganov-Tadmor type).
@@ -19,14 +31,36 @@ def central_upwind_flux(U_L: np.ndarray, U_R: np.ndarray, params: ModelParameter
     Handles the non-conservative form of the w_i equations approximately
     by defining a flux F(U) = (rho_m*v_m, w_m, rho_c*v_c, w_c)^T for the
     calculation within the CU formula.
+    
+    Junction-aware flux blocking: When junction_info is provided with a traffic signal,
+    the computed flux is reduced by light_factor to physically block flow during RED signals.
+    Based on Daganzo (1995) supply-demand junction model adapted to numerical flux calculation.
 
     Args:
         U_L (np.ndarray): State vector [rho_m, w_m, rho_c, w_c] to the left of the interface (SI units).
         U_R (np.ndarray): State vector [rho_m, w_m, rho_c, w_c] to the right of the interface (SI units).
         params (ModelParameters): Model parameters object.
+        junction_info (Optional[JunctionInfo]): Junction metadata for flux blocking.
+            If None, normal flux calculation (backward compatible).
+            If provided with is_junction=True, flux is multiplied by light_factor:
+                - RED signal: light_factor ≈ 0.01 (1% flow, 99% blocked)
+                - GREEN signal: light_factor = 1.0 (100% flow, no blocking)
 
     Returns:
         np.ndarray: The numerical flux vector F_CU at the interface. Shape (4,).
+        
+    References:
+        - Kurganov & Tadmor (2000): New high-resolution central schemes for nonlinear conservation laws
+        - Daganzo (1995): The cell transmission model, part II: Network traffic
+        
+    Example:
+        >>> # Normal flux calculation (no junction)
+        >>> F = central_upwind_flux(U_L, U_R, params)
+        >>> 
+        >>> # Junction with RED signal (99% blocked)
+        >>> junction = JunctionInfo(is_junction=True, light_factor=0.01, node_id=1)
+        >>> F_red = central_upwind_flux(U_L, U_R, params, junction)
+        >>> # F_red ≈ 0.01 * F (flux reduced by 99%)
     """
     # Ensure inputs are numpy arrays
     U_L = np.asarray(U_L)
@@ -87,6 +121,10 @@ def central_upwind_flux(U_L: np.ndarray, U_R: np.ndarray, params: ModelParameter
         term1 = (a_plus * F_L - a_minus * F_R) / denominator
         term2 = (a_plus * a_minus / denominator) * (U_R - U_L)
         F_CU = term1 + term2
+
+    # Apply junction-aware flux blocking if at junction interface
+    if junction_info is not None and junction_info.is_junction:
+        F_CU = F_CU * junction_info.light_factor
 
     return F_CU
 
@@ -195,10 +233,15 @@ SHARED_MEM_COLS = TPB_FLUX + 1 # Calculate derived constant
 def central_upwind_flux_cuda_kernel(d_U_in,
                                     alpha, rho_jam, epsilon,
                                     K_m, gamma_m, K_c, gamma_c,
+                                    light_factor,
                                     d_F_CU_out):
     """
     CUDA kernel to calculate the Central-Upwind flux for all interfaces using shared memory.
     Each thread calculates the flux for one interface idx (between cell idx and idx+1).
+    
+    Junction-aware: light_factor parameter enables traffic signal flux blocking.
+    - light_factor = 1.0: GREEN signal (normal flow)
+    - light_factor ≈ 0.01: RED signal (99% blocked flow)
     """
     # Shared memory for U state: NUM_VARS variables, TPB threads + 1 extra cell for right neighbor
     s_U = cuda.shared.array(shape=(NUM_VARS, SHARED_MEM_COLS), dtype=numba.float64) # Use constants for shape
@@ -255,6 +298,12 @@ def central_upwind_flux_cuda_kernel(d_U_in,
                                                    alpha, rho_jam, epsilon,
                                                    K_m, gamma_m, K_c, gamma_c)
 
+        # Apply junction blocking (same as CPU version)
+        f0 *= light_factor
+        f1 *= light_factor
+        f2 *= light_factor
+        f3 *= light_factor
+
         # Write the result components directly to global memory
         d_F_CU_out[0, idx] = f0
         d_F_CU_out[1, idx] = f1
@@ -266,7 +315,7 @@ def central_upwind_flux_cuda_kernel(d_U_in,
 
 # --- Wrapper function to call the CUDA kernel ---
 
-def central_upwind_flux_gpu(d_U_in: cuda.devicearray.DeviceNDArray, params: ModelParameters) -> cuda.devicearray.DeviceNDArray:
+def central_upwind_flux_gpu(d_U_in: cuda.devicearray.DeviceNDArray, params: ModelParameters, light_factor: float = 1.0) -> cuda.devicearray.DeviceNDArray:
     """
     Calculates the numerical flux at all interfaces using the Central-Upwind scheme on the GPU.
     Operates entirely on GPU arrays.
@@ -274,6 +323,7 @@ def central_upwind_flux_gpu(d_U_in: cuda.devicearray.DeviceNDArray, params: Mode
     Args:
         d_U_in (cuda.devicearray.DeviceNDArray): Input state device array (including ghost cells). Shape (4, N_total).
         params (ModelParameters): Model parameters object.
+        light_factor (float): Junction blocking factor (1.0 = GREEN/normal, 0.01 = RED/blocked). Default 1.0.
 
     Returns:
         cuda.devicearray.DeviceNDArray: The numerical flux vectors F_CU at all interfaces. Shape (4, N_total) on the GPU.
@@ -300,6 +350,7 @@ def central_upwind_flux_gpu(d_U_in: cuda.devicearray.DeviceNDArray, params: Mode
         d_U_in, # Pass the input GPU array directly
         params.alpha, params.rho_jam, params.epsilon,
         params.K_m, params.gamma_m, params.K_c, params.gamma_c,
+        light_factor,  # Junction blocking factor
         d_F_CU
     )
 

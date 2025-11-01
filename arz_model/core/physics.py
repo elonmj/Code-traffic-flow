@@ -274,21 +274,29 @@ def calculate_relaxation_time(rho_m: np.ndarray, rho_c: np.ndarray, params: Mode
     return params.tau_m, params.tau_c
 
 @njit
-def calculate_physical_velocity(w_m: np.ndarray, w_c: np.ndarray, p_m: np.ndarray, p_c: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def calculate_physical_velocity(w_m: np.ndarray, w_c: np.ndarray, p_m: np.ndarray, p_c: np.ndarray, v_max: float = 50.0) -> tuple[np.ndarray, np.ndarray]:
     """
     Calculates the physical velocities from Lagrangian variables and pressure.
+    
+    Applies bounds to prevent numerical instability from extreme velocity values
+    that can arise when density approaches zero (velocity explosion).
 
     Args:
         w_m: Lagrangian variable for motorcycles (m/s).
         w_c: Lagrangian variable for cars (m/s).
         p_m: Pressure term for motorcycles (m/s).
         p_c: Pressure term for cars (m/s).
+        v_max: Maximum realistic velocity magnitude (m/s). Default 50 m/s = 180 km/h.
 
     Returns:
-        A tuple (v_m, v_c) containing physical velocities (m/s).
+        A tuple (v_m, v_c) containing physical velocities (m/s), bounded to [-v_max, v_max].
     """
     v_m = w_m - p_m
     v_c = w_c - p_c
+    # Apply physical bounds to prevent numerical explosion
+    # Numba-compatible element-wise clipping using maximum/minimum
+    v_m = np.maximum(np.minimum(v_m, v_max), -v_max)
+    v_c = np.maximum(np.minimum(v_c, v_max), -v_max)
     return v_m, v_c
 
 # --- CUDA Kernel for Physical Velocity Calculation ---

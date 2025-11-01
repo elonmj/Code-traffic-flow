@@ -38,6 +38,9 @@ def reconstruct_weno5(v, epsilon=1e-6):
         alpha2 = 0.3 / (epsilon + beta2)**2
         sum_alpha = alpha0 + alpha1 + alpha2
         
+        # Safeguard against division by zero (can happen with extreme beta values)
+        sum_alpha = max(sum_alpha, epsilon)
+        
         w0 = alpha0 / sum_alpha
         w1 = alpha1 / sum_alpha
         w2 = alpha2 / sum_alpha
@@ -55,6 +58,9 @@ def reconstruct_weno5(v, epsilon=1e-6):
         alpha1_r = 0.6 / (epsilon + beta1)**2
         alpha2_r = 0.1 / (epsilon + beta2)**2
         sum_alpha_r = alpha0_r + alpha1_r + alpha2_r
+        
+        # Safeguard against division by zero (can happen with extreme beta values)
+        sum_alpha_r = max(sum_alpha_r, epsilon)
         
         w0_r = alpha0_r / sum_alpha_r
         w1_r = alpha1_r / sum_alpha_r

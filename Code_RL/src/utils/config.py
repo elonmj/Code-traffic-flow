@@ -1,5 +1,15 @@
 """
 Utility functions for configuration, logging, and analysis
+
+MIGRATION NOTE (2025-01-27):
+This module is being migrated to use Pydantic-based configurations.
+- NEW: RLConfigBuilder class uses arz_model.config.ConfigBuilder
+- DEPRECATED: load_config(), load_configs(), save_config() for ARZ configs
+- PRESERVED: RL-specific utilities (setup_logging, ExperimentTracker, etc.)
+
+For new code, use:
+    from utils.config import RLConfigBuilder
+    rl_config = RLConfigBuilder.for_training(scenario="lagos")
 """
 
 import yaml
@@ -9,6 +19,210 @@ import pandas as pd
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 import numpy as np
+
+# NEW: Import Pydantic config system
+try:
+    import sys
+    from pathlib import Path
+    
+    # Add parent directory to path to access arz_model
+    project_root = Path(__file__).parent.parent.parent.parent
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+    
+    from arz_model.config import ConfigBuilder, SimulationConfig
+    PYDANTIC_AVAILABLE = True
+except ImportError as e:
+    PYDANTIC_AVAILABLE = False
+    ConfigBuilder = None
+    SimulationConfig = None
+    print(f"[WARNING] Pydantic config system not available: {e}")
+    print("[WARNING] Falling back to legacy YAML configs")
+
+
+class RLConfigBuilder:
+    """
+    Configuration builder for RL training using Pydantic-based ARZ configs.
+    
+    This class bridges the RL training system with the new Pydantic configuration
+    system, replacing legacy YAML-based configuration loading.
+    
+    Example:
+        >>> from utils.config import RLConfigBuilder
+        >>> 
+        >>> # For RL training
+        >>> rl_config = RLConfigBuilder.for_training(
+        ...     scenario="lagos",
+        ...     N=200,
+        ...     episode_length=3600.0
+        ... )
+        >>> 
+        >>> # Access ARZ simulation config
+        >>> arz_config = rl_config.arz_simulation_config
+        >>> 
+        >>> # Access RL environment parameters
+        >>> env_params = rl_config.rl_env_params
+    """
+    
+    def __init__(
+        self,
+        arz_simulation_config: 'SimulationConfig',
+        rl_env_params: Dict[str, Any],
+        endpoint_params: Dict[str, Any],
+        signal_params: Dict[str, Any]
+    ):
+        """
+        Initialize RL configuration.
+        
+        Args:
+            arz_simulation_config: Pydantic SimulationConfig for ARZ simulator
+            rl_env_params: RL environment parameters (rewards, normalization, etc.)
+            endpoint_params: Endpoint client parameters
+            signal_params: Traffic signal controller parameters
+        """
+        self.arz_simulation_config = arz_simulation_config
+        self.rl_env_params = rl_env_params
+        self.endpoint_params = endpoint_params
+        self.signal_params = signal_params
+    
+    @classmethod
+    def for_training(
+        cls,
+        scenario: str = "simple",
+        N: int = 200,
+        episode_length: float = 3600.0,
+        device: str = "cpu",
+        **kwargs
+    ) -> 'RLConfigBuilder':
+        """
+        Create RL training configuration.
+        
+        Args:
+            scenario: Scenario name ("simple", "lagos", "riemann")
+            N: Grid resolution
+            episode_length: Episode length in seconds
+            device: Compute device ("cpu" or "gpu")
+            **kwargs: Additional scenario-specific parameters
+        
+        Returns:
+            RLConfigBuilder instance
+        """
+        if not PYDANTIC_AVAILABLE:
+            raise RuntimeError(
+                "Pydantic config system not available. "
+                "Please ensure arz_model.config is accessible."
+            )
+        
+        # Create ARZ simulation config based on scenario
+        if scenario == "simple":
+            arz_config = ConfigBuilder.simple_test()
+        elif scenario == "section_7_6" or scenario == "lagos":
+            arz_config = ConfigBuilder.section_7_6(N=N, t_final=episode_length, device=device)
+        elif scenario == "riemann":
+            arz_config = ConfigBuilder.riemann_problem(N=N, t_final=episode_length, device=device)
+        else:
+            raise ValueError(f"Unknown scenario: {scenario}. Use 'simple', 'lagos', or 'riemann'")
+        
+        # Override config parameters if provided
+        if 't_final' in kwargs:
+            arz_config.t_final = kwargs['t_final']
+        if 'output_dt' in kwargs:
+            arz_config.output_dt = kwargs['output_dt']
+        
+        # RL environment parameters (Lagos-specific defaults)
+        rl_env_params = {
+            "dt_decision": kwargs.get("dt_decision", 15.0),  # RL decision interval
+            "episode_length": episode_length,
+            "max_steps": int(episode_length / kwargs.get("dt_decision", 15.0)),
+            
+            # Normalization (Lagos traffic conditions)
+            "normalization": {
+                "rho_max_motorcycles": kwargs.get("rho_max_motorcycles", 250.0),  # veh/km
+                "rho_max_cars": kwargs.get("rho_max_cars", 120.0),
+                "v_free_motorcycles": kwargs.get("v_free_motorcycles", 32.0),  # km/h
+                "v_free_cars": kwargs.get("v_free_cars", 28.0),
+                "queue_max": kwargs.get("queue_max", 400.0),
+                "phase_time_max": kwargs.get("phase_time_max", 120.0),
+            },
+            
+            # Reward weights
+            "reward": {
+                "w_wait_time": kwargs.get("w_wait_time", 1.0),
+                "w_queue_length": kwargs.get("w_queue_length", 0.5),
+                "w_stops": kwargs.get("w_stops", 0.3),
+                "w_switch_penalty": kwargs.get("w_switch_penalty", 0.1),
+                "w_throughput": kwargs.get("w_throughput", 0.8),
+                "reward_clip": kwargs.get("reward_clip", (-10.0, 10.0)),
+                "stop_speed_threshold": kwargs.get("stop_speed_threshold", 5.0),
+            },
+            
+            # Observation settings
+            "observation": {
+                "ewma_alpha": kwargs.get("ewma_alpha", 0.1),
+                "include_phase_timing": kwargs.get("include_phase_timing", True),
+                "include_queues": kwargs.get("include_queues", True),
+            }
+        }
+        
+        # Endpoint parameters
+        endpoint_params = {
+            "protocol": kwargs.get("protocol", "mock"),
+            "host": kwargs.get("host", "localhost"),
+            "port": kwargs.get("port", 8000),
+            "dt_sim": 0.5,  # Fixed ARZ timestep (will be adaptive in runtime)
+            "timeout": kwargs.get("timeout", 30.0),
+            "max_retries": kwargs.get("max_retries", 3),
+        }
+        
+        # Signal controller parameters
+        signal_params = {
+            "signals": {
+                "phases": [
+                    {
+                        "id": 0,
+                        "name": "north_south",
+                        "description": "North-South green, East-West red",
+                        "duration": 60.0,
+                        "movements": ["north_through", "south_through", "north_left", "south_left"]
+                    },
+                    {
+                        "id": 1,
+                        "name": "east_west",
+                        "description": "East-West green, North-South red",
+                        "duration": 60.0,
+                        "movements": ["east_through", "west_through", "east_left", "west_left"]
+                    }
+                ],
+                "timings": {
+                    "min_green": kwargs.get("min_green", 10.0),
+                    "max_green": kwargs.get("max_green", 120.0),
+                    "yellow": kwargs.get("yellow_duration", 3.0),
+                    "all_red": kwargs.get("all_red", 2.0)
+                },
+                "initial_phase": 0
+            }
+        }
+        
+        return cls(
+            arz_simulation_config=arz_config,
+            rl_env_params=rl_env_params,
+            endpoint_params=endpoint_params,
+            signal_params=signal_params
+        )
+    
+    def to_legacy_dict(self) -> Dict[str, Any]:
+        """
+        Convert to legacy YAML-style dict for backward compatibility.
+        
+        Returns:
+            Dictionary in legacy format
+        """
+        return {
+            "arz_simulation": self.arz_simulation_config,
+            "env": {"environment": self.rl_env_params},
+            "endpoint": {"endpoint": self.endpoint_params},
+            "signals": self.signal_params,
+        }
 
 
 def setup_logging(level: str = "INFO", log_file: str = None):
@@ -54,19 +268,60 @@ def setup_logging(level: str = "INFO", log_file: str = None):
 
 
 def load_config(config_path: str) -> Dict[str, Any]:
-    """Load YAML configuration file"""
+    """
+    Load YAML configuration file.
+    
+    DEPRECATED: This function is deprecated for ARZ simulation configs.
+    Use RLConfigBuilder.for_training() instead for new code.
+    
+    This function is preserved for backward compatibility with legacy
+    RL training scripts.
+    """
+    import warnings
+    warnings.warn(
+        "load_config() is deprecated for ARZ configs. "
+        "Use RLConfigBuilder.for_training() instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
 
 
 def save_config(config: Dict[str, Any], config_path: str):
-    """Save configuration to YAML file"""
+    """
+    Save configuration to YAML file.
+    
+    DEPRECATED: YAML configs are being phased out in favor of Pydantic.
+    This function is preserved for backward compatibility only.
+    """
+    import warnings
+    warnings.warn(
+        "save_config() is deprecated. Use Pydantic configs instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
     with open(config_path, 'w') as f:
         yaml.dump(config, f, default_flow_style=False, indent=2)
 
 
 def load_configs(config_dir: str) -> Dict[str, Any]:
-    """Load all configuration files from directory"""
+    """
+    Load all configuration files from directory.
+    
+    DEPRECATED: This function is deprecated for ARZ simulation configs.
+    Use RLConfigBuilder.for_training() instead for new code.
+    
+    This function is preserved for backward compatibility with legacy
+    RL training scripts.
+    """
+    import warnings
+    warnings.warn(
+        "load_configs() is deprecated for ARZ configs. "
+        "Use RLConfigBuilder.for_training() instead.",
+        DeprecationWarning,
+        stacklevel=2
+    )
     config_path = Path(config_dir)
     configs = {}
     

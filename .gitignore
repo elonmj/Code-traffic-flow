@@ -6,6 +6,7 @@ ecoles.md
 .ipynb_checkpoints/
 # Ignore all and anywhere pycache directories
 **/__pycache__/
+**/__pycache__/*
 
 **/.copilot-tracking/*
 .copilot-tracking/

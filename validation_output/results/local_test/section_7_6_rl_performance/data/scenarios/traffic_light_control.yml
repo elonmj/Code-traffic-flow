@@ -1,85 +1,56 @@
-N: 100
-xmin: 0.0
-xmax: 1000.0
-t_final: 600.0
-output_dt: 60.0
+grid:
+  N: 200
+  xmin: 0.0
+  xmax: 20.0
+  ghost_cells: 2
 initial_conditions:
-  type: uniform
-  state:
-  - 212.5
-  - 1.8433333333333337
-  - 102.0
-  - 1.1666666666666667
+  type: uniform_equilibrium
+  rho_m: 0.1
+  rho_c: 0.05
+  R_val: 10
 boundary_conditions:
   left:
     type: inflow
     state:
-    - 212.5
-    - 8.88888888888889
-    - 102.0
-    - 7.777777777777778
+      rho_m: 0.1
+      w_m: 30.0
+      rho_c: 0.05
+      w_c: 40.0
+    schedule:
+    - time: 0.0
+      phase_id: 0
+    - time: 100.0
+      phase_id: 1
   right:
     type: outflow
-network:
-  name: Traffic_Light_Control_Lagos
-  description: Signalized intersection with REAL Lagos traffic data
-  segments:
-    upstream:
-      x_min: 0.0
-      x_max: 500.0
-      N: 50
-      start_node: entry
-      end_node: signal_junction
-      road_type: urban_arterial
-      parameters:
-        V0_m: 8.88888888888889
-        V0_c: 7.777777777777778
-        tau_m: 5.0
-        tau_c: 10.0
-    downstream:
-      x_min: 500.0
-      x_max: 1000.0
-      N: 50
-      start_node: signal_junction
-      end_node: exit
-      road_type: urban_arterial
-      parameters:
-        V0_m: 8.88888888888889
-        V0_c: 7.777777777777778
-        tau_m: 5.0
-        tau_c: 10.0
-  nodes:
-    entry:
-      type: boundary
-      position:
-      - 0.0
-      - 0.0
-      description: Network entry - Lagos traffic inflow
-    signal_junction:
-      type: signalized
-      position:
-      - 500.0
-      - 0.0
-      incoming_segments:
-      - upstream
-      outgoing_segments:
-      - downstream
-      description: RL-controlled traffic signal
-    exit:
-      type: boundary
-      position:
-      - 1000.0
-      - 0.0
-      description: Network exit
-  links:
-  - from_segment: upstream
-    to_segment: downstream
-    via_node: signal_junction
-    coupling_type: signalized
-    theta_m: 0.8
-    theta_c: 0.5
-    description: Behavioral coupling (config_base.yml)
-metadata:
-  created: '2025-10-24T23:35:12.668729'
-  scenario_type: traffic_light_control
-  data_source: Lagos Victoria Island (REAL)
+    state:
+      rho_m: 0.1
+      w_m: 30.0
+      rho_c: 0.05
+      w_c: 40.0
+  traffic_signal_phases:
+    left:
+      '0':
+        rho_m: 0.1
+        w_m: 30.0
+        rho_c: 0.05
+        w_c: 40.0
+      '1':
+        rho_m: 0.5
+        w_m: 10.0
+        rho_c: 0.3
+        w_c: 15.0
+physics:
+  lambda_m: 1.0
+  lambda_c: 1.0
+  V_max_m: 60.0
+  V_max_c: 80.0
+  alpha: 0.5
+  default_road_quality: 10
+t_final: 3600.0
+output_dt: 1.0
+cfl_number: 0.5
+max_iterations: 100000
+device: cpu
+quiet: false
+has_network: false

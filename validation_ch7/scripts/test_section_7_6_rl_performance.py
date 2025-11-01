@@ -9,6 +9,12 @@ This script validates the RL agent performance by:
 - Comparing RL performance vs baseline control methods
 - Validating learning convergence and stability
 - Measuring traffic flow improvements
+
+CONFIGURATION SYSTEM (Updated 2025-01-27):
+- NEW: Pydantic-based configuration via RLConfigBuilder (default)
+- LEGACY: YAML-based configuration via create_scenario_config_with_lagos_data (fallback)
+- Usage: python test_section_7_6_rl_performance.py [--no-pydantic to use legacy]
+- Environment: USE_PYDANTIC=false to disable Pydantic globally
 """
 
 import sys
@@ -57,7 +63,8 @@ from callbacks import RotatingCheckpointCallback, TrainingProgressCallback
 # ✅ Import Code_RL config utilities (DRY principle - Don't Repeat Yourself)
 from Code_RL.src.utils.config import (
     load_lagos_traffic_params,
-    create_scenario_config_with_lagos_data
+    create_scenario_config_with_lagos_data,  # DEPRECATED - kept for backward compatibility
+    RLConfigBuilder  # NEW: Pydantic-based configuration
 )
 
 # ✅ CODE_RL HYPERPARAMETERS (source of truth from train_dqn.py)
@@ -95,11 +102,14 @@ class RLPerformanceValidationTest(ValidationSection):
     Inherits from ValidationSection to use the standardized output structure.
     """
     
-    def __init__(self, quick_test=False):
+    def __init__(self, quick_test=False, use_pydantic=True):
         super().__init__(section_name="section_7_6_rl_performance")
         
         # Quick test mode: minimal timesteps for CI/CD validation (15 min on GPU)
         self.quick_test = quick_test
+        
+        # Use Pydantic configuration system (NEW, default: True)
+        self.use_pydantic = use_pydantic
         
         self.rl_scenarios = {
             'traffic_light_control': {
@@ -245,26 +255,38 @@ class RLPerformanceValidationTest(ValidationSection):
         self.debug_logger.info(f"[CACHE] Directory: {cache_dir}")
         return cache_dir
     
-    def _compute_config_hash(self, scenario_path: Path) -> str:
+    def _compute_config_hash(self, scenario_config) -> str:
         """Compute MD5 hash of scenario configuration for cache validation.
+        
+        Supports both Pydantic SimulationConfig and YAML file paths.
         
         Returns 8-character hex hash for cache filename.
         Changes in configuration (densities, velocities, domain) invalidate cache.
         """
-        with open(scenario_path, 'r') as f:
-            yaml_content = f.read()
-        hash_obj = hashlib.md5(yaml_content.encode('utf-8'))
+        if hasattr(scenario_config, 'grid'):  # Pydantic SimulationConfig
+            # Hash the JSON representation of the Pydantic config
+            config_dict = scenario_config.model_dump(mode='json')
+            import json
+            json_content = json.dumps(config_dict, sort_keys=True)
+            hash_obj = hashlib.md5(json_content.encode('utf-8'))
+        else:  # YAML file path
+            with open(scenario_config, 'r') as f:
+                yaml_content = f.read()
+            hash_obj = hashlib.md5(yaml_content.encode('utf-8'))
+        
         config_hash = hash_obj.hexdigest()[:8]  # 8 chars sufficient for uniqueness
         self.debug_logger.info(f"[CACHE] Config hash: {config_hash}")
         return config_hash
     
-    def _validate_checkpoint_config(self, checkpoint_path: Path, scenario_path: Path) -> bool:
+    def _validate_checkpoint_config(self, checkpoint_path: Path, scenario_config) -> bool:
         """Validate that checkpoint was trained with current configuration.
+        
+        Supports both Pydantic SimulationConfig and YAML file paths.
         
         Checks if checkpoint's config_hash matches current scenario config.
         Returns True if compatible, False if config changed.
         """
-        current_hash = self._compute_config_hash(scenario_path)
+        current_hash = self._compute_config_hash(scenario_config)
         
         # Extract config_hash from checkpoint metadata if stored
         # Format: scenario_checkpoint_HASH_steps.zip
@@ -325,7 +347,7 @@ class RLPerformanceValidationTest(ValidationSection):
         print(f"     Old config: {old_config_hash}", flush=True)
         print(f"     Archived to: {archived_path.name}", flush=True)
     
-    def _save_baseline_cache(self, scenario_type: str, scenario_path: Path, 
+    def _save_baseline_cache(self, scenario_type: str, scenario_config, 
                             states_history: list, duration: float, 
                             control_interval: float = 15.0, device: str = 'gpu'):
         """Save baseline simulation states to persistent cache.
@@ -368,7 +390,7 @@ class RLPerformanceValidationTest(ValidationSection):
         self.debug_logger.info(f"[CACHE BASELINE] Saved {len(states_history)} states to {cache_filename}")
         print(f"  [CACHE BASELINE] ✅ Saved universal cache: {cache_filename} ({len(states_history)} steps)", flush=True)
     
-    def _load_baseline_cache(self, scenario_type: str, scenario_path: Path, 
+    def _load_baseline_cache(self, scenario_type: str, scenario_config, 
                             required_duration: float, control_interval: float = 15.0) -> list:
         """Load baseline cache if it exists and is valid for requested duration.
         
@@ -420,7 +442,7 @@ class RLPerformanceValidationTest(ValidationSection):
             print(f"  [CACHE BASELINE] Error loading cache: {e}", flush=True)
             return None
     
-    def _extend_baseline_cache(self, scenario_type: str, scenario_path: Path,
+    def _extend_baseline_cache(self, scenario_type: str, scenario_config,
                               existing_states: list, target_duration: float,
                               control_interval: float = 15.0, device: str = 'gpu') -> list:
         """Extend existing baseline cache additively (aligned with ADDITIVE training philosophy).
@@ -463,7 +485,7 @@ class RLPerformanceValidationTest(ValidationSection):
         
         # Run simulation for EXTENSION period only
         extension_states, _ = self.run_control_simulation(
-            baseline_controller, scenario_path, 
+            baseline_controller, scenario_config, 
             duration=extension_duration,  # ONLY the missing duration
             control_interval=control_interval,
             device=device,
@@ -478,7 +500,7 @@ class RLPerformanceValidationTest(ValidationSection):
         
         # Save extended cache with the actual total duration (not the input target_duration)
         self._save_baseline_cache(
-            scenario_type, scenario_path, extended_states, 
+            scenario_type, scenario_config, extended_states, 
             target_duration_actual, control_interval, device
         )
         
@@ -488,13 +510,15 @@ class RLPerformanceValidationTest(ValidationSection):
     # SOPHISTICATED RL CACHE SYSTEM (Config-Specific)
     # ========================================================================
     
-    def _save_rl_cache(self, scenario_type: str, scenario_path: Path,
+    def _save_rl_cache(self, scenario_type: str, scenario_config,
                       model_path: Path, total_timesteps: int, device: str = 'gpu'):
         """Save RL training metadata to persistent cache.
         
         ✅ RL cache is CONFIG-SPECIFIC (requires config_hash)
         Rationale: RL agent is trained on specific scenario densities/velocities.
         Different configs require different trained models.
+        
+        Supports both Pydantic SimulationConfig and YAML file paths.
         
         Cache structure:
         {
@@ -508,7 +532,7 @@ class RLPerformanceValidationTest(ValidationSection):
         }
         """
         cache_dir = self._get_cache_dir()
-        config_hash = self._compute_config_hash(scenario_path)
+        config_hash = self._compute_config_hash(scenario_config)
         cache_filename = f"{scenario_type}_{config_hash}_rl_cache.pkl"
         cache_path = cache_dir / cache_filename
         
@@ -528,19 +552,21 @@ class RLPerformanceValidationTest(ValidationSection):
         self.debug_logger.info(f"[CACHE RL] Saved metadata to {cache_filename}")
         print(f"  [CACHE RL] ✅ Saved config-specific cache: {cache_filename} ({total_timesteps} steps)", flush=True)
     
-    def _load_rl_cache(self, scenario_type: str, scenario_path: Path,
+    def _load_rl_cache(self, scenario_type: str, scenario_config,
                       required_timesteps: int) -> dict:
         """Load RL training metadata if valid for current config.
         
         ✅ RL cache requires config_hash validation
         Rationale: Agent trained on different densities/velocities is invalid.
         
+        Supports both Pydantic SimulationConfig and YAML file paths.
+        
         Returns:
             - cache_data dict if valid and sufficient
             - None if no cache, config changed, or insufficient training
         """
         cache_dir = self._get_cache_dir()
-        config_hash = self._compute_config_hash(scenario_path)
+        config_hash = self._compute_config_hash(scenario_config)
         cache_filename = f"{scenario_type}_{config_hash}_rl_cache.pkl"
         cache_path = cache_dir / cache_filename
         
@@ -620,6 +646,108 @@ class RLPerformanceValidationTest(ValidationSection):
         
         return scenario_path
 
+    def _create_scenario_config_pydantic(self, scenario_type: str, duration: float = 600.0, N: int = 100):
+        """
+        NEW: Create scenario configuration using Pydantic-based RLConfigBuilder.
+        
+        This method now supports:
+        - Single-segment scenarios (traffic_light_control, etc.) via RLConfigBuilder
+        - Multi-segment network scenarios (NETWORK_CORRIDOR) via RLNetworkConfigBuilder
+        
+        Falls back to YAML-based approach if Pydantic is not available.
+        
+        Args:
+            scenario_type: Type of scenario:
+                - 'traffic_light_control': Single segment with signal (legacy, 20m)
+                - 'NETWORK_CORRIDOR': Multi-segment corridor (NEW, 400m+)
+                - 'ramp_metering': Single segment with ramp
+                - 'adaptive_speed_control': Single segment with speed control
+            duration: Simulation duration in seconds (default: 600s = 10 minutes)
+            N: Grid size for single-segment (default: 100), or segments for network
+        
+        Returns:
+            SimulationConfig or NetworkSimulationConfig (Pydantic), or Path to YAML as fallback
+        """
+        
+        try:
+            # Import builders
+            from arz_model.config.builders import RLNetworkConfigBuilder
+            
+            # Check if this is a network scenario
+            if scenario_type == 'NETWORK_CORRIDOR':
+                # ========================================================
+                # NEW: Multi-segment network configuration
+                # ========================================================
+                self.debug_logger.info(f"[SCENARIO] Creating NETWORK_CORRIDOR using RLNetworkConfigBuilder")
+                
+                # Create 2-segment corridor for quick testing
+                # This solves the "20m domain problem" → 400m domain with congestion!
+                network_config = RLNetworkConfigBuilder.simple_corridor(
+                    segments=2,           # 2 segments = 400m total
+                    segment_length=200.0, # Each segment 200m
+                    N_per_segment=40,     # dx = 5m resolution
+                    device=self.device,
+                    decision_interval=15.0
+                )
+                
+                # Override t_final with duration parameter
+                network_config.t_final = duration
+                
+                self.debug_logger.info(f"[SCENARIO] ✅ Created NETWORK_CORRIDOR (Pydantic)")
+                self.debug_logger.info(f"  Segments: {len(network_config.segments)}")
+                self.debug_logger.info(f"  Domain: {len(network_config.segments) * 200}m")
+                self.debug_logger.info(f"  Controlled nodes: {network_config.controlled_nodes}")
+                self.debug_logger.info(f"  Duration: {duration}s")
+                
+                print(f"  [SCENARIO] ✅ Created NETWORK_CORRIDOR via RLNetworkConfigBuilder", flush=True)
+                print(f"    Domain: {len(network_config.segments) * 200}m ({len(network_config.segments)} segments)", flush=True)
+                print(f"    Controlled signals: {len(network_config.controlled_nodes)}", flush=True)
+                
+                return network_config  # Return NetworkSimulationConfig!
+            
+            else:
+                # ========================================================
+                # EXISTING: Single-segment configuration
+                # ========================================================
+                self.debug_logger.info(f"[SCENARIO] Creating {scenario_type} using Pydantic RLConfigBuilder")
+                
+                # Map scenario types to RLConfigBuilder scenarios
+                scenario_map = {
+                    'traffic_light_control': 'lagos',  # Lagos traffic signal scenario
+                    'ramp_metering': 'lagos',  # Use Lagos with ramp metering
+                    'adaptive_speed_control': 'simple'  # Simple scenario for speed control
+                }
+                
+                builder_scenario = scenario_map.get(scenario_type, 'lagos')
+                
+                # Create RL configuration using Pydantic
+                rl_config = RLConfigBuilder.for_training(
+                    scenario=builder_scenario,
+                    N=N,
+                    episode_length=duration,
+                    device='cpu'  # Will be overridden during actual simulation
+                )
+                
+                # Return Pydantic SimulationConfig directly
+                arz_config = rl_config.arz_simulation_config
+                
+                self.debug_logger.info(f"[SCENARIO] ✅ Created using Pydantic RLConfigBuilder (single segment)")
+                self.debug_logger.info(f"  Grid size: N={N}, Duration: {duration}s")
+                self.debug_logger.info(f"  Scenario: {builder_scenario}")
+                
+                print(f"  [SCENARIO] ✅ Created via Pydantic RLConfigBuilder (single segment)", flush=True)
+                
+                return arz_config  # Return SimulationConfig!
+            
+        except Exception as e:
+            # Fallback to legacy YAML-based approach
+            self.debug_logger.warning(f"[SCENARIO] Pydantic creation failed: {e}")
+            self.debug_logger.info(f"[SCENARIO] Falling back to legacy YAML approach")
+            print(f"  [SCENARIO] ⚠️  Pydantic unavailable, using legacy YAML", flush=True)
+            
+            # Use original method as fallback (returns Path)
+            return self._create_scenario_config(scenario_type)
+
     class BaselineController:
         """Contrôleur de référence (baseline) simple, basé sur des règles.
         
@@ -680,10 +808,10 @@ class RLPerformanceValidationTest(ValidationSection):
 
     class RLController:
         """Wrapper pour un agent RL. Charge un modèle pré-entraîné."""
-        def __init__(self, scenario_type, model_path: Path, scenario_config_path: Path, device='gpu'):
+        def __init__(self, scenario_type, model_path: Path, scenario_config, device='gpu'):
             self.scenario_type = scenario_type
             self.model_path = model_path
-            self.scenario_config_path = scenario_config_path
+            self.scenario_config = scenario_config  # Can be Pydantic SimulationConfig or Path
             self.device = device
             self.agent = self._load_agent()
 
@@ -702,14 +830,27 @@ class RLPerformanceValidationTest(ValidationSection):
             
             # ✅ BUG #30 FIX: Create environment for model loading (matches training config)
             # This is CRITICAL - SB3 models need an environment to function properly
-            env = TrafficSignalEnvDirect(
-                scenario_config_path=str(self.scenario_config_path),
-                decision_interval=15.0,  # Match training configuration (Bug #27 fix)
-                episode_max_time=3600.0,
-                observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
-                device=self.device,
-                quiet=True  # Suppress environment logging during evaluation
-            )
+            # ✅ PYDANTIC SUPPORT: Check if scenario_config is Pydantic or YAML path
+            if hasattr(self.scenario_config, 'grid'):  # Pydantic SimulationConfig
+                print(f"  [PYDANTIC] Using Pydantic SimulationConfig for model loading", flush=True)
+                env = TrafficSignalEnvDirect(
+                    simulation_config=self.scenario_config,
+                    decision_interval=15.0,  # Match training configuration (Bug #27 fix)
+                    episode_max_time=3600.0,
+                    observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
+                    device=self.device,
+                    quiet=True  # Suppress environment logging during evaluation
+                )
+            else:  # YAML path (legacy)
+                print(f"  [YAML] Using YAML config path for model loading: {self.scenario_config}", flush=True)
+                env = TrafficSignalEnvDirect(
+                    scenario_config_path=str(self.scenario_config),
+                    decision_interval=15.0,  # Match training configuration (Bug #27 fix)
+                    episode_max_time=3600.0,
+                    observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
+                    device=self.device,
+                    quiet=True  # Suppress environment logging during evaluation
+                )
             
             print(f"  [BUG #30 FIX] Loading model WITH environment (env provided)", flush=True)
             return DQN.load(str(self.model_path), env=env)
@@ -746,7 +887,7 @@ class RLPerformanceValidationTest(ValidationSection):
             """Mise à jour de l'état interne de l'agent (si nécessaire)."""
             pass
 
-    def run_control_simulation(self, controller, scenario_path: Path, duration=3600.0, control_interval=15.0, device='gpu', initial_state=None, controller_type='UNKNOWN'):
+    def run_control_simulation(self, controller, scenario_config, duration=3600.0, control_interval=15.0, device='gpu', initial_state=None, controller_type='UNKNOWN'):
         """Execute real ARZ simulation with direct coupling (GPU-accelerated on Kaggle).
         
         ✅ NEW: Supports resumption from initial_state for truly additive baseline caching
@@ -778,7 +919,7 @@ class RLPerformanceValidationTest(ValidationSection):
         
         self.debug_logger.info("="*80)
         self.debug_logger.info(f"Starting run_control_simulation:")
-        self.debug_logger.info(f"  - scenario_path: {scenario_path}")
+        self.debug_logger.info(f"  - scenario_config type: {type(scenario_config).__name__}")
         self.debug_logger.info(f"  - duration: {duration}s")
         self.debug_logger.info(f"  - control_interval: {control_interval}s")
         self.debug_logger.info(f"  - device: {device}")
@@ -796,14 +937,29 @@ class RLPerformanceValidationTest(ValidationSection):
             # With 100 cells over 1km: cell 3 ~ 30m, cell 8 ~ 80m from left boundary
             # Much closer than before (200-325m) - should capture BC effects directly
             # BUG #5 FIX: Pass quiet=False to enable BC logging during comparison
-            env = TrafficSignalEnvDirect(
-                scenario_config_path=str(scenario_path),
-                decision_interval=control_interval,
-                episode_max_time=duration,
-                observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
-                device=device,  # GPU on Kaggle, CPU locally
-                quiet=False  # BUG #5 FIX: Enable BC logging to verify Bug #4 fix
-            )
+            
+            # ✅ PYDANTIC SUPPORT: Check if scenario_config is a Pydantic config or YAML path
+            if hasattr(scenario_config, 'grid'):  # Pydantic SimulationConfig
+                self.debug_logger.info("Using Pydantic SimulationConfig (direct mode)")
+                env = TrafficSignalEnvDirect(
+                    simulation_config=scenario_config,
+                    decision_interval=control_interval,
+                    episode_max_time=duration,
+                    observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
+                    device=device,  # GPU on Kaggle, CPU locally
+                    quiet=False  # BUG #5 FIX: Enable BC logging to verify Bug #4 fix
+                )
+            else:  # YAML path (legacy)
+                self.debug_logger.info(f"Using YAML config path: {scenario_config}")
+                env = TrafficSignalEnvDirect(
+                    scenario_config_path=str(scenario_config),
+                    decision_interval=control_interval,
+                    episode_max_time=duration,
+                    observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
+                    device=device,  # GPU on Kaggle, CPU locally
+                    quiet=False  # BUG #5 FIX: Enable BC logging to verify Bug #4 fix
+                )
+            
             self.debug_logger.info("TrafficSignalEnvDirect created successfully")
             self.debug_logger.info("  SENSITIVITY FIX: Observation segments [3-8] ~ 30-80m from boundary")
             
@@ -982,7 +1138,7 @@ class RLPerformanceValidationTest(ValidationSection):
         
         return states_history_detached, control_actions
     
-    def evaluate_traffic_performance(self, states_history, scenario_type, scenario_path=None):
+    def evaluate_traffic_performance(self, states_history, scenario_type, scenario_config=None):
         """
         Evaluate traffic performance metrics.
         
@@ -991,7 +1147,7 @@ class RLPerformanceValidationTest(ValidationSection):
         Parameters:
             states_history: List of state snapshots [rho_m, w_m, rho_c, w_c, ...]
             scenario_type: Type of scenario (for debugging)
-            scenario_path: Optional path to scenario config to extract real parameters
+            scenario_config: Optional Pydantic SimulationConfig or Path to YAML config
         
         Note: Métriques calibrées pour infrastructure béninoise (fixed-time baseline).
         Les résultats reflètent l'amélioration par rapport au système actuellement déployé.
@@ -1001,13 +1157,19 @@ class RLPerformanceValidationTest(ValidationSection):
         
         # ✅ FIX: Load domain_length from scenario config if available
         domain_length = 5000.0  # Default fallback
-        if scenario_path and Path(scenario_path).exists():
+        
+        if scenario_config is not None:
             try:
-                with open(scenario_path, 'r') as f:
-                    config = yaml.safe_load(f)
-                # Extract from network config
-                domain_length = config.get('xmax', 5000) - config.get('xmin', 0)
-                self.debug_logger.info(f"✅ Loaded domain_length from config: {domain_length}m")
+                if hasattr(scenario_config, 'grid'):  # Pydantic SimulationConfig
+                    # Extract from Pydantic config
+                    domain_length = scenario_config.grid.xmax - scenario_config.grid.xmin
+                    self.debug_logger.info(f"✅ Loaded domain_length from Pydantic config: {domain_length}m")
+                elif Path(scenario_config).exists():  # YAML path
+                    # Load from YAML file
+                    with open(scenario_config, 'r') as f:
+                        config = yaml.safe_load(f)
+                    domain_length = config.get('xmax', 5000) - config.get('xmin', 0)
+                    self.debug_logger.info(f"✅ Loaded domain_length from YAML config: {domain_length}m")
             except Exception as e:
                 self.debug_logger.warning(f"Could not load domain_length from config: {e}")
         
@@ -1137,8 +1299,8 @@ class RLPerformanceValidationTest(ValidationSection):
         
         # Quick test mode: reduce timesteps for setup validation
         if self.quick_test:
-            total_timesteps = 100  # Quick integration test
-            checkpoint_freq = 50
+            total_timesteps = 10  # VERY quick integration test
+            checkpoint_freq = 5  # Save checkpoint at step 5
             print(f"[QUICK TEST MODE] Training reduced to {total_timesteps} timesteps", flush=True)
         else:
             # Adaptive checkpoint frequency (matches Code_RL train_dqn.py logic)
@@ -1169,11 +1331,16 @@ class RLPerformanceValidationTest(ValidationSection):
         checkpoint_dir = self._get_checkpoint_dir()
         
         # Create scenario configuration (validation-specific)
-        scenario_path = self._create_scenario_config(scenario_type)
+        # NEW: Use Pydantic configuration if enabled
+        if self.use_pydantic:
+            scenario_config = self._create_scenario_config_pydantic(scenario_type, duration=3600.0, N=200)
+        else:
+            scenario_config = self._create_scenario_config(scenario_type)
         
         # ✅ CHECK SOPHISTICATED RL CACHE (config-specific, validation-specific)
         print(f"  [CACHE RL] Checking intelligent cache system...", flush=True)
-        rl_cache = self._load_rl_cache(scenario_type, scenario_path, total_timesteps)
+        # Pass scenario_config directly - _load_rl_cache will handle both Pydantic and Path types
+        rl_cache = self._load_rl_cache(scenario_type, scenario_config, total_timesteps)
         
         if rl_cache and rl_cache['total_timesteps'] >= total_timesteps:
             # Cache hit with sufficient training!
@@ -1187,14 +1354,26 @@ class RLPerformanceValidationTest(ValidationSection):
             # ✅ BUG #27 FIX: decision_interval=15.0 (4x improvement: 593→2361 episode reward)
             # LITERATURE: IntelliLight (5-10s), PressLight (5-30s), MPLight (10-30s)
             #             Our 15s: Conservative, research-aligned
-            env = TrafficSignalEnvDirect(
-                scenario_config_path=str(scenario_path),
-                decision_interval=15.0,  # ✅ BUG #27 validated: 4x improvement
-                episode_max_time=3600.0 if not self.quick_test else 120.0,
-                observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
-                device=device,
-                quiet=False
-            )
+            
+            # Handle both Pydantic config and YAML path
+            if hasattr(scenario_config, 'grid'):  # It's a Pydantic SimulationConfig
+                env = TrafficSignalEnvDirect(
+                    simulation_config=scenario_config,
+                    decision_interval=15.0,  # ✅ BUG #27 validated: 4x improvement
+                    episode_max_time=3600.0 if not self.quick_test else 120.0,
+                    observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
+                    device=device,
+                    quiet=False
+                )
+            else:  # It's a YAML path (str or Path)
+                env = TrafficSignalEnvDirect(
+                    scenario_config_path=str(scenario_config),
+                    decision_interval=15.0,  # ✅ BUG #27 validated: 4x improvement
+                    episode_max_time=3600.0 if not self.quick_test else 120.0,
+                    observation_segments={'upstream': [3, 4, 5], 'downstream': [6, 7, 8]},
+                    device=device,
+                    quiet=False
+                )
             
             print(f"  [INFO] Environment created: obs_space={env.observation_space.shape}, "
                   f"action_space={env.action_space.n}", flush=True)
@@ -1210,7 +1389,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 print(f"  [CHECKPOINT] Found checkpoint at {completed_steps} steps: {latest_checkpoint.name}", flush=True)
                 
                 # ✅ FIX: Validate checkpoint config compatibility
-                if self._validate_checkpoint_config(latest_checkpoint, scenario_path):
+                if self._validate_checkpoint_config(latest_checkpoint, scenario_config):
                     # Config matches - safe to resume
                     print(f"  [CHECKPOINT] ✅ Config validated - resuming training", flush=True)
                     print(f"  [RESUME] Loading model from {latest_checkpoint}", flush=True)
@@ -1282,7 +1461,7 @@ class RLPerformanceValidationTest(ValidationSection):
             callbacks = []
             
             # Compute config_hash for checkpoint naming (config-specific checkpoints)
-            config_hash = self._compute_config_hash(scenario_path)
+            config_hash = self._compute_config_hash(scenario_config)
             
             # 1. Rotating checkpoints for resume capability (Code_RL design)
             # ✅ FIX: Include config_hash in checkpoint name for validation
@@ -1357,7 +1536,7 @@ class RLPerformanceValidationTest(ValidationSection):
             
             # ✅ SAVE SOPHISTICATED RL CACHE (validation-specific)
             self._save_rl_cache(
-                scenario_type, scenario_path, model_path, 
+                scenario_type, scenario_config, model_path, 
                 final_total_timesteps, device
             )
             
@@ -1387,7 +1566,12 @@ class RLPerformanceValidationTest(ValidationSection):
         self.debug_logger.info("="*80)
         
         try:
-            scenario_path = self._create_scenario_config(scenario_type)
+            # Create scenario configuration
+            # NEW: Use Pydantic configuration if enabled
+            if self.use_pydantic:
+                scenario_config = self._create_scenario_config_pydantic(scenario_type, duration=3600.0, N=200)
+            else:
+                scenario_config = self._create_scenario_config(scenario_type)
 
             # --- Baseline controller evaluation with INTELLIGENT CACHING ---
             # ✅ BASELINE CACHE OPTIMIZATION: Baseline (fixed-time 60s) never changes
@@ -1403,7 +1587,7 @@ class RLPerformanceValidationTest(ValidationSection):
             
             # Try to load cached baseline states
             cached_states = self._load_baseline_cache(
-                scenario_type, scenario_path, 
+                scenario_type, scenario_config, 
                 baseline_duration, control_interval
             )
             
@@ -1419,7 +1603,7 @@ class RLPerformanceValidationTest(ValidationSection):
                     # Cache partial, needs additive extension
                     print(f"  [CACHE] Extending cache additively...", flush=True)
                     baseline_states = self._extend_baseline_cache(
-                        scenario_type, scenario_path, cached_states,
+                        scenario_type, scenario_config, cached_states,
                         baseline_duration, control_interval, device
                     )
             else:
@@ -1427,7 +1611,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 print(f"  [BASELINE] Running full simulation ({baseline_duration}s)...", flush=True)
                 baseline_controller = self.BaselineController(scenario_type)
                 baseline_states, _ = self.run_control_simulation(
-                    baseline_controller, scenario_path,
+                    baseline_controller, scenario_config,
                     duration=baseline_duration,
                     control_interval=control_interval,
                     device=device,
@@ -1439,13 +1623,13 @@ class RLPerformanceValidationTest(ValidationSection):
                 
                 # Save to intelligent cache for future reuse
                 self._save_baseline_cache(
-                    scenario_type, scenario_path, baseline_states,
+                    scenario_type, scenario_config, baseline_states,
                     baseline_duration, control_interval, device
                 )
             
             # Evaluate baseline performance from cached/computed states
             baseline_states_copy = [state.copy() for state in baseline_states]
-            baseline_performance = self.evaluate_traffic_performance(baseline_states_copy, scenario_type, scenario_path)
+            baseline_performance = self.evaluate_traffic_performance(baseline_states_copy, scenario_type, scenario_config)
             
             # Test RL controller
             print("  Running RL controller...", flush=True)
@@ -1475,12 +1659,12 @@ class RLPerformanceValidationTest(ValidationSection):
             print("="*80, flush=True)
             print("", flush=True)
             
-            # ✅ BUG #30 FIX: Pass scenario_config_path and device to RLController
+            # ✅ BUG #30 FIX: Pass scenario_config and device to RLController
             # ✅ BUG CRITICAL FIX: Pass SAME duration/control_interval as baseline for fair comparison!
-            rl_controller = self.RLController(scenario_type, model_path, scenario_path, device)
+            rl_controller = self.RLController(scenario_type, model_path, scenario_config, device)
             rl_states, _ = self.run_control_simulation(
                 rl_controller, 
-                scenario_path,
+                scenario_config,
                 duration=baseline_duration,  # CRITICAL: Use same duration as baseline!
                 control_interval=control_interval,  # CRITICAL: Use same interval as baseline!
                 device=device,
@@ -1497,7 +1681,7 @@ class RLPerformanceValidationTest(ValidationSection):
                 return {'success': False, 'error': 'RL simulation failed'}
             
             rl_states_copy = [state.copy() for state in rl_states]
-            rl_performance = self.evaluate_traffic_performance(rl_states_copy, scenario_type, scenario_path)
+            rl_performance = self.evaluate_traffic_performance(rl_states_copy, scenario_type, scenario_config)
             
             # DEBUG: Log performance metrics
             self.debug_logger.info(f"Baseline performance: {baseline_performance}")
@@ -1602,7 +1786,7 @@ class RLPerformanceValidationTest(ValidationSection):
             print(f"[SCENARIO] Default single scenario mode: traffic_light_control")
         
         if self.quick_test:
-            total_timesteps = 100  # Quick integration test
+            total_timesteps = 10  # VERY quick integration test (just to verify setup)
             print(f"[QUICK TEST] Training {scenarios_to_train[0]} with {total_timesteps} timesteps")
         else:
             total_timesteps = 24000  # 100 episodes × 240 steps = literature standard
@@ -1950,6 +2134,11 @@ def main():
     if '--quick' in sys.argv or '--quick-test' in sys.argv:
         quick_test = True
     
+    # Check for Pydantic configuration mode (default: True)
+    use_pydantic = os.environ.get('USE_PYDANTIC', 'true').lower() == 'true'
+    if '--no-pydantic' in sys.argv or '--legacy-yaml' in sys.argv:
+        use_pydantic = False
+    
     if quick_test:
         print("=" * 80)
         print("QUICK TEST MODE ENABLED")
@@ -1959,7 +2148,12 @@ def main():
         print("- Expected runtime: ~5 minutes on GPU")
         print("=" * 80)
     
-    test = RLPerformanceValidationTest(quick_test=quick_test)
+    if use_pydantic:
+        print("✅ Using Pydantic configuration system (NEW)")
+    else:
+        print("⚠️  Using legacy YAML configuration system")
+    
+    test = RLPerformanceValidationTest(quick_test=quick_test, use_pydantic=use_pydantic)
     try:
         success = test.run_all_tests()
     except Exception as e:
