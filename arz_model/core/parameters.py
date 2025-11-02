@@ -146,6 +146,14 @@ class ModelParameters:
         self.ode_rtol = float(config['ode_rtol'])
         self.ode_atol = float(config['ode_atol'])
         self.epsilon = float(config['epsilon'])
+        
+        # Validate spatial_scheme
+        valid_spatial_schemes = ['first_order', 'weno5', 'godunov']
+        if self.spatial_scheme not in valid_spatial_schemes:
+            raise ValueError(
+                f"Invalid spatial_scheme='{self.spatial_scheme}'. "
+                f"Must be one of: {valid_spatial_schemes}"
+            )
 
         # --- Assign Scenario Parameters (if present in merged config) ---
         # --- Assign Scenario Parameters (if present in merged config) ---

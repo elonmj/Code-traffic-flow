@@ -214,9 +214,13 @@ def test_light_factor_changes_with_signal_state(two_segment_network):
     print("✅ light_factor correctly reflects signal state")
 
 
-def test_congestion_forms_during_red_signal(two_segment_network):
+@pytest.mark.parametrize("scheme", ["weno5", "godunov"])
+def test_congestion_forms_during_red_signal(network_params, scheme):
     """
     Integration test: verify traffic light BLOCKS flux and congestion forms.
+    
+    🔬 DIAGNOSTIC TEST: Parametrized to test both WENO5 and Godunov schemes.
+    This reveals if WENO5 causes density=0 failures (Gibbs oscillations at steep gradients).
     
     Setup:
     - seg_0 with inflow BC (0.05 veh/m, 10 m/s)
@@ -227,8 +231,49 @@ def test_congestion_forms_during_red_signal(two_segment_network):
     - Densities INCREASE in seg_0 (0.05 → 0.10+)
     - Velocities DECREASE in seg_0 (< 5.56 m/s congestion threshold)
     - Queue forms (> 5.0 vehicles)
+    
+    Diagnostic Outcomes:
+    1. Both pass → Bug already fixed (BC/ODE corrections sufficient)
+    2. Godunov passes, WENO5 fails → WENO5 is the problem
+    3. Both fail → Problem elsewhere (CFL=44,000 suspect)
     """
-    network = two_segment_network
+    # Override spatial scheme for this test
+    network_params.spatial_scheme = scheme
+    
+    # Create network with specified scheme
+    network = NetworkGrid(network_params)
+    
+    # Add segments
+    network.add_segment('seg_0', xmin=0, xmax=100, N=50,
+                        start_node=None, end_node='node_1')
+    network.add_segment('seg_1', xmin=100, xmax=200, N=50,
+                        start_node='node_1', end_node=None)
+    
+    # Add junction with traffic light (initially RED for seg_0)
+    phases = [
+        Phase(duration=60.0, green_segments=['seg_1']),  # seg_0 RED
+        Phase(duration=30.0, green_segments=['seg_0'])   # seg_0 GREEN
+    ]
+    traffic_light = TrafficLightController(
+        cycle_time=90.0,
+        phases=phases,
+        offset=0.0
+    )
+    
+    network.add_node(
+        node_id='node_1', 
+        position=(100.0, 0.0),
+        incoming_segments=['seg_0'],
+        outgoing_segments=['seg_1'],
+        node_type='signalized_intersection',
+        traffic_lights=traffic_light
+    )
+    
+    # Add link for coupling
+    network.add_link(from_segment='seg_0', to_segment='seg_1', via_node='node_1')
+    
+    # Initialize
+    network.initialize()
     
     # Set inflow BC on seg_0 via params
     network.params.boundary_conditions = {
@@ -239,12 +284,36 @@ def test_congestion_forms_during_red_signal(two_segment_network):
                 'v_m': 10.0      # 36 km/h   
             }
         }
-    }    # Run simulation (RED signal throughout)
-    dt = 0.1
-    t_max = 120.0
+    }    # Run simulation (RED signal throughout) with ADAPTIVE timestep
+    from arz_model.numerics import cfl as cfl_module
     
-    for t in np.arange(0, t_max, dt):
+    t = 0.0
+    t_max = 120.0
+    dt_old = None
+    
+    while t < t_max:
+        # Get current state from first segment for CFL calculation
+        current_U = network.segments['seg_0']['U']
+        grid = network.segments['seg_0']['grid']
+        
+        # Extract physical cells only (excluding ghost cells) for CFL calculation
+        U_physical = current_U[:, grid.num_ghost_cells:grid.num_ghost_cells + grid.N_physical]
+        
+        # Calculate adaptive dt based on CFL condition
+        dt = cfl_module.calculate_cfl_dt(U_physical, grid, network.params)
+        
+        # Safety: limit dt change rate (max 2x increase per step)
+        if dt_old is not None:
+            dt = min(dt, 2.0 * dt_old)
+        dt_old = dt
+        
+        # Don't overshoot t_max
+        if t + dt > t_max:
+            dt = t_max - t
+        
+        # Step simulation
         network.step(dt, current_time=t)
+        t += dt
     
     # Check final state
     seg_0 = network.segments['seg_0']

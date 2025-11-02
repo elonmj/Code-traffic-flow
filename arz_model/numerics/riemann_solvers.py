@@ -124,9 +124,140 @@ def central_upwind_flux(
 
     # Apply junction-aware flux blocking if at junction interface
     if junction_info is not None and junction_info.is_junction:
+        # [PHASE 3 DEBUG - Junction flux blocking verification]
+        if junction_info.light_factor < 0.5:  # RED or YELLOW signal
+            print("[JUNCTION FLUX BLOCKING]")
+            print("  light_factor =", junction_info.light_factor)
+            print("  F_before (momentum) =", F_CU[1])
+        
         F_CU = F_CU * junction_info.light_factor
-
+        
+        if junction_info.light_factor < 0.5:
+            print("  F_after (momentum, blocked) =", F_CU[1])
+    
     return F_CU
+
+
+def godunov_flux_upwind(
+    U_L: np.ndarray,
+    U_R: np.ndarray,
+    params: ModelParameters,
+    junction_info: Optional['JunctionInfo'] = None
+) -> np.ndarray:
+    """
+    Godunov flux via upwind selection (Phase 1 - simplified).
+    
+    This is a robust first-order Riemann solver that selects the flux based on
+    wave speeds (eigenvalues). For the ARZ multi-class traffic model:
+    
+    - If all waves move right (λ_min ≥ 0): Use left flux F(U_L)
+    - If all waves move left (λ_max ≤ 0): Use right flux F(U_R)
+    - Mixed waves: Fallback to central_upwind_flux
+    
+    Advantages:
+    - Positivity-preserving (monotone scheme)
+    - Robust with sharp discontinuities (BCs, shocks)
+    - No Gibbs oscillations
+    
+    Disadvantages:
+    - First-order accuracy (more diffusive than WENO5)
+    
+    Junction-aware flux blocking: Same as central_upwind_flux, the computed
+    flux is reduced by light_factor when junction_info indicates a traffic signal.
+    
+    Args:
+        U_L (np.ndarray): State vector [rho_m, w_m, rho_c, w_c] left of interface (SI units).
+        U_R (np.ndarray): State vector [rho_m, w_m, rho_c, w_c] right of interface (SI units).
+        params (ModelParameters): Model parameters object.
+        junction_info (Optional[JunctionInfo]): Junction metadata for flux blocking.
+    
+    Returns:
+        np.ndarray: The numerical flux vector F at the interface. Shape (4,).
+        
+    References:
+        - Godunov (1959): A difference method for numerical calculation of discontinuous solutions
+        - Mammar et al. (2009): Riemann solver for ARZ model
+        - Villa (2016): ARZ with traffic lights (arXiv:1605.00632)
+    
+    Example:
+        >>> # Normal flux calculation
+        >>> F = godunov_flux_upwind(U_L, U_R, params)
+        >>> 
+        >>> # Junction with RED signal (99% blocked)
+        >>> junction = JunctionInfo(is_junction=True, light_factor=0.01, node_id=1)
+        >>> F_red = godunov_flux_upwind(U_L, U_R, params, junction)
+    """
+    # Ensure inputs are numpy arrays
+    U_L = np.asarray(U_L)
+    U_R = np.asarray(U_R)
+    
+    # 1. Extract and clamp densities
+    rho_m_L = max(U_L[0], 0.0)
+    rho_c_L = max(U_L[2], 0.0)
+    rho_m_R = max(U_R[0], 0.0)
+    rho_c_R = max(U_R[2], 0.0)
+    
+    # 2. Calculate pressures (REUSE physics.py)
+    p_m_L, p_c_L = physics.calculate_pressure(
+        np.array([rho_m_L]), np.array([rho_c_L]),
+        params.alpha, params.rho_jam, params.epsilon,
+        params.K_m, params.gamma_m, params.K_c, params.gamma_c
+    )
+    p_m_R, p_c_R = physics.calculate_pressure(
+        np.array([rho_m_R]), np.array([rho_c_R]),
+        params.alpha, params.rho_jam, params.epsilon,
+        params.K_m, params.gamma_m, params.K_c, params.gamma_c
+    )
+    
+    # 3. Calculate velocities
+    v_m_L, v_c_L = physics.calculate_physical_velocity(U_L[1], U_L[3], p_m_L[0], p_c_L[0])
+    v_m_R, v_c_R = physics.calculate_physical_velocity(U_R[1], U_R[3], p_m_R[0], p_c_R[0])
+    
+    # 4. Calculate eigenvalues (REUSE physics.py)
+    lambda_L_list = physics.calculate_eigenvalues(
+        np.array([rho_m_L]), np.array([v_m_L]),
+        np.array([rho_c_L]), np.array([v_c_L]),
+        params
+    )
+    lambda_R_list = physics.calculate_eigenvalues(
+        np.array([rho_m_R]), np.array([v_m_R]),
+        np.array([rho_c_R]), np.array([v_c_R]),
+        params
+    )
+    
+    # 5. Flatten (calculate_eigenvalues returns list of arrays)
+    all_lambda_L = [float(l[0]) for l in lambda_L_list]
+    all_lambda_R = [float(l[0]) for l in lambda_R_list]
+    
+    # 6. Upwind selection
+    lambda_min = min(min(all_lambda_L), min(all_lambda_R))
+    lambda_max = max(max(all_lambda_L), max(all_lambda_R))
+    
+    if lambda_min >= 0.0:
+        # All waves move right → flux = F(U_L)
+        F = np.array([
+            rho_m_L * v_m_L,
+            U_L[1],
+            rho_c_L * v_c_L,
+            U_L[3]
+        ])
+    elif lambda_max <= 0.0:
+        # All waves move left → flux = F(U_R)
+        F = np.array([
+            rho_m_R * v_m_R,
+            U_R[1],
+            rho_c_R * v_c_R,
+            U_R[3]
+        ])
+    else:
+        # Mixed waves → fallback to Central-Upwind (handles complex wave interactions)
+        F = central_upwind_flux(U_L, U_R, params)
+    
+    # 7. Junction blocking (REUSE logic)
+    if junction_info is not None and junction_info.is_junction:
+        F = F * junction_info.light_factor
+    
+    return F
 
 
 # --- CUDA Device Function for Central-Upwind Flux ---

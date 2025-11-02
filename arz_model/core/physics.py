@@ -180,13 +180,39 @@ def calculate_equilibrium_speed(rho_m: np.ndarray, rho_c: np.ndarray, R_local: n
              Vmax_c_local = params.Vmax_c[int(R_local)]
 
 
+    # [PHASE 2 DEBUG - Hypothesis B: Equilibrium speed calculation]
+    # TEMPORARILY DISABLED - too much output, will re-enable with cell_index filter
+    # Debug for scalar case (single cell from ODE solver)
+    # if np.isscalar(rho_m) and np.isscalar(rho_c):
+    #     print("[EQUILIBRIUM DEBUG - SCALAR]")
+    #     print("  rho_total =", rho_total, ", rho_jam =", params.rho_jam)
+    #     print("  g =", g, "(congestion factor)")
+    #     if V0_m_override is not None:
+    #         print("  Using V0_m_override =", V0_m_override)
+    #     else:
+    #         R_idx = int(R_local)
+    #         print("  R_local =", R_local, ", R_idx =", R_idx)
+    #         print("  Vmax_m[R] =", params.Vmax_m[R_idx])
+    #         print("  Vmax_m_local =", Vmax_m_local)
+    #     print("  V_creeping =", params.V_creeping)
+    
     Ve_m = params.V_creeping + (Vmax_m_local - params.V_creeping) * g
     Ve_c = Vmax_c_local * g
 
+    # [PHASE 2 DEBUG - Hypothesis B cont'd: Final Ve_m value]
+    # TEMPORARILY DISABLED
+    # if np.isscalar(rho_m) and np.isscalar(rho_c):
+    #     print("  Ve_m (before clipping) =", Ve_m)
+    
     # Ensure speeds are non-negative
     Ve_m = np.maximum(Ve_m, 0.0)
     Ve_c = np.maximum(Ve_c, 0.0)
 
+    # [PHASE 2 DEBUG - Hypothesis B final: After clipping]
+    # TEMPORARILY DISABLED
+    # if np.isscalar(rho_m) and np.isscalar(rho_c):
+    #     print("  Ve_m (final) =", Ve_m)
+    
     return Ve_m, Ve_c
 # --- CUDA Device Function for Equilibrium Speed ---
 @cuda.jit(device=True)
@@ -465,6 +491,17 @@ def calculate_source_term(U: np.ndarray,
     Sm = (Ve_m - v_m) / (tau_m + epsilon)
     Sc = (Ve_c - v_c) / (tau_c + epsilon)
 
+    # [PHASE 2 DEBUG - Hypothesis A: Zero-density guard triggering] - TEMPORARILY DISABLED
+    # Debug for cell index 5 (if scalar U, skip this debug)
+    # if U.ndim == 1:  # Scalar case (single cell from ODE solver)
+    #     # For scalar debugging, check if we're being called with near-zero density
+    #     if rho_m_calc > 0 and rho_m_calc <= epsilon:
+    #         print("[SOURCE TERM DEBUG - SCALAR]")
+    #         print("  rho_m =", rho_m, ", epsilon =", epsilon)
+    #         print("  Ve_m =", Ve_m, ", v_m =", v_m)
+    #         print("  Sm_before_guard =", Sm)
+    #         print("  GUARD WILL TRIGGER: rho_m_calc <= epsilon")
+    
     # Source term is zero if density is zero
     Sm = np.where(rho_m_calc <= epsilon, 0.0, Sm)
     Sc = np.where(rho_c_calc <= epsilon, 0.0, Sc)

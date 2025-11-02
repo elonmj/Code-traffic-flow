@@ -546,6 +546,22 @@ class NetworkGrid:
         # Step 1.5: Clear junction metadata after evolution
         # Ensures fresh junction info each timestep
         self._clear_junction_info()
+        
+        # Step 1.6: CFL Validation (post-evolution check)
+        # Verify timestep was appropriate for achieved wavespeeds
+        from ..numerics.time_integration import check_cfl_condition
+        for seg_id, segment in self.segments.items():
+            U = segment['U']
+            grid = segment['grid']
+            
+            is_stable, cfl_actual = check_cfl_condition(U, grid, self.params, dt)
+            
+            if not is_stable:
+                import warnings
+                warnings.warn(
+                    f"[CFL VIOLATION] Segment {seg_id}: CFL={cfl_actual:.3f} > 0.9 "
+                    f"at t={current_time:.2f}s with dt={dt:.6f}s"
+                )
             
         # Step 2: Apply behavioral coupling (θ_k memory transmission)
         # This implements thesis Section 4.2.2: Phenomenological coupling

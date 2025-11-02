@@ -1,6 +1,7 @@
 import numpy as np
 from numba import cuda # Import cuda
 from scipy.integrate import solve_ivp
+from typing import Optional
 from ..grid.grid1d import Grid1D
 from ..core.parameters import ModelParameters
 from ..core import physics
@@ -314,6 +315,84 @@ def calculate_spatial_discretization_weno(U: np.ndarray, grid: Grid1D, params: M
     
     return L_U
 
+
+def calculate_spatial_discretization_godunov(
+    U: np.ndarray, 
+    grid: Grid1D, 
+    params: ModelParameters,
+    current_bc_params: Optional[dict] = None
+) -> np.ndarray:
+    """
+    Godunov spatial discretization (first-order upwind).
+    
+    Differences vs WENO5:
+    - No reconstruction (piecewise constant)
+    - Direct cell-to-cell flux calculation
+    - Robust with sharp discontinuities
+    
+    This is the spatial discretization component of the Godunov method for
+    hyperbolic conservation laws. It computes L(U) = -dF/dx where F are
+    the numerical fluxes at cell interfaces.
+    
+    Args:
+        U (np.ndarray): State array (4, N_total) = [rho_m, w_m, rho_c, w_c]
+        grid (Grid1D): Spatial grid object
+        params (ModelParameters): Model parameters
+        current_bc_params (Optional[dict]): Dynamic boundary conditions (for time-varying inflow)
+    
+    Returns:
+        np.ndarray: Spatial discretization L(U) = -dF/dx. Shape (4, N_total).
+        
+    References:
+        - Godunov (1959): A difference method for numerical calculation of discontinuous solutions
+        - LeVeque (2002): Finite Volume Methods for Hyperbolic Problems
+        - Mammar et al. (2009): Riemann solver for ARZ traffic model
+        
+    Example:
+        >>> L_U = calculate_spatial_discretization_godunov(U, grid, params)
+        >>> # Use in time integration (Euler or SSP-RK3)
+        >>> U_new = U + dt * L_U
+    """
+    # 1. Apply boundary conditions
+    U_bc_result = boundary_conditions.apply_boundary_conditions(
+        U, grid, params, current_bc_params
+    )
+    
+    # Handle case where BC returns None (NetworkGrid interior segments)
+    # In this case, ghost cells are already set by junction coupling
+    U_bc = U if U_bc_result is None else U_bc_result
+    
+    # 2. Calculate fluxes at all interfaces
+    g = grid.num_ghost_cells
+    N = grid.N_physical
+    fluxes = np.zeros((4, N + 2*g))
+    
+    # Loop over interfaces (j-1/2) from ghost to physical
+    for j in range(g-1, g+N):
+        # Left and right states (NO reconstruction - piecewise constant!)
+        U_L = U_bc[:, j]
+        U_R = U_bc[:, j+1]
+        
+        # Check if at junction interface (same logic as WENO5)
+        junction_info = None
+        if j == g + N - 1 and hasattr(grid, 'junction_at_right'):
+            if grid.junction_at_right is not None:
+                junction_info = grid.junction_at_right
+        
+        # Godunov flux (upwind selection with Central-Upwind fallback)
+        fluxes[:, j] = riemann_solvers.godunov_flux_upwind(
+            U_L, U_R, params, junction_info
+        )
+    
+    # 3. Calculate L(U) = -dF/dx (conservative form)
+    L_U = np.zeros_like(U)
+    for j in range(g, g + N):
+        # Finite volume: dU/dt = -(F_{j+1/2} - F_{j-1/2}) / dx
+        L_U[:, j] = -(fluxes[:, j] - fluxes[:, j-1]) / grid.dx
+    
+    return L_U
+
+
 def primitives_to_conserved_single(P_single, params):
     """
     Convertit un vecteur de variables primitives en variables conservées.
@@ -397,6 +476,16 @@ def _ode_rhs(t: float, y: np.ndarray, cell_index: int, grid: Grid1D, params: Mod
     )
     tau_m, tau_c = physics.calculate_relaxation_time(rho_m_calc, rho_c_calc, params)
     
+    # [PHASE 2 DEBUG - Hypothesis C: tau_m numerical issue] - TEMPORARILY DISABLED
+    # if cell_index == 5:  # Debug cell
+    #     print("[TAU DEBUG cell=", cell_index, "]")
+    #     print("  tau_m =", tau_m, ", tau_c =", tau_c)
+    #     assert tau_m > 0, "Invalid tau_m"
+    #     assert tau_c > 0, "Invalid tau_c"
+    #     assert not np.isinf(tau_m), "tau_m is infinite"
+    #     assert not np.isinf(tau_c), "tau_c is infinite"
+    #     print("  tau values valid")
+    
     # DEBUG: Print equilibrium speed calculation
     # DEBUG: Temporarily disabled to reduce output noise
     # if cell_index == 5:  # Only print for one cell
@@ -416,6 +505,14 @@ def _ode_rhs(t: float, y: np.ndarray, cell_index: int, grid: Grid1D, params: Mod
     # other array-based physics calculations if they were moved here.
     # For now, the source term calculation within the ODE solver remains CPU-based.
 
+    # [PHASE 2 DEBUG - Pre source term calculation] - TEMPORARILY DISABLED
+    # if cell_index == 5:
+    #     print("[PRE-SOURCE DEBUG cell=", cell_index, "]")
+    #     print("  y[0] (rho_m) =", y[0])
+    #     print("  rho_m_calc =", rho_m_calc)
+    #     print("  epsilon =", params.epsilon)
+    #     print("  rho_m_calc <= epsilon?", rho_m_calc <= params.epsilon)
+    
     source = physics.calculate_source_term( # This is the Numba-optimized CPU version
         y,
         # Pressure params
@@ -428,17 +525,18 @@ def _ode_rhs(t: float, y: np.ndarray, cell_index: int, grid: Grid1D, params: Mod
         params.epsilon
     )
     
-    if cell_index == 5:
-        # Calculate pressure and velocity manually to debug
-        p_m_calc, p_c_calc = physics.calculate_pressure(
-            rho_m_calc, rho_c_calc,
-            params.alpha, params.rho_jam, params.epsilon,
-            params.K_m, params.gamma_m, params.K_c, params.gamma_c
-        )
-        v_m_calc = y[1] - p_m_calc  # v_m = w_m - p_m
-        print(f"  p_m={p_m_calc:.4f}, v_m_calc={v_m_calc:.4f}")
-        print(f"  Sm_expected = (Ve_m - v_m)/tau = ({Ve_m:.4f} - {v_m_calc:.4f})/{tau_m:.4f} = {(Ve_m - v_m_calc)/tau_m:.4f}")
-        print(f"  source[1]={source[1]:.4f} (Sm actual)")
+    # [PHASE 2 DEBUG - Post source term] - TEMPORARILY DISABLED
+    # if cell_index == 5:
+    #     # Calculate pressure and velocity manually to debug
+    #     p_m_calc, p_c_calc = physics.calculate_pressure(
+    #         rho_m_calc, rho_c_calc,
+    #         params.alpha, params.rho_jam, params.epsilon,
+    #         params.K_m, params.gamma_m, params.K_c, params.gamma_c
+    #     )
+    #     v_m_calc = y[1] - p_m_calc  # v_m = w_m - p_m
+    #     print(f"  p_m={p_m_calc:.4f}, v_m_calc={v_m_calc:.4f}")
+    #     print(f"  Sm_expected = (Ve_m - v_m)/tau = ({Ve_m:.4f} - {v_m_calc:.4f})/{tau_m:.4f} = {(Ve_m - v_m_calc)/tau_m:.4f}")
+    #     print(f"  source[1]={source[1]:.4f} (Sm actual)")
     
     return source
 
@@ -740,9 +838,16 @@ def strang_splitting_step(U_or_d_U_n, dt: float, grid: Grid1D, params: ModelPara
             U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params, current_bc_params)
         elif params.spatial_scheme == 'weno5' and params.time_scheme == 'ssprk3':
             U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params, current_bc_params)
+        elif params.spatial_scheme == 'godunov' and params.time_scheme == 'euler':
+            # Godunov + Euler (use SSP-RK3 as fallback)
+            U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params, current_bc_params)
+        elif params.spatial_scheme == 'godunov' and params.time_scheme == 'ssprk3':
+            # Godunov + SSP-RK3 (recommended combination)
+            U_ss = solve_hyperbolic_step_ssprk3(U_star, dt, grid, params, current_bc_params)
         else:
             raise ValueError(f"Unsupported scheme combination: spatial_scheme='{params.spatial_scheme}', time_scheme='{params.time_scheme}'. "
-                           f"Supported combinations: (first_order, euler), (first_order, ssprk3), (weno5, euler), (weno5, ssprk3)")
+                           f"Supported combinations: (first_order, euler), (first_order, ssprk3), (weno5, euler), (weno5, ssprk3), "
+                           f"(godunov, euler), (godunov, ssprk3)")
 
         # Step 3: Solve ODEs for dt/2
         U_np1 = solve_ode_step_cpu(U_ss, dt / 2.0, grid, params)
@@ -796,8 +901,11 @@ def solve_hyperbolic_step_ssprk3(U_in: np.ndarray, dt_hyp: float, grid: Grid1D, 
         compute_L = lambda U: -compute_flux_divergence_first_order(U, grid, params, current_bc_params)
     elif params.spatial_scheme == 'weno5':
         compute_L = lambda U: calculate_spatial_discretization_weno(U, grid, params, current_bc_params)
+    elif params.spatial_scheme == 'godunov':
+        compute_L = lambda U: calculate_spatial_discretization_godunov(U, grid, params, current_bc_params)
     else:
-        raise ValueError(f"Unsupported spatial_scheme '{params.spatial_scheme}' for SSP-RK3")
+        raise ValueError(f"Unsupported spatial_scheme '{params.spatial_scheme}' for SSP-RK3. "
+                        f"Valid options: 'first_order', 'weno5', 'godunov'")
     
     # --- Étape 1 : U^{(1)} = U^n + dt * L(U^n) ---
     L_U_n = compute_L(U_in)
