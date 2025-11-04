@@ -571,7 +571,8 @@ class NetworkGrid:
         # Verify timestep was appropriate for achieved wavespeeds
         from ..numerics.time_integration import check_cfl_condition
         for seg_id, segment in self.segments.items():
-            U = segment['U']
+            # For GPU mode, this triggers GPU→CPU transfer via get_segment_state()
+            U = self.get_segment_state(seg_id)
             grid = segment['grid']
             
             is_stable, cfl_actual = check_cfl_condition(U, grid, self.params, dt)
