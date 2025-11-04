@@ -71,13 +71,23 @@ def test_gpu_stability():
     print("\n[SETUP] Creating network...")
     network = NetworkGrid(params)
     
-    # Segment 1: Inflow with high velocity (unstable!)
-    # Note: start_node=None, end_node=None for completely isolated segments (no junctions)
-    network.add_segment('seg_0', xmin=0.0, xmax=100.0, N=params.N, start_node=None, end_node=None)
+    # Add segments (following test_gpu_small_timestep.py pattern)
+    network.add_segment('seg_0', xmin=0.0, xmax=100.0, N=params.N,
+                        start_node=None, end_node='node_1')
+    network.add_segment('seg_1', xmin=100.0, xmax=200.0, N=params.N,
+                        start_node='node_1', end_node=None)
     
-    # Segment 2: Normal outflow
-    # Note: Isolated segment, no connection to seg_0
-    network.add_segment('seg_1', xmin=100.0, xmax=200.0, N=params.N, start_node=None, end_node=None)
+    # Add simple junction node (no traffic light for this test)
+    network.add_node(
+        node_id='node_1',
+        position=(100.0, 0.0),
+        incoming_segments=['seg_0'],
+        outgoing_segments=['seg_1'],
+        node_type='simple_junction'
+    )
+    
+    # Add link between segments
+    network.add_link(from_segment='seg_0', to_segment='seg_1', via_node='node_1')
     
     # Set boundary conditions via params
     network.params.boundary_conditions = {
@@ -97,14 +107,12 @@ def test_gpu_stability():
         }
     }
     
-    print(f"✅ Network: 2 segments, {params.N} cells each, GPU mode")
-    print(f"✅ BC: Inflow v_m=10.0 m/s (very high!)")
+    # Initialize network (validates topology and prepares for simulation)
+    network.initialize()
     
-    # Bypass topology validation for simple test
-    # We have segments but no junctions, so skip full initialize()
-    # Just set the initialization flag to allow step() to proceed
-    network._initialized = True
-    print(f"✅ Initialization bypassed (simple test, no junctions)")
+    print(f"✅ Network: 2 segments, {params.N} cells each, GPU mode")
+    print(f"✅ Junction: node_1 (simple junction)")
+    print(f"✅ BC: Inflow v_m=10.0 m/s (very high!)")
     
     # Set initial conditions (low density equilibrium)
     for seg_id in ['seg_0', 'seg_1']:
