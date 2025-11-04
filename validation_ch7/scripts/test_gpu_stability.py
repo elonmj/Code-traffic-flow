@@ -73,22 +73,42 @@ def test_gpu_stability():
     
     # Segment 1: Inflow with high velocity (unstable!)
     network.add_segment('seg_0', xmin=0.0, xmax=100.0, N=params.N, start_node=None, end_node='node_1')
-    network.set_boundary_condition('seg_0', 'left', 'inflow', rho_m=0.15, v_m=10.0, rho_c=0.0, v_c=0.0)
     
     # Segment 2: Normal outflow
     network.add_segment('seg_1', xmin=100.0, xmax=200.0, N=params.N, start_node='node_1', end_node=None)
-    network.set_boundary_condition('seg_1', 'right', 'outflow')
+    
+    # Set boundary conditions via params
+    network.params.boundary_conditions = {
+        'seg_0': {
+            'left': {
+                'type': 'inflow',
+                'rho_m': 0.15,
+                'v_m': 10.0,  # HIGH VELOCITY - unstable on CPU @ dt=0.001s
+                'rho_c': 0.0,
+                'v_c': 0.0
+            }
+        },
+        'seg_1': {
+            'right': {
+                'type': 'outflow'
+            }
+        }
+    }
     
     print(f"✅ Network: 2 segments, {params.N} cells each, GPU mode")
     print(f"✅ BC: Inflow v_m=10.0 m/s (very high!)")
     
-    # Initialize equilibrium
+    # Initialize network
+    network.initialize()
+    
+    # Set initial conditions (low density equilibrium)
     for seg_id in ['seg_0', 'seg_1']:
         grid = network.segments[seg_id]['grid']
-        U_init = np.zeros((4, grid.N_total), dtype=np.float64)
-        U_init[0, grid.physical_cell_indices] = 0.05  # Low initial density
-        U_init[1, grid.physical_cell_indices] = 5.0   # Moderate initial velocity
-        network.segments[seg_id]['U'] = U_init.copy()
+        U = network.segments[seg_id]['U']
+        U[0, grid.physical_cell_indices] = 0.05  # Low initial density
+        U[1, grid.physical_cell_indices] = 0.05 * 5.0  # w_m = rho_m * v_m (v=5 m/s)
+        U[2, grid.physical_cell_indices] = 0.0  # No cars initially
+        U[3, grid.physical_cell_indices] = 0.0  # No car momentum initially
     
     print(f"\n[SIMULATION] Running {int(duration/dt):,} timesteps...")
     print(f"  dt={dt}s, duration={duration}s")
