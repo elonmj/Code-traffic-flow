@@ -140,6 +140,14 @@ class ValidationKaggleManager:
                 "description": "Tests robustesse GPU/CPU",
                 "estimated_minutes": 60,
                 "gpu_required": True
+            },
+            {
+                "name": "gpu_stability_test",
+                "script": "test_gpu_stability.py",
+                "revendications": ["STABILITY"], 
+                "description": "GPU + small timestep vs inflow BC instability",
+                "estimated_minutes": 15,
+                "gpu_required": True
             }
         ]
         

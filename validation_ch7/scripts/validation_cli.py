@@ -24,7 +24,7 @@ def main():
         '--section',
         required=True,
         choices=['section_7_3_analytical', 'section_7_4_calibration', 'section_7_5_digital_twin',
-                 'section_7_6_rl_performance', 'section_7_7_robustness'],
+                 'section_7_6_rl_performance', 'section_7_7_robustness', 'gpu_stability_test'],
         help='Validation section to run'
     )
     
