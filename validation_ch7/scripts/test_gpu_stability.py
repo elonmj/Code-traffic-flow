@@ -125,8 +125,8 @@ def test_gpu_stability():
     
     try:
         while t < duration:
-            # Evolve network
-            network.evolve(dt=dt)
+            # Advance simulation
+            network.step(dt, t)
             t += dt
             step += 1
             
