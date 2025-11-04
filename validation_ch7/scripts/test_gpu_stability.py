@@ -98,8 +98,8 @@ def test_gpu_stability():
     print(f"✅ Network: 2 segments, {params.N} cells each, GPU mode")
     print(f"✅ BC: Inflow v_m=10.0 m/s (very high!)")
     
-    # Initialize network
-    network.initialize()
+    # Note: Skip initialize() for simple test - no junctions needed
+    # BCs are set via params.boundary_conditions
     
     # Set initial conditions (low density equilibrium)
     for seg_id in ['seg_0', 'seg_1']:
