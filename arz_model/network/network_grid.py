@@ -587,7 +587,17 @@ class NetworkGrid:
         # Step 2: Apply behavioral coupling (θ_k memory transmission)
         # This implements thesis Section 4.2.2: Phenomenological coupling
         # Applies AFTER flux resolution to model driver adaptation
-        self._resolve_node_coupling(current_time)
+        # 
+        # ⚠️ EXPERIMENT A: DISABLED TO TEST CAUSALITY HYPOTHESIS
+        # Hypothesis: Lagrangian variable θ_k creates backward causality
+        # violations that cause instability at high velocities (v_m > 6.5 m/s)
+        # 
+        # Literature support:
+        # - Mojgani et al. (2022): "Lagrangian PINNs: A causality-conforming solution"
+        # - Wang et al. (2022): "Respecting causality is all you need"
+        # 
+        # If instability disappears with this disabled, θ coupling is root cause!
+        # self._resolve_node_coupling(current_time)  # ← DISABLED FOR EXPERIMENT A
         
         # Step 3: Update traffic lights for next cycle
         self._update_traffic_lights(dt)

@@ -1,12 +1,41 @@
 """
-GPU Stability Test - Test l'instabilité BC inflow avec GPU + petits pas de temps.
+🔬 EXPERIMENT A: GPU Stability Test WITHOUT Behavioral Coupling
+================================================================================
 
-Test Configuration:
+HYPOTHESIS:
+    Lagrangian variable θ_k (behavioral memory transmission) causes instability
+    at high velocities by violating causality in Eulerian solver framework.
+
+MODIFICATION:
+    ✅ Disabled: self._resolve_node_coupling(current_time) in NetworkGrid.step()
+    → No phenomenological coupling (Section 4.2.2 thesis)
+    → No θ_k memory transmission between junctions
+
+LITERATURE SUPPORT:
+    - Mojgani et al. (2022): "Lagrangian PINNs: A causality-conforming solution"
+      → Lagrangian variables can violate causality in Eulerian solvers
+    - Wang et al. (2022): "Respecting causality is all you need"  
+      → Spatio-temporal causal structure critical for stability
+    - Bremer et al. (2021, ACM): No literature found on traffic junction instability
+      → This may be novel research territory!
+
+TEST CONFIGURATION:
     - BC inflow: v_m = 10.0 m/s (haute vitesse, instable sur CPU à dt=0.001s)
     - Timestep: dt = 0.0001s (10x plus petit que standard)
     - Duration: 15s simulées (150,000 timesteps!)
     - Device: GPU (Numba CUDA)
-    - Expected: v_max < 20 m/s, rho > 0.08 (congestion)
+    - Expected: v_max < 20 m/s IF hypothesis correct
+    
+PREVIOUS RESULT (Kernel 10 - WITH COUPLING):
+    ❌ FAILURE: v_max=172.11 m/s at t=1.0s (only 6.7% of 15s)
+    → Instability persisted even with GPU + dt=0.0001s
+
+EXPECTED RESULT (Kernel 11 - WITHOUT COUPLING):
+    If θ coupling is root cause:
+        ✅ SUCCESS: v_max stays < 20 m/s for full 15s
+        ✅ Congestion develops: rho > 0.08
+    If other cause:
+        ❌ FAILURE: v_max explodes again (same as Kernel 10)
 
 Quick Test Mode (env var QUICK_TEST=1):
     - Duration: 5s simulées au lieu de 15s
@@ -27,22 +56,32 @@ from arz_model.network.network_grid import NetworkGrid
 from arz_model.core.parameters import ModelParameters
 
 def test_gpu_stability():
-    """Test GPU avec petits pas de temps contre instabilité inflow BC."""
+    """
+    🔬 EXPERIMENT A: Test GPU stability WITHOUT behavioral coupling.
+    
+    This test diagnoses whether θ_k Lagrangian coupling causes instability
+    by disabling _resolve_node_coupling() in NetworkGrid.step().
+    """
     
     # Check quick test mode
     quick_test = os.environ.get('QUICK_TEST', '0') == '1'
     duration = 5.0 if quick_test else 15.0
     dt = 0.0001  # 10x plus petit que standard (0.001s)
     
-    print("=" * 70)
-    print("GPU STABILITY TEST - Inflow BC Instability")
-    print("=" * 70)
+    print("=" * 80)
+    print("🔬 EXPERIMENT A: GPU STABILITY TEST - NO BEHAVIORAL COUPLING")
+    print("=" * 80)
+    print("\n⚠️  CRITICAL CHANGE: θ_k coupling DISABLED in this test!")
+    print("    → _resolve_node_coupling() is commented out")
+    print("    → Testing hypothesis: Lagrangian θ violates causality")
     print(f"\nMode: {'QUICK TEST (5s)' if quick_test else 'FULL TEST (15s)'}")
     print(f"Duration: {duration}s simulated")
     print(f"Timestep: dt={dt}s (10x smaller than standard)")
     print(f"BC inflow: v_m=10.0 m/s (unstable on CPU @ dt=0.001s)")
-    print(f"Expected: v_max < 20 m/s, rho > 0.08")
-    print(f"Timesteps: {int(duration/dt):,}")
+    print(f"\n📊 Expected Outcomes:")
+    print(f"    If θ IS root cause:  ✅ v_max < 20 m/s for full duration")
+    print(f"    If θ NOT root cause: ❌ v_max explodes (like Kernel 10)")
+    print(f"\nTimesteps: {int(duration/dt):,}")
     
     # Create parameters with GPU
     params = ModelParameters()
@@ -186,24 +225,53 @@ def test_gpu_stability():
         print(f"Final v_max: {v_max_final:.2f} m/s")
         print(f"Final rho_max: {rho_max_final:.4f}")
         
-        # Verdict
+        # Verdict for EXPERIMENT A
         stable = v_max_final < 20.0
         congestion = rho_max_final > 0.08
         
-        print(f"\n[VERDICT]")
+        print("\n" + "=" * 80)
+        print("🔬 EXPERIMENT A VERDICT: θ COUPLING HYPOTHESIS TEST")
+        print("=" * 80)
+        
         if stable and congestion:
-            print("✅ SUCCESS: GPU + small timestep RESOLVED instability!")
+            print("\n✅ SUCCESS: Simulation STABLE without θ coupling!")
             print(f"   - Velocity stable: {v_max_final:.2f} < 20 m/s")
             print(f"   - Congestion formed: rho_max={rho_max_final:.4f} > 0.08")
+            print(f"\n🎯 CRITICAL FINDING:")
+            print(f"   → Lagrangian θ_k coupling IS THE ROOT CAUSE!")
+            print(f"   → Disabling _resolve_node_coupling() RESOLVES instability")
+            print(f"   → Literature hypothesis CONFIRMED (Mojgani 2022, Wang 2022)")
+            print(f"\n📚 NEXT STEPS:")
+            print(f"   1. Analyze mathematical causality violation in θ model")
+            print(f"   2. Design causality-preserving junction coupling")
+            print(f"   3. Consider publication: Novel finding in traffic flow!")
             success = True
+            
         elif stable and not congestion:
-            print("⚠️  PARTIAL: Velocity stable but no congestion")
+            print("\n⚠️  PARTIAL SUCCESS: Velocity stable without θ coupling")
             print(f"   - Velocity stable: {v_max_final:.2f} < 20 m/s")
             print(f"   - No congestion: rho_max={rho_max_final:.4f} < 0.08")
+            print(f"\n🤔 INTERPRETATION:")
+            print(f"   → θ coupling LIKELY contributes to instability")
+            print(f"   → But may not be sole cause of velocity explosion")
+            print(f"\n📚 NEXT STEPS:")
+            print(f"   1. Test with congestion scenario (longer duration?)")
+            print(f"   2. Analyze θ coupling mathematical properties")
             success = True
+            
         else:
-            print("❌ FAILURE: Instability persists even with GPU + small dt")
+            print("\n❌ FAILURE: Instability PERSISTS without θ coupling!")
             print(f"   - Velocity unstable: {v_max_final:.2f} ≥ 20 m/s")
+            print(f"\n🤔 INTERPRETATION:")
+            print(f"   → θ coupling is NOT the root cause")
+            print(f"   → Instability originates elsewhere:")
+            print(f"     • BC inflow formulation (velocity prescription)?")
+            print(f"     • Numerical scheme (WENO5, flux limiter)?")
+            print(f"     • ODE solver (Euler explicit too simple)?")
+            print(f"\n📚 NEXT STEPS:")
+            print(f"   1. Implement rollback/checkpoint (Bremer 2021)")
+            print(f"   2. Analyze BC velocity prescription mechanism")
+            print(f"   3. Test entropy-fix or WENO5 schemes")
             success = False
         
         # Save results
