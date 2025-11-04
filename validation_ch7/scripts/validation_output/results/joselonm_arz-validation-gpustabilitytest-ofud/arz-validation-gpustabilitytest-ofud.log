@@ -1,0 +1,81 @@
+[{"stream_name":"stdout","time":0.692017484,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.692064001,"data":"ARZ-RL VALIDATION: GPU_STABILITY_TEST\n"}
+,{"stream_name":"stdout","time":0.692070846,"data":"Revendications: STABILITY\n"}
+,{"stream_name":"stdout","time":0.692075319,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.692148395,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.692368822,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":5.734764427,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.736631781,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.78794455,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.809005194,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.809092507,"data":"CUDA version: 12.4\n"}
+,{"stream_name":"stdout","time":5.809235499,"data":"\n"}
+,{"stream_name":"stdout","time":5.809248931,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.809354617,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":12.669653942,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":12.669832127,"data":"TRACKING_SUCCESS: Repository cloned\n"}
+,{"stream_name":"stdout","time":12.669916504,"data":"\n"}
+,{"stream_name":"stdout","time":12.669932214,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":12.669986892,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":16.50051338,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":19.487426383,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":22.504653658,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":25.523865983,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":28.427312530000002,"data":"Installing gymnasium...\n"}
+,{"stream_name":"stdout","time":31.458089793,"data":"Installing stable-baselines3...\n"}
+,{"stream_name":"stdout","time":114.455257229,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":114.455477122,"data":"TRACKING_SUCCESS: Dependencies ready\n"}
+,{"stream_name":"stdout","time":114.455576035,"data":"\n"}
+,{"stream_name":"stdout","time":114.455584762,"data":"[STEP 3/4] Running validation tests...\n"}
+,{"stream_name":"stdout","time":114.455947903,"data":"[QUICK_TEST] Quick test mode enabled (100 timesteps for RL, reduced simulation time)\n"}
+,{"stream_name":"stdout","time":114.456041053,"data":"Executing Python module: validation_ch7.scripts.test_gpu_stability...\n"}
+,{"stream_name":"stdout","time":114.456120703,"data":"PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts\n"}
+,{"stream_name":"stdout","time":114.456178856,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":119.983884735,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":119.983928331,"data":"GPU STABILITY TEST - Inflow BC Instability\n"}
+,{"stream_name":"stdout","time":119.983935678,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":119.983941725,"data":"\n"}
+,{"stream_name":"stdout","time":119.983959414,"data":"Mode: FULL TEST (15s)\n"}
+,{"stream_name":"stdout","time":119.983963201,"data":"Duration: 15.0s simulated\n"}
+,{"stream_name":"stdout","time":119.983966893,"data":"Timestep: dt=0.0001s (10x smaller than standard)\n"}
+,{"stream_name":"stdout","time":119.983971394,"data":"BC inflow: v_m=10.0 m/s (unstable on CPU @ dt=0.001s)\n"}
+,{"stream_name":"stdout","time":119.983975404,"data":"Expected: v_max \u003c 20 m/s, rho \u003e 0.08\n"}
+,{"stream_name":"stdout","time":119.983979563,"data":"Timesteps: 150,000\n"}
+,{"stream_name":"stdout","time":119.983983149,"data":"\n"}
+,{"stream_name":"stdout","time":119.983986365,"data":"[SETUP] Creating network...\n"}
+,{"stream_name":"stderr","time":119.983984285,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":119.984028139,"data":"  File \"\u003cfrozen runpy\u003e\", line 198, in _run_module_as_main\n"}
+,{"stream_name":"stderr","time":119.984031353,"data":"  File \"\u003cfrozen runpy\u003e\", line 88, in _run_code\n"}
+,{"stream_name":"stderr","time":119.984033891,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_gpu_stability.py\", line 248, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":119.984214428,"data":"    success = test_gpu_stability()\n"}
+,{"stream_name":"stderr","time":119.984309328,"data":"              ^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":119.984321543,"data":"  File \"/kaggle/working/Code-traffic-flow/validation_ch7/scripts/test_gpu_stability.py\", line 75, in test_gpu_stability\n"}
+,{"stream_name":"stderr","time":119.984510151,"data":"    network.add_segment('seg_0', length=100.0, road_category=1, start_node=None, end_node='node_1')\n"}
+,{"stream_name":"stderr","time":119.984533528,"data":"TypeError: NetworkGrid.add_segment() got an unexpected keyword argument 'length'\n"}
+,{"stream_name":"stdout","time":120.235012727,"data":"[WARNING] Tests returned code: 1\n"}
+,{"stream_name":"stdout","time":120.235199879,"data":"\n"}
+,{"stream_name":"stdout","time":120.235207071,"data":"[STEP 4/4] Copying artifacts and cleaning up...\n"}
+,{"stream_name":"stdout","time":120.235316777,"data":"[ARTIFACTS] Copying results for gpu_stability_test...\n"}
+,{"stream_name":"stdout","time":120.235509023,"data":"[WARN] Source section not found: /kaggle/working/Code-traffic-flow/validation_output/results/local_test/gpu_stability_test\n"}
+,{"stream_name":"stdout","time":120.235591999,"data":"[INFO] Expected path: validation_output/results/local_test/gpu_stability_test/\n"}
+,{"stream_name":"stdout","time":120.235653758,"data":"[INFO] Run test locally first to generate artifacts\n"}
+,{"stream_name":"stdout","time":120.235742233,"data":"[FALLBACK] Creating empty structure...\n"}
+,{"stream_name":"stdout","time":120.23595578,"data":"[SUCCESS] All artifacts organized and copied\n"}
+,{"stream_name":"stdout","time":120.236044673,"data":"[CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":120.364160441,"data":"[OK] Cleanup completed - only validation results remain\n"}
+,{"stream_name":"stdout","time":120.364249234,"data":"TRACKING_SUCCESS: Cleanup completed\n"}
+,{"stream_name":"stdout","time":120.36465758,"data":"[OK] Session summary created: /kaggle/working/validation_results/session_summary.json\n"}
+,{"stream_name":"stdout","time":120.364768345,"data":"TRACKING_SUCCESS: Session summary created\n"}
+,{"stream_name":"stdout","time":120.364815773,"data":"\n"}
+,{"stream_name":"stdout","time":120.364824917,"data":"[FINAL] Validation workflow completed\n"}
+,{"stream_name":"stdout","time":120.364883974,"data":"Remote logging finalized - ready for download\n"}
+,{"stream_name":"stdout","time":120.364981681,"data":"\n"}
+,{"stream_name":"stdout","time":120.364987982,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":120.364992641,"data":"VALIDATION GPU_STABILITY_TEST COMPLETED\n"}
+,{"stream_name":"stdout","time":120.364996634,"data":"Output ready at: /kaggle/working/validation_results/\n"}
+,{"stream_name":"stdout","time":120.365000854,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":124.329251262,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":124.329305992,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":124.374212598,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":125.490790525,"data":"[NbConvertApp] Writing 321976 bytes to __results__.html\n"}
+]

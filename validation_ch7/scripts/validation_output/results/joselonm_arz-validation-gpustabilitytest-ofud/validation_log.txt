@@ -1,0 +1,46 @@
+2025-11-04 16:44:40,439 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-11-04 16:44:40,440 - INFO - Branch: main
+2025-11-04 16:44:45,482 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-11-04 16:44:45,484 - INFO - PyTorch: 2.6.0+cu124
+2025-11-04 16:44:45,535 - INFO - CUDA available: True
+2025-11-04 16:44:45,556 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-11-04 16:44:45,556 - INFO - CUDA version: 12.4
+2025-11-04 16:44:45,556 - INFO - 
+[STEP 1/4] Cloning repository from GitHub...
+2025-11-04 16:44:45,556 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-11-04 16:44:52,417 - INFO - [OK] Repository cloned successfully
+2025-11-04 16:44:52,417 - INFO - TRACKING_SUCCESS: Repository cloned
+2025-11-04 16:44:52,417 - INFO - 
+[STEP 2/4] Installing dependencies...
+2025-11-04 16:44:52,417 - INFO - Installing PyYAML...
+2025-11-04 16:44:56,247 - INFO - Installing matplotlib...
+2025-11-04 16:44:59,234 - INFO - Installing pandas...
+2025-11-04 16:45:02,251 - INFO - Installing scipy...
+2025-11-04 16:45:05,270 - INFO - Installing numpy...
+2025-11-04 16:45:08,174 - INFO - Installing gymnasium...
+2025-11-04 16:45:11,205 - INFO - Installing stable-baselines3...
+2025-11-04 16:46:34,202 - INFO - [OK] Dependencies installed
+2025-11-04 16:46:34,203 - INFO - TRACKING_SUCCESS: Dependencies ready
+2025-11-04 16:46:34,203 - INFO - 
+[STEP 3/4] Running validation tests...
+2025-11-04 16:46:34,203 - INFO - [QUICK_TEST] Quick test mode enabled (100 timesteps for RL, reduced simulation time)
+2025-11-04 16:46:34,203 - INFO - Executing Python module: validation_ch7.scripts.test_gpu_stability...
+2025-11-04 16:46:34,203 - INFO - PYTHONPATH=/kaggle/working/Code-traffic-flow:/kaggle/working/Code-traffic-flow/arz_model:/kaggle/working/Code-traffic-flow/validation_ch7/scripts
+2025-11-04 16:46:34,203 - INFO - ============================================================
+2025-11-04 16:46:39,982 - WARNING - [WARNING] Tests returned code: 1
+2025-11-04 16:46:39,982 - INFO - 
+[STEP 4/4] Copying artifacts and cleaning up...
+2025-11-04 16:46:39,982 - INFO - [ARTIFACTS] Copying results for gpu_stability_test...
+2025-11-04 16:46:39,983 - WARNING - [WARN] Source section not found: /kaggle/working/Code-traffic-flow/validation_output/results/local_test/gpu_stability_test
+2025-11-04 16:46:39,983 - WARNING - [INFO] Expected path: validation_output/results/local_test/gpu_stability_test/
+2025-11-04 16:46:39,983 - WARNING - [INFO] Run test locally first to generate artifacts
+2025-11-04 16:46:39,983 - INFO - [FALLBACK] Creating empty structure...
+2025-11-04 16:46:39,983 - INFO - [SUCCESS] All artifacts organized and copied
+2025-11-04 16:46:39,983 - INFO - [CLEANUP] Removing cloned repository: /kaggle/working/Code-traffic-flow
+2025-11-04 16:46:40,111 - INFO - [OK] Cleanup completed - only validation results remain
+2025-11-04 16:46:40,111 - INFO - TRACKING_SUCCESS: Cleanup completed
+2025-11-04 16:46:40,112 - INFO - [OK] Session summary created: /kaggle/working/validation_results/session_summary.json
+2025-11-04 16:46:40,112 - INFO - TRACKING_SUCCESS: Session summary created
+2025-11-04 16:46:40,112 - INFO - 
+[FINAL] Validation workflow completed
+2025-11-04 16:46:40,112 - INFO - Remote logging finalized - ready for download
