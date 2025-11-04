@@ -517,16 +517,36 @@ class NetworkGrid:
                     # DEBUG: Check mass before/after physics step
                     rho_before = U[0, grid.num_ghost_cells:grid.num_ghost_cells+5].mean()
                     print(f"[PRE-STRANG] {seg_id}: BC={segment_bc is not None}, calling strang_splitting_step")
-                    U_new = strang_splitting_step(U, dt, grid, self.params)
+                    U_new = strang_splitting_step(U, dt, grid, self.params, seg_id=seg_id)
                     print(f"[POST-STRANG] {seg_id}: strang_splitting returned")
                     rho_after = U_new[0, grid.num_ghost_cells:grid.num_ghost_cells+5].mean()
                     if segment_bc is not None and abs(rho_after - rho_before) > 1e-6:
                         logger.debug(f"[PHYSICS STEP] {seg_id}: ρ_mean[0:5] {rho_before:.6f} → {rho_after:.6f} (Δ={rho_after-rho_before:.6f})")
                     segment['U'] = U_new
+                elif self.params.device == 'gpu':
+                    # ⚡ GPU MODE: Use pure Numba CUDA (no CuPy conversions!)
+                    from numba import cuda
+                    
+                    # Transfer to GPU if not already there (using Numba CUDA)
+                    if 'U_gpu' not in segment or segment.get('device_location') != 'gpu':
+                        logger.info(f"[GPU INIT] Transferring {seg_id} state to GPU (Numba CUDA)")
+                        segment['U_gpu'] = cuda.to_device(U)
+                        segment['device_location'] = 'gpu'
+                    
+                    U_gpu = segment['U_gpu']
+                    
+                    # Call GPU-enabled Strang splitting (pure Numba - no conversions!)
+                    from ..numerics.time_integration import strang_splitting_step_gpu
+                    U_new_gpu = strang_splitting_step_gpu(U_gpu, dt, grid, self.params, seg_id=seg_id)
+                    
+                    # Keep result on GPU for next timestep
+                    segment['U_gpu'] = U_new_gpu
+                    
+                    # Also update CPU copy for compatibility (lazy sync)
+                    # Only transfer when explicitly requested via get_segment_state()
+                    segment['U'] = None  # Mark as stale
                 else:
-                    # GPU path would require d_R (road quality array)
-                    # For now, network mode only supports CPU
-                    raise NotImplementedError("NetworkGrid GPU mode not yet implemented")
+                    raise ValueError(f"Unknown device: {self.params.device}")
             finally:
                 # Restore global BC config
                 self.params.boundary_conditions = saved_bc
@@ -941,6 +961,34 @@ class NetworkGrid:
         for node in self.nodes.values():
             node.update_traffic_lights(dt)
             
+    def get_segment_state(self, seg_id: str) -> np.ndarray:
+        """
+        Get segment state as NumPy array (transfers from GPU if needed).
+        
+        Args:
+            seg_id: Segment identifier
+            
+        Returns:
+            State array U (4, N_total) as NumPy array
+            
+        Note:
+            For GPU mode, this triggers a device→host transfer.
+            Avoid calling frequently in tight loops.
+        """
+        segment = self.segments[seg_id]
+        
+        # GPU mode: Transfer from GPU if needed (using Numba CUDA)
+        if segment.get('device_location') == 'gpu':
+            from numba import cuda
+            # Check if CPU copy is stale
+            if segment['U'] is None or segment.get('U_stale', True):
+                logger.debug(f"[GPU→CPU] Transferring {seg_id} state (Numba CUDA)")
+                segment['U'] = segment['U_gpu'].copy_to_host()
+                segment['U_stale'] = False
+            return segment['U'].copy()
+        else:
+            return segment['U'].copy()
+    
     def get_network_state(self) -> Dict[str, np.ndarray]:
         """
         Get complete network state.
@@ -948,7 +996,7 @@ class NetworkGrid:
         Returns:
             Dictionary {segment_id: U} where U is the 4×N state array
         """
-        return {seg_id: seg['U'].copy() for seg_id, seg in self.segments.items()}
+        return {seg_id: self.get_segment_state(seg_id) for seg_id in self.segments.keys()}
         
     def get_network_metrics(self) -> Dict[str, float]:
         """
