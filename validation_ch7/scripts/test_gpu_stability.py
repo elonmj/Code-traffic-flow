@@ -72,11 +72,11 @@ def test_gpu_stability():
     network = NetworkGrid(params)
     
     # Segment 1: Inflow with high velocity (unstable!)
-    network.add_segment('seg_0', length=100.0, road_category=1, start_node=None, end_node='node_1')
+    network.add_segment('seg_0', xmin=0.0, xmax=100.0, N=params.N, start_node=None, end_node='node_1')
     network.set_boundary_condition('seg_0', 'left', 'inflow', rho_m=0.15, v_m=10.0, rho_c=0.0, v_c=0.0)
     
     # Segment 2: Normal outflow
-    network.add_segment('seg_1', length=100.0, road_category=1, start_node='node_1', end_node=None)
+    network.add_segment('seg_1', xmin=100.0, xmax=200.0, N=params.N, start_node='node_1', end_node=None)
     network.set_boundary_condition('seg_1', 'right', 'outflow')
     
     print(f"✅ Network: 2 segments, {params.N} cells each, GPU mode")
