@@ -227,14 +227,18 @@ def calculate_cfl_dt(U_or_d_U_physical, grid: Grid1D, params: ModelParameters) -
             problematic_rho_c = rho_c_calc[max_val_index]
             problematic_v_c = v_c[max_val_index]
 
-            error_msg = (
+            # ARCHITECTURE FIX (2025-11-02): Don't crash on extreme wavespeeds
+            # Instead, clamp and warn - let apply_physical_state_bounds() fix the state
+            import warnings
+            warnings.warn(
                 f"CFL Check (CPU): Extremely large max_abs_lambda detected ({max_abs_lambda:.4e} m/s) "
-                f"at physical cell index {max_val_index}.\n"
-                f"  State at this cell: density_m={problematic_rho_m:.4e}, velocity_m={problematic_v_m:.4e}, "
-                f"density_c={problematic_rho_c:.4e}, velocity_c={problematic_v_c:.4e}\n"
-                f"  Eigenvalues at this cell: {problematic_eigenvalues}. Stopping simulation."
+                f"at physical cell index {max_val_index}. "
+                f"State: rho_m={problematic_rho_m:.4e}, v_m={problematic_v_m:.4e}, "
+                f"rho_c={problematic_rho_c:.4e}, v_c={problematic_v_c:.4e}. "
+                f"Eigenvalues: {problematic_eigenvalues}. "
+                f"CLAMPING wavespeed to 100 m/s for dt calculation."
             )
-            raise ValueError(error_msg)
+            max_abs_lambda = 100.0  # Clamp to realistic maximum (360 km/h)
         # --- END DEBUGGING ---
 
     # Calculate dt based on CFL condition

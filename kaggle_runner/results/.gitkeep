@@ -1,0 +1,3 @@
+# Results directory
+# Artifacts automatically downloaded here by kernel_manager.py
+# Structure: results/<kernel-slug>/<artifacts>

@@ -1,0 +1,102 @@
+# GPU Stability Test Configuration
+# Experiment A: Test without behavioral coupling (θ_k)
+
+test_name: gpu_stability_test
+description: "Test if GPU + small timestep resolves BC inflow instability"
+
+# Test metadata
+experiment: "A"
+hypothesis: "Lagrangian θ_k coupling causes instability via causality violation"
+literature_support:
+  - "Mojgani et al. (2022): Lagrangian PINNs causality-conforming"
+  - "Wang et al. (2022): Respecting causality is all you need"
+
+# Kaggle kernel configuration
+kernel:
+  slug: "arz-gpu-stability"  # Will be: joselonm/arz-gpu-stability
+  title: "ARZ GPU Stability Test - Experiment A"
+  enable_gpu: true
+  enable_internet: false
+
+# Test parameters
+simulation:
+  duration: 15.0  # seconds (full test)
+  duration_quick: 5.0  # seconds (quick mode)
+  timestep: 0.0001  # 10x smaller than standard
+  
+# Boundary conditions
+boundary_conditions:
+  seg_0:
+    left:
+      type: inflow
+      rho_m: 0.15
+      v_m: 10.0  # High velocity - unstable on CPU @ dt=0.001s
+      rho_c: 0.0
+      v_c: 0.0
+  seg_1:
+    right:
+      type: outflow
+
+# Network topology (2 segments with simple junction)
+network:
+  segments:
+    seg_0:
+      xmin: 0.0
+      xmax: 100.0
+      N: 50
+      start_node: null
+      end_node: node_1
+    seg_1:
+      xmin: 100.0
+      xmax: 200.0
+      N: 50
+      start_node: node_1
+      end_node: null
+  nodes:
+    node_1:
+      position: [100.0, 0.0]
+      incoming_segments: [seg_0]
+      outgoing_segments: [seg_1]
+      node_type: simple_junction
+
+# Model parameters
+model_params:
+  alpha: 0.5
+  rho_jam: 1.0
+  epsilon: 1.0e-10
+  K_m: 20.0
+  gamma_m: 2.0
+  K_c: 30.0
+  gamma_c: 2.0
+  tau_m: 2.0
+  tau_c: 2.0
+  V_creeping: 1.0
+  cfl_number: 0.5
+  ghost_cells: 3
+  spatial_scheme: weno5
+  time_scheme: ssprk3
+  device: gpu
+
+# Success criteria
+success_criteria:
+  v_max_threshold: 20.0  # m/s
+  rho_congestion_threshold: 0.08  # vehicles/m
+  
+# Expected outcomes
+expected:
+  if_theta_is_cause:
+    - "v_max < 20 m/s for full duration"
+    - "Congestion forms (rho > 0.08)"
+    - "Confirms: θ coupling IS root cause"
+  if_theta_not_cause:
+    - "v_max explodes (like Kernel 10)"
+    - "Confirms: Instability elsewhere (BC, numerics, etc.)"
+
+# Artifact outputs
+outputs:
+  results_dir: "/kaggle/working/validation_results/gpu_stability_test"
+  figures:
+    - "gpu_stability_evolution.png"
+  metrics:
+    - "gpu_stability_metrics.json"
+  session_summary: "/kaggle/working/session_summary.json"

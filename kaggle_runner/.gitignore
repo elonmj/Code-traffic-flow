@@ -1,0 +1,16 @@
+# Kaggle workflow - Generated files
+*.log
+*.pyc
+__pycache__/
+.pytest_cache/
+
+# Temp directories
+kaggle_kernel_temp/
+kaggle_validation_temp/
+
+# Results (keep structure, ignore content for git)
+results/*/
+!results/.gitkeep
+
+# Credentials (NEVER commit!)
+kaggle.json
