@@ -261,22 +261,21 @@ class GPUMemoryPool:
             raise KeyError(f"Segment '{seg_id}' not found in memory pool")
         return self.d_U_pool[seg_id]
     
-    def get_all_segment_states_list(self) -> List[cuda.devicearray.DeviceNDArray]:
+    def get_all_segment_states_tuple(self):
         """
-        Get all segment state arrays as a list ordered by segment_ids.
+        Get all segment state arrays as a tuple for passing to CUDA kernels.
         
-        This is used by network coupling kernels which need to access
-        segments by their global index (gid).
+        CUDA kernels cannot accept Python lists, so we return a tuple which
+        can be unpacked as individual arguments.
         
         Returns:
-            List of GPU device arrays, one per segment in order of segment_ids
+            Tuple of GPU device arrays, one per segment in order of segment_ids
             
-        Example:
-            >>> d_all_segments = pool.get_all_segment_states_list()
-            >>> # Access segment with gid=5
-            >>> d_U_seg5 = d_all_segments[5]
+        Note:
+            This works for small networks (<10 segments). For larger networks,
+            use a flattened array approach instead.
         """
-        return [self.d_U_pool[seg_id] for seg_id in self.segment_ids]
+        return tuple(self.d_U_pool[seg_id] for seg_id in self.segment_ids)
     
     def update_segment_state(self, seg_id: str, d_U_new: cuda.devicearray.DeviceNDArray):
         """
