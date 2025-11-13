@@ -25,3 +25,16 @@
 2025-11-13 14:03:10,978 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-13 14:03:10,979 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-13 14:03:38,750 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-13 14:09:33,285 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-13 14:09:33,382 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-13 14:09:33,445 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-13 14:09:33,445 - kernel_manager - INFO -   M  rz_model/tests/test_gpu_memory_pool.py (Modified (staged))
+2025-11-13 14:09:33,445 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-13 14:09:33,445 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/generic-test-runner-kernel.log (Modified (unstaged))
+2025-11-13 14:09:33,447 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/test_log.txt (Modified (unstaged))
+2025-11-13 14:09:33,447 - kernel_manager - INFO -    M kaggle_runner/kernel_manager.py (Modified (unstaged))
+2025-11-13 14:09:33,447 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-13 14:09:33,530 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-13 14:09:34,258 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-13 14:09:34,258 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-13 14:09:42,294 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
