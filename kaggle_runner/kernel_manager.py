@@ -376,7 +376,7 @@ try:
     log_and_print("info", "\\n[STEP 2/4] Installing dependencies...")
     
     # Add pytest for running test suites
-    dependencies = ["pytest", "PyYAML", "matplotlib", "pandas", "scipy", "numpy"]
+    dependencies = ["pytest", "PyYAML"]
     
     for dep in dependencies:
         log_and_print("info", f"Installing {{dep}}...")
@@ -577,7 +577,7 @@ print("=" * 80)
         print(f"[TIMEOUT] Timeout: {timeout}s, Adaptive intervals: {base_interval}s -> {max_interval}s")
         
         # Add initial delay (COPIÉ ligne 868-871)
-        initial_delay = 120  # Wait 2 minutes before first check
+        initial_delay = 45  # Wait 45s before first check
         print(f"[DELAY] Waiting {initial_delay}s for Kaggle to process kernel...")
         print(f"[INFO] Manual check available at: https://www.kaggle.com/code/{kernel_slug}")
         time.sleep(initial_delay)
@@ -738,7 +738,7 @@ print("=" * 80)
                             log_content = f.read()
                         
                         # Copy remote log to persist directory
-                        shutil.copy2(remote_log_path, persist_dir / 'remote_log.txt')
+                        shutil.copy2(remote_log_path, persist_dir / 'test_log.txt')
                         print("[SAVED] Remote log saved to persist directory")
                         
                         # Check for success in remote log

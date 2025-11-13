@@ -1,0 +1,123 @@
+[{"stream_name":"stdout","time":0.457839717,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.45788876,"data":"GENERIC_TEST_TESTS\n"}
+,{"stream_name":"stdout","time":0.457896238,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.457905013,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.458055916,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":0.458133748,"data":"Target: arz_model/tests/\n"}
+,{"stream_name":"stdout","time":5.053971995,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.054070619,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.097934214,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.11821966,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.118254331,"data":"\n"}
+,{"stream_name":"stdout","time":5.118259226,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.118414956,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":6.230452342,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":6.230560786,"data":"\n"}
+,{"stream_name":"stdout","time":6.2305707439999996,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":6.230623128,"data":"Installing pytest...\n"}
+,{"stream_name":"stdout","time":9.966249986,"data":"Installing PyYAML...\n"}
+,{"stream_name":"stdout","time":12.985286158,"data":"Installing matplotlib...\n"}
+,{"stream_name":"stdout","time":16.010501051,"data":"Installing pandas...\n"}
+,{"stream_name":"stdout","time":19.039571681,"data":"Installing scipy...\n"}
+,{"stream_name":"stdout","time":21.988422268,"data":"Installing numpy...\n"}
+,{"stream_name":"stdout","time":24.967256811,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":24.967289314,"data":"\n"}
+,{"stream_name":"stdout","time":24.967295383,"data":"[STEP 3/4] Running Target...\n"}
+,{"stream_name":"stdout","time":24.967300616,"data":"Target is a directory. Executing pytest...\n"}
+,{"stream_name":"stdout","time":24.967309723,"data":"Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests\n"}
+,{"stream_name":"stdout","time":26.535993648,"data":"============================= test session starts ==============================\n"}
+,{"stream_name":"stdout","time":26.536025478,"data":"platform linux -- Python 3.11.13, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3\n"}
+,{"stream_name":"stdout","time":26.536033636,"data":"cachedir: .pytest_cache\n"}
+,{"stream_name":"stdout","time":26.536039319,"data":"rootdir: /kaggle/working/Code-traffic-flow/arz_model\n"}
+,{"stream_name":"stdout","time":26.536044288,"data":"configfile: pytest.ini\n"}
+,{"stream_name":"stdout","time":26.536049065,"data":"plugins: anyio-4.11.0, typeguard-4.4.4, langsmith-0.4.8\n"}
+,{"stream_name":"stdout","time":31.323003923,"data":"collecting ... collected 21 items\n"}
+,{"stream_name":"stdout","time":31.323037777,"data":"\n"}
+,{"stream_name":"stdout","time":31.521475239,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_state_initialization_full_array FAILED [  4%]\n"}
+,{"stream_name":"stdout","time":31.530685241,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_state_initialization_physical_only FAILED [  9%]\n"}
+,{"stream_name":"stdout","time":31.533514121,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_invalid_initialization PASSED [ 14%]\n"}
+,{"stream_name":"stdout","time":31.535692229,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_segment_state_access PASSED [ 19%]\n"}
+,{"stream_name":"stdout","time":31.543704674,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_road_quality_access FAILED [ 23%]\n"}
+,{"stream_name":"stdout","time":31.551630592,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_stream_access ✅ GPUMemoryPool cleaned up\n"}
+,{"stream_name":"stdout","time":31.551652923,"data":"   - Peak memory usage: 0.00 MB\n"}
+,{"stream_name":"stdout","time":31.552115505,"data":"FAILED [ 28%]\n"}
+,{"stream_name":"stdout","time":31.58228858,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_synchronous_checkpoint PASSED [ 33%]\n"}
+,{"stream_name":"stdout","time":31.585321982,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_asynchronous_checkpoint PASSED [ 38%]\n"}
+,{"stream_name":"stdout","time":31.587603743,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_checkpoint_invalid_segment PASSED [ 42%]\n"}
+,{"stream_name":"stdout","time":31.589678962,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolStreams::test_stream_synchronization PASSED [ 47%]\n"}
+,{"stream_name":"stdout","time":31.591882856,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolStreams::test_no_streams_synchronization PASSED [ 52%]\n"}
+,{"stream_name":"stdout","time":31.594147802,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolMonitoring::test_memory_statistics PASSED [ 57%]\n"}
+,{"stream_name":"stdout","time":31.596487928,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolMonitoring::test_string_representation PASSED [ 61%]\n"}
+,{"stream_name":"stdout","time":31.598503221,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCleanup::test_explicit_cleanup PASSED [ 66%]\n"}
+,{"stream_name":"stdout","time":31.600566555,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCleanup::test_destructor_cleanup PASSED [ 71%]\n"}
+,{"stream_name":"stdout","time":31.61162643,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolIntegration::test_multi_segment_workflow FAILED [ 76%]\n"}
+,{"stream_name":"stdout","time":31.614747732,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolIntegration::test_memory_persistence PASSED [ 80%]\n"}
+,{"stream_name":"stdout","time":31.642446265,"data":"arz_model/tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu ✅ GPUMemoryPool cleaned up\n"}
+,{"stream_name":"stdout","time":31.642464836,"data":"   - Peak memory usage: 0.00 MB\n"}
+,{"stream_name":"stdout","time":31.642932361,"data":"FAILED [ 85%]\n"}
+,{"stream_name":"stdout","time":31.643882961,"data":"arz_model/tests/test_gpu_only_integration.py::test_gpu_required_error SKIPPED [ 90%]\n"}
+,{"stream_name":"stdout","time":31.66609652,"data":"arz_model/tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop FAILED [ 95%]\n"}
+,{"stream_name":"stderr","time":31.731185446,"data":"Fatal Python error: Segmentation fault\n"}
+,{"stream_name":"stderr","time":31.731238843,"data":"\n"}
+,{"stream_name":"stderr","time":31.731243867,"data":"Current thread 0x00007acba5c97480 (most recent call first):\n"}
+,{"stream_name":"stderr","time":31.731248692,"data":"  Garbage-collecting\n"}
+,{"stream_name":"stderr","time":31.731253478,"data":"  File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/driver.py\", line 345 in safe_cuda_api_call\n"}
+,{"stream_name":"stderr","time":31.731281793,"data":"  File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/cudadrv/driver.py\", line 2260 in synchronize\n"}
+,{"stream_name":"stderr","time":31.731287675,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/tests/../numerics/gpu/memory_pool.py\", line 469 in cleanup\n"}
+,{"stream_name":"stderr","time":31.731293046,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/tests/../numerics/gpu/memory_pool.py\", line 490 in __del__\n"}
+,{"stream_name":"stderr","time":31.731298135,"data":"  File \"/usr/lib/python3.11/ast.py\", line 50 in parse\n"}
+,{"stream_name":"stderr","time":31.731302936,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/_code/source.py\", line 191 in getstatementrange_ast\n"}
+,{"stream_name":"stderr","time":31.731307908,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/_code/code.py\", line 300 in getsource\n"}
+,{"stream_name":"stderr","time":31.731313077,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/_code/code.py\", line 903 in _getentrysource\n"}
+,{"stream_name":"stderr","time":31.731317914999998,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/_code/code.py\", line 1065 in repr_traceback_entry\n"}
+,{"stream_name":"stderr","time":31.731322882,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/_code/code.py\", line 1135 in \u003clistcomp\u003e\n"}
+,{"stream_name":"stderr","time":31.731328664,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/_code/code.py\", line 1134 in repr_traceback\n"}
+,{"stream_name":"stderr","time":31.73133392,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/_code/code.py\", line 1202 in repr_excinfo\n"}
+,{"stream_name":"stderr","time":31.731338823,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/_code/code.py\", line 766 in getrepr\n"}
+,{"stream_name":"stderr","time":31.731343415,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/nodes.py\", line 456 in _repr_failure_py\n"}
+,{"stream_name":"stderr","time":31.731352547,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/python.py\", line 1713 in repr_failure\n"}
+,{"stream_name":"stderr","time":31.731357258,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/reports.py\", line 377 in from_item_and_call\n"}
+,{"stream_name":"stderr","time":31.73136187,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/runner.py\", line 368 in pytest_runtest_makereport\n"}
+,{"stream_name":"stderr","time":31.731367106,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_callers.py\", line 121 in _multicall\n"}
+,{"stream_name":"stderr","time":31.731372063,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_manager.py\", line 120 in _hookexec\n"}
+,{"stream_name":"stderr","time":31.731376867,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_hooks.py\", line 512 in __call__\n"}
+,{"stream_name":"stderr","time":31.731381749,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/runner.py\", line 248 in call_and_report\n"}
+,{"stream_name":"stderr","time":31.731386652,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/runner.py\", line 136 in runtestprotocol\n"}
+,{"stream_name":"stderr","time":31.731391252999998,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/runner.py\", line 117 in pytest_runtest_protocol\n"}
+,{"stream_name":"stderr","time":31.731396895,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_callers.py\", line 121 in _multicall\n"}
+,{"stream_name":"stderr","time":31.731400882,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_manager.py\", line 120 in _hookexec\n"}
+,{"stream_name":"stderr","time":31.731411037,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_hooks.py\", line 512 in __call__\n"}
+,{"stream_name":"stderr","time":31.731416738,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/main.py\", line 367 in pytest_runtestloop\n"}
+,{"stream_name":"stderr","time":31.731429982,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_callers.py\", line 121 in _multicall\n"}
+,{"stream_name":"stderr","time":31.731455805,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_manager.py\", line 120 in _hookexec\n"}
+,{"stream_name":"stderr","time":31.731472165,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_hooks.py\", line 512 in __call__\n"}
+,{"stream_name":"stderr","time":31.73150675,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/main.py\", line 343 in _main\n"}
+,{"stream_name":"stderr","time":31.731517765,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/main.py\", line 289 in wrap_session\n"}
+,{"stream_name":"stderr","time":31.731549588,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/main.py\", line 336 in pytest_cmdline_main\n"}
+,{"stream_name":"stderr","time":31.731555409,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_callers.py\", line 121 in _multicall\n"}
+,{"stream_name":"stderr","time":31.731589732,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_manager.py\", line 120 in _hookexec\n"}
+,{"stream_name":"stderr","time":31.731596365,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pluggy/_hooks.py\", line 512 in __call__\n"}
+,{"stream_name":"stderr","time":31.731603366,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/config/__init__.py\", line 175 in main\n"}
+,{"stream_name":"stderr","time":31.731631282,"data":"  File \"/usr/local/lib/python3.11/dist-packages/_pytest/config/__init__.py\", line 201 in console_main\n"}
+,{"stream_name":"stderr","time":31.731638342,"data":"  File \"/usr/local/lib/python3.11/dist-packages/pytest/__main__.py\", line 9 in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":31.731651008,"data":"  File \"\u003cfrozen runpy\u003e\", line 88 in _run_code\n"}
+,{"stream_name":"stderr","time":31.731663581,"data":"  File \"\u003cfrozen runpy\u003e\", line 198 in _run_module_as_main\n"}
+,{"stream_name":"stderr","time":31.731990992,"data":"\n"}
+,{"stream_name":"stderr","time":31.733553667,"data":"Extension modules: _brotli, zstandard.backend_c, simplejson._speedups, charset_normalizer.md, cython.cimports.libc.math, psutil._psutil_linux, mkl._mklinit, mkl._py_mkl_service, numpy.core._multiarray_umath, numpy.core._multiarray_tests, numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, mkl_fft._pydfti, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937, numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64, numpy.random._sfc64, numpy.random._generator, _patch, mkl_umath._patch, scipy._lib._ccallback_c, yaml._yaml, numba.core.typeconv._typeconv, numba._helperlib, numba._dynfunc, numba._dispatcher, numba.core.runtime._nrt_python, numba.np.ufunc._internal, numba.experimental.jitclass._box, numba.mviewbuf, pynvjitlink._nvjitlinklib, numba.types.itertools, pyarrow.lib, pandas._libs.tslibs.ccalendar, pandas._libs.tslibs.np_datetime, pandas._libs.tslibs.dtypes, pandas._libs.tslibs.base, pandas._libs.tslibs.nattype, pandas._libs.tslibs.timezones, pandas._libs.tslibs.fields, pandas._libs.tslibs.timedeltas, pandas._libs.tslibs.tzconversion, pandas._libs.tslibs.timestamps, pandas._libs.properties, pandas._libs.tslibs.offsets, pandas._libs.tslibs.strptime, pandas._libs.tslibs.parsing, pandas._libs.tslibs.conversion, pandas._libs.tslibs.period, pandas._libs.tslibs.vectorized, pandas._libs.ops_dispatch, pandas._libs.missing, pandas._libs.hashtable, pandas._libs.algos, pandas._libs.interval, pandas._libs.lib, pyarrow._compute, pandas._libs.ops, numexpr.interpreter, bottleneck.move, bottleneck.nonreduce, bottleneck.nonreduce_axis, bottleneck.reduce, pandas._libs.hashing, pandas._libs.arrays, pandas._libs.tslib, pandas._libs.sparse, pandas._libs.internals, pandas._libs.indexing, pandas._libs.index, pandas._libs.writers, pandas._libs.join, pandas._libs.window.aggregations, pandas._libs.window.indexers, pandas._libs.reshape, pandas._libs.groupby, pandas._libs.json, pandas._libs.parsers, pandas._libs.testing (total: 83)\n"}
+,{"stream_name":"stdout","time":31.78133162,"data":"arz_model/tests/test_gpu_only_integration.py::test_mass_conservation_gpu [WARNING] Target execution returned code: -11\n"}
+,{"stream_name":"stdout","time":31.781425367,"data":"\n"}
+,{"stream_name":"stdout","time":31.781432575,"data":"[STEP 4/4] Cleanup...\n"}
+,{"stream_name":"stdout","time":31.781552339,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
+,{"stream_name":"stdout","time":31.788651061,"data":"[OK] Repository cleaned up.\n"}
+,{"stream_name":"stdout","time":31.788680332,"data":"\n"}
+,{"stream_name":"stdout","time":31.788687197,"data":"[FINAL] Test workflow completed\n"}
+,{"stream_name":"stdout","time":31.788810057,"data":"\n"}
+,{"stream_name":"stdout","time":31.788822924,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":31.788827115,"data":"EXECUTION COMPLETED\n"}
+,{"stream_name":"stdout","time":31.788830998,"data":"Check /kaggle/working/test_log.txt for details.\n"}
+,{"stream_name":"stdout","time":31.78883474,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":35.559851938,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":35.559890728,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":35.599606545,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":36.675798865,"data":"[NbConvertApp] Writing 298657 bytes to __results__.html\n"}
+]

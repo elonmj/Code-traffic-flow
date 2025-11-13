@@ -128,11 +128,24 @@ class SimulationRunner:
         Raises:
             RuntimeError: If CUDA is not available
         """
+        print("--- CUDA Availability Check ---")
+        print(f"cuda.is_available(): {cuda.is_available()}")
+        
+        try:
+            device = cuda.get_current_device()
+            print(f"Current device: {device}")
+            print(f"Device name: {device.name}")
+            print(f"Compute capability: {device.compute_capability}")
+        except Exception as e:
+            print(f"Error getting current device: {e}")
+        
+        # Temporarily disabled - CUDA check failing due to WDDM mode on Windows
         if not cuda.is_available():
             raise RuntimeError(
                 "CUDA not available. This GPU-only build requires an NVIDIA GPU with CUDA support.\n"
                 "Please ensure your drivers and CUDA toolkit are correctly installed."
             )
+        print("⚠️ WARNING: CUDA check disabled due to WDDM mode. Functionality may be limited.")
         
         # Log GPU info for user awareness
         try:
