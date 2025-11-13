@@ -203,6 +203,7 @@ class TestGPUMemoryPoolInitialization:
         
         pool.initialize_segment_state(seg_id, U_init, R_init)
         
+        d_U = pool.get_segment_state(seg_id)
         d_R = pool.get_road_quality_array(seg_id)
         
         # Transfer back to CPU for verification
@@ -229,6 +230,7 @@ class TestGPUMemoryPoolInitialization:
         
         pool.initialize_segment_state(seg_id, U_init, R_init)
         
+        d_U = pool.get_segment_state(seg_id)
         d_R = pool.get_road_quality_array(seg_id)
         
         U_check = d_U.copy_to_host()

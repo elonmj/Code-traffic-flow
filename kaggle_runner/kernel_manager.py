@@ -30,12 +30,7 @@ except ImportError as e:
     # Don't sys.exit() here - let __init__ handle it
     _import_error = str(e)
 
-# Import YAML pour configuration
-try:
-    import yaml
-except ImportError:
-    print("[ERROR] PyYAML not installed. Install with: pip install PyYAML")
-    sys.exit(1)
+
 
 
 class KernelManager:
@@ -376,7 +371,7 @@ try:
     log_and_print("info", "\\n[STEP 2/4] Installing dependencies...")
     
     # Add pytest for running test suites
-    dependencies = ["pytest", "PyYAML"]
+    dependencies = ["pytest"]
     
     for dep in dependencies:
         log_and_print("info", f"Installing {{dep}}...")
@@ -387,6 +382,13 @@ try:
     
     log_and_print("info", "[OK] Dependencies installed")
     
+    # Debugging GPUMemoryPool __init__ signature
+    try:
+        from numerics.gpu.memory_pool import GPUMemoryPool
+        log_and_print("info", f"GPUMemoryPool __init__ signature: {GPUMemoryPool.__init__.__code__.co_varnames}")
+    except Exception as e:
+        log_and_print("error", f"Failed to get GPUMemoryPool __init__ signature: {e}")
+
     # ========== STEP 3: RUN TARGET ==========
     log_and_print("info", "\\n[STEP 3/4] Running Target...")
     
@@ -577,7 +579,7 @@ print("=" * 80)
         print(f"[TIMEOUT] Timeout: {timeout}s, Adaptive intervals: {base_interval}s -> {max_interval}s")
         
         # Add initial delay (COPIÉ ligne 868-871)
-        initial_delay = 45  # Wait 45s before first check
+        initial_delay = 35  # Wait 35s before first check
         print(f"[DELAY] Waiting {initial_delay}s for Kaggle to process kernel...")
         print(f"[INFO] Manual check available at: https://www.kaggle.com/code/{kernel_slug}")
         time.sleep(initial_delay)

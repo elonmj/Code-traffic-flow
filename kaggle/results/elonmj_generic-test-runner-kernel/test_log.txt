@@ -1,27 +1,27 @@
-2025-11-13 12:53:02,828 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
-2025-11-13 12:53:02,828 - INFO - Branch: main
-2025-11-13 12:53:02,828 - INFO - Target: arz_model/tests/
-2025-11-13 12:53:07,856 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
-2025-11-13 12:53:07,856 - INFO - PyTorch: 2.6.0+cu124
-2025-11-13 12:53:07,905 - INFO - CUDA available: True
-2025-11-13 12:53:07,926 - INFO - CUDA device: Tesla P100-PCIE-16GB
-2025-11-13 12:53:07,926 - INFO - 
+2025-11-13 13:03:50,797 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-11-13 13:03:50,797 - INFO - Branch: main
+2025-11-13 13:03:50,797 - INFO - Target: arz_model/tests/
+2025-11-13 13:04:06,988 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-11-13 13:04:06,988 - INFO - PyTorch: 2.6.0+cu124
+2025-11-13 13:04:07,039 - INFO - CUDA available: True
+2025-11-13 13:04:07,060 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-11-13 13:04:07,061 - INFO - 
 [STEP 1/4] Cloning repository from GitHub...
-2025-11-13 12:53:07,926 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
-2025-11-13 12:53:09,329 - INFO - [OK] Repository cloned successfully
-2025-11-13 12:53:09,329 - INFO - 
+2025-11-13 13:04:07,061 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-11-13 13:04:08,171 - INFO - [OK] Repository cloned successfully
+2025-11-13 13:04:08,171 - INFO - 
 [STEP 2/4] Installing dependencies...
-2025-11-13 12:53:09,329 - INFO - Installing pytest...
-2025-11-13 12:53:13,230 - INFO - Installing PyYAML...
-2025-11-13 12:53:16,303 - INFO - [OK] Dependencies installed
-2025-11-13 12:53:16,303 - INFO - 
+2025-11-13 13:04:08,171 - INFO - Installing pytest...
+2025-11-13 13:04:12,398 - INFO - Installing PyYAML...
+2025-11-13 13:04:15,291 - INFO - [OK] Dependencies installed
+2025-11-13 13:04:15,291 - INFO - 
 [STEP 3/4] Running Target...
-2025-11-13 12:53:16,304 - INFO - Target is a directory. Executing pytest...
-2025-11-13 12:53:16,304 - INFO - Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests
-2025-11-13 12:53:24,136 - WARNING - [WARNING] Target execution returned code: 1
-2025-11-13 12:53:24,136 - INFO - 
+2025-11-13 13:04:15,292 - INFO - Target is a directory. Executing pytest...
+2025-11-13 13:04:15,292 - INFO - Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests
+2025-11-13 13:04:23,804 - WARNING - [WARNING] Target execution returned code: 1
+2025-11-13 13:04:23,804 - INFO - 
 [STEP 4/4] Cleanup...
-2025-11-13 12:53:24,136 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
-2025-11-13 12:53:24,144 - INFO - [OK] Repository cleaned up.
-2025-11-13 12:53:24,144 - INFO - 
+2025-11-13 13:04:23,804 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
+2025-11-13 13:04:23,812 - INFO - [OK] Repository cleaned up.
+2025-11-13 13:04:23,812 - INFO - 
 [FINAL] Test workflow completed
