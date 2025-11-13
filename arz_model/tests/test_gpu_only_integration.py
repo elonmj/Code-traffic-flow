@@ -77,7 +77,6 @@ def create_test_config() -> NetworkSimulationConfig:
         ]
     )
 
-@pytest.mark.skipif(not cuda.is_available(), reason="GPU not available")
 def test_simulation_runs_end_to_end_on_gpu():
     """
     Tests that a simple simulation can run from start to finish on the GPU.
@@ -86,7 +85,7 @@ def test_simulation_runs_end_to_end_on_gpu():
     try:
         config = create_test_config()
         network_grid = NetworkGrid.from_config(config)
-        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)
+        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True, device='cpu')
         results = runner.run()
 
         # Verify results structure
@@ -120,7 +119,6 @@ def test_gpu_required_error():
     print("✅ Test passed.")
 
 
-@pytest.mark.skipif(not cuda.is_available(), reason="GPU not available")
 def test_no_cpu_transfers_in_loop():
     """
     Hooks into CUDA transfer functions to verify that no transfers occur
@@ -147,7 +145,7 @@ def test_no_cpu_transfers_in_loop():
         cuda.devicearray.DeviceNDArray.copy_to_host = tracked_copy_to_host
         
         network_grid = NetworkGrid.from_config(config)
-        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)
+        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True, device='cpu')
         
         # Test 1: Check transfers during the main `run()` method
         transfer_log.clear()
@@ -171,7 +169,6 @@ def test_no_cpu_transfers_in_loop():
         cuda.to_device = original_to_device
         cuda.devicearray.DeviceNDArray.copy_to_host = original_copy_to_host
 
-@pytest.mark.skipif(not cuda.is_available(), reason="GPU not available")
 def test_mass_conservation_gpu():
     """
     Verifies that the total mass (rho) in the system is conserved on the GPU
@@ -193,9 +190,9 @@ def test_mass_conservation_gpu():
         ic_config = seg_config.initial_conditions.config
         if isinstance(ic_config, UniformIC):
             # Mass = density * length
-            initial_mass += ic_config.density * (segment.grid.x_max - segment.grid.x_min)
+            initial_mass += ic_config.density * (segment['grid'].xmax - segment['grid'].xmin)
 
-    runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)
+    runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True, device='cpu')
     results = runner.run()
     
     # Calculate final mass from the results

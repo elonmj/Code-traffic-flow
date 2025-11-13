@@ -390,13 +390,6 @@ try:
     
     env = os.environ.copy()
     env["PYTHONPATH"] = str(Path(REPO_DIR))
-
-    # Debugging GPUMemoryPool __init__ signature
-    try:
-        from arz_model.numerics.gpu.memory_pool import GPUMemoryPool
-        log_and_print("info", f"GPUMemoryPool __init__ signature: {{GPUMemoryPool.__init__.__code__.co_varnames}}")
-    except Exception as e:
-        log_and_print("error", f"Failed to get GPUMemoryPool __init__ signature: {{e}}")
     
     # Quick test mode
     quick_test_enabled = "{quick_test}"

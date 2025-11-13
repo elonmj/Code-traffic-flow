@@ -24,7 +24,7 @@ class NetworkSimulator:
     Orchestrates the execution of a multi-segment network simulation on the GPU.
     """
 
-    def __init__(self, network: NetworkGrid, config: NetworkSimulationConfig, quiet: bool = False, compute_capability: tuple = (6, 0)):
+    def __init__(self, network: NetworkGrid, config: NetworkSimulationConfig, quiet: bool = False, device: str = 'gpu'):
         """
         Initializes the GPU-based network simulator.
 
@@ -32,12 +32,12 @@ class NetworkSimulator:
             network: The initialized NetworkGrid object.
             config: The simulation configuration object.
             quiet: Suppress progress bar and verbose output.
-            compute_capability: The compute capability (major, minor) of the GPU.
+            device: The device to run the simulation on ('gpu' or 'cpu').
         """
         self.network = network
         self.config = config
         self.quiet = quiet
-        self.compute_capability = compute_capability
+        self.device = device
         self.t = 0.0
         self.time_step = 0
         
@@ -59,8 +59,13 @@ class NetworkSimulator:
         if not self.quiet:
             print("✅ GPU Network Simulator initialized.")
 
-    def _initialize_gpu_pool(self) -> GPUMemoryPool:
+    def _initialize_gpu_pool(self) -> Optional[GPUMemoryPool]:
         """Creates and initializes the GPUMemoryPool for the network."""
+        if self.device == 'cpu':
+            if not self.quiet:
+                print("  - Running in CPU mode, skipping GPU Memory Pool initialization.")
+            return None
+
         if not self.quiet:
             print("  - Initializing GPU Memory Pool for network...")
             
@@ -86,8 +91,13 @@ class NetworkSimulator:
             
         return pool
 
-    def _initialize_gpu_coupling(self) -> NetworkCouplingGPU:
+    def _initialize_gpu_coupling(self) -> Optional[NetworkCouplingGPU]:
         """Initializes the GPU-native network coupling manager."""
+        if self.device == 'cpu':
+            if not self.quiet:
+                print("  - Running in CPU mode, skipping GPU-native network coupling initialization.")
+            return None
+
         if not self.quiet:
             print("  - Initializing GPU-native network coupling...")
             
@@ -124,6 +134,9 @@ class NetworkSimulator:
         pbar = tqdm(total=sim_t_final, desc="Simulating on GPU", disable=self.quiet)
 
         while self.t < sim_t_final:
+            if self.device == 'cpu':
+                raise NotImplementedError("CPU mode for NetworkSimulator.run() is not yet implemented.")
+
             # 1. Calculate network-wide CFL-stable dt on the GPU
             if self.config.time.dt:
                 # Use a fixed time step if provided

@@ -44,7 +44,8 @@ class SimulationRunner:
     def __init__(self,
                  simulation_config: Optional[Union[SimulationConfig, NetworkSimulationConfig]] = None,
                  quiet: bool = False,
-                 network_grid: Optional['NetworkGrid'] = None):
+                 network_grid: Optional['NetworkGrid'] = None,
+                 device: str = 'gpu'):
         """
         Initializes the simulation runner.
 
@@ -68,7 +69,7 @@ class SimulationRunner:
         if network_grid is not None:
             if not isinstance(simulation_config, NetworkSimulationConfig):
                 raise TypeError("Network mode requires a `NetworkSimulationConfig` object.")
-            self._init_from_network_grid(network_grid, simulation_config, quiet)
+            self._init_from_network_grid(network_grid, simulation_config, quiet, device)
             return
 
         # Case 2: Single-Segment Pydantic Mode - DEPRECATED
@@ -88,12 +89,13 @@ class SimulationRunner:
             "  2. simulation_config: A Pydantic SimulationConfig object"
         )
 
-    def _init_from_network_grid(self, network_grid: 'NetworkGrid', config: 'NetworkSimulationConfig', quiet: bool):
+    def _init_from_network_grid(self, network_grid: 'NetworkGrid', config: 'NetworkSimulationConfig', quiet: bool, device: str):
         """Initializes the runner for a network simulation."""
         self.mode = 'network'
         self.is_network_simulation = True
         self.quiet = quiet
         self.network_grid = network_grid
+        self.device = device # Set the device here
         
         # Use the provided Pydantic config
         self.config = config
@@ -104,8 +106,12 @@ class SimulationRunner:
         self.simulation_config = config
         
         # GPU-only validation and architecture check
-        self._validate_gpu_availability()
-        self.device = 'gpu'  # Hardcoded - no CPU fallback
+        if self.device == 'gpu':
+            self._validate_gpu_availability()
+        else:
+            self.cc = (0,0) # Default compute capability for CPU mode
+            if not self.quiet:
+                print("Running in CPU mode, skipping GPU validation.")
         
         if not self.quiet:
             print(f"   - Mode: Network Simulation")
@@ -118,7 +124,7 @@ class SimulationRunner:
             network=self.network_grid,
             config=self.config,
             quiet=self.quiet,
-            compute_capability=self.cc  # Pass compute capability down
+            device=self.device # Pass device down
         )
     
     @staticmethod
