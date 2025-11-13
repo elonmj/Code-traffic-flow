@@ -63,7 +63,7 @@ class GPUMemoryPool:
         segment_ids: List[str],
         N_per_segment: Dict[str, int],
         ghost_cells: int = 3,
-        enable_streams: bool = True
+        compute_capability: Tuple[int, int] = (6, 0)
     ):
         """
         Initialize GPU memory pool with pre-allocated arrays.
@@ -72,7 +72,8 @@ class GPUMemoryPool:
             segment_ids: List of segment identifiers
             N_per_segment: Dictionary mapping segment ID to number of physical cells
             ghost_cells: Number of ghost cells per boundary (default: 3 for WENO5)
-            enable_streams: Enable CUDA streams for parallel processing (default: True)
+            compute_capability: The compute capability (major, minor) of the GPU.
+                                This determines if certain features like streams are enabled.
             
         Raises:
             RuntimeError: If CUDA is not available
@@ -97,7 +98,10 @@ class GPUMemoryPool:
         self.segment_ids = segment_ids
         self.N_per_segment = N_per_segment
         self.ghost_cells = ghost_cells
-        self.enable_streams = enable_streams
+        self.compute_capability = compute_capability
+        
+        # Enable streams only if compute capability is sufficient (>= 3.0 for streams)
+        self.enable_streams = self.compute_capability[0] >= 3
         
         # GPU array pools
         self.d_U_pool: Dict[str, cuda.devicearray.DeviceNDArray] = {}
@@ -126,7 +130,8 @@ class GPUMemoryPool:
         print(f"   - Segments: {len(segment_ids)}")
         print(f"   - Total cells: {sum(N_per_segment.values())}")
         print(f"   - Ghost cells: {ghost_cells}")
-        print(f"   - CUDA streams: {'Enabled' if enable_streams else 'Disabled'}")
+        print(f"   - Compute Capability: {self.compute_capability}")
+        print(f"   - CUDA streams: {'Enabled' if self.enable_streams else 'Disabled'}")
         print(f"   - GPU memory allocated: {self._get_memory_delta():.2f} MB")
     
     def _allocate_all_arrays(self):
@@ -483,13 +488,6 @@ class GPUMemoryPool:
         
         print(f"✅ GPUMemoryPool cleaned up")
         print(f"   - Peak memory usage: {self._peak_memory:.2f} MB")
-    
-    def __del__(self):
-        """Destructor - ensure cleanup on object deletion."""
-        try:
-            self.cleanup()
-        except Exception:
-            pass  # Avoid errors during interpreter shutdown
     
     def __repr__(self) -> str:
         """String representation."""

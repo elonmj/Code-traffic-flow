@@ -103,13 +103,13 @@ class SimulationRunner:
         # The `simulation_config` attribute is also required for other parts of the runner
         self.simulation_config = config
         
-        # GPU-only validation
+        # GPU-only validation and architecture check
         self._validate_gpu_availability()
         self.device = 'gpu'  # Hardcoded - no CPU fallback
         
         if not self.quiet:
             print(f"   - Mode: Network Simulation")
-            print(f"   - Device: {self.device.upper()}")
+            print(f"   - Device: {self.device.upper()} (Compute Capability: {self.cc})")
             print(f"   - Segments: {len(self.network_grid.segments)}")
             print(f"   - Nodes: {len(self.network_grid.nodes)}")
 
@@ -117,48 +117,58 @@ class SimulationRunner:
         self.network_simulator = NetworkSimulator(
             network=self.network_grid,
             config=self.config,
-            quiet=self.quiet
+            quiet=self.quiet,
+            compute_capability=self.cc  # Pass compute capability down
         )
     
     @staticmethod
-    def _validate_gpu_availability():
+    def _validate_gpu_architecture():
         """
+        DEPRECATED: Replaced by _validate_gpu_availability which also stores compute capability.
         Validates that CUDA is available for GPU-only execution.
         
         Raises:
             RuntimeError: If CUDA is not available
         """
         print("--- CUDA Availability Check ---")
-        print(f"cuda.is_available(): {cuda.is_available()}")
-        
-        try:
-            device = cuda.get_current_device()
-            print(f"Current device: {device}")
-            print(f"Device name: {device.name}")
-            print(f"Compute capability: {device.compute_capability}")
-        except Exception as e:
-            print(f"Error getting current device: {e}")
-        
-        # Temporarily disabled - CUDA check failing due to WDDM mode on Windows
         if not cuda.is_available():
             raise RuntimeError(
                 "CUDA not available. This GPU-only build requires an NVIDIA GPU with CUDA support.\n"
                 "Please ensure your drivers and CUDA toolkit are correctly installed."
             )
-        print("⚠️ WARNING: CUDA check disabled due to WDDM mode. Functionality may be limited.")
         
         # Log GPU info for user awareness
         try:
             device = cuda.get_current_device()
+            cc = device.compute_capability
             print(f"✅ GPU Detected: {device.name.decode('utf-8')}")
-            print(f"   - Compute Capability: {device.compute_capability}")
+            print(f"   - Compute Capability: {cc}")
             print(f"   - Memory: {device.memory.total / (1024**3):.1f} GB")
-            if device.compute_capability[0] < 6:
+            if cc[0] < 6:
                 print("   - ⚠️ WARNING: Compute Capability is below the recommended 6.0. Some performance features may be limited.")
         except Exception:
             print(f"✅ CUDA Available (device info unavailable)")
 
     
+    def _validate_gpu_availability(self):
+        """
+        Validates that CUDA is available and checks the GPU's compute capability.
+        
+        Raises:
+            RuntimeError: If CUDA is not available or the GPU is unsupported.
+        """
+        if not cuda.is_available():
+            raise RuntimeError(
+                "CUDA not available. This GPU-only build requires an NVIDIA GPU with CUDA support.\n"
+                "Please ensure your drivers and CUDA toolkit are correctly installed."
+            )
+        
+        try:
+            device = cuda.get_current_device()
+            self.cc = device.compute_capability
+        except Exception as e:
+            raise RuntimeError(f"Could not retrieve GPU device information: {e}") from e
+
     def _create_legacy_params_from_config(self, config: 'SimulationConfig') -> ModelParameters:
         """
         Create legacy ModelParameters from Pydantic SimulationConfig

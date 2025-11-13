@@ -24,7 +24,7 @@ class NetworkSimulator:
     Orchestrates the execution of a multi-segment network simulation on the GPU.
     """
 
-    def __init__(self, network: NetworkGrid, config: NetworkSimulationConfig, quiet: bool = False):
+    def __init__(self, network: NetworkGrid, config: NetworkSimulationConfig, quiet: bool = False, compute_capability: tuple = (6, 0)):
         """
         Initializes the GPU-based network simulator.
 
@@ -32,10 +32,12 @@ class NetworkSimulator:
             network: The initialized NetworkGrid object.
             config: The simulation configuration object.
             quiet: Suppress progress bar and verbose output.
+            compute_capability: The compute capability (major, minor) of the GPU.
         """
         self.network = network
         self.config = config
         self.quiet = quiet
+        self.compute_capability = compute_capability
         self.t = 0.0
         self.time_step = 0
         
@@ -68,7 +70,8 @@ class NetworkSimulator:
         pool = GPUMemoryPool(
             segment_ids=segment_ids,
             N_per_segment=N_per_segment,
-            ghost_cells=self.config.grid.ghost_cells
+            ghost_cells=self.config.grid.ghost_cells,
+            compute_capability=self.compute_capability # Pass CC to pool
         )
         
         # Transfer initial states and road quality to the GPU
