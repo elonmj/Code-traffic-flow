@@ -103,7 +103,9 @@ class TestGPUMemoryPoolInitialization:
         assert pool_with_streams.enable_streams is True
         assert len(pool_with_streams.streams) == 2
         for stream in pool_with_streams.streams.values():
-            assert isinstance(stream, cuda.Stream)
+            # Numba streams don't expose cuda.Stream publicly - just verify not None and has synchronize
+            assert stream is not None
+            assert hasattr(stream, 'synchronize')
         pool_with_streams.cleanup()
         
         # Test with streams disabled
@@ -152,7 +154,7 @@ class TestGPUMemoryPoolAccess:
         
         # Test invalid access
         with pytest.raises(KeyError, match="not found"):
-            pool.get_road_quality('invalid_seg')
+            pool.get_road_quality_array('invalid_seg')
         
         pool.cleanup()
     
@@ -163,7 +165,9 @@ class TestGPUMemoryPoolAccess:
         
         for seg_id in simple_config['segment_ids']:
             stream = pool.get_stream(seg_id)
-            assert isinstance(stream, cuda.Stream)
+            # Numba streams don't expose cuda.Stream publicly - just check stream is not None and has synchronize
+            assert stream is not None
+            assert hasattr(stream, 'synchronize')
         
         with pytest.raises(KeyError, match="not found"):
             pool.get_stream('invalid_seg')

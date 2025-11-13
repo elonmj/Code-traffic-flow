@@ -187,7 +187,7 @@ class SimulationRunner:
         params.N = config.grid.N
         params.xmin = config.grid.xmin
         params.xmax = config.grid.xmax
-        params.ghost_cells = config.grid.ghost_cells
+        params.ghost_cells = config.grid.num_ghost_cells
         
         # Time parameters
         params.t_final = config.t_final
