@@ -197,8 +197,19 @@ class NetworkSimulator:
         pbar.close()
         if not self.quiet:
             print("GPU network simulation finished.")
-            
-        return self.history
+        
+        # Collect final states from GPU
+        final_states = {}
+        for seg_id in self.network.segments.keys():
+            final_states[seg_id] = self.gpu_pool.checkpoint_to_cpu(seg_id)
+        
+        # Return results in the expected format
+        return {
+            'final_time': self.t,
+            'total_steps': self.time_step,
+            'final_states': final_states,
+            'history': self.history  # Keep history for backward compatibility
+        }
 
     def _log_state(self):
         """
