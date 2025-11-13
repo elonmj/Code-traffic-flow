@@ -396,4 +396,81 @@
 
 \end{frame}
 
+%-------------------------------------------------
+\section{Résultats de la Simulation}
+%-------------------------------------------------
+
+\begin{frame}
+    \frametitle{Scénario de Simulation : Un Embouteillage}
+
+    \begin{itemize}
+        \item \textbf{Objectif :} Observer la formation et la propagation d'un embouteillage sur un réseau de deux segments de route (0-200m et 200-400m).
+        \item \textbf{Cause :} Nous avons simulé une forte densité de véhicules à la fin du premier segment (à 200m), comme un feu rouge ou un rétrécissement.
+        \item \textbf{Observation :} Nous allons visualiser la densité des motos et la vitesse des voitures pour voir comment le système réagit.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Résultats : Segment 1 (0-200m)}
+
+    \begin{columns}[T]
+        \begin{column}{.5\textwidth}
+            \textbf{Densité des Motos ($\rho_m$)}
+            \includegraphics[width=\textwidth]{Network Simulation Results - seg_0 (Motorcycle Density).png}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \textbf{Vitesse des Voitures ($v_c$)}
+            \includegraphics[width=\textwidth]{Network Simulation Results - seg_0 (Car Velocity).png}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \textbf{Analyse :}
+    \begin{itemize}
+        \item Une \textbf{onde de choc} (embouteillage) se forme à 200m et se propage vers l'arrière (vers x=0).
+        \item \textit{À gauche :} La densité augmente (couleurs vertes/jaunes).
+        \item \textit{À droite :} La vitesse des voitures chute drastiquement (couleur violet foncé).
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Résultats : Segment 2 (200-400m)}
+
+    \begin{columns}[T]
+        \begin{column}{.5\textwidth}
+            \textbf{Densité des Motos ($\rho_m$)}
+            \includegraphics[width=\textwidth]{Network Simulation Results - seg_1 (Motorcycle Density).png}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \textbf{Vitesse des Voitures ($v_c$)}
+            \includegraphics[width=\textwidth]{Network Simulation Results - seg_1 (Car Velocity).png}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.5cm}
+    \textbf{Analyse :}
+    \begin{itemize}
+        \item Le segment en aval de l'embouteillage reste fluide.
+        \item \textit{À gauche :} La densité reste très faible (violet), car les véhicules sont bloqués sur le segment précédent.
+        \item \textit{À droite :} La vitesse des voitures est élevée (vert/jaune), ce qui est cohérent avec un trafic fluide.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Conclusion de la Simulation}
+
+    \textbf{La simulation est un succès !}
+
+    \begin{itemize}
+        \item \textbf{Cohérence physique :} Le modèle a correctement reproduit la dynamique d'un embouteillage. Une haute densité correspond bien à une faible vitesse.
+        \item \textbf{Propagation d'onde :} On observe clairement la propagation de l'onde de choc vers l'amont, ce qui est un phénomène bien connu en trafic routier.
+        \item \textbf{Robustesse du code :} La chaîne numérique, de la discrétisation à la résolution sur GPU, a fonctionné de manière stable et a produit des résultats physiquement réalistes.
+        \item \textbf{Validation du modèle :} Ces résultats valident que notre implémentation du modèle ARZ est capable de capturer des phénomènes complexes et pertinents pour l'étude du trafic.
+    \end{itemize}
+
+\end{frame}
+
 \end{document}

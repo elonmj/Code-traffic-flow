@@ -316,12 +316,6 @@ INPUT C:\Program Files\MiKTeX\tex\latex\epstopdf-pkg\epstopdf-base.sty
 INPUT C:\Program Files\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT C:\Program Files\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT C:\Program Files\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
-INPUT .\presentation_mathematique.out
-INPUT .\presentation_mathematique.out
-INPUT presentation_mathematique.out
-INPUT presentation_mathematique.out
-INPUT .\presentation_mathematique.out
-INPUT .\presentation_mathematique.out
 OUTPUT presentation_mathematique.out
 INPUT C:\Users\JOSAPHAT\AppData\Roaming\MiKTeX\tex\latex\translator\translator-basic-dictionary-English.dict
 INPUT C:\Users\JOSAPHAT\AppData\Roaming\MiKTeX\tex\latex\translator\translator-basic-dictionary-English.dict
@@ -429,6 +423,10 @@ INPUT .\riemann.png
 INPUT .\riemann.png
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmss10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
+INPUT C:\Program Files\MiKTeX\tex\latex\lm\t1lmtt.fd
+INPUT C:\Program Files\MiKTeX\tex\latex\lm\t1lmtt.fd
+INPUT C:\Program Files\MiKTeX\tex\latex\lm\t1lmtt.fd
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmtt10.tfm
 OUTPUT presentation_mathematique.nav
 OUTPUT presentation_mathematique.toc
 OUTPUT presentation_mathematique.snm
@@ -457,3 +455,5 @@ INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmsy8.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmsy8.pfb
+INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmtt10.pfb
+INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmtt10.pfb

@@ -369,3 +369,16 @@
 2025-11-13 19:50:06,682 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-13 19:50:06,683 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-13 19:50:13,006 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-13 19:58:20,959 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-13 19:58:21,103 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-13 19:58:21,181 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-13 19:58:21,181 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-13 19:58:21,181 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/generic-test-runner-kernel.log (Modified (unstaged))
+2025-11-13 19:58:21,183 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/test_log.txt (Modified (unstaged))
+2025-11-13 19:58:21,183 - kernel_manager - INFO -   ?? run_simulation_save_npz.py (Untracked)
+2025-11-13 19:58:21,183 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-13 19:58:21,278 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-13 19:58:22,231 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-13 19:58:22,232 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-13 19:58:27,586 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-13 20:04:20,794 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...

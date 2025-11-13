@@ -8,15 +8,12 @@ Lance une simulation complète et sauvegarde les résultats en fichiers NPZ.
 import numpy as np
 from pathlib import Path
 
-from arz_model.config.network_simulation_config import NetworkSimulationConfig
-from arz_model.config.time_config import TimeConfig
-from arz_model.config.physics_config import PhysicsConfig
-from arz_model.config.grid_config import GridConfig
-from arz_model.config.segment_config import SegmentConfig
-from arz_model.config.node_config import NodeConfig
-from arz_model.config.ic_config import ICConfig, UniformIC
-from arz_model.config.boundary_conditions_config import BoundaryConditionsConfig, InflowBC, OutflowBC
-from arz_model.simulation.network_grid import NetworkGrid
+from arz_model.config import (
+    NetworkSimulationConfig, TimeConfig, PhysicsConfig, GridConfig,
+    SegmentConfig, NodeConfig, ICConfig, UniformIC,
+    BoundaryConditionsConfig, InflowBC, OutflowBC
+)
+from arz_model.network.network_grid import NetworkGrid
 from arz_model.simulation.runner import SimulationRunner
 
 
