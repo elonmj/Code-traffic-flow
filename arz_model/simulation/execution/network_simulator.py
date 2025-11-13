@@ -185,7 +185,7 @@ class NetworkSimulator:
             self.network_coupling.apply_coupling(self.config.physics)
 
             # 4. Log data (requires transferring data from GPU to CPU)
-            if self.time_step % max(1, int(self.config.output_dt / stable_dt)) == 0:
+            if self.time_step % max(1, int(self.config.time.output_dt / stable_dt)) == 0:
                 self._log_state()
 
             # 5. Update time and progress
