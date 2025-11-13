@@ -30,9 +30,9 @@ from ..core.physics import (
 @cuda.jit(device=True)
 def solve_node_fluxes_gpu(
     U_L_m, U_L_c, num_incoming, num_outgoing,
-    alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c,
-    # TODO: Pass Vmax properly
-    v_max_m_cat3, v_max_c_cat3, V_creeping
+    alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c,
+    # Pass Vmax with unit conversion already applied (m/s)
+    v_max_m, v_max_c, v_creeping
 ):
     """
     GPU device function to solve for the equilibrium state at a single node
@@ -61,7 +61,7 @@ def solve_node_fluxes_gpu(
         for i in range(num_incoming):
             demand_m, demand_c = _calculate_demand_flux_cuda(
                 U_L_m[i, 0], U_L_m[i, 1], U_L_c[i, 0], U_L_c[i, 1],
-                alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c
+                alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c
             )
             total_demand_m += demand_m
             total_demand_c += demand_c
@@ -74,7 +74,7 @@ def solve_node_fluxes_gpu(
     total_supply_c = 0.0
     if num_outgoing > 0:
         supply_m_per_link, supply_c_per_link = _calculate_supply_flux_cuda(
-            rho_jam, K_m, gamma_m, K_c, gamma_c
+            rho_max, k_m, gamma_m, k_c, gamma_c
         )
         total_supply_m = num_outgoing * supply_m_per_link
         total_supply_c = num_outgoing * supply_c_per_link
@@ -101,21 +101,21 @@ def solve_node_fluxes_gpu(
     
     # Invert the flux function to get the density for the outgoing ghost cells
     # This is a simplified inversion assuming a simple fundamental diagram.
-    # We need Vmax for this, which should be passed in. Using a placeholder.
-    Vmax_m = v_max_m_cat3
-    Vmax_c = v_max_c_cat3
+    # We need Vmax for this, which is now passed as v_max_m and v_max_c
+    Vmax_m = v_max_m
+    Vmax_c = v_max_c
     
-    rho_star_m = _invert_flux_function_cuda(flux_per_outgoing_m, rho_jam, Vmax_m, epsilon)
-    rho_star_c = _invert_flux_function_cuda(flux_per_outgoing_c, rho_jam, Vmax_c, epsilon)
+    rho_star_m = _invert_flux_function_cuda(flux_per_outgoing_m, rho_max, Vmax_m, epsilon)
+    rho_star_c = _invert_flux_function_cuda(flux_per_outgoing_c, rho_max, Vmax_c, epsilon)
 
     # Now calculate the corresponding equilibrium speed for this density
     # We assume the road quality of the outgoing link is category 3 (placeholder)
     R_local = 3 
     Ve_star_m, Ve_star_c = calculate_equilibrium_speed_gpu(
         rho_star_m, rho_star_c, R_local,
-        rho_jam, V_creeping,
-        v_max_m_cat3, v_max_m_cat3, v_max_m_cat3, # placeholder Vmax values
-        v_max_c_cat3, v_max_c_cat3, v_max_c_cat3
+        rho_max, v_creeping,
+        v_max_m, v_max_m, v_max_m, # Use same v_max for all categories (placeholder)
+        v_max_c, v_max_c, v_max_c
     )
 
     # The momentum `w` in the ghost cell should be such that the physical velocity

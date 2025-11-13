@@ -141,13 +141,13 @@ class NetworkCouplingGPU:
             self.d_node_outgoing_offsets,
             self.d_segment_n_phys,
             self.d_segment_n_ghost,
-            # Pass physics params directly
-            params.alpha, params.rho_jam, params.epsilon,
-            params.K_m, params.gamma_m, params.K_c, params.gamma_c,
-            # Pass Vmax for category 3 and V_creeping
-            params.Vmax_m.get(3, 40/3.6),
-            params.Vmax_c.get(3, 90/3.6),
-            params.V_creeping
+            # Pass physics params directly (using Pydantic v2 PhysicsConfig attribute names)
+            params.alpha, params.rho_max, params.epsilon,
+            params.k_m, params.gamma_m, params.k_c, params.gamma_c,
+            # Pass Vmax with unit conversion from km/h to m/s
+            params.v_max_m_kmh / 3.6,
+            params.v_max_c_kmh / 3.6,
+            params.v_creeping_kmh / 3.6
         )
         
         # No need for explicit print, the effect is on GPU memory
@@ -302,10 +302,10 @@ def network_coupling_kernel(
     d_node_incoming_gids, d_node_incoming_offsets,
     d_node_outgoing_gids, d_node_outgoing_offsets,
     d_segment_n_phys, d_segment_n_ghost,
-    # Physics params
-    alpha, rho_jam, epsilon,
-    K_m, gamma_m, K_c, gamma_c,
-    v_max_m_cat3, v_max_c_cat3, V_creeping
+    # Physics params (using Pydantic v2 PhysicsConfig naming)
+    alpha, rho_max, epsilon,
+    k_m, gamma_m, k_c, gamma_c,
+    v_max_m, v_max_c, v_creeping
 ):
     """
     Main CUDA kernel for performing network coupling for all nodes.
@@ -342,8 +342,8 @@ def network_coupling_kernel(
             # --- 2. Solve the Riemann problem at the node ---
             U_star_m, U_star_c = solve_node_fluxes_gpu(
                 U_L_m, U_L_c, num_incoming, num_outgoing,
-                alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c,
-                v_max_m_cat3, v_max_c_cat3, V_creeping
+                alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c,
+                v_max_m, v_max_c, v_creeping
             )
 
             # --- 3. Apply the solved state to outgoing ghost cells ---

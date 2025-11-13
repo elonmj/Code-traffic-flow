@@ -1,421 +1,314 @@
-[{"stream_name":"stdout","time":0.496677662,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.496755501,"data":"GENERIC_TEST_TESTS\n"}
-,{"stream_name":"stdout","time":0.49676299,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.496767939,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
-,{"stream_name":"stdout","time":0.496796609,"data":"Branch: main\n"}
-,{"stream_name":"stdout","time":0.496866219,"data":"Target: arz_model/tests/\n"}
-,{"stream_name":"stdout","time":5.245732815,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
-,{"stream_name":"stdout","time":5.245834999,"data":"PyTorch: 2.6.0+cu124\n"}
-,{"stream_name":"stdout","time":5.296983199,"data":"CUDA available: True\n"}
-,{"stream_name":"stdout","time":5.317413763,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
-,{"stream_name":"stdout","time":5.317448217,"data":"\n"}
-,{"stream_name":"stdout","time":5.31745408,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
-,{"stream_name":"stdout","time":5.317642501,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
-,{"stream_name":"stdout","time":6.19681277,"data":"[OK] Repository cloned successfully\n"}
-,{"stream_name":"stdout","time":6.196913676,"data":"\n"}
-,{"stream_name":"stdout","time":6.196920933,"data":"[STEP 2/4] Installing dependencies...\n"}
-,{"stream_name":"stdout","time":6.196967503,"data":"Installing pytest...\n"}
-,{"stream_name":"stdout","time":10.13085245,"data":"[OK] Dependencies installed\n"}
-,{"stream_name":"stdout","time":10.130888498,"data":"\n"}
-,{"stream_name":"stdout","time":10.130894398,"data":"[STEP 3/4] Running Target...\n"}
-,{"stream_name":"stdout","time":10.13089938,"data":"Target is a directory. Executing pytest...\n"}
-,{"stream_name":"stdout","time":10.130936333,"data":"Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests\n"}
-,{"stream_name":"stdout","time":11.805366553,"data":"============================= test session starts ==============================\n"}
-,{"stream_name":"stdout","time":11.805397843,"data":"platform linux -- Python 3.11.13, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3\n"}
-,{"stream_name":"stdout","time":11.80540155,"data":"cachedir: .pytest_cache\n"}
-,{"stream_name":"stdout","time":11.80540422,"data":"rootdir: /kaggle/working/Code-traffic-flow/arz_model\n"}
-,{"stream_name":"stdout","time":11.805406996,"data":"configfile: pytest.ini\n"}
-,{"stream_name":"stdout","time":11.805409421,"data":"plugins: anyio-4.11.0, typeguard-4.4.4, langsmith-0.4.8\n"}
-,{"stream_name":"stdout","time":16.605097915,"data":"collecting ... collected 21 items\n"}
-,{"stream_name":"stdout","time":16.605131401,"data":"\n"}
-,{"stream_name":"stdout","time":16.741159651,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_state_initialization_full_array PASSED [  4%]\n"}
-,{"stream_name":"stdout","time":16.746121018,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_state_initialization_physical_only PASSED [  9%]\n"}
-,{"stream_name":"stdout","time":16.74894122,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_invalid_initialization PASSED [ 14%]\n"}
-,{"stream_name":"stdout","time":16.751232003,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_segment_state_access PASSED [ 19%]\n"}
-,{"stream_name":"stdout","time":16.753526417,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_road_quality_access PASSED [ 23%]\n"}
-,{"stream_name":"stdout","time":16.756502918,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_stream_access PASSED [ 28%]\n"}
-,{"stream_name":"stdout","time":16.759250409,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_synchronous_checkpoint PASSED [ 33%]\n"}
-,{"stream_name":"stdout","time":16.762993393,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_asynchronous_checkpoint PASSED [ 38%]\n"}
-,{"stream_name":"stdout","time":16.766817682,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_checkpoint_invalid_segment PASSED [ 42%]\n"}
-,{"stream_name":"stdout","time":16.769124912,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolStreams::test_stream_synchronization PASSED [ 47%]\n"}
-,{"stream_name":"stdout","time":16.77141248,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolStreams::test_no_streams_synchronization PASSED [ 52%]\n"}
-,{"stream_name":"stdout","time":16.773407133,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolMonitoring::test_memory_statistics PASSED [ 57%]\n"}
-,{"stream_name":"stdout","time":16.775542826,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolMonitoring::test_string_representation PASSED [ 61%]\n"}
-,{"stream_name":"stdout","time":16.777587511,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCleanup::test_explicit_cleanup PASSED [ 66%]\n"}
-,{"stream_name":"stdout","time":16.779542806,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCleanup::test_destructor_cleanup PASSED [ 71%]\n"}
-,{"stream_name":"stdout","time":16.783809078,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolIntegration::test_multi_segment_workflow PASSED [ 76%]\n"}
-,{"stream_name":"stdout","time":16.786776271,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolIntegration::test_memory_persistence PASSED [ 80%]\n"}
-,{"stream_name":"stdout","time":20.172067267,"data":"arz_model/tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu FAILED [ 85%]\n"}
-,{"stream_name":"stdout","time":20.173057335,"data":"arz_model/tests/test_gpu_only_integration.py::test_gpu_required_error SKIPPED [ 90%]\n"}
-,{"stream_name":"stdout","time":20.216163071,"data":"arz_model/tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop FAILED [ 95%]\n"}
-,{"stream_name":"stdout","time":20.25900254,"data":"arz_model/tests/test_gpu_only_integration.py::test_mass_conservation_gpu FAILED [100%]\n"}
-,{"stream_name":"stdout","time":20.259028342,"data":"\n"}
-,{"stream_name":"stdout","time":20.259033285,"data":"=================================== FAILURES ===================================\n"}
-,{"stream_name":"stdout","time":20.25903797,"data":"____________________ test_simulation_runs_end_to_end_on_gpu ____________________\n"}
-,{"stream_name":"stdout","time":20.259042392,"data":"\n"}
-,{"stream_name":"stdout","time":20.259046721,"data":"    def test_simulation_runs_end_to_end_on_gpu():\n"}
-,{"stream_name":"stdout","time":20.259051233,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.259055633,"data":"        Tests that a simple simulation can run from start to finish on the GPU.\n"}
-,{"stream_name":"stdout","time":20.259060007,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.259064765,"data":"        print(\"Running test: test_simulation_runs_end_to_end_on_gpu\")\n"}
-,{"stream_name":"stdout","time":20.259068892,"data":"        try:\n"}
-,{"stream_name":"stdout","time":20.25907242,"data":"            config = create_test_config()\n"}
-,{"stream_name":"stdout","time":20.259101837,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
-,{"stream_name":"stdout","time":20.259105066,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
-,{"stream_name":"stdout","time":20.25910764,"data":"\u003e           results = runner.run()\n"}
-,{"stream_name":"stdout","time":20.259110316,"data":"                      ^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.259112707,"data":"\n"}
-,{"stream_name":"stdout","time":20.259114976,"data":"arz_model/tests/test_gpu_only_integration.py:89: \n"}
-,{"stream_name":"stdout","time":20.259117481,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.259119931,"data":"arz_model/simulation/runner.py:745: in run\n"}
-,{"stream_name":"stdout","time":20.259122326,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
-,{"stream_name":"stdout","time":20.259124757,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.259127279,"data":"arz_model/simulation/execution/network_simulator.py:171: in run\n"}
-,{"stream_name":"stdout","time":20.259129685,"data":"    d_U_out = strang_splitting_step_gpu_native(\n"}
-,{"stream_name":"stdout","time":20.259132082,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.259134812,"data":"\n"}
-,{"stream_name":"stdout","time":20.259137195,"data":"d_U_n = \u003cnumba.cuda.cudadrv.devicearray.DeviceNDArray object at 0x7aeadf9732d0\u003e\n"}
-,{"stream_name":"stdout","time":20.259139765,"data":"dt = 0.01, grid = \u003carz_model.grid.grid1d.Grid1D object at 0x7aeadcabe210\u003e\n"}
-,{"stream_name":"stdout","time":20.259142337,"data":"params = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
-,{"stream_name":"stdout","time":20.25914485,"data":"gpu_pool = GPUMemoryPool(segments=2, total_cells=150, memory=0.00MB)\n"}
-,{"stream_name":"stdout","time":20.259147367,"data":"seg_id = 'seg-1', current_time = 0.0\n"}
-,{"stream_name":"stdout","time":20.259149736,"data":"\n"}
-,{"stream_name":"stdout","time":20.259151995,"data":"    def strang_splitting_step_gpu_native(\n"}
-,{"stream_name":"stdout","time":20.259154355,"data":"        d_U_n: cuda.devicearray.DeviceNDArray,\n"}
-,{"stream_name":"stdout","time":20.259156857,"data":"        dt: float,\n"}
-,{"stream_name":"stdout","time":20.259159209,"data":"        grid: Grid1D,\n"}
-,{"stream_name":"stdout","time":20.259161553,"data":"        params: 'PhysicsConfig',\n"}
-,{"stream_name":"stdout","time":20.259163923,"data":"        gpu_pool: 'GPUMemoryPool',\n"}
-,{"stream_name":"stdout","time":20.259166302,"data":"        seg_id: str,\n"}
-,{"stream_name":"stdout","time":20.259168656,"data":"        current_time: float\n"}
-,{"stream_name":"stdout","time":20.259171017,"data":"    ) -\u003e cuda.devicearray.DeviceNDArray:\n"}
-,{"stream_name":"stdout","time":20.259173457,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.259175837,"data":"        Performs one full, GPU-native time step using Strang splitting.\n"}
-,{"stream_name":"stdout","time":20.259178287,"data":"    \n"}
-,{"stream_name":"stdout","time":20.25918062,"data":"        This function is the core of the GPU-only simulation loop. It orchestrates\n"}
-,{"stream_name":"stdout","time":20.259183786,"data":"        the ODE and hyperbolic substeps, ensuring all data remains on the GPU\n"}
-,{"stream_name":"stdout","time":20.25919263,"data":"        and all transfers are eliminated.\n"}
-,{"stream_name":"stdout","time":20.259195295,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259197585,"data":"        Args:\n"}
-,{"stream_name":"stdout","time":20.259199938,"data":"            d_U_n: Input state device array for the current segment.\n"}
-,{"stream_name":"stdout","time":20.259202482,"data":"            dt: The full time step.\n"}
-,{"stream_name":"stdout","time":20.259204852,"data":"            grid: The Grid1D object for the segment (CPU object).\n"}
-,{"stream_name":"stdout","time":20.259207289,"data":"            params: ModelParameters object (CPU object).\n"}
-,{"stream_name":"stdout","time":20.259209728,"data":"            gpu_pool: The GPUMemoryPool managing all device arrays.\n"}
-,{"stream_name":"stdout","time":20.259212178,"data":"            seg_id: The identifier for the current segment.\n"}
-,{"stream_name":"stdout","time":20.259214581,"data":"            current_time: The current simulation time.\n"}
-,{"stream_name":"stdout","time":20.259216985,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259219273,"data":"        Returns:\n"}
-,{"stream_name":"stdout","time":20.259221616,"data":"            The updated state device array for the segment.\n"}
-,{"stream_name":"stdout","time":20.259224032,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.259226365,"data":"        # 1. Get cached road quality array from the memory pool\n"}
-,{"stream_name":"stdout","time":20.259228813,"data":"        d_R = gpu_pool.get_road_quality_array(seg_id)\n"}
-,{"stream_name":"stdout","time":20.259231227,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259233491,"data":"        # 2. First ODE substep (dt/2)\n"}
-,{"stream_name":"stdout","time":20.259235875,"data":"        d_U_star = solve_ode_step_gpu(d_U_n, dt / 2.0, grid, params, d_R)\n"}
-,{"stream_name":"stdout","time":20.259238345,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259240625,"data":"        # 3. Hyperbolic substep (dt)\n"}
-,{"stream_name":"stdout","time":20.259243,"data":"        # This will be a new function that wraps the GPU-native WENO/SSP-RK3 logic\n"}
-,{"stream_name":"stdout","time":20.259245476,"data":"        d_U_ss = solve_hyperbolic_step_ssp_rk3_gpu_native(d_U_star, dt, grid, params, gpu_pool, seg_id, current_time)\n"}
-,{"stream_name":"stdout","time":20.259248026,"data":"    \n"}
-,{"stream_name":"stdout","time":20.25925034,"data":"        # 4. Second ODE substep (dt/2)\n"}
-,{"stream_name":"stdout","time":20.259252725,"data":"        d_U_np1 = solve_ode_step_gpu(d_U_ss, dt / 2.0, grid, params, d_R)\n"}
-,{"stream_name":"stdout","time":20.259255157,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259257454,"data":"        # 5. Apply physical bounds to prevent numerical instability\n"}
-,{"stream_name":"stdout","time":20.259259972,"data":"\u003e       d_U_np1 = apply_physical_state_bounds_gpu(d_U_np1, grid, params, rho_max=1.5 * params.physics.rho_jam)\n"}
-,{"stream_name":"stdout","time":20.259262504,"data":"                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.259264957,"data":"E       NameError: name 'apply_physical_state_bounds_gpu' is not defined\n"}
-,{"stream_name":"stdout","time":20.259267456,"data":"\n"}
-,{"stream_name":"stdout","time":20.259269734,"data":"arz_model/numerics/time_integration.py:1205: NameError\n"}
-,{"stream_name":"stdout","time":20.25927216,"data":"\n"}
-,{"stream_name":"stdout","time":20.259274435000002,"data":"During handling of the above exception, another exception occurred:\n"}
-,{"stream_name":"stdout","time":20.259276893,"data":"\n"}
-,{"stream_name":"stdout","time":20.259284237,"data":"    def test_simulation_runs_end_to_end_on_gpu():\n"}
-,{"stream_name":"stdout","time":20.259286883,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.259289216,"data":"        Tests that a simple simulation can run from start to finish on the GPU.\n"}
-,{"stream_name":"stdout","time":20.259291717,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.25929404,"data":"        print(\"Running test: test_simulation_runs_end_to_end_on_gpu\")\n"}
-,{"stream_name":"stdout","time":20.259296607,"data":"        try:\n"}
-,{"stream_name":"stdout","time":20.25929896,"data":"            config = create_test_config()\n"}
-,{"stream_name":"stdout","time":20.259301371,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
-,{"stream_name":"stdout","time":20.259303992,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
-,{"stream_name":"stdout","time":20.25930675,"data":"            results = runner.run()\n"}
-,{"stream_name":"stdout","time":20.259309227,"data":"    \n"}
-,{"stream_name":"stdout","time":20.25931151,"data":"            # Verify results structure\n"}
-,{"stream_name":"stdout","time":20.259313857,"data":"            assert \"final_time\" in results\n"}
-,{"stream_name":"stdout","time":20.259316347,"data":"            assert \"total_steps\" in results\n"}
-,{"stream_name":"stdout","time":20.259318931,"data":"            assert \"final_states\" in results\n"}
-,{"stream_name":"stdout","time":20.25932139,"data":"            assert \"seg-1\" in results[\"final_states\"]\n"}
-,{"stream_name":"stdout","time":20.259323881,"data":"            assert \"seg-2\" in results[\"final_states\"]\n"}
-,{"stream_name":"stdout","time":20.259326355,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259328697,"data":"            # Verify state array shape\n"}
-,{"stream_name":"stdout","time":20.259331103,"data":"            final_state_seg1 = results[\"final_states\"][\"seg-1\"]\n"}
-,{"stream_name":"stdout","time":20.259333662,"data":"            expected_shape = (4, config.segments[0].N + 2 * config.grid.num_ghost_cells)\n"}
-,{"stream_name":"stdout","time":20.259336179,"data":"            assert final_state_seg1.shape == expected_shape, f\"Expected shape {expected_shape}, but got {final_state_seg1.shape}\"\n"}
-,{"stream_name":"stdout","time":20.259338911,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259341241,"data":"            print(\"✅ Test passed. Simulation ran end-to-end and produced valid results.\")\n"}
-,{"stream_name":"stdout","time":20.259344539,"data":"        except Exception as e:\n"}
-,{"stream_name":"stdout","time":20.259346917,"data":"\u003e           pytest.fail(f\"End-to-end GPU simulation test failed with an exception: {e}\", pytrace=True)\n"}
-,{"stream_name":"stdout","time":20.259349518,"data":"E           Failed: End-to-end GPU simulation test failed with an exception: name 'apply_physical_state_bounds_gpu' is not defined\n"}
-,{"stream_name":"stdout","time":20.2593521,"data":"\n"}
-,{"stream_name":"stdout","time":20.259354343,"data":"arz_model/tests/test_gpu_only_integration.py:105: Failed\n"}
-,{"stream_name":"stdout","time":20.259356724,"data":"----------------------------- Captured stdout call -----------------------------\n"}
-,{"stream_name":"stdout","time":20.259359189,"data":"Running test: test_simulation_runs_end_to_end_on_gpu\n"}
-,{"stream_name":"stdout","time":20.259361569,"data":"Finalizing network structure and validating topology...\n"}
-,{"stream_name":"stdout","time":20.259363964,"data":"✅ Network topology is valid.\n"}
-,{"stream_name":"stdout","time":20.25937175,"data":"✅ GPUMemoryPool initialized:\n"}
-,{"stream_name":"stdout","time":20.259374368,"data":"   - Segments: 2\n"}
-,{"stream_name":"stdout","time":20.259376741,"data":"   - Total cells: 150\n"}
-,{"stream_name":"stdout","time":20.259379087,"data":"   - Ghost cells: 3\n"}
-,{"stream_name":"stdout","time":20.2593814,"data":"   - Compute Capability: (6, 0)\n"}
-,{"stream_name":"stdout","time":20.259383741,"data":"   - CUDA streams: Enabled\n"}
-,{"stream_name":"stdout","time":20.259386086,"data":"   - GPU memory allocated: 0.00 MB\n"}
-,{"stream_name":"stdout","time":20.259388463,"data":"  - Preparing GPU topology for network coupling...\n"}
-,{"stream_name":"stdout","time":20.259390855,"data":"    - GPU topology prepared and transferred.\n"}
-,{"stream_name":"stdout","time":20.259393255,"data":"________________________ test_no_cpu_transfers_in_loop _________________________\n"}
-,{"stream_name":"stdout","time":20.259395733,"data":"\n"}
-,{"stream_name":"stdout","time":20.259397986,"data":"    def test_no_cpu_transfers_in_loop():\n"}
-,{"stream_name":"stdout","time":20.259400374,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.25940274,"data":"        Hooks into CUDA transfer functions to verify that no transfers occur\n"}
-,{"stream_name":"stdout","time":20.259405180999998,"data":"        during the main simulation loop.\n"}
-,{"stream_name":"stdout","time":20.259407562,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.259409878,"data":"        print(\"Running test: test_no_cpu_transfers_in_loop\")\n"}
-,{"stream_name":"stdout","time":20.259412338,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259414621,"data":"        transfer_log = []\n"}
-,{"stream_name":"stdout","time":20.259416964,"data":"        original_to_device = cuda.to_device\n"}
-,{"stream_name":"stdout","time":20.259419385,"data":"        original_copy_to_host = cuda.devicearray.DeviceNDArray.copy_to_host\n"}
-,{"stream_name":"stdout","time":20.259422174,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259424508,"data":"        def tracked_to_device(obj, *args, **kwargs):\n"}
-,{"stream_name":"stdout","time":20.259426907,"data":"            transfer_log.append(f\"to_device: {type(obj)}\")\n"}
-,{"stream_name":"stdout","time":20.259429345,"data":"            return original_to_device(obj, *args, **kwargs)\n"}
-,{"stream_name":"stdout","time":20.259431784,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259434076,"data":"        def tracked_copy_to_host(self, *args, **kwargs):\n"}
-,{"stream_name":"stdout","time":20.259436488,"data":"            transfer_log.append(f\"copy_to_host: shape={self.shape}\")\n"}
-,{"stream_name":"stdout","time":20.259438963,"data":"            return original_copy_to_host(self, *args, **kwargs)\n"}
-,{"stream_name":"stdout","time":20.259441378,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259443653,"data":"        try:\n"}
-,{"stream_name":"stdout","time":20.259445953,"data":"            config = create_test_config()\n"}
-,{"stream_name":"stdout","time":20.259448328,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259450582,"data":"            cuda.to_device = tracked_to_device\n"}
-,{"stream_name":"stdout","time":20.259452992,"data":"            cuda.devicearray.DeviceNDArray.copy_to_host = tracked_copy_to_host\n"}
-,{"stream_name":"stdout","time":20.259455442,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259457705,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
-,{"stream_name":"stdout","time":20.259460114,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
-,{"stream_name":"stdout","time":20.259479352,"data":"    \n"}
-,{"stream_name":"stdout","time":20.259481988,"data":"            # Test 1: Check transfers during the main `run()` method\n"}
-,{"stream_name":"stdout","time":20.259484443,"data":"            transfer_log.clear()\n"}
-,{"stream_name":"stdout","time":20.259486873,"data":"\u003e           runner.run()\n"}
-,{"stream_name":"stdout","time":20.259489306,"data":"\n"}
-,{"stream_name":"stdout","time":20.25949155,"data":"arz_model/tests/test_gpu_only_integration.py:152: \n"}
-,{"stream_name":"stdout","time":20.259493957,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.259496383,"data":"arz_model/simulation/runner.py:745: in run\n"}
-,{"stream_name":"stdout","time":20.259498746,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
-,{"stream_name":"stdout","time":20.259501133,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.259503527,"data":"arz_model/simulation/execution/network_simulator.py:171: in run\n"}
-,{"stream_name":"stdout","time":20.259505944,"data":"    d_U_out = strang_splitting_step_gpu_native(\n"}
-,{"stream_name":"stdout","time":20.259530809,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.259539183,"data":"\n"}
-,{"stream_name":"stdout","time":20.259544813,"data":"d_U_n = \u003cnumba.cuda.cudadrv.devicearray.DeviceNDArray object at 0x7aead9a4f890\u003e\n"}
-,{"stream_name":"stdout","time":20.259548825,"data":"dt = 0.01, grid = \u003carz_model.grid.grid1d.Grid1D object at 0x7aead95a5d90\u003e\n"}
-,{"stream_name":"stdout","time":20.259551547,"data":"params = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
-,{"stream_name":"stdout","time":20.259554007,"data":"gpu_pool = GPUMemoryPool(segments=2, total_cells=150, memory=0.00MB)\n"}
-,{"stream_name":"stdout","time":20.259556448,"data":"seg_id = 'seg-1', current_time = 0.0\n"}
-,{"stream_name":"stdout","time":20.25955883,"data":"\n"}
-,{"stream_name":"stdout","time":20.259561114,"data":"    def strang_splitting_step_gpu_native(\n"}
-,{"stream_name":"stdout","time":20.259563501,"data":"        d_U_n: cuda.devicearray.DeviceNDArray,\n"}
-,{"stream_name":"stdout","time":20.259565882,"data":"        dt: float,\n"}
-,{"stream_name":"stdout","time":20.25956822,"data":"        grid: Grid1D,\n"}
-,{"stream_name":"stdout","time":20.25957053,"data":"        params: 'PhysicsConfig',\n"}
-,{"stream_name":"stdout","time":20.25957287,"data":"        gpu_pool: 'GPUMemoryPool',\n"}
-,{"stream_name":"stdout","time":20.259575237,"data":"        seg_id: str,\n"}
-,{"stream_name":"stdout","time":20.259577576,"data":"        current_time: float\n"}
-,{"stream_name":"stdout","time":20.259579945,"data":"    ) -\u003e cuda.devicearray.DeviceNDArray:\n"}
-,{"stream_name":"stdout","time":20.259582374,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.734564072,"data":"        Performs one full, GPU-native time step using Strang splitting.\n"}
-,{"stream_name":"stdout","time":20.734598955,"data":"    \n"}
-,{"stream_name":"stdout","time":20.73460429,"data":"        This function is the core of the GPU-only simulation loop. It orchestrates\n"}
-,{"stream_name":"stdout","time":20.734608247,"data":"        the ODE and hyperbolic substeps, ensuring all data remains on the GPU\n"}
-,{"stream_name":"stdout","time":20.734612052,"data":"        and all transfers are eliminated.\n"}
-,{"stream_name":"stdout","time":20.734630743,"data":"    \n"}
-,{"stream_name":"stdout","time":20.734633734,"data":"        Args:\n"}
-,{"stream_name":"stdout","time":20.734636225,"data":"            d_U_n: Input state device array for the current segment.\n"}
-,{"stream_name":"stdout","time":20.734638683,"data":"            dt: The full time step.\n"}
-,{"stream_name":"stdout","time":20.734641097,"data":"            grid: The Grid1D object for the segment (CPU object).\n"}
-,{"stream_name":"stdout","time":20.734643602,"data":"            params: ModelParameters object (CPU object).\n"}
-,{"stream_name":"stdout","time":20.734646031,"data":"            gpu_pool: The GPUMemoryPool managing all device arrays.\n"}
-,{"stream_name":"stdout","time":20.734648473,"data":"            seg_id: The identifier for the current segment.\n"}
-,{"stream_name":"stdout","time":20.734650908,"data":"            current_time: The current simulation time.\n"}
-,{"stream_name":"stdout","time":20.734653383,"data":"    \n"}
-,{"stream_name":"stdout","time":20.734655686,"data":"        Returns:\n"}
-,{"stream_name":"stdout","time":20.734658003,"data":"            The updated state device array for the segment.\n"}
-,{"stream_name":"stdout","time":20.73466042,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.734662908,"data":"        # 1. Get cached road quality array from the memory pool\n"}
-,{"stream_name":"stdout","time":20.734666271000002,"data":"        d_R = gpu_pool.get_road_quality_array(seg_id)\n"}
-,{"stream_name":"stdout","time":20.734670227,"data":"    \n"}
-,{"stream_name":"stdout","time":20.734675447,"data":"        # 2. First ODE substep (dt/2)\n"}
-,{"stream_name":"stdout","time":20.734679132,"data":"        d_U_star = solve_ode_step_gpu(d_U_n, dt / 2.0, grid, params, d_R)\n"}
-,{"stream_name":"stdout","time":20.734683845,"data":"    \n"}
-,{"stream_name":"stdout","time":20.734688024,"data":"        # 3. Hyperbolic substep (dt)\n"}
-,{"stream_name":"stdout","time":20.734692642,"data":"        # This will be a new function that wraps the GPU-native WENO/SSP-RK3 logic\n"}
-,{"stream_name":"stdout","time":20.734697123,"data":"        d_U_ss = solve_hyperbolic_step_ssp_rk3_gpu_native(d_U_star, dt, grid, params, gpu_pool, seg_id, current_time)\n"}
-,{"stream_name":"stdout","time":20.734701017,"data":"    \n"}
-,{"stream_name":"stdout","time":20.734704457,"data":"        # 4. Second ODE substep (dt/2)\n"}
-,{"stream_name":"stdout","time":20.734708126,"data":"        d_U_np1 = solve_ode_step_gpu(d_U_ss, dt / 2.0, grid, params, d_R)\n"}
-,{"stream_name":"stdout","time":20.734711873,"data":"    \n"}
-,{"stream_name":"stdout","time":20.734715295,"data":"        # 5. Apply physical bounds to prevent numerical instability\n"}
-,{"stream_name":"stdout","time":20.734731433,"data":"\u003e       d_U_np1 = apply_physical_state_bounds_gpu(d_U_np1, grid, params, rho_max=1.5 * params.physics.rho_jam)\n"}
-,{"stream_name":"stdout","time":20.734734498999998,"data":"                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.734736912,"data":"E       NameError: name 'apply_physical_state_bounds_gpu' is not defined\n"}
-,{"stream_name":"stdout","time":20.73473936,"data":"\n"}
-,{"stream_name":"stdout","time":20.734741707,"data":"arz_model/numerics/time_integration.py:1205: NameError\n"}
-,{"stream_name":"stdout","time":20.734744218,"data":"----------------------------- Captured stdout call -----------------------------\n"}
-,{"stream_name":"stdout","time":20.734746677,"data":"Running test: test_no_cpu_transfers_in_loop\n"}
-,{"stream_name":"stdout","time":20.734749065,"data":"Finalizing network structure and validating topology...\n"}
-,{"stream_name":"stdout","time":20.734756151,"data":"✅ Network topology is valid.\n"}
-,{"stream_name":"stdout","time":20.73475937,"data":"✅ GPUMemoryPool initialized:\n"}
-,{"stream_name":"stdout","time":20.734762327,"data":"   - Segments: 2\n"}
-,{"stream_name":"stdout","time":20.734765928,"data":"   - Total cells: 150\n"}
-,{"stream_name":"stdout","time":20.7347712,"data":"   - Ghost cells: 3\n"}
-,{"stream_name":"stdout","time":20.734775303,"data":"   - Compute Capability: (6, 0)\n"}
-,{"stream_name":"stdout","time":20.734781117,"data":"   - CUDA streams: Enabled\n"}
-,{"stream_name":"stdout","time":20.734785764,"data":"   - GPU memory allocated: 0.00 MB\n"}
-,{"stream_name":"stdout","time":20.734790068,"data":"  - Preparing GPU topology for network coupling...\n"}
-,{"stream_name":"stdout","time":20.734793807,"data":"    - GPU topology prepared and transferred.\n"}
-,{"stream_name":"stdout","time":20.734797465,"data":"__________________________ test_mass_conservation_gpu __________________________\n"}
-,{"stream_name":"stdout","time":20.734801202,"data":"\n"}
-,{"stream_name":"stdout","time":20.734804655,"data":"    def test_mass_conservation_gpu():\n"}
-,{"stream_name":"stdout","time":20.734808249,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.734811798,"data":"        Verifies that the total mass (rho) in the system is conserved on the GPU\n"}
-,{"stream_name":"stdout","time":20.734815438,"data":"        when using reflective boundary conditions.\n"}
-,{"stream_name":"stdout","time":20.734819128,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.734822633,"data":"        print(\"Running test: test_mass_conservation_gpu\")\n"}
-,{"stream_name":"stdout","time":20.734826346,"data":"    \n"}
-,{"stream_name":"stdout","time":20.734829787,"data":"        config = create_test_config()\n"}
-,{"stream_name":"stdout","time":20.734833376,"data":"        # Use reflective \"wall\" boundary conditions to ensure mass is conserved\n"}
-,{"stream_name":"stdout","time":20.73483933,"data":"        config.segments[0].boundary_conditions.left = ReflectiveBC()\n"}
-,{"stream_name":"stdout","time":20.734842043,"data":"        config.segments[1].boundary_conditions.right = ReflectiveBC()\n"}
-,{"stream_name":"stdout","time":20.734844445,"data":"    \n"}
-,{"stream_name":"stdout","time":20.734846762,"data":"        network_grid = NetworkGrid.from_config(config)\n"}
-,{"stream_name":"stdout","time":20.73484921,"data":"    \n"}
-,{"stream_name":"stdout","time":20.734851488,"data":"        # Calculate initial mass from the config\n"}
-,{"stream_name":"stdout","time":20.734853906,"data":"        initial_mass = 0.0\n"}
-,{"stream_name":"stdout","time":20.734857297,"data":"        for seg_config in config.segments:\n"}
-,{"stream_name":"stdout","time":20.73486268,"data":"            segment = network_grid.segments[seg_config.id]\n"}
-,{"stream_name":"stdout","time":20.734866861,"data":"            ic_config = seg_config.initial_conditions.config\n"}
-,{"stream_name":"stdout","time":20.734871191,"data":"            if isinstance(ic_config, UniformIC):\n"}
-,{"stream_name":"stdout","time":20.734875532,"data":"                # Mass = density * length\n"}
-,{"stream_name":"stdout","time":20.734880107,"data":"                initial_mass += ic_config.density * (segment['grid'].xmax - segment['grid'].xmin)\n"}
-,{"stream_name":"stdout","time":20.734883959,"data":"    \n"}
-,{"stream_name":"stdout","time":20.734887476,"data":"        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
-,{"stream_name":"stdout","time":20.73489117,"data":"\u003e       results = runner.run()\n"}
-,{"stream_name":"stdout","time":20.734899139,"data":"                  ^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.734902804,"data":"\n"}
-,{"stream_name":"stdout","time":20.734906242,"data":"arz_model/tests/test_gpu_only_integration.py:196: \n"}
-,{"stream_name":"stdout","time":20.734909817,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.734913482,"data":"arz_model/simulation/runner.py:745: in run\n"}
-,{"stream_name":"stdout","time":20.734916982,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
-,{"stream_name":"stdout","time":20.734920547,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.734924103,"data":"arz_model/simulation/execution/network_simulator.py:171: in run\n"}
-,{"stream_name":"stdout","time":20.734927949,"data":"    d_U_out = strang_splitting_step_gpu_native(\n"}
-,{"stream_name":"stdout","time":20.734931528,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.734937001,"data":"\n"}
-,{"stream_name":"stdout","time":20.734940808,"data":"d_U_n = \u003cnumba.cuda.cudadrv.devicearray.DeviceNDArray object at 0x7aead8ebe650\u003e\n"}
-,{"stream_name":"stdout","time":20.734943475,"data":"dt = 0.01, grid = \u003carz_model.grid.grid1d.Grid1D object at 0x7aead9091310\u003e\n"}
-,{"stream_name":"stdout","time":20.734946945,"data":"params = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
-,{"stream_name":"stdout","time":20.734952577,"data":"gpu_pool = GPUMemoryPool(segments=2, total_cells=150, memory=0.00MB)\n"}
-,{"stream_name":"stdout","time":20.734956816,"data":"seg_id = 'seg-1', current_time = 0.0\n"}
-,{"stream_name":"stdout","time":20.734961318,"data":"\n"}
-,{"stream_name":"stdout","time":20.734965606,"data":"    def strang_splitting_step_gpu_native(\n"}
-,{"stream_name":"stdout","time":20.734969871,"data":"        d_U_n: cuda.devicearray.DeviceNDArray,\n"}
-,{"stream_name":"stdout","time":20.734973998,"data":"        dt: float,\n"}
-,{"stream_name":"stdout","time":20.73497751,"data":"        grid: Grid1D,\n"}
-,{"stream_name":"stdout","time":20.734980983,"data":"        params: 'PhysicsConfig',\n"}
-,{"stream_name":"stdout","time":20.734984477,"data":"        gpu_pool: 'GPUMemoryPool',\n"}
-,{"stream_name":"stdout","time":20.73498797,"data":"        seg_id: str,\n"}
-,{"stream_name":"stdout","time":20.734991497,"data":"        current_time: float\n"}
-,{"stream_name":"stdout","time":20.734995042,"data":"    ) -\u003e cuda.devicearray.DeviceNDArray:\n"}
-,{"stream_name":"stdout","time":20.734998668,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.73500219,"data":"        Performs one full, GPU-native time step using Strang splitting.\n"}
-,{"stream_name":"stdout","time":20.735005817,"data":"    \n"}
-,{"stream_name":"stdout","time":20.735009216999998,"data":"        This function is the core of the GPU-only simulation loop. It orchestrates\n"}
-,{"stream_name":"stdout","time":20.73501288,"data":"        the ODE and hyperbolic substeps, ensuring all data remains on the GPU\n"}
-,{"stream_name":"stdout","time":20.735016485,"data":"        and all transfers are eliminated.\n"}
-,{"stream_name":"stdout","time":20.735020122,"data":"    \n"}
-,{"stream_name":"stdout","time":20.735023559,"data":"        Args:\n"}
-,{"stream_name":"stdout","time":20.735028734,"data":"            d_U_n: Input state device array for the current segment.\n"}
-,{"stream_name":"stdout","time":20.735035257,"data":"            dt: The full time step.\n"}
-,{"stream_name":"stdout","time":20.735038295,"data":"            grid: The Grid1D object for the segment (CPU object).\n"}
-,{"stream_name":"stdout","time":20.735043673,"data":"            params: ModelParameters object (CPU object).\n"}
-,{"stream_name":"stdout","time":20.735047809,"data":"            gpu_pool: The GPUMemoryPool managing all device arrays.\n"}
-,{"stream_name":"stdout","time":20.735051859,"data":"            seg_id: The identifier for the current segment.\n"}
-,{"stream_name":"stdout","time":20.735056372,"data":"            current_time: The current simulation time.\n"}
-,{"stream_name":"stdout","time":20.735060691,"data":"    \n"}
-,{"stream_name":"stdout","time":20.735064933,"data":"        Returns:\n"}
-,{"stream_name":"stdout","time":20.735068438,"data":"            The updated state device array for the segment.\n"}
-,{"stream_name":"stdout","time":20.735072,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.735075522,"data":"        # 1. Get cached road quality array from the memory pool\n"}
-,{"stream_name":"stdout","time":20.735079102,"data":"        d_R = gpu_pool.get_road_quality_array(seg_id)\n"}
-,{"stream_name":"stdout","time":20.735082733,"data":"    \n"}
-,{"stream_name":"stdout","time":20.735086137,"data":"        # 2. First ODE substep (dt/2)\n"}
-,{"stream_name":"stdout","time":20.735089655,"data":"        d_U_star = solve_ode_step_gpu(d_U_n, dt / 2.0, grid, params, d_R)\n"}
-,{"stream_name":"stdout","time":20.735093281,"data":"    \n"}
-,{"stream_name":"stdout","time":20.735096592,"data":"        # 3. Hyperbolic substep (dt)\n"}
-,{"stream_name":"stdout","time":20.735100128,"data":"        # This will be a new function that wraps the GPU-native WENO/SSP-RK3 logic\n"}
-,{"stream_name":"stdout","time":20.735103814,"data":"        d_U_ss = solve_hyperbolic_step_ssp_rk3_gpu_native(d_U_star, dt, grid, params, gpu_pool, seg_id, current_time)\n"}
-,{"stream_name":"stdout","time":20.735107677,"data":"    \n"}
-,{"stream_name":"stdout","time":20.735111058,"data":"        # 4. Second ODE substep (dt/2)\n"}
-,{"stream_name":"stdout","time":20.735114618,"data":"        d_U_np1 = solve_ode_step_gpu(d_U_ss, dt / 2.0, grid, params, d_R)\n"}
-,{"stream_name":"stdout","time":20.735119891,"data":"    \n"}
-,{"stream_name":"stdout","time":20.735123587,"data":"        # 5. Apply physical bounds to prevent numerical instability\n"}
-,{"stream_name":"stdout","time":20.735126542,"data":"\u003e       d_U_np1 = apply_physical_state_bounds_gpu(d_U_np1, grid, params, rho_max=1.5 * params.physics.rho_jam)\n"}
-,{"stream_name":"stdout","time":20.735129698,"data":"                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.735135003,"data":"E       NameError: name 'apply_physical_state_bounds_gpu' is not defined\n"}
-,{"stream_name":"stdout","time":20.735139038,"data":"\n"}
-,{"stream_name":"stdout","time":20.735142987,"data":"arz_model/numerics/time_integration.py:1205: NameError\n"}
-,{"stream_name":"stdout","time":20.735147592,"data":"----------------------------- Captured stdout call -----------------------------\n"}
-,{"stream_name":"stdout","time":20.735152028999998,"data":"Running test: test_mass_conservation_gpu\n"}
-,{"stream_name":"stdout","time":20.735156117,"data":"Finalizing network structure and validating topology...\n"}
-,{"stream_name":"stdout","time":20.735159795,"data":"✅ Network topology is valid.\n"}
-,{"stream_name":"stdout","time":20.735163313,"data":"✅ GPUMemoryPool initialized:\n"}
-,{"stream_name":"stdout","time":20.735166828,"data":"   - Segments: 2\n"}
-,{"stream_name":"stdout","time":20.735174343,"data":"   - Total cells: 150\n"}
-,{"stream_name":"stdout","time":20.735177868,"data":"   - Ghost cells: 3\n"}
-,{"stream_name":"stdout","time":20.735181411,"data":"   - Compute Capability: (6, 0)\n"}
-,{"stream_name":"stdout","time":20.735184881,"data":"   - CUDA streams: Enabled\n"}
-,{"stream_name":"stdout","time":20.735188358,"data":"   - GPU memory allocated: 0.00 MB\n"}
-,{"stream_name":"stdout","time":20.735191844,"data":"  - Preparing GPU topology for network coupling...\n"}
-,{"stream_name":"stdout","time":20.735195396,"data":"    - GPU topology prepared and transferred.\n"}
-,{"stream_name":"stdout","time":20.735198971,"data":"=============================== warnings summary ===============================\n"}
-,{"stream_name":"stdout","time":20.735202612,"data":"tests/test_gpu_only_integration.py: 10 warnings\n"}
-,{"stream_name":"stdout","time":20.735206173,"data":"  /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stdout","time":20.735213242,"data":"    warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stdout","time":20.735215922,"data":"\n"}
-,{"stream_name":"stdout","time":20.73521817,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
-,{"stream_name":"stdout","time":20.735221524,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
-,{"stream_name":"stdout","time":20.735226962,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
-,{"stream_name":"stdout","time":20.735231022,"data":"  /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stdout","time":20.73523605,"data":"    warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stdout","time":20.735240187,"data":"\n"}
-,{"stream_name":"stdout","time":20.735244571,"data":"-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n"}
-,{"stream_name":"stdout","time":20.735248328,"data":"=========================== short test summary info ============================\n"}
-,{"stream_name":"stdout","time":20.73525203,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
-,{"stream_name":"stdout","time":20.735255725000002,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop\n"}
-,{"stream_name":"stdout","time":20.735259363,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_mass_conservation_gpu\n"}
-,{"stream_name":"stdout","time":20.735262996,"data":"============= 3 failed, 17 passed, 1 skipped, 13 warnings in 8.46s =============\n"}
-,{"stream_name":"stdout","time":21.28086064,"data":"[WARNING] Target execution returned code: 1\n"}
-,{"stream_name":"stdout","time":21.28090482,"data":"\n"}
-,{"stream_name":"stdout","time":21.280910377,"data":"[STEP 4/4] Cleanup...\n"}
-,{"stream_name":"stdout","time":21.28096973,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
-,{"stream_name":"stdout","time":21.290205861,"data":"[OK] Repository cleaned up.\n"}
-,{"stream_name":"stdout","time":21.290301187,"data":"\n"}
-,{"stream_name":"stdout","time":21.290315607,"data":"[FINAL] Test workflow completed\n"}
-,{"stream_name":"stdout","time":21.290392168,"data":"\n"}
-,{"stream_name":"stdout","time":21.2904007,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":21.290417867,"data":"EXECUTION COMPLETED\n"}
-,{"stream_name":"stdout","time":21.290423409,"data":"Check /kaggle/working/test_log.txt for details.\n"}
-,{"stream_name":"stdout","time":21.290427316,"data":"================================================================================\n"}
-,{"stream_name":"stderr","time":24.985274645,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
-,{"stream_name":"stderr","time":24.98532283,"data":"  warn(\n"}
-,{"stream_name":"stderr","time":25.024555962,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
-,{"stream_name":"stderr","time":26.109422034,"data":"[NbConvertApp] Writing 298633 bytes to __results__.html\n"}
+[{"stream_name":"stdout","time":0.504618806,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.504675296,"data":"GENERIC_TEST_TESTS\n"}
+,{"stream_name":"stdout","time":0.504681432,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.504686031,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.504794846,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":0.504847651,"data":"Target: arz_model/tests/\n"}
+,{"stream_name":"stdout","time":5.103469763,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.103556673,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.1507156179999996,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.171361831,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.17139415,"data":"\n"}
+,{"stream_name":"stdout","time":5.17139897,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.171580056,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":6.037774544,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":6.037810146,"data":"\n"}
+,{"stream_name":"stdout","time":6.037819793,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":6.037906502,"data":"Installing pytest...\n"}
+,{"stream_name":"stdout","time":9.898044561,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":9.898080093,"data":"\n"}
+,{"stream_name":"stdout","time":9.898084985,"data":"[STEP 3/4] Running Target...\n"}
+,{"stream_name":"stdout","time":9.898088727,"data":"Target is a directory. Executing pytest...\n"}
+,{"stream_name":"stdout","time":9.898092683,"data":"Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests\n"}
+,{"stream_name":"stdout","time":11.533863004,"data":"============================= test session starts ==============================\n"}
+,{"stream_name":"stdout","time":11.533891816,"data":"platform linux -- Python 3.11.13, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3\n"}
+,{"stream_name":"stdout","time":11.533897968,"data":"cachedir: .pytest_cache\n"}
+,{"stream_name":"stdout","time":11.53390247,"data":"rootdir: /kaggle/working/Code-traffic-flow/arz_model\n"}
+,{"stream_name":"stdout","time":11.533906961,"data":"configfile: pytest.ini\n"}
+,{"stream_name":"stdout","time":11.533910606,"data":"plugins: anyio-4.11.0, typeguard-4.4.4, langsmith-0.4.8\n"}
+,{"stream_name":"stdout","time":16.197046407,"data":"collecting ... collected 21 items\n"}
+,{"stream_name":"stdout","time":16.197078313,"data":"\n"}
+,{"stream_name":"stdout","time":16.329925156,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_state_initialization_full_array PASSED [  4%]\n"}
+,{"stream_name":"stdout","time":16.33473773,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_state_initialization_physical_only PASSED [  9%]\n"}
+,{"stream_name":"stdout","time":16.337526937,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_invalid_initialization PASSED [ 14%]\n"}
+,{"stream_name":"stdout","time":16.339772421,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_segment_state_access PASSED [ 19%]\n"}
+,{"stream_name":"stdout","time":16.342221174,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_road_quality_access PASSED [ 23%]\n"}
+,{"stream_name":"stdout","time":16.345355711,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_stream_access PASSED [ 28%]\n"}
+,{"stream_name":"stdout","time":16.348175805,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_synchronous_checkpoint PASSED [ 33%]\n"}
+,{"stream_name":"stdout","time":16.352018506,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_asynchronous_checkpoint PASSED [ 38%]\n"}
+,{"stream_name":"stdout","time":16.355917413,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_checkpoint_invalid_segment PASSED [ 42%]\n"}
+,{"stream_name":"stdout","time":16.358281174,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolStreams::test_stream_synchronization PASSED [ 47%]\n"}
+,{"stream_name":"stdout","time":16.360418825,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolStreams::test_no_streams_synchronization PASSED [ 52%]\n"}
+,{"stream_name":"stdout","time":16.362480143,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolMonitoring::test_memory_statistics PASSED [ 57%]\n"}
+,{"stream_name":"stdout","time":16.364637028,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolMonitoring::test_string_representation PASSED [ 61%]\n"}
+,{"stream_name":"stdout","time":16.366773924,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCleanup::test_explicit_cleanup PASSED [ 66%]\n"}
+,{"stream_name":"stdout","time":16.368913916,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCleanup::test_destructor_cleanup PASSED [ 71%]\n"}
+,{"stream_name":"stdout","time":16.3730861,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolIntegration::test_multi_segment_workflow PASSED [ 76%]\n"}
+,{"stream_name":"stdout","time":16.376225016,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolIntegration::test_memory_persistence PASSED [ 80%]\n"}
+,{"stream_name":"stdout","time":19.760824753,"data":"arz_model/tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu FAILED [ 85%]\n"}
+,{"stream_name":"stdout","time":19.76180084,"data":"arz_model/tests/test_gpu_only_integration.py::test_gpu_required_error SKIPPED [ 90%]\n"}
+,{"stream_name":"stdout","time":19.805621652,"data":"arz_model/tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop FAILED [ 95%]\n"}
+,{"stream_name":"stdout","time":19.848380306,"data":"arz_model/tests/test_gpu_only_integration.py::test_mass_conservation_gpu FAILED [100%]\n"}
+,{"stream_name":"stdout","time":19.848397516,"data":"\n"}
+,{"stream_name":"stdout","time":19.848400823,"data":"=================================== FAILURES ===================================\n"}
+,{"stream_name":"stdout","time":19.848404407,"data":"____________________ test_simulation_runs_end_to_end_on_gpu ____________________\n"}
+,{"stream_name":"stdout","time":19.848408468,"data":"\n"}
+,{"stream_name":"stdout","time":19.848412767,"data":"    def test_simulation_runs_end_to_end_on_gpu():\n"}
+,{"stream_name":"stdout","time":19.848417331,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848421713,"data":"        Tests that a simple simulation can run from start to finish on the GPU.\n"}
+,{"stream_name":"stdout","time":19.848426391,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848430634,"data":"        print(\"Running test: test_simulation_runs_end_to_end_on_gpu\")\n"}
+,{"stream_name":"stdout","time":19.84843492,"data":"        try:\n"}
+,{"stream_name":"stdout","time":19.848457554,"data":"            config = create_test_config()\n"}
+,{"stream_name":"stdout","time":19.848473583,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
+,{"stream_name":"stdout","time":19.848477317,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
+,{"stream_name":"stdout","time":19.848481399,"data":"\u003e           results = runner.run()\n"}
+,{"stream_name":"stdout","time":19.848485046,"data":"                      ^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.848487526,"data":"\n"}
+,{"stream_name":"stdout","time":19.848489806,"data":"arz_model/tests/test_gpu_only_integration.py:89: \n"}
+,{"stream_name":"stdout","time":19.848492219,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":19.848494662,"data":"arz_model/simulation/runner.py:745: in run\n"}
+,{"stream_name":"stdout","time":19.848497101,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
+,{"stream_name":"stdout","time":19.848499852,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.848502426,"data":"arz_model/simulation/execution/network_simulator.py:185: in run\n"}
+,{"stream_name":"stdout","time":19.848504859,"data":"    self.network_coupling.apply_coupling(self.config.physics)\n"}
+,{"stream_name":"stdout","time":19.848507356,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":19.848509818,"data":"\n"}
+,{"stream_name":"stdout","time":19.848512144,"data":"self = \u003carz_model.numerics.gpu.network_coupling_gpu.NetworkCouplingGPU object at 0x7d862dcca410\u003e\n"}
+,{"stream_name":"stdout","time":19.84851478,"data":"params = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
+,{"stream_name":"stdout","time":19.848517379,"data":"\n"}
+,{"stream_name":"stdout","time":19.848519649,"data":"    def apply_coupling(self, params: PhysicsConfig):\n"}
+,{"stream_name":"stdout","time":19.848522073,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848524456,"data":"        Executes the network coupling kernel on the GPU.\n"}
+,{"stream_name":"stdout","time":19.848526933,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848529296,"data":"        if self.num_nodes == 0:\n"}
+,{"stream_name":"stdout","time":19.848531675,"data":"            return\n"}
+,{"stream_name":"stdout","time":19.848534019,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848536428,"data":"        # Get the pool of all segment device arrays\n"}
+,{"stream_name":"stdout","time":19.848538895,"data":"\u003e       d_all_segments_pool = self.gpu_pool.get_all_segment_states_list()\n"}
+,{"stream_name":"stdout","time":19.848541398,"data":"                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.848543911,"data":"E       AttributeError: 'GPUMemoryPool' object has no attribute 'get_all_segment_states_list'\n"}
+,{"stream_name":"stdout","time":19.848546476,"data":"\n"}
+,{"stream_name":"stdout","time":19.848548756,"data":"arz_model/numerics/gpu/network_coupling_gpu.py:127: AttributeError\n"}
+,{"stream_name":"stdout","time":19.848551191,"data":"\n"}
+,{"stream_name":"stdout","time":19.848553464,"data":"During handling of the above exception, another exception occurred:\n"}
+,{"stream_name":"stdout","time":19.848555903,"data":"\n"}
+,{"stream_name":"stdout","time":19.848558207,"data":"    def test_simulation_runs_end_to_end_on_gpu():\n"}
+,{"stream_name":"stdout","time":19.848561396,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848567218,"data":"        Tests that a simple simulation can run from start to finish on the GPU.\n"}
+,{"stream_name":"stdout","time":19.848569926,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848572269,"data":"        print(\"Running test: test_simulation_runs_end_to_end_on_gpu\")\n"}
+,{"stream_name":"stdout","time":19.848574798,"data":"        try:\n"}
+,{"stream_name":"stdout","time":19.848577166,"data":"            config = create_test_config()\n"}
+,{"stream_name":"stdout","time":19.848579579,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
+,{"stream_name":"stdout","time":19.848582029,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
+,{"stream_name":"stdout","time":19.848584528,"data":"            results = runner.run()\n"}
+,{"stream_name":"stdout","time":19.848586946,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848589252,"data":"            # Verify results structure\n"}
+,{"stream_name":"stdout","time":19.848591628,"data":"            assert \"final_time\" in results\n"}
+,{"stream_name":"stdout","time":19.848594121,"data":"            assert \"total_steps\" in results\n"}
+,{"stream_name":"stdout","time":19.848596561,"data":"            assert \"final_states\" in results\n"}
+,{"stream_name":"stdout","time":19.848599013,"data":"            assert \"seg-1\" in results[\"final_states\"]\n"}
+,{"stream_name":"stdout","time":19.848601528,"data":"            assert \"seg-2\" in results[\"final_states\"]\n"}
+,{"stream_name":"stdout","time":19.848604004,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848606329,"data":"            # Verify state array shape\n"}
+,{"stream_name":"stdout","time":19.848608698,"data":"            final_state_seg1 = results[\"final_states\"][\"seg-1\"]\n"}
+,{"stream_name":"stdout","time":19.848611286,"data":"            expected_shape = (4, config.segments[0].N + 2 * config.grid.num_ghost_cells)\n"}
+,{"stream_name":"stdout","time":19.848613801,"data":"            assert final_state_seg1.shape == expected_shape, f\"Expected shape {expected_shape}, but got {final_state_seg1.shape}\"\n"}
+,{"stream_name":"stdout","time":19.848616402,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848618704,"data":"            print(\"✅ Test passed. Simulation ran end-to-end and produced valid results.\")\n"}
+,{"stream_name":"stdout","time":19.848622078,"data":"        except Exception as e:\n"}
+,{"stream_name":"stdout","time":19.848624538,"data":"\u003e           pytest.fail(f\"End-to-end GPU simulation test failed with an exception: {e}\", pytrace=True)\n"}
+,{"stream_name":"stdout","time":19.848627194,"data":"E           Failed: End-to-end GPU simulation test failed with an exception: 'GPUMemoryPool' object has no attribute 'get_all_segment_states_list'\n"}
+,{"stream_name":"stdout","time":19.848629809,"data":"\n"}
+,{"stream_name":"stdout","time":19.848632114,"data":"arz_model/tests/test_gpu_only_integration.py:105: Failed\n"}
+,{"stream_name":"stdout","time":19.848634629,"data":"----------------------------- Captured stdout call -----------------------------\n"}
+,{"stream_name":"stdout","time":19.848637086,"data":"Running test: test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":19.848639505,"data":"Finalizing network structure and validating topology...\n"}
+,{"stream_name":"stdout","time":19.848641922,"data":"✅ Network topology is valid.\n"}
+,{"stream_name":"stdout","time":19.848644348,"data":"✅ GPUMemoryPool initialized:\n"}
+,{"stream_name":"stdout","time":19.848646761,"data":"   - Segments: 2\n"}
+,{"stream_name":"stdout","time":19.848651863,"data":"   - Total cells: 150\n"}
+,{"stream_name":"stdout","time":19.848654352,"data":"   - Ghost cells: 3\n"}
+,{"stream_name":"stdout","time":19.848656708,"data":"   - Compute Capability: (6, 0)\n"}
+,{"stream_name":"stdout","time":19.848659089999998,"data":"   - CUDA streams: Enabled\n"}
+,{"stream_name":"stdout","time":19.848661448,"data":"   - GPU memory allocated: 0.00 MB\n"}
+,{"stream_name":"stdout","time":19.848663894,"data":"  - Preparing GPU topology for network coupling...\n"}
+,{"stream_name":"stdout","time":19.848666334,"data":"    - GPU topology prepared and transferred.\n"}
+,{"stream_name":"stdout","time":19.848669037,"data":"________________________ test_no_cpu_transfers_in_loop _________________________\n"}
+,{"stream_name":"stdout","time":19.848671558,"data":"\n"}
+,{"stream_name":"stdout","time":19.848673866,"data":"    def test_no_cpu_transfers_in_loop():\n"}
+,{"stream_name":"stdout","time":19.848676291,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848678685,"data":"        Hooks into CUDA transfer functions to verify that no transfers occur\n"}
+,{"stream_name":"stdout","time":19.848681151,"data":"        during the main simulation loop.\n"}
+,{"stream_name":"stdout","time":19.848683552,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848685929,"data":"        print(\"Running test: test_no_cpu_transfers_in_loop\")\n"}
+,{"stream_name":"stdout","time":19.848688429,"data":"    \n"}
+,{"stream_name":"stdout","time":19.84869072,"data":"        transfer_log = []\n"}
+,{"stream_name":"stdout","time":19.848693089,"data":"        original_to_device = cuda.to_device\n"}
+,{"stream_name":"stdout","time":19.848695491,"data":"        original_copy_to_host = cuda.devicearray.DeviceNDArray.copy_to_host\n"}
+,{"stream_name":"stdout","time":19.848697968,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848700296,"data":"        def tracked_to_device(obj, *args, **kwargs):\n"}
+,{"stream_name":"stdout","time":19.848702711,"data":"            transfer_log.append(f\"to_device: {type(obj)}\")\n"}
+,{"stream_name":"stdout","time":19.848705184,"data":"            return original_to_device(obj, *args, **kwargs)\n"}
+,{"stream_name":"stdout","time":19.848707626,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848709924,"data":"        def tracked_copy_to_host(self, *args, **kwargs):\n"}
+,{"stream_name":"stdout","time":19.848712336,"data":"            transfer_log.append(f\"copy_to_host: shape={self.shape}\")\n"}
+,{"stream_name":"stdout","time":19.848714839,"data":"            return original_copy_to_host(self, *args, **kwargs)\n"}
+,{"stream_name":"stdout","time":19.848717273,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848719598,"data":"        try:\n"}
+,{"stream_name":"stdout","time":19.848721957,"data":"            config = create_test_config()\n"}
+,{"stream_name":"stdout","time":19.848724465,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848726763,"data":"            cuda.to_device = tracked_to_device\n"}
+,{"stream_name":"stdout","time":19.848729164,"data":"            cuda.devicearray.DeviceNDArray.copy_to_host = tracked_copy_to_host\n"}
+,{"stream_name":"stdout","time":19.848731639,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848733933,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
+,{"stream_name":"stdout","time":19.848736374,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
+,{"stream_name":"stdout","time":19.848738874,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848741204,"data":"            # Test 1: Check transfers during the main `run()` method\n"}
+,{"stream_name":"stdout","time":19.848746659,"data":"            transfer_log.clear()\n"}
+,{"stream_name":"stdout","time":19.848749253,"data":"\u003e           runner.run()\n"}
+,{"stream_name":"stdout","time":19.848751659,"data":"\n"}
+,{"stream_name":"stdout","time":19.848753934,"data":"arz_model/tests/test_gpu_only_integration.py:152: \n"}
+,{"stream_name":"stdout","time":19.848756341,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":19.848758797,"data":"arz_model/simulation/runner.py:745: in run\n"}
+,{"stream_name":"stdout","time":19.848761184,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
+,{"stream_name":"stdout","time":19.848763601,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.848766013,"data":"arz_model/simulation/execution/network_simulator.py:185: in run\n"}
+,{"stream_name":"stdout","time":19.848768456,"data":"    self.network_coupling.apply_coupling(self.config.physics)\n"}
+,{"stream_name":"stdout","time":19.848770887,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":19.848773344,"data":"\n"}
+,{"stream_name":"stdout","time":19.848775674,"data":"self = \u003carz_model.numerics.gpu.network_coupling_gpu.NetworkCouplingGPU object at 0x7d86264b6410\u003e\n"}
+,{"stream_name":"stdout","time":19.848778305,"data":"params = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
+,{"stream_name":"stdout","time":19.848780799,"data":"\n"}
+,{"stream_name":"stdout","time":19.848783076,"data":"    def apply_coupling(self, params: PhysicsConfig):\n"}
+,{"stream_name":"stdout","time":19.848785504,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848788282,"data":"        Executes the network coupling kernel on the GPU.\n"}
+,{"stream_name":"stdout","time":19.848790744,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848793079,"data":"        if self.num_nodes == 0:\n"}
+,{"stream_name":"stdout","time":19.848795459,"data":"            return\n"}
+,{"stream_name":"stdout","time":19.848797808,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848800128,"data":"        # Get the pool of all segment device arrays\n"}
+,{"stream_name":"stdout","time":19.84880258,"data":"\u003e       d_all_segments_pool = self.gpu_pool.get_all_segment_states_list()\n"}
+,{"stream_name":"stdout","time":19.848805086,"data":"                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.848807581,"data":"E       AttributeError: 'GPUMemoryPool' object has no attribute 'get_all_segment_states_list'\n"}
+,{"stream_name":"stdout","time":19.848810071,"data":"\n"}
+,{"stream_name":"stdout","time":19.84881242,"data":"arz_model/numerics/gpu/network_coupling_gpu.py:127: AttributeError\n"}
+,{"stream_name":"stdout","time":19.848814868,"data":"----------------------------- Captured stdout call -----------------------------\n"}
+,{"stream_name":"stdout","time":19.84881735,"data":"Running test: test_no_cpu_transfers_in_loop\n"}
+,{"stream_name":"stdout","time":19.848819774,"data":"Finalizing network structure and validating topology...\n"}
+,{"stream_name":"stdout","time":19.848822226,"data":"✅ Network topology is valid.\n"}
+,{"stream_name":"stdout","time":19.848827223,"data":"✅ GPUMemoryPool initialized:\n"}
+,{"stream_name":"stdout","time":19.848829719,"data":"   - Segments: 2\n"}
+,{"stream_name":"stdout","time":19.848834653,"data":"   - Total cells: 150\n"}
+,{"stream_name":"stdout","time":19.848837134,"data":"   - Ghost cells: 3\n"}
+,{"stream_name":"stdout","time":19.848839467,"data":"   - Compute Capability: (6, 0)\n"}
+,{"stream_name":"stdout","time":19.848841829,"data":"   - CUDA streams: Enabled\n"}
+,{"stream_name":"stdout","time":19.848844203,"data":"   - GPU memory allocated: 0.00 MB\n"}
+,{"stream_name":"stdout","time":19.848846594,"data":"  - Preparing GPU topology for network coupling...\n"}
+,{"stream_name":"stdout","time":19.848849004,"data":"    - GPU topology prepared and transferred.\n"}
+,{"stream_name":"stdout","time":19.848851433,"data":"__________________________ test_mass_conservation_gpu __________________________\n"}
+,{"stream_name":"stdout","time":19.848853883,"data":"\n"}
+,{"stream_name":"stdout","time":19.848856178,"data":"    def test_mass_conservation_gpu():\n"}
+,{"stream_name":"stdout","time":19.848858562,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848869278,"data":"        Verifies that the total mass (rho) in the system is conserved on the GPU\n"}
+,{"stream_name":"stdout","time":19.848871941,"data":"        when using reflective boundary conditions.\n"}
+,{"stream_name":"stdout","time":19.848874366,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.848876699,"data":"        print(\"Running test: test_mass_conservation_gpu\")\n"}
+,{"stream_name":"stdout","time":19.848879209,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848881573,"data":"        config = create_test_config()\n"}
+,{"stream_name":"stdout","time":19.84888396,"data":"        # Use reflective \"wall\" boundary conditions to ensure mass is conserved\n"}
+,{"stream_name":"stdout","time":19.848886518,"data":"        config.segments[0].boundary_conditions.left = ReflectiveBC()\n"}
+,{"stream_name":"stdout","time":19.84888898,"data":"        config.segments[1].boundary_conditions.right = ReflectiveBC()\n"}
+,{"stream_name":"stdout","time":19.848891529,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848893817,"data":"        network_grid = NetworkGrid.from_config(config)\n"}
+,{"stream_name":"stdout","time":19.848896241,"data":"    \n"}
+,{"stream_name":"stdout","time":19.848898539,"data":"        # Calculate initial mass from the config\n"}
+,{"stream_name":"stdout","time":19.848901017,"data":"        initial_mass = 0.0\n"}
+,{"stream_name":"stdout","time":19.848903391,"data":"        for seg_config in config.segments:\n"}
+,{"stream_name":"stdout","time":19.84890588,"data":"            segment = network_grid.segments[seg_config.id]\n"}
+,{"stream_name":"stdout","time":19.84890829,"data":"            ic_config = seg_config.initial_conditions.config\n"}
+,{"stream_name":"stdout","time":19.848910756,"data":"            if isinstance(ic_config, UniformIC):\n"}
+,{"stream_name":"stdout","time":19.84891314,"data":"                # Mass = density * length\n"}
+,{"stream_name":"stdout","time":19.848915574,"data":"                initial_mass += ic_config.density * (segment['grid'].xmax - segment['grid'].xmin)\n"}
+,{"stream_name":"stdout","time":19.848918093,"data":"    \n"}
+,{"stream_name":"stdout","time":20.299743374,"data":"        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
+,{"stream_name":"stdout","time":20.299777266,"data":"\u003e       results = runner.run()\n"}
+,{"stream_name":"stdout","time":20.299783298,"data":"                  ^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":20.299787505,"data":"\n"}
+,{"stream_name":"stdout","time":20.299791674,"data":"arz_model/tests/test_gpu_only_integration.py:196: \n"}
+,{"stream_name":"stdout","time":20.299815331,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":20.299819883,"data":"arz_model/simulation/runner.py:745: in run\n"}
+,{"stream_name":"stdout","time":20.299823606,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
+,{"stream_name":"stdout","time":20.299827414,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":20.299831638,"data":"arz_model/simulation/execution/network_simulator.py:185: in run\n"}
+,{"stream_name":"stdout","time":20.299836293,"data":"    self.network_coupling.apply_coupling(self.config.physics)\n"}
+,{"stream_name":"stdout","time":20.299840496,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":20.299845605,"data":"\n"}
+,{"stream_name":"stdout","time":20.299849887,"data":"self = \u003carz_model.numerics.gpu.network_coupling_gpu.NetworkCouplingGPU object at 0x7d86119c4210\u003e\n"}
+,{"stream_name":"stdout","time":20.299854082,"data":"params = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
+,{"stream_name":"stdout","time":20.299864383,"data":"\n"}
+,{"stream_name":"stdout","time":20.299867897,"data":"    def apply_coupling(self, params: PhysicsConfig):\n"}
+,{"stream_name":"stdout","time":20.299871566,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":20.299875276,"data":"        Executes the network coupling kernel on the GPU.\n"}
+,{"stream_name":"stdout","time":20.299878636,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":20.299881045,"data":"        if self.num_nodes == 0:\n"}
+,{"stream_name":"stdout","time":20.299883496,"data":"            return\n"}
+,{"stream_name":"stdout","time":20.299885871,"data":"    \n"}
+,{"stream_name":"stdout","time":20.299888214,"data":"        # Get the pool of all segment device arrays\n"}
+,{"stream_name":"stdout","time":20.299890676,"data":"\u003e       d_all_segments_pool = self.gpu_pool.get_all_segment_states_list()\n"}
+,{"stream_name":"stdout","time":20.299893362,"data":"                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":20.299896251,"data":"E       AttributeError: 'GPUMemoryPool' object has no attribute 'get_all_segment_states_list'\n"}
+,{"stream_name":"stdout","time":20.299898766,"data":"\n"}
+,{"stream_name":"stdout","time":20.299901065,"data":"arz_model/numerics/gpu/network_coupling_gpu.py:127: AttributeError\n"}
+,{"stream_name":"stdout","time":20.299903549,"data":"----------------------------- Captured stdout call -----------------------------\n"}
+,{"stream_name":"stdout","time":20.299906033,"data":"Running test: test_mass_conservation_gpu\n"}
+,{"stream_name":"stdout","time":20.299908419,"data":"Finalizing network structure and validating topology...\n"}
+,{"stream_name":"stdout","time":20.299910838,"data":"✅ Network topology is valid.\n"}
+,{"stream_name":"stdout","time":20.299915011,"data":"✅ GPUMemoryPool initialized:\n"}
+,{"stream_name":"stdout","time":20.299919179,"data":"   - Segments: 2\n"}
+,{"stream_name":"stdout","time":20.299922781,"data":"   - Total cells: 150\n"}
+,{"stream_name":"stdout","time":20.29992749,"data":"   - Ghost cells: 3\n"}
+,{"stream_name":"stdout","time":20.299931758,"data":"   - Compute Capability: (6, 0)\n"}
+,{"stream_name":"stdout","time":20.299936218,"data":"   - CUDA streams: Enabled\n"}
+,{"stream_name":"stdout","time":20.299940492,"data":"   - GPU memory allocated: 0.00 MB\n"}
+,{"stream_name":"stdout","time":20.299949508,"data":"  - Preparing GPU topology for network coupling...\n"}
+,{"stream_name":"stdout","time":20.299953303,"data":"    - GPU topology prepared and transferred.\n"}
+,{"stream_name":"stdout","time":20.299956926,"data":"=============================== warnings summary ===============================\n"}
+,{"stream_name":"stdout","time":20.299960606,"data":"tests/test_gpu_only_integration.py: 10 warnings\n"}
+,{"stream_name":"stdout","time":20.299966099,"data":"  /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":20.29997177,"data":"    warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":20.299975419,"data":"\n"}
+,{"stream_name":"stdout","time":20.299978904,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":20.299982554,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":20.299986346,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":20.299989753,"data":"  /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":20.299992639,"data":"    warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":20.299995034,"data":"\n"}
+,{"stream_name":"stdout","time":20.299997308000002,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":20.299999781,"data":"  /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 4 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":20.300002584,"data":"    warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":20.300004948,"data":"\n"}
+,{"stream_name":"stdout","time":20.30000766,"data":"-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n"}
+,{"stream_name":"stdout","time":20.300011544,"data":"=========================== short test summary info ============================\n"}
+,{"stream_name":"stdout","time":20.300015788,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":20.300020569,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop\n"}
+,{"stream_name":"stdout","time":20.300025084,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_mass_conservation_gpu\n"}
+,{"stream_name":"stdout","time":20.300029951,"data":"============= 3 failed, 17 passed, 1 skipped, 14 warnings in 8.32s =============\n"}
+,{"stream_name":"stdout","time":20.926944154,"data":"[WARNING] Target execution returned code: 1\n"}
+,{"stream_name":"stdout","time":20.927093909,"data":"\n"}
+,{"stream_name":"stdout","time":20.927102071,"data":"[STEP 4/4] Cleanup...\n"}
+,{"stream_name":"stdout","time":20.927164655,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
+,{"stream_name":"stdout","time":20.93666862,"data":"[OK] Repository cleaned up.\n"}
+,{"stream_name":"stdout","time":20.936691094,"data":"\n"}
+,{"stream_name":"stdout","time":20.936697011,"data":"[FINAL] Test workflow completed\n"}
+,{"stream_name":"stdout","time":20.936824807,"data":"\n"}
+,{"stream_name":"stdout","time":20.936844364,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":20.936848727,"data":"EXECUTION COMPLETED\n"}
+,{"stream_name":"stdout","time":20.936852486,"data":"Check /kaggle/working/test_log.txt for details.\n"}
+,{"stream_name":"stdout","time":20.936856189,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":24.671538676,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":24.671584071,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":24.710891765,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":25.808229668,"data":"[NbConvertApp] Writing 298633 bytes to __results__.html\n"}
 ]
