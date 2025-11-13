@@ -41,6 +41,12 @@ class NetworkSimulator:
         self.t = 0.0
         self.time_step = 0
         
+        # Create simple params wrapper for legacy functions that expect ModelParameters
+        class ParamsWrapper:
+            def __init__(self, config):
+                self.physics = config.physics
+        self.params = ParamsWrapper(config)
+        
         if not self.quiet:
             print("Initializing GPU Network Simulator...")
 
@@ -145,9 +151,9 @@ class NetworkSimulator:
                 # Otherwise, calculate dt based on CFL condition
                 stable_dt = cfl_condition_gpu_native(
                     gpu_pool=self.gpu_pool,
-                    network_segments=self.network.segments,
-                    cfl_factor=self.config.time.cfl_factor,
-                    physics_params=self.config.physics
+                    network=self.network,
+                    params=self.params,
+                    cfl_max=self.config.time.cfl_factor
                 )
             
             # Adjust last step to hit t_final exactly
