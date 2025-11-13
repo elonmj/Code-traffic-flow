@@ -382,3 +382,24 @@
 2025-11-13 19:58:22,232 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-13 19:58:27,586 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-11-13 20:04:20,794 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-13 20:04:21,493 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-13 20:04:21,648 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-13 20:04:21,648 - kernel_manager - INFO -   M  rz_model/presentation_mathematique.aux (Modified (staged))
+2025-11-13 20:04:21,648 - kernel_manager - INFO -    M arz_model/presentation_mathematique.fdb_latexmk (Modified (unstaged))
+2025-11-13 20:04:21,648 - kernel_manager - INFO -    M arz_model/presentation_mathematique.fls (Modified (unstaged))
+2025-11-13 20:04:21,651 - kernel_manager - INFO -    M arz_model/presentation_mathematique.log (Modified (unstaged))
+2025-11-13 20:04:21,651 - kernel_manager - INFO -    M arz_model/presentation_mathematique.nav (Modified (unstaged))
+2025-11-13 20:04:21,651 - kernel_manager - INFO -    M arz_model/presentation_mathematique.out (Modified (unstaged))
+2025-11-13 20:04:21,652 - kernel_manager - INFO -    M arz_model/presentation_mathematique.pdf (Modified (unstaged))
+2025-11-13 20:04:21,652 - kernel_manager - INFO -    M arz_model/presentation_mathematique.synctex.gz (Modified (unstaged))
+2025-11-13 20:04:21,652 - kernel_manager - INFO -    M arz_model/presentation_mathematique.tex (Modified (unstaged))
+2025-11-13 20:04:21,653 - kernel_manager - INFO -    M arz_model/presentation_mathematique.toc (Modified (unstaged))
+2025-11-13 20:04:21,653 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-13 20:04:21,654 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/generic-test-runner-kernel.log (Modified (unstaged))
+2025-11-13 20:04:21,654 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/test_log.txt (Modified (unstaged))
+2025-11-13 20:04:21,655 - kernel_manager - INFO -    M run_simulation_save_npz.py (Modified (unstaged))
+2025-11-13 20:04:21,655 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-13 20:04:21,901 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-13 20:04:23,434 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-13 20:04:23,435 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-13 20:04:34,688 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub

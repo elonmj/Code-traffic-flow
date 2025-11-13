@@ -436,8 +436,23 @@ except Exception as e:
     sys.exit(1)
 
 finally:
-    # ========== STEP 4: CLEANUP ==========
-    log_and_print("info", "\\n[STEP 4/4] Cleanup...")
+    # ========== STEP 4: PERSIST RESULTS & CLEANUP ==========
+    log_and_print("info", "\\n[STEP 4/4] Persisting results and cleaning up...")
+
+    # Move simulation results out of the repo directory before cleanup
+    results_dir_name = "simulation_results"
+    source_results_path = os.path.join(REPO_DIR, results_dir_name)
+    dest_results_path = os.path.join("/kaggle/working/", results_dir_name)
+
+    if os.path.exists(source_results_path):
+        log_and_print("info", f"Found results directory at {{source_results_path}}.")
+        try:
+            if os.path.exists(dest_results_path):
+                shutil.rmtree(dest_results_path) # Clean destination if it exists
+            shutil.move(source_results_path, dest_results_path)
+            log_and_print("info", f"[OK] Moved results to {{dest_results_path}} for persistence.")
+        except Exception as e:
+            log_and_print("error", f"[ERROR] Failed to move results directory: {{e}}")
     
     # Clean up the cloned repository
     if os.path.exists(REPO_DIR):
