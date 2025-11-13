@@ -73,24 +73,24 @@ class NetworkCouplingGPU:
         outgoing_gids_list = []
 
         for i, (node_id, node_data) in enumerate(nodes.items()):
-            # Node type
-            if node_data['type'] == 'boundary':
+            # Node type - node_data is a Node object, not a dict
+            if node_data.node_type == 'boundary':
                 # Check if it's an inflow or outflow boundary
-                if node_data.get('incoming_segments'): # Outflow node
+                if node_data.incoming_segments: # Outflow node
                     h_node_types[i] = NODE_TYPE_BOUNDARY_OUTFLOW
                 else: # Inflow node
                     h_node_types[i] = NODE_TYPE_BOUNDARY_INFLOW
             else: # junction, signalized, etc.
                 h_node_types[i] = NODE_TYPE_JUNCTION
 
-            # Incoming segments
-            inc_segs = node_data.get('incoming_segments', [])
+            # Incoming segments - accessing attribute, not dict key
+            inc_segs = node_data.incoming_segments if node_data.incoming_segments else []
             h_node_incoming_offsets[i+1] = h_node_incoming_offsets[i] + len(inc_segs)
             for seg_id in inc_segs:
                 incoming_gids_list.append(seg_id_to_idx[seg_id])
 
-            # Outgoing segments
-            out_segs = node_data.get('outgoing_segments', [])
+            # Outgoing segments - accessing attribute, not dict key
+            out_segs = node_data.outgoing_segments if node_data.outgoing_segments else []
             h_node_outgoing_offsets[i+1] = h_node_outgoing_offsets[i] + len(out_segs)
             for seg_id in out_segs:
                 outgoing_gids_list.append(seg_id_to_idx[seg_id])
