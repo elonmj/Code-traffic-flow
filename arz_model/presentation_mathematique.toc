@@ -1,4 +1,4 @@
 \beamer@sectionintoc {1}{Introduction : Le Problème}{2}{0}{1}
-\beamer@sectionintoc {2}{Le Modèle Mathématique (ARZ)}{6}{0}{2}
-\beamer@sectionintoc {3}{La Chaîne de Résolution Numérique}{14}{0}{3}
-\beamer@sectionintoc {4}{Synthèse et Conclusion}{25}{0}{4}
+\beamer@sectionintoc {2}{Le Modèle Mathématique (ARZ)}{4}{0}{2}
+\beamer@sectionintoc {3}{La Chaîne de Résolution Numérique}{10}{0}{3}
+\beamer@sectionintoc {4}{Synthèse et Conclusion}{19}{0}{4}

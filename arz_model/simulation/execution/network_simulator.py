@@ -148,7 +148,7 @@ class NetworkSimulator:
                 stable_dt = cfl_condition_gpu_native(
                     gpu_pool=self.gpu_pool,
                     network=self.network,
-                    params=self.params,
+                    params=self.config.physics,
                     cfl_max=self.config.time.cfl_factor
                 )
             

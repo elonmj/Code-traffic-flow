@@ -17,7 +17,7 @@ TPB_REDUCE = 256 # Threads per block for reduction kernel
 @cuda.jit
 def _calculate_max_wavespeed_kernel(d_U, n_ghost, n_phys,
                                     # Physics parameters needed for eigenvalues
-                                    alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c,
+                                    alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c,
                                     dx,
                                     # Output array (size 1) for the global max
                                     d_max_ratio_out):
@@ -52,14 +52,14 @@ def _calculate_max_wavespeed_kernel(d_U, n_ghost, n_phys,
 
         # 2. Calculate intermediate values using device functions
         p_m, p_c = _calculate_pressure_cuda(rho_m_calc, rho_c_calc,
-                                            alpha, rho_jam, epsilon,
+                                            alpha, rho_max, epsilon,
                                             K_m, gamma_m, K_c, gamma_c)
         v_m, v_c = _calculate_physical_velocity_cuda(w_m, w_c, p_m, p_c)
 
         # 3. Calculate eigenvalues using device function
         lambda1, lambda2, lambda3, lambda4 = _calculate_eigenvalues_cuda(
             rho_m_calc, v_m, rho_c_calc, v_c,
-            alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c
+            alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c
         )
 
         # 4. Find max absolute eigenvalue for this cell

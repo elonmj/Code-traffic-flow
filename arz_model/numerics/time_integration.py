@@ -26,7 +26,7 @@ from ..core.parameters import ModelParameters
 
 @cuda.jit
 def _apply_bounds_kernel(U, N_physical, num_ghost, rho_max, v_max, epsilon,
-                         alpha, rho_jam, K_m, gamma_m, K_c, gamma_c):
+                         alpha, K_m, gamma_m, K_c, gamma_c):
     """
     GPU kernel for applying physical bounds to state variables.
     
@@ -52,7 +52,7 @@ def _apply_bounds_kernel(U, N_physical, num_ghost, rho_max, v_max, epsilon,
         if rho_m > epsilon:
             # Simplified pressure calculation (inline to avoid device function issues)
             rho_total = rho_m + rho_c
-            pressure_factor = (rho_total / rho_jam) ** gamma_m if rho_total > epsilon else 0.0
+            pressure_factor = (rho_total / rho_max) ** gamma_m if rho_total > epsilon else 0.0
             p_m = K_m * pressure_factor
             
             v_m = w_m - p_m
@@ -64,7 +64,7 @@ def _apply_bounds_kernel(U, N_physical, num_ghost, rho_max, v_max, epsilon,
         # 3. Same for cars
         if rho_c > epsilon:
             rho_total = rho_m + rho_c
-            pressure_factor = (rho_total / rho_jam) ** gamma_c if rho_total > epsilon else 0.0
+            pressure_factor = (rho_total / rho_max) ** gamma_c if rho_total > epsilon else 0.0
             p_c = K_c * pressure_factor
             
             v_c = w_c - p_c
@@ -80,33 +80,32 @@ def _apply_bounds_kernel(U, N_physical, num_ghost, rho_max, v_max, epsilon,
         U[3, j] = w_c
 
 
-def apply_physical_state_bounds_gpu(d_U: cuda.devicearray.DeviceNDArray, grid: Grid1D, 
-                                    params: 'PhysicsConfig', rho_max: float = 1.0, 
-                                    v_max: float = 50.0) -> cuda.devicearray.DeviceNDArray:
+def _apply_physical_bounds_gpu_in_place(d_U: cuda.devicearray.DeviceNDArray, grid: Grid1D, 
+                                           params: 'PhysicsConfig', stream: cuda.cudadrv.driver.Stream):
     """
-    GPU version of apply_physical_state_bounds.
-    
-    Enforces physical bounds on GPU without CPU transfer.
-    
-    Args:
-        d_U: Numba device array (4, N_total) on GPU
-        grid: Grid object
-        params: Model parameters
-        rho_max: Maximum density (veh/m)
-        v_max: Maximum velocity (m/s)
-        
-    Returns:
-        Numba device array with bounds applied (same object, modified in-place)
+    Applies physical bounds to a state array on the GPU, modifying it in-place.
+    This is a helper to be called from within other GPU-orchestrating functions.
     """
-    threadsperblock = 256
-    blockspergrid = math.ceil(grid.N_physical / threadsperblock)
+    threads_per_block = 256
+    blocks_per_grid = math.ceil(grid.N_physical / threads_per_block)
     
-    _apply_bounds_kernel[blockspergrid, threadsperblock](
-        d_U, grid.N_physical, grid.num_ghost_cells, rho_max, v_max, params.physics.epsilon,
-        params.physics.alpha, params.physics.rho_jam, params.physics.k_m, params.physics.gamma_m, params.physics.k_c, params.physics.gamma_c
+    # Max velocity is not directly in params, needs conversion if units are km/h
+    # Assuming v_max is provided in m/s or calculated before calling
+    v_max_physical = 50.0 # m/s, equivalent to 180 km/h. TODO: Get from config.
+
+    _apply_bounds_kernel[blocks_per_grid, threads_per_block, stream](
+        d_U, 
+        grid.N_physical, 
+        grid.num_ghost_cells, 
+        params.rho_max, 
+        v_max_physical, 
+        params.epsilon,
+        params.alpha, 
+        params.k_m, 
+        params.gamma_m, 
+        params.k_c, 
+        params.gamma_c
     )
-    
-    return d_U
 
 
 def apply_physical_state_bounds(U: np.ndarray, grid: Grid1D, params: ModelParameters, rho_max: float = 1.0, v_max: float = 50.0) -> np.ndarray:
