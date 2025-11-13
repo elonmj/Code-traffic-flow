@@ -101,8 +101,8 @@ class NetworkCouplingGPU:
         # Segment info arrays
         num_segments = len(segments)
         h_segment_gids = np.array([seg_id_to_idx[seg_id] for seg_id in segments.keys()], dtype=np.int32)
-        h_segment_n_phys = np.array([seg['grid'].N for seg in segments.values()], dtype=np.int32)
-        h_segment_n_ghost = np.array([seg['grid'].n_ghost for seg in segments.values()], dtype=np.int32)
+        h_segment_n_phys = np.array([seg['grid'].N_physical for seg in segments.values()], dtype=np.int32)
+        h_segment_n_ghost = np.array([seg['grid'].num_ghost_cells for seg in segments.values()], dtype=np.int32)
 
         # --- Transfer to GPU ---
         self.d_node_types = cuda.to_device(h_node_types)
