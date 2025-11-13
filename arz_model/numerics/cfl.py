@@ -208,7 +208,9 @@ def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', 
     """
     # Create a single-element device array to store the global maximum of (lambda / dx)
     d_global_max_ratio = cuda.to_device(np.array([0.0], dtype=np.float64))
-    phys_params = params.physics
+    
+    # params is already the PhysicsConfig object, no need for .physics accessor
+    phys_params = params
 
     for seg_id in gpu_pool.segment_ids:
         d_U = gpu_pool.get_segment_state(seg_id)
