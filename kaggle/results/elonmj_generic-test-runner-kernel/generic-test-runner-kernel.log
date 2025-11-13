@@ -1,388 +1,390 @@
-[{"stream_name":"stdout","time":0.471612885,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.471661661,"data":"GENERIC_TEST_TESTS\n"}
-,{"stream_name":"stdout","time":0.471668106,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.471719941,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
-,{"stream_name":"stdout","time":0.471933266,"data":"Branch: main\n"}
-,{"stream_name":"stdout","time":0.471986862,"data":"Target: arz_model/tests/\n"}
-,{"stream_name":"stdout","time":5.78113027,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
-,{"stream_name":"stdout","time":5.781171138,"data":"PyTorch: 2.6.0+cu124\n"}
-,{"stream_name":"stdout","time":5.842691054,"data":"CUDA available: True\n"}
-,{"stream_name":"stdout","time":5.864570615,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
-,{"stream_name":"stdout","time":5.864614382,"data":"\n"}
-,{"stream_name":"stdout","time":5.864624693,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
-,{"stream_name":"stdout","time":5.864815024,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
-,{"stream_name":"stdout","time":6.678387762,"data":"[OK] Repository cloned successfully\n"}
-,{"stream_name":"stdout","time":6.678424362,"data":"\n"}
-,{"stream_name":"stdout","time":6.678429574,"data":"[STEP 2/4] Installing dependencies...\n"}
-,{"stream_name":"stdout","time":6.678534802,"data":"Installing pytest...\n"}
-,{"stream_name":"stdout","time":10.721054467,"data":"[OK] Dependencies installed\n"}
-,{"stream_name":"stdout","time":10.721106935,"data":"\n"}
-,{"stream_name":"stdout","time":10.721112739,"data":"[STEP 3/4] Running Target...\n"}
-,{"stream_name":"stdout","time":10.721117969,"data":"Target is a directory. Executing pytest...\n"}
-,{"stream_name":"stdout","time":10.721123167,"data":"Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests\n"}
-,{"stream_name":"stdout","time":12.476311761,"data":"============================= test session starts ==============================\n"}
-,{"stream_name":"stdout","time":12.476347249,"data":"platform linux -- Python 3.11.13, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3\n"}
-,{"stream_name":"stdout","time":12.476354685,"data":"cachedir: .pytest_cache\n"}
-,{"stream_name":"stdout","time":12.476359772,"data":"rootdir: /kaggle/working/Code-traffic-flow/arz_model\n"}
-,{"stream_name":"stdout","time":12.476365660999999,"data":"configfile: pytest.ini\n"}
-,{"stream_name":"stdout","time":12.476371329,"data":"plugins: anyio-4.11.0, typeguard-4.4.4, langsmith-0.4.8\n"}
-,{"stream_name":"stdout","time":17.657142902,"data":"collecting ... collected 21 items\n"}
-,{"stream_name":"stdout","time":17.65717444,"data":"\n"}
-,{"stream_name":"stdout","time":17.81179085,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_state_initialization_full_array PASSED [  4%]\n"}
-,{"stream_name":"stdout","time":17.816930124,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_state_initialization_physical_only PASSED [  9%]\n"}
-,{"stream_name":"stdout","time":17.820139282,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_invalid_initialization PASSED [ 14%]\n"}
-,{"stream_name":"stdout","time":17.822457694,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_segment_state_access PASSED [ 19%]\n"}
-,{"stream_name":"stdout","time":17.824818203,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_road_quality_access PASSED [ 23%]\n"}
-,{"stream_name":"stdout","time":17.827966911,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_stream_access PASSED [ 28%]\n"}
-,{"stream_name":"stdout","time":17.830913533,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_synchronous_checkpoint PASSED [ 33%]\n"}
-,{"stream_name":"stdout","time":17.834899889,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_asynchronous_checkpoint PASSED [ 38%]\n"}
-,{"stream_name":"stdout","time":17.838883122,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_checkpoint_invalid_segment PASSED [ 42%]\n"}
-,{"stream_name":"stdout","time":17.841279739,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolStreams::test_stream_synchronization PASSED [ 47%]\n"}
-,{"stream_name":"stdout","time":17.843550136,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolStreams::test_no_streams_synchronization PASSED [ 52%]\n"}
-,{"stream_name":"stdout","time":17.845651757,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolMonitoring::test_memory_statistics PASSED [ 57%]\n"}
-,{"stream_name":"stdout","time":17.847834149,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolMonitoring::test_string_representation PASSED [ 61%]\n"}
-,{"stream_name":"stdout","time":17.849949825,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCleanup::test_explicit_cleanup PASSED [ 66%]\n"}
-,{"stream_name":"stdout","time":17.852090867,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCleanup::test_destructor_cleanup PASSED [ 71%]\n"}
-,{"stream_name":"stdout","time":17.856127946,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolIntegration::test_multi_segment_workflow PASSED [ 76%]\n"}
-,{"stream_name":"stdout","time":17.85939398,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolIntegration::test_memory_persistence PASSED [ 80%]\n"}
-,{"stream_name":"stdout","time":19.904346972,"data":"arz_model/tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu FAILED [ 85%]\n"}
-,{"stream_name":"stdout","time":19.905379243,"data":"arz_model/tests/test_gpu_only_integration.py::test_gpu_required_error SKIPPED [ 90%]\n"}
-,{"stream_name":"stdout","time":19.972312121999998,"data":"arz_model/tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop FAILED [ 95%]\n"}
-,{"stream_name":"stdout","time":20.165952502,"data":"arz_model/tests/test_gpu_only_integration.py::test_mass_conservation_gpu FAILED [100%]\n"}
-,{"stream_name":"stdout","time":20.165982995,"data":"\n"}
-,{"stream_name":"stdout","time":20.165988248,"data":"=================================== FAILURES ===================================\n"}
-,{"stream_name":"stdout","time":20.165992901,"data":"____________________ test_simulation_runs_end_to_end_on_gpu ____________________\n"}
-,{"stream_name":"stdout","time":20.165997977,"data":"\n"}
-,{"stream_name":"stdout","time":20.166002079,"data":"    def test_simulation_runs_end_to_end_on_gpu():\n"}
-,{"stream_name":"stdout","time":20.166006535,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.166010906,"data":"        Tests that a simple simulation can run from start to finish on the GPU.\n"}
-,{"stream_name":"stdout","time":20.166015655,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.166019862,"data":"        print(\"Running test: test_simulation_runs_end_to_end_on_gpu\")\n"}
-,{"stream_name":"stdout","time":20.166024474,"data":"        try:\n"}
-,{"stream_name":"stdout","time":20.166028739,"data":"            config = create_test_config()\n"}
-,{"stream_name":"stdout","time":20.166047639,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
-,{"stream_name":"stdout","time":20.166052232,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
-,{"stream_name":"stdout","time":20.166056643,"data":"\u003e           results = runner.run()\n"}
-,{"stream_name":"stdout","time":20.166061267,"data":"                      ^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.166096673,"data":"\n"}
-,{"stream_name":"stdout","time":20.166100925,"data":"arz_model/tests/test_gpu_only_integration.py:89: \n"}
-,{"stream_name":"stdout","time":20.166105321,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.166109834,"data":"arz_model/simulation/runner.py:745: in run\n"}
-,{"stream_name":"stdout","time":20.166114086,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
-,{"stream_name":"stdout","time":20.166118396,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.166122752,"data":"arz_model/simulation/execution/network_simulator.py:171: in run\n"}
-,{"stream_name":"stdout","time":20.1661272,"data":"    d_U_out = strang_splitting_step_gpu_native(\n"}
-,{"stream_name":"stdout","time":20.166131725,"data":"arz_model/numerics/time_integration.py:1199: in strang_splitting_step_gpu_native\n"}
-,{"stream_name":"stdout","time":20.166136239,"data":"    d_U_ss = solve_hyperbolic_step_ssp_rk3_gpu_native(d_U_star, dt, grid, params, gpu_pool, seg_id, current_time)\n"}
-,{"stream_name":"stdout","time":20.166140804,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.166145447,"data":"arz_model/numerics/time_integration.py:1244: in solve_hyperbolic_step_ssp_rk3_gpu_native\n"}
-,{"stream_name":"stdout","time":20.166150017,"data":"    L_U0 = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, gpu_pool, seg_id, current_time)\n"}
-,{"stream_name":"stdout","time":20.166154603,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.166159151,"data":"arz_model/numerics/time_integration.py:1327: in calculate_spatial_discretization_weno_gpu_native\n"}
-,{"stream_name":"stdout","time":20.166163488,"data":"    phys_params = params.physics\n"}
-,{"stream_name":"stdout","time":20.166168294,"data":"                  ^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.166172784,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.16617726,"data":"\n"}
-,{"stream_name":"stdout","time":20.1661818,"data":"self = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
-,{"stream_name":"stdout","time":20.166187773,"data":"item = 'physics'\n"}
-,{"stream_name":"stdout","time":20.166192044,"data":"\n"}
-,{"stream_name":"stdout","time":20.166196079,"data":"    def __getattr__(self, item: str) -\u003e Any:\n"}
-,{"stream_name":"stdout","time":20.166200404,"data":"        private_attributes = object.__getattribute__(self, '__private_attributes__')\n"}
-,{"stream_name":"stdout","time":20.16620473,"data":"        if item in private_attributes:\n"}
-,{"stream_name":"stdout","time":20.166209095,"data":"            attribute = private_attributes[item]\n"}
-,{"stream_name":"stdout","time":20.166213269,"data":"            if hasattr(attribute, '__get__'):\n"}
-,{"stream_name":"stdout","time":20.166224547,"data":"                return attribute.__get__(self, type(self))  # type: ignore\n"}
-,{"stream_name":"stdout","time":20.166229071,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166233194,"data":"            try:\n"}
-,{"stream_name":"stdout","time":20.166237358,"data":"                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items\n"}
-,{"stream_name":"stdout","time":20.166241877,"data":"                return self.__pydantic_private__[item]  # type: ignore\n"}
-,{"stream_name":"stdout","time":20.166246251,"data":"            except KeyError as exc:\n"}
-,{"stream_name":"stdout","time":20.166250644,"data":"                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc\n"}
-,{"stream_name":"stdout","time":20.166255169,"data":"        else:\n"}
-,{"stream_name":"stdout","time":20.166259337,"data":"            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.\n"}
-,{"stream_name":"stdout","time":20.166263907,"data":"            # See `BaseModel.__repr_args__` for more details\n"}
-,{"stream_name":"stdout","time":20.166276797,"data":"            try:\n"}
-,{"stream_name":"stdout","time":20.166281082,"data":"                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')\n"}
-,{"stream_name":"stdout","time":20.166285652,"data":"            except AttributeError:\n"}
-,{"stream_name":"stdout","time":20.166289948,"data":"                pydantic_extra = None\n"}
-,{"stream_name":"stdout","time":20.166294369,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166298479,"data":"            if pydantic_extra and item in pydantic_extra:\n"}
-,{"stream_name":"stdout","time":20.166302816,"data":"                return pydantic_extra[item]\n"}
-,{"stream_name":"stdout","time":20.166307307,"data":"            else:\n"}
-,{"stream_name":"stdout","time":20.166311622,"data":"                if hasattr(self.__class__, item):\n"}
-,{"stream_name":"stdout","time":20.166316046,"data":"                    return super().__getattribute__(item)  # Raises AttributeError if appropriate\n"}
-,{"stream_name":"stdout","time":20.166320576,"data":"                else:\n"}
-,{"stream_name":"stdout","time":20.166324845,"data":"                    # this is the current error\n"}
-,{"stream_name":"stdout","time":20.166329303,"data":"\u003e                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')\n"}
-,{"stream_name":"stdout","time":20.166334105,"data":"E                   AttributeError: 'PhysicsConfig' object has no attribute 'physics'\n"}
-,{"stream_name":"stdout","time":20.166338874,"data":"\n"}
-,{"stream_name":"stdout","time":20.166342968,"data":"/usr/local/lib/python3.11/dist-packages/pydantic/main.py:1026: AttributeError\n"}
-,{"stream_name":"stdout","time":20.166347417,"data":"\n"}
-,{"stream_name":"stdout","time":20.166351506,"data":"During handling of the above exception, another exception occurred:\n"}
-,{"stream_name":"stdout","time":20.16635621,"data":"\n"}
-,{"stream_name":"stdout","time":20.16636004,"data":"    def test_simulation_runs_end_to_end_on_gpu():\n"}
-,{"stream_name":"stdout","time":20.166364472,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.166369159,"data":"        Tests that a simple simulation can run from start to finish on the GPU.\n"}
-,{"stream_name":"stdout","time":20.166373417,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.166377605,"data":"        print(\"Running test: test_simulation_runs_end_to_end_on_gpu\")\n"}
-,{"stream_name":"stdout","time":20.166387452,"data":"        try:\n"}
-,{"stream_name":"stdout","time":20.166391678,"data":"            config = create_test_config()\n"}
-,{"stream_name":"stdout","time":20.166396333,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
-,{"stream_name":"stdout","time":20.166400388,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
-,{"stream_name":"stdout","time":20.166404699,"data":"            results = runner.run()\n"}
-,{"stream_name":"stdout","time":20.166408478,"data":"    \n"}
-,{"stream_name":"stdout","time":20.16641239,"data":"            # Verify results structure\n"}
-,{"stream_name":"stdout","time":20.166416564,"data":"            assert \"final_time\" in results\n"}
-,{"stream_name":"stdout","time":20.166420988,"data":"            assert \"total_steps\" in results\n"}
-,{"stream_name":"stdout","time":20.166425342,"data":"            assert \"final_states\" in results\n"}
-,{"stream_name":"stdout","time":20.166429665,"data":"            assert \"seg-1\" in results[\"final_states\"]\n"}
-,{"stream_name":"stdout","time":20.16643378,"data":"            assert \"seg-2\" in results[\"final_states\"]\n"}
-,{"stream_name":"stdout","time":20.166438042,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166441909,"data":"            # Verify state array shape\n"}
-,{"stream_name":"stdout","time":20.166445837,"data":"            final_state_seg1 = results[\"final_states\"][\"seg-1\"]\n"}
-,{"stream_name":"stdout","time":20.166450176,"data":"            expected_shape = (4, config.segments[0].N + 2 * config.grid.num_ghost_cells)\n"}
-,{"stream_name":"stdout","time":20.166454771,"data":"            assert final_state_seg1.shape == expected_shape, f\"Expected shape {expected_shape}, but got {final_state_seg1.shape}\"\n"}
-,{"stream_name":"stdout","time":20.166459849,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166464057,"data":"            print(\"✅ Test passed. Simulation ran end-to-end and produced valid results.\")\n"}
-,{"stream_name":"stdout","time":20.166469465,"data":"        except Exception as e:\n"}
-,{"stream_name":"stdout","time":20.166473741,"data":"\u003e           pytest.fail(f\"End-to-end GPU simulation test failed with an exception: {e}\", pytrace=True)\n"}
-,{"stream_name":"stdout","time":20.166478519,"data":"E           Failed: End-to-end GPU simulation test failed with an exception: 'PhysicsConfig' object has no attribute 'physics'\n"}
-,{"stream_name":"stdout","time":20.166483076,"data":"\n"}
-,{"stream_name":"stdout","time":20.166486954,"data":"arz_model/tests/test_gpu_only_integration.py:105: Failed\n"}
-,{"stream_name":"stdout","time":20.166491192,"data":"----------------------------- Captured stdout call -----------------------------\n"}
-,{"stream_name":"stdout","time":20.166495275,"data":"Running test: test_simulation_runs_end_to_end_on_gpu\n"}
-,{"stream_name":"stdout","time":20.166499459,"data":"Finalizing network structure and validating topology...\n"}
-,{"stream_name":"stdout","time":20.166503863,"data":"✅ Network topology is valid.\n"}
-,{"stream_name":"stdout","time":20.166508202,"data":"✅ GPUMemoryPool initialized:\n"}
-,{"stream_name":"stdout","time":20.166512285,"data":"   - Segments: 2\n"}
-,{"stream_name":"stdout","time":20.166516181,"data":"   - Total cells: 150\n"}
-,{"stream_name":"stdout","time":20.16652015,"data":"   - Ghost cells: 3\n"}
-,{"stream_name":"stdout","time":20.166524003,"data":"   - Compute Capability: (6, 0)\n"}
-,{"stream_name":"stdout","time":20.166527843,"data":"   - CUDA streams: Enabled\n"}
-,{"stream_name":"stdout","time":20.166531909,"data":"   - GPU memory allocated: 0.00 MB\n"}
-,{"stream_name":"stdout","time":20.166540758,"data":"  - Preparing GPU topology for network coupling...\n"}
-,{"stream_name":"stdout","time":20.166545248,"data":"    - GPU topology prepared and transferred.\n"}
-,{"stream_name":"stdout","time":20.166549213,"data":"________________________ test_no_cpu_transfers_in_loop _________________________\n"}
-,{"stream_name":"stdout","time":20.166553708,"data":"\n"}
-,{"stream_name":"stdout","time":20.16655756,"data":"    def test_no_cpu_transfers_in_loop():\n"}
-,{"stream_name":"stdout","time":20.166561629,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.166565589,"data":"        Hooks into CUDA transfer functions to verify that no transfers occur\n"}
-,{"stream_name":"stdout","time":20.166569969,"data":"        during the main simulation loop.\n"}
-,{"stream_name":"stdout","time":20.166574094,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.166578105,"data":"        print(\"Running test: test_no_cpu_transfers_in_loop\")\n"}
-,{"stream_name":"stdout","time":20.166582227,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166586185,"data":"        transfer_log = []\n"}
-,{"stream_name":"stdout","time":20.166591304,"data":"        original_to_device = cuda.to_device\n"}
-,{"stream_name":"stdout","time":20.166595592,"data":"        original_copy_to_host = cuda.devicearray.DeviceNDArray.copy_to_host\n"}
-,{"stream_name":"stdout","time":20.166600017,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166603947,"data":"        def tracked_to_device(obj, *args, **kwargs):\n"}
-,{"stream_name":"stdout","time":20.166608034,"data":"            transfer_log.append(f\"to_device: {type(obj)}\")\n"}
-,{"stream_name":"stdout","time":20.166612198,"data":"            return original_to_device(obj, *args, **kwargs)\n"}
-,{"stream_name":"stdout","time":20.16661627,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166620004,"data":"        def tracked_copy_to_host(self, *args, **kwargs):\n"}
-,{"stream_name":"stdout","time":20.166623922,"data":"            transfer_log.append(f\"copy_to_host: shape={self.shape}\")\n"}
-,{"stream_name":"stdout","time":20.166631533,"data":"            return original_copy_to_host(self, *args, **kwargs)\n"}
-,{"stream_name":"stdout","time":20.166636057,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166639981,"data":"        try:\n"}
-,{"stream_name":"stdout","time":20.16664398,"data":"            config = create_test_config()\n"}
-,{"stream_name":"stdout","time":20.166648187,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166651915,"data":"            cuda.to_device = tracked_to_device\n"}
-,{"stream_name":"stdout","time":20.166656057,"data":"            cuda.devicearray.DeviceNDArray.copy_to_host = tracked_copy_to_host\n"}
-,{"stream_name":"stdout","time":20.166660297,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166663954,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
-,{"stream_name":"stdout","time":20.166668056,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
-,{"stream_name":"stdout","time":20.166672332,"data":"    \n"}
-,{"stream_name":"stdout","time":20.166676328,"data":"            # Test 1: Check transfers during the main `run()` method\n"}
-,{"stream_name":"stdout","time":20.166680739,"data":"            transfer_log.clear()\n"}
-,{"stream_name":"stdout","time":20.166698169,"data":"\u003e           runner.run()\n"}
-,{"stream_name":"stdout","time":20.166702135,"data":"\n"}
-,{"stream_name":"stdout","time":20.166705835,"data":"arz_model/tests/test_gpu_only_integration.py:152: \n"}
-,{"stream_name":"stdout","time":20.166715698,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.166719929,"data":"arz_model/simulation/runner.py:745: in run\n"}
-,{"stream_name":"stdout","time":20.166723807,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
-,{"stream_name":"stdout","time":20.166727689,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.166731608,"data":"arz_model/simulation/execution/network_simulator.py:171: in run\n"}
-,{"stream_name":"stdout","time":20.166735555,"data":"    d_U_out = strang_splitting_step_gpu_native(\n"}
-,{"stream_name":"stdout","time":20.166739413,"data":"arz_model/numerics/time_integration.py:1199: in strang_splitting_step_gpu_native\n"}
-,{"stream_name":"stdout","time":20.166743367,"data":"    d_U_ss = solve_hyperbolic_step_ssp_rk3_gpu_native(d_U_star, dt, grid, params, gpu_pool, seg_id, current_time)\n"}
-,{"stream_name":"stdout","time":20.166747231,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.166751169,"data":"arz_model/numerics/time_integration.py:1244: in solve_hyperbolic_step_ssp_rk3_gpu_native\n"}
-,{"stream_name":"stdout","time":20.166755051,"data":"    L_U0 = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, gpu_pool, seg_id, current_time)\n"}
-,{"stream_name":"stdout","time":20.166759143,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.167275036,"data":"arz_model/numerics/time_integration.py:1327: in calculate_spatial_discretization_weno_gpu_native\n"}
-,{"stream_name":"stdout","time":20.167294428,"data":"    phys_params = params.physics\n"}
-,{"stream_name":"stdout","time":20.167298776,"data":"                  ^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.167302059,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.167305578,"data":"\n"}
-,{"stream_name":"stdout","time":20.167309045,"data":"self = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
-,{"stream_name":"stdout","time":20.167312798,"data":"item = 'physics'\n"}
-,{"stream_name":"stdout","time":20.167316453,"data":"\n"}
-,{"stream_name":"stdout","time":20.167319958,"data":"    def __getattr__(self, item: str) -\u003e Any:\n"}
-,{"stream_name":"stdout","time":20.16732396,"data":"        private_attributes = object.__getattribute__(self, '__private_attributes__')\n"}
-,{"stream_name":"stdout","time":20.167327705,"data":"        if item in private_attributes:\n"}
-,{"stream_name":"stdout","time":20.167331403,"data":"            attribute = private_attributes[item]\n"}
-,{"stream_name":"stdout","time":20.167335246,"data":"            if hasattr(attribute, '__get__'):\n"}
-,{"stream_name":"stdout","time":20.16733903,"data":"                return attribute.__get__(self, type(self))  # type: ignore\n"}
-,{"stream_name":"stdout","time":20.167342802,"data":"    \n"}
-,{"stream_name":"stdout","time":20.167346562,"data":"            try:\n"}
-,{"stream_name":"stdout","time":20.16735004,"data":"                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items\n"}
-,{"stream_name":"stdout","time":20.167353793,"data":"                return self.__pydantic_private__[item]  # type: ignore\n"}
-,{"stream_name":"stdout","time":20.167357578,"data":"            except KeyError as exc:\n"}
-,{"stream_name":"stdout","time":20.167371308,"data":"                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc\n"}
-,{"stream_name":"stdout","time":20.167375255,"data":"        else:\n"}
-,{"stream_name":"stdout","time":20.167378809,"data":"            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.\n"}
-,{"stream_name":"stdout","time":20.167382595,"data":"            # See `BaseModel.__repr_args__` for more details\n"}
-,{"stream_name":"stdout","time":20.167386423,"data":"            try:\n"}
-,{"stream_name":"stdout","time":20.167389855,"data":"                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')\n"}
-,{"stream_name":"stdout","time":20.167393593,"data":"            except AttributeError:\n"}
-,{"stream_name":"stdout","time":20.167397418,"data":"                pydantic_extra = None\n"}
-,{"stream_name":"stdout","time":20.167400927,"data":"    \n"}
-,{"stream_name":"stdout","time":20.167404477,"data":"            if pydantic_extra and item in pydantic_extra:\n"}
-,{"stream_name":"stdout","time":20.167408163,"data":"                return pydantic_extra[item]\n"}
-,{"stream_name":"stdout","time":20.167412138,"data":"            else:\n"}
-,{"stream_name":"stdout","time":20.167416053,"data":"                if hasattr(self.__class__, item):\n"}
-,{"stream_name":"stdout","time":20.16741994,"data":"                    return super().__getattribute__(item)  # Raises AttributeError if appropriate\n"}
-,{"stream_name":"stdout","time":20.167423689,"data":"                else:\n"}
-,{"stream_name":"stdout","time":20.167427216,"data":"                    # this is the current error\n"}
-,{"stream_name":"stdout","time":20.167431245,"data":"\u003e                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')\n"}
-,{"stream_name":"stdout","time":20.167435068,"data":"E                   AttributeError: 'PhysicsConfig' object has no attribute 'physics'\n"}
-,{"stream_name":"stdout","time":20.167438879,"data":"\n"}
-,{"stream_name":"stdout","time":20.167442575,"data":"/usr/local/lib/python3.11/dist-packages/pydantic/main.py:1026: AttributeError\n"}
-,{"stream_name":"stdout","time":20.167446262,"data":"----------------------------- Captured stdout call -----------------------------\n"}
-,{"stream_name":"stdout","time":20.16744977,"data":"Running test: test_no_cpu_transfers_in_loop\n"}
-,{"stream_name":"stdout","time":20.167454669,"data":"Finalizing network structure and validating topology...\n"}
-,{"stream_name":"stdout","time":20.16745844,"data":"✅ Network topology is valid.\n"}
-,{"stream_name":"stdout","time":20.167462818,"data":"✅ GPUMemoryPool initialized:\n"}
-,{"stream_name":"stdout","time":20.167466608,"data":"   - Segments: 2\n"}
-,{"stream_name":"stdout","time":20.167470463,"data":"   - Total cells: 150\n"}
-,{"stream_name":"stdout","time":20.16747424,"data":"   - Ghost cells: 3\n"}
-,{"stream_name":"stdout","time":20.167477812,"data":"   - Compute Capability: (6, 0)\n"}
-,{"stream_name":"stdout","time":20.167481905,"data":"   - CUDA streams: Enabled\n"}
-,{"stream_name":"stdout","time":20.167485377,"data":"   - GPU memory allocated: 0.00 MB\n"}
-,{"stream_name":"stdout","time":20.167489265,"data":"  - Preparing GPU topology for network coupling...\n"}
-,{"stream_name":"stdout","time":20.167492745,"data":"    - GPU topology prepared and transferred.\n"}
-,{"stream_name":"stdout","time":20.16749663,"data":"__________________________ test_mass_conservation_gpu __________________________\n"}
-,{"stream_name":"stdout","time":20.167500242,"data":"\n"}
-,{"stream_name":"stdout","time":20.16750907,"data":"    def test_mass_conservation_gpu():\n"}
-,{"stream_name":"stdout","time":20.167513337,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.167517192,"data":"        Verifies that the total mass (rho) in the system is conserved on the GPU\n"}
-,{"stream_name":"stdout","time":20.167521045,"data":"        when using reflective boundary conditions.\n"}
-,{"stream_name":"stdout","time":20.167524775,"data":"        \"\"\"\n"}
-,{"stream_name":"stdout","time":20.167528649,"data":"        print(\"Running test: test_mass_conservation_gpu\")\n"}
-,{"stream_name":"stdout","time":20.167532357,"data":"    \n"}
-,{"stream_name":"stdout","time":20.167536136,"data":"        config = create_test_config()\n"}
-,{"stream_name":"stdout","time":20.167540063,"data":"        # Use reflective \"wall\" boundary conditions to ensure mass is conserved\n"}
-,{"stream_name":"stdout","time":20.167543905,"data":"        config.segments[0].boundary_conditions.left = ReflectiveBC()\n"}
-,{"stream_name":"stdout","time":20.16754774,"data":"        config.segments[1].boundary_conditions.right = ReflectiveBC()\n"}
-,{"stream_name":"stdout","time":20.167551622,"data":"    \n"}
-,{"stream_name":"stdout","time":20.167555168,"data":"        network_grid = NetworkGrid.from_config(config)\n"}
-,{"stream_name":"stdout","time":20.16755904,"data":"    \n"}
-,{"stream_name":"stdout","time":20.167562493,"data":"        # Calculate initial mass from the config\n"}
-,{"stream_name":"stdout","time":20.167565927,"data":"        initial_mass = 0.0\n"}
-,{"stream_name":"stdout","time":20.167569877,"data":"        for seg_config in config.segments:\n"}
-,{"stream_name":"stdout","time":20.167573586,"data":"            segment = network_grid.segments[seg_config.id]\n"}
-,{"stream_name":"stdout","time":20.16757708,"data":"            ic_config = seg_config.initial_conditions.config\n"}
-,{"stream_name":"stdout","time":20.167580659,"data":"            if isinstance(ic_config, UniformIC):\n"}
-,{"stream_name":"stdout","time":20.167584277,"data":"                # Mass = density * length\n"}
-,{"stream_name":"stdout","time":20.167587807,"data":"                initial_mass += ic_config.density * (segment['grid'].xmax - segment['grid'].xmin)\n"}
-,{"stream_name":"stdout","time":20.167592053,"data":"    \n"}
-,{"stream_name":"stdout","time":20.167595665,"data":"        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
-,{"stream_name":"stdout","time":20.167599929,"data":"\u003e       results = runner.run()\n"}
-,{"stream_name":"stdout","time":20.167603405,"data":"                  ^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.167607176,"data":"\n"}
-,{"stream_name":"stdout","time":20.167610512,"data":"arz_model/tests/test_gpu_only_integration.py:196: \n"}
-,{"stream_name":"stdout","time":20.167614321,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.167617931,"data":"arz_model/simulation/runner.py:745: in run\n"}
-,{"stream_name":"stdout","time":20.167621438,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
-,{"stream_name":"stdout","time":20.167625289,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.16762875,"data":"arz_model/simulation/execution/network_simulator.py:171: in run\n"}
-,{"stream_name":"stdout","time":20.167632858,"data":"    d_U_out = strang_splitting_step_gpu_native(\n"}
-,{"stream_name":"stdout","time":20.167637008,"data":"arz_model/numerics/time_integration.py:1199: in strang_splitting_step_gpu_native\n"}
-,{"stream_name":"stdout","time":20.167644669,"data":"    d_U_ss = solve_hyperbolic_step_ssp_rk3_gpu_native(d_U_star, dt, grid, params, gpu_pool, seg_id, current_time)\n"}
-,{"stream_name":"stdout","time":20.167649046,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.167653112,"data":"arz_model/numerics/time_integration.py:1244: in solve_hyperbolic_step_ssp_rk3_gpu_native\n"}
-,{"stream_name":"stdout","time":20.167657066,"data":"    L_U0 = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, gpu_pool, seg_id, current_time)\n"}
-,{"stream_name":"stdout","time":20.167660761,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.167664707,"data":"arz_model/numerics/time_integration.py:1327: in calculate_spatial_discretization_weno_gpu_native\n"}
-,{"stream_name":"stdout","time":20.167668678,"data":"    phys_params = params.physics\n"}
-,{"stream_name":"stdout","time":20.167672708,"data":"                  ^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stdout","time":20.167676253,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
-,{"stream_name":"stdout","time":20.167680362,"data":"\n"}
-,{"stream_name":"stdout","time":20.167683641,"data":"self = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
-,{"stream_name":"stdout","time":20.167687576,"data":"item = 'physics'\n"}
-,{"stream_name":"stdout","time":20.167691612,"data":"\n"}
-,{"stream_name":"stdout","time":20.1676951,"data":"    def __getattr__(self, item: str) -\u003e Any:\n"}
-,{"stream_name":"stdout","time":20.167698835,"data":"        private_attributes = object.__getattribute__(self, '__private_attributes__')\n"}
-,{"stream_name":"stdout","time":20.16770291,"data":"        if item in private_attributes:\n"}
-,{"stream_name":"stdout","time":20.167706883,"data":"            attribute = private_attributes[item]\n"}
-,{"stream_name":"stdout","time":20.167710551,"data":"            if hasattr(attribute, '__get__'):\n"}
-,{"stream_name":"stdout","time":20.16771411,"data":"                return attribute.__get__(self, type(self))  # type: ignore\n"}
-,{"stream_name":"stdout","time":20.167717768,"data":"    \n"}
-,{"stream_name":"stdout","time":20.167721227,"data":"            try:\n"}
-,{"stream_name":"stdout","time":20.167724544,"data":"                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items\n"}
-,{"stream_name":"stdout","time":20.167728444,"data":"                return self.__pydantic_private__[item]  # type: ignore\n"}
-,{"stream_name":"stdout","time":20.167731972,"data":"            except KeyError as exc:\n"}
-,{"stream_name":"stdout","time":20.167735873,"data":"                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc\n"}
-,{"stream_name":"stdout","time":20.16773969,"data":"        else:\n"}
-,{"stream_name":"stdout","time":20.167743947,"data":"            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.\n"}
-,{"stream_name":"stdout","time":20.167747758,"data":"            # See `BaseModel.__repr_args__` for more details\n"}
-,{"stream_name":"stdout","time":20.167751443,"data":"            try:\n"}
-,{"stream_name":"stdout","time":20.167755277,"data":"                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')\n"}
-,{"stream_name":"stdout","time":20.167759133,"data":"            except AttributeError:\n"}
-,{"stream_name":"stdout","time":20.167766738,"data":"                pydantic_extra = None\n"}
-,{"stream_name":"stdout","time":20.167770536,"data":"    \n"}
-,{"stream_name":"stdout","time":20.167774049,"data":"            if pydantic_extra and item in pydantic_extra:\n"}
-,{"stream_name":"stdout","time":20.167778333,"data":"                return pydantic_extra[item]\n"}
-,{"stream_name":"stdout","time":20.167782253,"data":"            else:\n"}
-,{"stream_name":"stdout","time":20.167785794,"data":"                if hasattr(self.__class__, item):\n"}
-,{"stream_name":"stdout","time":20.167789918,"data":"                    return super().__getattribute__(item)  # Raises AttributeError if appropriate\n"}
-,{"stream_name":"stdout","time":20.167794152,"data":"                else:\n"}
-,{"stream_name":"stdout","time":20.167797984,"data":"                    # this is the current error\n"}
-,{"stream_name":"stdout","time":20.167801663,"data":"\u003e                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')\n"}
-,{"stream_name":"stdout","time":20.167805683,"data":"E                   AttributeError: 'PhysicsConfig' object has no attribute 'physics'\n"}
-,{"stream_name":"stdout","time":20.167809733,"data":"\n"}
-,{"stream_name":"stdout","time":20.16781329,"data":"/usr/local/lib/python3.11/dist-packages/pydantic/main.py:1026: AttributeError\n"}
-,{"stream_name":"stdout","time":20.167817537,"data":"----------------------------- Captured stdout call -----------------------------\n"}
-,{"stream_name":"stdout","time":20.167821523,"data":"Running test: test_mass_conservation_gpu\n"}
-,{"stream_name":"stdout","time":20.167825175,"data":"Finalizing network structure and validating topology...\n"}
-,{"stream_name":"stdout","time":20.167828943,"data":"✅ Network topology is valid.\n"}
-,{"stream_name":"stdout","time":20.167832595,"data":"✅ GPUMemoryPool initialized:\n"}
-,{"stream_name":"stdout","time":20.16783608,"data":"   - Segments: 2\n"}
-,{"stream_name":"stdout","time":20.167839569,"data":"   - Total cells: 150\n"}
-,{"stream_name":"stdout","time":20.167843362,"data":"   - Ghost cells: 3\n"}
-,{"stream_name":"stdout","time":20.167846857,"data":"   - Compute Capability: (6, 0)\n"}
-,{"stream_name":"stdout","time":20.167850497,"data":"   - CUDA streams: Enabled\n"}
-,{"stream_name":"stdout","time":20.167854227,"data":"   - GPU memory allocated: 0.00 MB\n"}
-,{"stream_name":"stdout","time":20.167858168,"data":"  - Preparing GPU topology for network coupling...\n"}
-,{"stream_name":"stdout","time":20.167877956,"data":"    - GPU topology prepared and transferred.\n"}
-,{"stream_name":"stdout","time":20.1678819,"data":"=============================== warnings summary ===============================\n"}
-,{"stream_name":"stdout","time":20.167886223,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
-,{"stream_name":"stdout","time":20.167890238,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
-,{"stream_name":"stdout","time":20.167894568,"data":"tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop\n"}
-,{"stream_name":"stdout","time":20.167898432,"data":"tests/test_gpu_only_integration.py::test_mass_conservation_gpu\n"}
-,{"stream_name":"stdout","time":20.167902333,"data":"  /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stdout","time":20.167908821,"data":"    warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stdout","time":20.167916769,"data":"\n"}
-,{"stream_name":"stdout","time":20.167920895,"data":"-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n"}
-,{"stream_name":"stdout","time":20.167924821,"data":"=========================== short test summary info ============================\n"}
-,{"stream_name":"stdout","time":20.167928902,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
-,{"stream_name":"stdout","time":20.167932963,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop\n"}
-,{"stream_name":"stdout","time":20.167937119,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_mass_conservation_gpu\n"}
-,{"stream_name":"stdout","time":20.766915865,"data":"============= 3 failed, 17 passed, 1 skipped, 4 warnings in 7.69s ==============\n"}
-,{"stream_name":"stdout","time":21.446182993,"data":"[WARNING] Target execution returned code: 1\n"}
-,{"stream_name":"stdout","time":21.44631993,"data":"\n"}
-,{"stream_name":"stdout","time":21.446329293,"data":"[STEP 4/4] Cleanup...\n"}
-,{"stream_name":"stdout","time":21.446401215,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
-,{"stream_name":"stdout","time":21.455693708,"data":"[OK] Repository cleaned up.\n"}
-,{"stream_name":"stdout","time":21.455719039,"data":"\n"}
-,{"stream_name":"stdout","time":21.455723072,"data":"[FINAL] Test workflow completed\n"}
-,{"stream_name":"stdout","time":21.455832578,"data":"\n"}
-,{"stream_name":"stdout","time":21.455845535,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":21.455849723,"data":"EXECUTION COMPLETED\n"}
-,{"stream_name":"stdout","time":21.45585315,"data":"Check /kaggle/working/test_log.txt for details.\n"}
-,{"stream_name":"stdout","time":21.4558568,"data":"================================================================================\n"}
-,{"stream_name":"stderr","time":25.566778235,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
-,{"stream_name":"stderr","time":25.566834655,"data":"  warn(\n"}
-,{"stream_name":"stderr","time":25.61052956,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
-,{"stream_name":"stderr","time":26.793951416,"data":"[NbConvertApp] Writing 298633 bytes to __results__.html\n"}
+[{"stream_name":"stdout","time":0.475550045,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.475612256,"data":"GENERIC_TEST_TESTS\n"}
+,{"stream_name":"stdout","time":0.475619925,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.47566177,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.47583185,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":0.475841118,"data":"Target: arz_model/tests/\n"}
+,{"stream_name":"stdout","time":5.267812659,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.267865053,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.314598904,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.335895168,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.335917652,"data":"\n"}
+,{"stream_name":"stdout","time":5.335922066,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.33605444,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":6.215306146,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":6.215375218,"data":"\n"}
+,{"stream_name":"stdout","time":6.21539146,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":6.215471236,"data":"Installing pytest...\n"}
+,{"stream_name":"stdout","time":10.093773366,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":10.093808488,"data":"\n"}
+,{"stream_name":"stdout","time":10.093812084,"data":"[STEP 3/4] Running Target...\n"}
+,{"stream_name":"stdout","time":10.093814729,"data":"Target is a directory. Executing pytest...\n"}
+,{"stream_name":"stdout","time":10.093817394,"data":"Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests\n"}
+,{"stream_name":"stdout","time":11.769073507,"data":"============================= test session starts ==============================\n"}
+,{"stream_name":"stdout","time":11.7691118,"data":"platform linux -- Python 3.11.13, pytest-8.4.1, pluggy-1.6.0 -- /usr/bin/python3\n"}
+,{"stream_name":"stdout","time":11.76911845,"data":"cachedir: .pytest_cache\n"}
+,{"stream_name":"stdout","time":11.76912312,"data":"rootdir: /kaggle/working/Code-traffic-flow/arz_model\n"}
+,{"stream_name":"stdout","time":11.76912804,"data":"configfile: pytest.ini\n"}
+,{"stream_name":"stdout","time":11.769132054,"data":"plugins: anyio-4.11.0, typeguard-4.4.4, langsmith-0.4.8\n"}
+,{"stream_name":"stdout","time":16.627428403,"data":"collecting ... collected 21 items\n"}
+,{"stream_name":"stdout","time":16.627454468,"data":"\n"}
+,{"stream_name":"stdout","time":16.763775407,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_state_initialization_full_array PASSED [  4%]\n"}
+,{"stream_name":"stdout","time":16.76850002,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_state_initialization_physical_only PASSED [  9%]\n"}
+,{"stream_name":"stdout","time":16.771448241,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolInitialization::test_invalid_initialization PASSED [ 14%]\n"}
+,{"stream_name":"stdout","time":16.77362458,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_segment_state_access PASSED [ 19%]\n"}
+,{"stream_name":"stdout","time":16.775987554,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_road_quality_access PASSED [ 23%]\n"}
+,{"stream_name":"stdout","time":16.779246044,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolAccess::test_stream_access PASSED [ 28%]\n"}
+,{"stream_name":"stdout","time":16.782276675,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_synchronous_checkpoint PASSED [ 33%]\n"}
+,{"stream_name":"stdout","time":16.786076605,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_asynchronous_checkpoint PASSED [ 38%]\n"}
+,{"stream_name":"stdout","time":16.790027007,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCheckpointing::test_checkpoint_invalid_segment PASSED [ 42%]\n"}
+,{"stream_name":"stdout","time":16.792439732,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolStreams::test_stream_synchronization PASSED [ 47%]\n"}
+,{"stream_name":"stdout","time":16.794841095,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolStreams::test_no_streams_synchronization PASSED [ 52%]\n"}
+,{"stream_name":"stdout","time":16.797079398,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolMonitoring::test_memory_statistics PASSED [ 57%]\n"}
+,{"stream_name":"stdout","time":16.799381899,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolMonitoring::test_string_representation PASSED [ 61%]\n"}
+,{"stream_name":"stdout","time":16.801688513,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCleanup::test_explicit_cleanup PASSED [ 66%]\n"}
+,{"stream_name":"stdout","time":16.803924768999998,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolCleanup::test_destructor_cleanup PASSED [ 71%]\n"}
+,{"stream_name":"stdout","time":16.808063424,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolIntegration::test_multi_segment_workflow PASSED [ 76%]\n"}
+,{"stream_name":"stdout","time":16.811253566,"data":"arz_model/tests/test_gpu_memory_pool.py::TestGPUMemoryPoolIntegration::test_memory_persistence PASSED [ 80%]\n"}
+,{"stream_name":"stdout","time":18.867469015,"data":"arz_model/tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu FAILED [ 85%]\n"}
+,{"stream_name":"stdout","time":18.86836632,"data":"arz_model/tests/test_gpu_only_integration.py::test_gpu_required_error SKIPPED [ 90%]\n"}
+,{"stream_name":"stdout","time":18.929783485,"data":"arz_model/tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop FAILED [ 95%]\n"}
+,{"stream_name":"stdout","time":19.091350919,"data":"arz_model/tests/test_gpu_only_integration.py::test_mass_conservation_gpu FAILED [100%]\n"}
+,{"stream_name":"stdout","time":19.091389756,"data":"\n"}
+,{"stream_name":"stdout","time":19.091395237,"data":"=================================== FAILURES ===================================\n"}
+,{"stream_name":"stdout","time":19.091400375,"data":"____________________ test_simulation_runs_end_to_end_on_gpu ____________________\n"}
+,{"stream_name":"stdout","time":19.09142846,"data":"\n"}
+,{"stream_name":"stdout","time":19.091437431,"data":"    def test_simulation_runs_end_to_end_on_gpu():\n"}
+,{"stream_name":"stdout","time":19.091442922,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.091447115,"data":"        Tests that a simple simulation can run from start to finish on the GPU.\n"}
+,{"stream_name":"stdout","time":19.091451414,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.091455691,"data":"        print(\"Running test: test_simulation_runs_end_to_end_on_gpu\")\n"}
+,{"stream_name":"stdout","time":19.091460301,"data":"        try:\n"}
+,{"stream_name":"stdout","time":19.091464634,"data":"            config = create_test_config()\n"}
+,{"stream_name":"stdout","time":19.091482117,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
+,{"stream_name":"stdout","time":19.091486749,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
+,{"stream_name":"stdout","time":19.091491386,"data":"\u003e           results = runner.run()\n"}
+,{"stream_name":"stdout","time":19.091496409,"data":"                      ^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.091500781,"data":"\n"}
+,{"stream_name":"stdout","time":19.091504968,"data":"arz_model/tests/test_gpu_only_integration.py:89: \n"}
+,{"stream_name":"stdout","time":19.091509423,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":19.091514087,"data":"arz_model/simulation/runner.py:745: in run\n"}
+,{"stream_name":"stdout","time":19.091518936,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
+,{"stream_name":"stdout","time":19.091523403,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.091527698,"data":"arz_model/simulation/execution/network_simulator.py:171: in run\n"}
+,{"stream_name":"stdout","time":19.091532143,"data":"    d_U_out = strang_splitting_step_gpu_native(\n"}
+,{"stream_name":"stdout","time":19.091536624,"data":"arz_model/numerics/time_integration.py:1199: in strang_splitting_step_gpu_native\n"}
+,{"stream_name":"stdout","time":19.091541137,"data":"    d_U_ss = solve_hyperbolic_step_ssp_rk3_gpu_native(d_U_star, dt, grid, params, gpu_pool, seg_id, current_time)\n"}
+,{"stream_name":"stdout","time":19.091545899,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.091550549,"data":"arz_model/numerics/time_integration.py:1244: in solve_hyperbolic_step_ssp_rk3_gpu_native\n"}
+,{"stream_name":"stdout","time":19.09155515,"data":"    L_U0 = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, gpu_pool, seg_id, current_time)\n"}
+,{"stream_name":"stdout","time":19.091559766,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.091564479,"data":"arz_model/numerics/time_integration.py:1352: in calculate_spatial_discretization_weno_gpu_native\n"}
+,{"stream_name":"stdout","time":19.091569112,"data":"    N_total, phys_params.weno_epsilon\n"}
+,{"stream_name":"stdout","time":19.09157312,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.091577462,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":19.091582224,"data":"\n"}
+,{"stream_name":"stdout","time":19.091589834,"data":"self = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
+,{"stream_name":"stdout","time":19.091594526,"data":"item = 'weno_epsilon'\n"}
+,{"stream_name":"stdout","time":19.091598783,"data":"\n"}
+,{"stream_name":"stdout","time":19.091603158,"data":"    def __getattr__(self, item: str) -\u003e Any:\n"}
+,{"stream_name":"stdout","time":19.091607732,"data":"        private_attributes = object.__getattribute__(self, '__private_attributes__')\n"}
+,{"stream_name":"stdout","time":19.091612367,"data":"        if item in private_attributes:\n"}
+,{"stream_name":"stdout","time":19.091617297,"data":"            attribute = private_attributes[item]\n"}
+,{"stream_name":"stdout","time":19.091621732,"data":"            if hasattr(attribute, '__get__'):\n"}
+,{"stream_name":"stdout","time":19.091631528,"data":"                return attribute.__get__(self, type(self))  # type: ignore\n"}
+,{"stream_name":"stdout","time":19.091636161,"data":"    \n"}
+,{"stream_name":"stdout","time":19.091640176,"data":"            try:\n"}
+,{"stream_name":"stdout","time":19.091644232,"data":"                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items\n"}
+,{"stream_name":"stdout","time":19.091648737,"data":"                return self.__pydantic_private__[item]  # type: ignore\n"}
+,{"stream_name":"stdout","time":19.091653048,"data":"            except KeyError as exc:\n"}
+,{"stream_name":"stdout","time":19.091657187,"data":"                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc\n"}
+,{"stream_name":"stdout","time":19.091661622,"data":"        else:\n"}
+,{"stream_name":"stdout","time":19.091666044,"data":"            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.\n"}
+,{"stream_name":"stdout","time":19.091670652,"data":"            # See `BaseModel.__repr_args__` for more details\n"}
+,{"stream_name":"stdout","time":19.091675093,"data":"            try:\n"}
+,{"stream_name":"stdout","time":19.091679315,"data":"                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')\n"}
+,{"stream_name":"stdout","time":19.091683953,"data":"            except AttributeError:\n"}
+,{"stream_name":"stdout","time":19.091688329,"data":"                pydantic_extra = None\n"}
+,{"stream_name":"stdout","time":19.091692722,"data":"    \n"}
+,{"stream_name":"stdout","time":19.091696846,"data":"            if pydantic_extra and item in pydantic_extra:\n"}
+,{"stream_name":"stdout","time":19.091701406,"data":"                return pydantic_extra[item]\n"}
+,{"stream_name":"stdout","time":19.091705902,"data":"            else:\n"}
+,{"stream_name":"stdout","time":19.091710148,"data":"                if hasattr(self.__class__, item):\n"}
+,{"stream_name":"stdout","time":19.091714539,"data":"                    return super().__getattribute__(item)  # Raises AttributeError if appropriate\n"}
+,{"stream_name":"stdout","time":19.091719408,"data":"                else:\n"}
+,{"stream_name":"stdout","time":19.091723619,"data":"                    # this is the current error\n"}
+,{"stream_name":"stdout","time":19.091728032,"data":"\u003e                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')\n"}
+,{"stream_name":"stdout","time":19.091732746,"data":"E                   AttributeError: 'PhysicsConfig' object has no attribute 'weno_epsilon'\n"}
+,{"stream_name":"stdout","time":19.091737312,"data":"\n"}
+,{"stream_name":"stdout","time":19.091741505,"data":"/usr/local/lib/python3.11/dist-packages/pydantic/main.py:1026: AttributeError\n"}
+,{"stream_name":"stdout","time":19.09174599,"data":"\n"}
+,{"stream_name":"stdout","time":19.09175008,"data":"During handling of the above exception, another exception occurred:\n"}
+,{"stream_name":"stdout","time":19.091754534,"data":"\n"}
+,{"stream_name":"stdout","time":19.091758605,"data":"    def test_simulation_runs_end_to_end_on_gpu():\n"}
+,{"stream_name":"stdout","time":19.091763177,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.091767512,"data":"        Tests that a simple simulation can run from start to finish on the GPU.\n"}
+,{"stream_name":"stdout","time":19.091771931,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.091776073,"data":"        print(\"Running test: test_simulation_runs_end_to_end_on_gpu\")\n"}
+,{"stream_name":"stdout","time":19.091785362,"data":"        try:\n"}
+,{"stream_name":"stdout","time":19.091789652,"data":"            config = create_test_config()\n"}
+,{"stream_name":"stdout","time":19.091794293,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
+,{"stream_name":"stdout","time":19.091798464,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
+,{"stream_name":"stdout","time":19.091802957,"data":"            results = runner.run()\n"}
+,{"stream_name":"stdout","time":19.091807581,"data":"    \n"}
+,{"stream_name":"stdout","time":19.091811654,"data":"            # Verify results structure\n"}
+,{"stream_name":"stdout","time":19.091815677,"data":"            assert \"final_time\" in results\n"}
+,{"stream_name":"stdout","time":19.091820187,"data":"            assert \"total_steps\" in results\n"}
+,{"stream_name":"stdout","time":19.091824527,"data":"            assert \"final_states\" in results\n"}
+,{"stream_name":"stdout","time":19.091828864,"data":"            assert \"seg-1\" in results[\"final_states\"]\n"}
+,{"stream_name":"stdout","time":19.091833124,"data":"            assert \"seg-2\" in results[\"final_states\"]\n"}
+,{"stream_name":"stdout","time":19.091837292,"data":"    \n"}
+,{"stream_name":"stdout","time":19.091841135,"data":"            # Verify state array shape\n"}
+,{"stream_name":"stdout","time":19.09184528,"data":"            final_state_seg1 = results[\"final_states\"][\"seg-1\"]\n"}
+,{"stream_name":"stdout","time":19.091849689,"data":"            expected_shape = (4, config.segments[0].N + 2 * config.grid.num_ghost_cells)\n"}
+,{"stream_name":"stdout","time":19.09185394,"data":"            assert final_state_seg1.shape == expected_shape, f\"Expected shape {expected_shape}, but got {final_state_seg1.shape}\"\n"}
+,{"stream_name":"stdout","time":19.091858774,"data":"    \n"}
+,{"stream_name":"stdout","time":19.091862587,"data":"            print(\"✅ Test passed. Simulation ran end-to-end and produced valid results.\")\n"}
+,{"stream_name":"stdout","time":19.091867404,"data":"        except Exception as e:\n"}
+,{"stream_name":"stdout","time":19.091871757,"data":"\u003e           pytest.fail(f\"End-to-end GPU simulation test failed with an exception: {e}\", pytrace=True)\n"}
+,{"stream_name":"stdout","time":19.091876212,"data":"E           Failed: End-to-end GPU simulation test failed with an exception: 'PhysicsConfig' object has no attribute 'weno_epsilon'\n"}
+,{"stream_name":"stdout","time":19.091880706,"data":"\n"}
+,{"stream_name":"stdout","time":19.091884708,"data":"arz_model/tests/test_gpu_only_integration.py:105: Failed\n"}
+,{"stream_name":"stdout","time":19.091888909,"data":"----------------------------- Captured stdout call -----------------------------\n"}
+,{"stream_name":"stdout","time":19.091893319,"data":"Running test: test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":19.091897909,"data":"Finalizing network structure and validating topology...\n"}
+,{"stream_name":"stdout","time":19.091902087,"data":"✅ Network topology is valid.\n"}
+,{"stream_name":"stdout","time":19.091906409,"data":"✅ GPUMemoryPool initialized:\n"}
+,{"stream_name":"stdout","time":19.091910648,"data":"   - Segments: 2\n"}
+,{"stream_name":"stdout","time":19.09191477,"data":"   - Total cells: 150\n"}
+,{"stream_name":"stdout","time":19.091918846,"data":"   - Ghost cells: 3\n"}
+,{"stream_name":"stdout","time":19.091922831,"data":"   - Compute Capability: (6, 0)\n"}
+,{"stream_name":"stdout","time":19.091926926,"data":"   - CUDA streams: Enabled\n"}
+,{"stream_name":"stdout","time":19.091936754,"data":"   - GPU memory allocated: 0.00 MB\n"}
+,{"stream_name":"stdout","time":19.091941359,"data":"  - Preparing GPU topology for network coupling...\n"}
+,{"stream_name":"stdout","time":19.091945592,"data":"    - GPU topology prepared and transferred.\n"}
+,{"stream_name":"stdout","time":19.091949889,"data":"________________________ test_no_cpu_transfers_in_loop _________________________\n"}
+,{"stream_name":"stdout","time":19.091954507,"data":"\n"}
+,{"stream_name":"stdout","time":19.091958309,"data":"    def test_no_cpu_transfers_in_loop():\n"}
+,{"stream_name":"stdout","time":19.091962219,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.091966057,"data":"        Hooks into CUDA transfer functions to verify that no transfers occur\n"}
+,{"stream_name":"stdout","time":19.091970255,"data":"        during the main simulation loop.\n"}
+,{"stream_name":"stdout","time":19.091974196,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.091978015,"data":"        print(\"Running test: test_no_cpu_transfers_in_loop\")\n"}
+,{"stream_name":"stdout","time":19.091982265,"data":"    \n"}
+,{"stream_name":"stdout","time":19.091987659,"data":"        transfer_log = []\n"}
+,{"stream_name":"stdout","time":19.091991824,"data":"        original_to_device = cuda.to_device\n"}
+,{"stream_name":"stdout","time":19.09199596,"data":"        original_copy_to_host = cuda.devicearray.DeviceNDArray.copy_to_host\n"}
+,{"stream_name":"stdout","time":19.092000254,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092004276,"data":"        def tracked_to_device(obj, *args, **kwargs):\n"}
+,{"stream_name":"stdout","time":19.092008532,"data":"            transfer_log.append(f\"to_device: {type(obj)}\")\n"}
+,{"stream_name":"stdout","time":19.092012873,"data":"            return original_to_device(obj, *args, **kwargs)\n"}
+,{"stream_name":"stdout","time":19.092016899,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092020815,"data":"        def tracked_copy_to_host(self, *args, **kwargs):\n"}
+,{"stream_name":"stdout","time":19.092024862,"data":"            transfer_log.append(f\"copy_to_host: shape={self.shape}\")\n"}
+,{"stream_name":"stdout","time":19.092028831,"data":"            return original_copy_to_host(self, *args, **kwargs)\n"}
+,{"stream_name":"stdout","time":19.092032964,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092037051,"data":"        try:\n"}
+,{"stream_name":"stdout","time":19.092041017,"data":"            config = create_test_config()\n"}
+,{"stream_name":"stdout","time":19.092045072,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092048938,"data":"            cuda.to_device = tracked_to_device\n"}
+,{"stream_name":"stdout","time":19.092053234,"data":"            cuda.devicearray.DeviceNDArray.copy_to_host = tracked_copy_to_host\n"}
+,{"stream_name":"stdout","time":19.092057299,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092061072,"data":"            network_grid = NetworkGrid.from_config(config)\n"}
+,{"stream_name":"stdout","time":19.092065302,"data":"            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
+,{"stream_name":"stdout","time":19.092069801,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092073755,"data":"            # Test 1: Check transfers during the main `run()` method\n"}
+,{"stream_name":"stdout","time":19.092078069,"data":"            transfer_log.clear()\n"}
+,{"stream_name":"stdout","time":19.092082187,"data":"\u003e           runner.run()\n"}
+,{"stream_name":"stdout","time":19.09208661,"data":"\n"}
+,{"stream_name":"stdout","time":19.092090517,"data":"arz_model/tests/test_gpu_only_integration.py:152: \n"}
+,{"stream_name":"stdout","time":19.092100727,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":19.092105264,"data":"arz_model/simulation/runner.py:745: in run\n"}
+,{"stream_name":"stdout","time":19.092109522,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
+,{"stream_name":"stdout","time":19.092113788,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.092118284,"data":"arz_model/simulation/execution/network_simulator.py:171: in run\n"}
+,{"stream_name":"stdout","time":19.092122215,"data":"    d_U_out = strang_splitting_step_gpu_native(\n"}
+,{"stream_name":"stdout","time":19.092126392,"data":"arz_model/numerics/time_integration.py:1199: in strang_splitting_step_gpu_native\n"}
+,{"stream_name":"stdout","time":19.092131101,"data":"    d_U_ss = solve_hyperbolic_step_ssp_rk3_gpu_native(d_U_star, dt, grid, params, gpu_pool, seg_id, current_time)\n"}
+,{"stream_name":"stdout","time":19.092135698,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.09214037,"data":"arz_model/numerics/time_integration.py:1244: in solve_hyperbolic_step_ssp_rk3_gpu_native\n"}
+,{"stream_name":"stdout","time":19.092145351,"data":"    L_U0 = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, gpu_pool, seg_id, current_time)\n"}
+,{"stream_name":"stdout","time":19.092149727,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.09261731,"data":"arz_model/numerics/time_integration.py:1352: in calculate_spatial_discretization_weno_gpu_native\n"}
+,{"stream_name":"stdout","time":19.092637355,"data":"    N_total, phys_params.weno_epsilon\n"}
+,{"stream_name":"stdout","time":19.092641848,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.092645622,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":19.092649408,"data":"\n"}
+,{"stream_name":"stdout","time":19.092653067,"data":"self = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
+,{"stream_name":"stdout","time":19.09265687,"data":"item = 'weno_epsilon'\n"}
+,{"stream_name":"stdout","time":19.092660393,"data":"\n"}
+,{"stream_name":"stdout","time":19.092663768,"data":"    def __getattr__(self, item: str) -\u003e Any:\n"}
+,{"stream_name":"stdout","time":19.092667698,"data":"        private_attributes = object.__getattribute__(self, '__private_attributes__')\n"}
+,{"stream_name":"stdout","time":19.092671475,"data":"        if item in private_attributes:\n"}
+,{"stream_name":"stdout","time":19.092675465,"data":"            attribute = private_attributes[item]\n"}
+,{"stream_name":"stdout","time":19.092679639,"data":"            if hasattr(attribute, '__get__'):\n"}
+,{"stream_name":"stdout","time":19.09268353,"data":"                return attribute.__get__(self, type(self))  # type: ignore\n"}
+,{"stream_name":"stdout","time":19.092687317,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092690853,"data":"            try:\n"}
+,{"stream_name":"stdout","time":19.092694483,"data":"                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items\n"}
+,{"stream_name":"stdout","time":19.092698037,"data":"                return self.__pydantic_private__[item]  # type: ignore\n"}
+,{"stream_name":"stdout","time":19.092702609,"data":"            except KeyError as exc:\n"}
+,{"stream_name":"stdout","time":19.092716382,"data":"                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc\n"}
+,{"stream_name":"stdout","time":19.092720482,"data":"        else:\n"}
+,{"stream_name":"stdout","time":19.092724223,"data":"            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.\n"}
+,{"stream_name":"stdout","time":19.092728282,"data":"            # See `BaseModel.__repr_args__` for more details\n"}
+,{"stream_name":"stdout","time":19.092731647,"data":"            try:\n"}
+,{"stream_name":"stdout","time":19.092734995,"data":"                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')\n"}
+,{"stream_name":"stdout","time":19.092738613,"data":"            except AttributeError:\n"}
+,{"stream_name":"stdout","time":19.092742238,"data":"                pydantic_extra = None\n"}
+,{"stream_name":"stdout","time":19.09274596,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092749373,"data":"            if pydantic_extra and item in pydantic_extra:\n"}
+,{"stream_name":"stdout","time":19.092753007,"data":"                return pydantic_extra[item]\n"}
+,{"stream_name":"stdout","time":19.092756514,"data":"            else:\n"}
+,{"stream_name":"stdout","time":19.092759873,"data":"                if hasattr(self.__class__, item):\n"}
+,{"stream_name":"stdout","time":19.092763502,"data":"                    return super().__getattribute__(item)  # Raises AttributeError if appropriate\n"}
+,{"stream_name":"stdout","time":19.092767402,"data":"                else:\n"}
+,{"stream_name":"stdout","time":19.092770974,"data":"                    # this is the current error\n"}
+,{"stream_name":"stdout","time":19.092774654,"data":"\u003e                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')\n"}
+,{"stream_name":"stdout","time":19.092778621,"data":"E                   AttributeError: 'PhysicsConfig' object has no attribute 'weno_epsilon'\n"}
+,{"stream_name":"stdout","time":19.092782368,"data":"\n"}
+,{"stream_name":"stdout","time":19.09278571,"data":"/usr/local/lib/python3.11/dist-packages/pydantic/main.py:1026: AttributeError\n"}
+,{"stream_name":"stdout","time":19.09279076,"data":"----------------------------- Captured stdout call -----------------------------\n"}
+,{"stream_name":"stdout","time":19.092794788,"data":"Running test: test_no_cpu_transfers_in_loop\n"}
+,{"stream_name":"stdout","time":19.092798443,"data":"Finalizing network structure and validating topology...\n"}
+,{"stream_name":"stdout","time":19.092802448,"data":"✅ Network topology is valid.\n"}
+,{"stream_name":"stdout","time":19.092806836,"data":"✅ GPUMemoryPool initialized:\n"}
+,{"stream_name":"stdout","time":19.09281045,"data":"   - Segments: 2\n"}
+,{"stream_name":"stdout","time":19.092813906,"data":"   - Total cells: 150\n"}
+,{"stream_name":"stdout","time":19.092817809,"data":"   - Ghost cells: 3\n"}
+,{"stream_name":"stdout","time":19.092821148,"data":"   - Compute Capability: (6, 0)\n"}
+,{"stream_name":"stdout","time":19.092824677,"data":"   - CUDA streams: Enabled\n"}
+,{"stream_name":"stdout","time":19.092828251,"data":"   - GPU memory allocated: 0.00 MB\n"}
+,{"stream_name":"stdout","time":19.092831848,"data":"  - Preparing GPU topology for network coupling...\n"}
+,{"stream_name":"stdout","time":19.092835332,"data":"    - GPU topology prepared and transferred.\n"}
+,{"stream_name":"stdout","time":19.092839159,"data":"__________________________ test_mass_conservation_gpu __________________________\n"}
+,{"stream_name":"stdout","time":19.092847916,"data":"\n"}
+,{"stream_name":"stdout","time":19.092851659,"data":"    def test_mass_conservation_gpu():\n"}
+,{"stream_name":"stdout","time":19.092855479,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.092859268,"data":"        Verifies that the total mass (rho) in the system is conserved on the GPU\n"}
+,{"stream_name":"stdout","time":19.092863313,"data":"        when using reflective boundary conditions.\n"}
+,{"stream_name":"stdout","time":19.092867047,"data":"        \"\"\"\n"}
+,{"stream_name":"stdout","time":19.092870654,"data":"        print(\"Running test: test_mass_conservation_gpu\")\n"}
+,{"stream_name":"stdout","time":19.092874724,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092878814,"data":"        config = create_test_config()\n"}
+,{"stream_name":"stdout","time":19.092882264,"data":"        # Use reflective \"wall\" boundary conditions to ensure mass is conserved\n"}
+,{"stream_name":"stdout","time":19.092885964,"data":"        config.segments[0].boundary_conditions.left = ReflectiveBC()\n"}
+,{"stream_name":"stdout","time":19.092890164,"data":"        config.segments[1].boundary_conditions.right = ReflectiveBC()\n"}
+,{"stream_name":"stdout","time":19.092893839,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092897465,"data":"        network_grid = NetworkGrid.from_config(config)\n"}
+,{"stream_name":"stdout","time":19.092901012,"data":"    \n"}
+,{"stream_name":"stdout","time":19.09290455,"data":"        # Calculate initial mass from the config\n"}
+,{"stream_name":"stdout","time":19.092908092,"data":"        initial_mass = 0.0\n"}
+,{"stream_name":"stdout","time":19.092911676,"data":"        for seg_config in config.segments:\n"}
+,{"stream_name":"stdout","time":19.092915161,"data":"            segment = network_grid.segments[seg_config.id]\n"}
+,{"stream_name":"stdout","time":19.092918889,"data":"            ic_config = seg_config.initial_conditions.config\n"}
+,{"stream_name":"stdout","time":19.092922424,"data":"            if isinstance(ic_config, UniformIC):\n"}
+,{"stream_name":"stdout","time":19.092926112,"data":"                # Mass = density * length\n"}
+,{"stream_name":"stdout","time":19.092930227,"data":"                initial_mass += ic_config.density * (segment['grid'].xmax - segment['grid'].xmin)\n"}
+,{"stream_name":"stdout","time":19.092934127,"data":"    \n"}
+,{"stream_name":"stdout","time":19.092937782,"data":"        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)\n"}
+,{"stream_name":"stdout","time":19.092941687,"data":"\u003e       results = runner.run()\n"}
+,{"stream_name":"stdout","time":19.092945216,"data":"                  ^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.092948737,"data":"\n"}
+,{"stream_name":"stdout","time":19.092951989,"data":"arz_model/tests/test_gpu_only_integration.py:196: \n"}
+,{"stream_name":"stdout","time":19.092955806,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":19.092959439,"data":"arz_model/simulation/runner.py:745: in run\n"}
+,{"stream_name":"stdout","time":19.092963107,"data":"    return self.network_simulator.run(t_final=sim_t_final)\n"}
+,{"stream_name":"stdout","time":19.092966803,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.092970641,"data":"arz_model/simulation/execution/network_simulator.py:171: in run\n"}
+,{"stream_name":"stdout","time":19.092974847,"data":"    d_U_out = strang_splitting_step_gpu_native(\n"}
+,{"stream_name":"stdout","time":19.092978456,"data":"arz_model/numerics/time_integration.py:1199: in strang_splitting_step_gpu_native\n"}
+,{"stream_name":"stdout","time":19.092986264,"data":"    d_U_ss = solve_hyperbolic_step_ssp_rk3_gpu_native(d_U_star, dt, grid, params, gpu_pool, seg_id, current_time)\n"}
+,{"stream_name":"stdout","time":19.092990449,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.092994492,"data":"arz_model/numerics/time_integration.py:1244: in solve_hyperbolic_step_ssp_rk3_gpu_native\n"}
+,{"stream_name":"stdout","time":19.092998184,"data":"    L_U0 = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, gpu_pool, seg_id, current_time)\n"}
+,{"stream_name":"stdout","time":19.093001982,"data":"           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.093005809,"data":"arz_model/numerics/time_integration.py:1352: in calculate_spatial_discretization_weno_gpu_native\n"}
+,{"stream_name":"stdout","time":19.093009542,"data":"    N_total, phys_params.weno_epsilon\n"}
+,{"stream_name":"stdout","time":19.093013146,"data":"             ^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":19.093016729,"data":"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n"}
+,{"stream_name":"stdout","time":19.093020429,"data":"\n"}
+,{"stream_name":"stdout","time":19.093024165,"data":"self = PhysicsConfig(alpha=0.6, v_max_c=120.0 km/h, v_max_m=100.0 km/h, tau_c=1.5s, tau_m=1.0s)\n"}
+,{"stream_name":"stdout","time":19.093027677,"data":"item = 'weno_epsilon'\n"}
+,{"stream_name":"stdout","time":19.093031267,"data":"\n"}
+,{"stream_name":"stdout","time":19.093034922,"data":"    def __getattr__(self, item: str) -\u003e Any:\n"}
+,{"stream_name":"stdout","time":19.093038708999998,"data":"        private_attributes = object.__getattribute__(self, '__private_attributes__')\n"}
+,{"stream_name":"stdout","time":19.093042382,"data":"        if item in private_attributes:\n"}
+,{"stream_name":"stdout","time":19.093046263,"data":"            attribute = private_attributes[item]\n"}
+,{"stream_name":"stdout","time":19.093049916,"data":"            if hasattr(attribute, '__get__'):\n"}
+,{"stream_name":"stdout","time":19.093053431,"data":"                return attribute.__get__(self, type(self))  # type: ignore\n"}
+,{"stream_name":"stdout","time":19.093056969,"data":"    \n"}
+,{"stream_name":"stdout","time":19.093060451,"data":"            try:\n"}
+,{"stream_name":"stdout","time":19.093064109,"data":"                # Note: self.__pydantic_private__ cannot be None if self.__private_attributes__ has items\n"}
+,{"stream_name":"stdout","time":19.093067738,"data":"                return self.__pydantic_private__[item]  # type: ignore\n"}
+,{"stream_name":"stdout","time":19.093071311,"data":"            except KeyError as exc:\n"}
+,{"stream_name":"stdout","time":19.09307512,"data":"                raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}') from exc\n"}
+,{"stream_name":"stdout","time":19.093078965,"data":"        else:\n"}
+,{"stream_name":"stdout","time":19.093082368,"data":"            # `__pydantic_extra__` can fail to be set if the model is not yet fully initialized.\n"}
+,{"stream_name":"stdout","time":19.093085869,"data":"            # See `BaseModel.__repr_args__` for more details\n"}
+,{"stream_name":"stdout","time":19.093089636,"data":"            try:\n"}
+,{"stream_name":"stdout","time":19.093093249,"data":"                pydantic_extra = object.__getattribute__(self, '__pydantic_extra__')\n"}
+,{"stream_name":"stdout","time":19.093100457,"data":"            except AttributeError:\n"}
+,{"stream_name":"stdout","time":19.093105572,"data":"                pydantic_extra = None\n"}
+,{"stream_name":"stdout","time":19.093109226,"data":"    \n"}
+,{"stream_name":"stdout","time":19.093112731,"data":"            if pydantic_extra and item in pydantic_extra:\n"}
+,{"stream_name":"stdout","time":19.093116402,"data":"                return pydantic_extra[item]\n"}
+,{"stream_name":"stdout","time":19.093119951,"data":"            else:\n"}
+,{"stream_name":"stdout","time":19.093123409,"data":"                if hasattr(self.__class__, item):\n"}
+,{"stream_name":"stdout","time":19.093130739,"data":"                    return super().__getattribute__(item)  # Raises AttributeError if appropriate\n"}
+,{"stream_name":"stdout","time":19.093134867,"data":"                else:\n"}
+,{"stream_name":"stdout","time":19.093138401,"data":"                    # this is the current error\n"}
+,{"stream_name":"stdout","time":19.0931421,"data":"\u003e                   raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')\n"}
+,{"stream_name":"stdout","time":19.093146122,"data":"E                   AttributeError: 'PhysicsConfig' object has no attribute 'weno_epsilon'\n"}
+,{"stream_name":"stdout","time":19.093150331,"data":"\n"}
+,{"stream_name":"stdout","time":19.093154163,"data":"/usr/local/lib/python3.11/dist-packages/pydantic/main.py:1026: AttributeError\n"}
+,{"stream_name":"stdout","time":19.093157789,"data":"----------------------------- Captured stdout call -----------------------------\n"}
+,{"stream_name":"stdout","time":19.093161806,"data":"Running test: test_mass_conservation_gpu\n"}
+,{"stream_name":"stdout","time":19.093165556,"data":"Finalizing network structure and validating topology...\n"}
+,{"stream_name":"stdout","time":19.093169338,"data":"✅ Network topology is valid.\n"}
+,{"stream_name":"stdout","time":19.093173129,"data":"✅ GPUMemoryPool initialized:\n"}
+,{"stream_name":"stdout","time":19.093177212,"data":"   - Segments: 2\n"}
+,{"stream_name":"stdout","time":19.093180778,"data":"   - Total cells: 150\n"}
+,{"stream_name":"stdout","time":19.093184325,"data":"   - Ghost cells: 3\n"}
+,{"stream_name":"stdout","time":19.093187925,"data":"   - Compute Capability: (6, 0)\n"}
+,{"stream_name":"stdout","time":19.093191517,"data":"   - CUDA streams: Enabled\n"}
+,{"stream_name":"stdout","time":19.093195352,"data":"   - GPU memory allocated: 0.00 MB\n"}
+,{"stream_name":"stdout","time":19.093199001,"data":"  - Preparing GPU topology for network coupling...\n"}
+,{"stream_name":"stdout","time":19.093202744,"data":"    - GPU topology prepared and transferred.\n"}
+,{"stream_name":"stdout","time":19.093206369,"data":"=============================== warnings summary ===============================\n"}
+,{"stream_name":"stdout","time":19.093210103,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":19.093213947,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":19.093217648,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":19.093221354,"data":"tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":19.093225281,"data":"tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop\n"}
+,{"stream_name":"stdout","time":19.093229141,"data":"tests/test_gpu_only_integration.py::test_mass_conservation_gpu\n"}
+,{"stream_name":"stdout","time":19.093233194,"data":"  /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":19.093248014,"data":"    warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":19.093251624,"data":"\n"}
+,{"stream_name":"stdout","time":19.093255281,"data":"-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n"}
+,{"stream_name":"stdout","time":19.093258907,"data":"=========================== short test summary info ============================\n"}
+,{"stream_name":"stdout","time":19.508040054,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_simulation_runs_end_to_end_on_gpu\n"}
+,{"stream_name":"stdout","time":19.508074235,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_no_cpu_transfers_in_loop\n"}
+,{"stream_name":"stdout","time":19.508080062,"data":"FAILED arz_model/tests/test_gpu_only_integration.py::test_mass_conservation_gpu\n"}
+,{"stream_name":"stdout","time":19.508084572,"data":"============= 3 failed, 17 passed, 1 skipped, 6 warnings in 7.33s ==============\n"}
+,{"stream_name":"stdout","time":19.964366518,"data":"[WARNING] Target execution returned code: 1\n"}
+,{"stream_name":"stdout","time":19.964510294,"data":"\n"}
+,{"stream_name":"stdout","time":19.964521128,"data":"[STEP 4/4] Cleanup...\n"}
+,{"stream_name":"stdout","time":19.964636389,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
+,{"stream_name":"stdout","time":19.97422718,"data":"[OK] Repository cleaned up.\n"}
+,{"stream_name":"stdout","time":19.974249315,"data":"\n"}
+,{"stream_name":"stdout","time":19.974255704,"data":"[FINAL] Test workflow completed\n"}
+,{"stream_name":"stdout","time":19.974259462,"data":"\n"}
+,{"stream_name":"stdout","time":19.97426363,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":19.974268011,"data":"EXECUTION COMPLETED\n"}
+,{"stream_name":"stdout","time":19.974271877,"data":"Check /kaggle/working/test_log.txt for details.\n"}
+,{"stream_name":"stdout","time":19.974276395,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":23.697763631,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":23.697818209,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":23.73749272,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":24.794249249,"data":"[NbConvertApp] Writing 298633 bytes to __results__.html\n"}
 ]

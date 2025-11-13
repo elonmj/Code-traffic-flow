@@ -1349,7 +1349,7 @@ def calculate_spatial_discretization_weno_gpu_native(
     for var_idx in range(4):
         weno5_reconstruction_kernel[blockspergrid_total, threadsperblock](
             d_P[var_idx, :], d_P_left[var_idx, :], d_P_right[var_idx, :],
-            N_total, phys_params.weno_epsilon
+            N_total, phys_params.epsilon  # Use epsilon for WENO numerical stability
         )
         # Apply simple extrapolation at boundaries for WENO stencil
         apply_boundary_conditions_kernel[1, n_ghost](
