@@ -38,3 +38,13 @@
 2025-11-13 14:09:34,258 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-13 14:09:34,258 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-13 14:09:42,294 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-13 14:10:47,124 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-13 14:10:47,233 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-13 14:10:47,291 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-13 14:10:47,291 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-13 14:10:47,293 - kernel_manager - INFO -    M kaggle_runner/kernel_manager.py (Modified (unstaged))
+2025-11-13 14:10:47,293 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-13 14:10:47,360 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-13 14:10:48,042 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-13 14:10:48,042 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-13 14:10:53,243 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub

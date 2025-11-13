@@ -386,6 +386,7 @@ try:
     log_and_print("info", "\\n[STEP 3/4] Running Target...")
     
     os.chdir(REPO_DIR)
+    sys.path.insert(0, os.getcwd())
     
     env = os.environ.copy()
     env["PYTHONPATH"] = str(Path(REPO_DIR))

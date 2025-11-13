@@ -1,27 +1,27 @@
-2025-11-13 13:03:50,797 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
-2025-11-13 13:03:50,797 - INFO - Branch: main
-2025-11-13 13:03:50,797 - INFO - Target: arz_model/tests/
-2025-11-13 13:04:06,988 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
-2025-11-13 13:04:06,988 - INFO - PyTorch: 2.6.0+cu124
-2025-11-13 13:04:07,039 - INFO - CUDA available: True
-2025-11-13 13:04:07,060 - INFO - CUDA device: Tesla P100-PCIE-16GB
-2025-11-13 13:04:07,061 - INFO - 
+2025-11-13 13:10:58,871 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-11-13 13:10:58,871 - INFO - Branch: main
+2025-11-13 13:10:58,871 - INFO - Target: arz_model/tests/
+2025-11-13 13:11:03,564 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-11-13 13:11:03,564 - INFO - PyTorch: 2.6.0+cu124
+2025-11-13 13:11:03,610 - INFO - CUDA available: True
+2025-11-13 13:11:03,631 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-11-13 13:11:03,632 - INFO - 
 [STEP 1/4] Cloning repository from GitHub...
-2025-11-13 13:04:07,061 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
-2025-11-13 13:04:08,171 - INFO - [OK] Repository cloned successfully
-2025-11-13 13:04:08,171 - INFO - 
+2025-11-13 13:11:03,632 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-11-13 13:11:04,375 - INFO - [OK] Repository cloned successfully
+2025-11-13 13:11:04,375 - INFO - 
 [STEP 2/4] Installing dependencies...
-2025-11-13 13:04:08,171 - INFO - Installing pytest...
-2025-11-13 13:04:12,398 - INFO - Installing PyYAML...
-2025-11-13 13:04:15,291 - INFO - [OK] Dependencies installed
-2025-11-13 13:04:15,291 - INFO - 
+2025-11-13 13:11:04,375 - INFO - Installing pytest...
+2025-11-13 13:11:08,265 - INFO - [OK] Dependencies installed
+2025-11-13 13:11:08,265 - INFO - 
 [STEP 3/4] Running Target...
-2025-11-13 13:04:15,292 - INFO - Target is a directory. Executing pytest...
-2025-11-13 13:04:15,292 - INFO - Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests
-2025-11-13 13:04:23,804 - WARNING - [WARNING] Target execution returned code: 1
-2025-11-13 13:04:23,804 - INFO - 
+2025-11-13 13:11:08,265 - ERROR - Failed to get GPUMemoryPool __init__ signature: No module named 'arz_model'
+2025-11-13 13:11:08,265 - INFO - Target is a directory. Executing pytest...
+2025-11-13 13:11:08,265 - INFO - Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests
+2025-11-13 13:11:16,162 - WARNING - [WARNING] Target execution returned code: 1
+2025-11-13 13:11:16,162 - INFO - 
 [STEP 4/4] Cleanup...
-2025-11-13 13:04:23,804 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
-2025-11-13 13:04:23,812 - INFO - [OK] Repository cleaned up.
-2025-11-13 13:04:23,812 - INFO - 
+2025-11-13 13:11:16,162 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
+2025-11-13 13:11:16,169 - INFO - [OK] Repository cleaned up.
+2025-11-13 13:11:16,169 - INFO - 
 [FINAL] Test workflow completed
