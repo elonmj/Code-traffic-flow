@@ -1324,7 +1324,8 @@ def calculate_spatial_discretization_weno_gpu_native(
     N_total = grid.N_total
     N_physical = grid.N_physical
     n_ghost = grid.num_ghost_cells
-    phys_params = params.physics
+    # params is already PhysicsConfig, no .physics accessor needed
+    phys_params = params
 
     # --- Get temporary arrays from the pool ---
     d_P = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype)
@@ -1339,8 +1340,8 @@ def calculate_spatial_discretization_weno_gpu_native(
     
     # --- 1. Conversion: Conserved -> Primitives ---
     conserved_to_primitives_arr_gpu(
-        d_U_in, phys_params.alpha, phys_params.rho_jam, phys_params.epsilon,
-        phys_params.K_m, phys_params.gamma_m, phys_params.K_c, phys_params.gamma_c,
+        d_U_in, phys_params.alpha, phys_params.rho_max, phys_params.epsilon,
+        phys_params.k_m, phys_params.gamma_m, phys_params.k_c, phys_params.gamma_c,
         target_array=d_P
     )
 
@@ -1366,8 +1367,8 @@ def calculate_spatial_discretization_weno_gpu_native(
     blockspergrid_flux = (N_total - 1 + threadsperblock - 1) // threadsperblock
     central_upwind_flux_cuda_kernel[blockspergrid_flux, threadsperblock](
         d_U_in, # The flux kernel uses U to calculate speeds
-        phys_params.alpha, phys_params.rho_jam, phys_params.epsilon,
-        phys_params.K_m, phys_params.gamma_m, phys_params.K_c, phys_params.gamma_c,
+        phys_params.alpha, phys_params.rho_max, phys_params.epsilon,
+        phys_params.k_m, phys_params.gamma_m, phys_params.k_c, phys_params.gamma_c,
         light_factor,
         d_fluxes
     )
