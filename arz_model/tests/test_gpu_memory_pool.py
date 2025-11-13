@@ -146,7 +146,7 @@ class TestGPUMemoryPoolAccess:
         
         # Test valid access
         for seg_id in simple_config['segment_ids']:
-            d_R = pool.get_road_quality(seg_id)
+            d_R = pool.get_road_quality_array(seg_id)
             assert d_R is not None
             assert isinstance(d_R, cuda.devicearray.DeviceNDArray)
             
@@ -203,9 +203,7 @@ class TestGPUMemoryPoolInitialization:
         
         pool.initialize_segment_state(seg_id, U_init, R_init)
         
-        # Verify data was transferred
-        d_U = pool.get_segment_state(seg_id)
-        d_R = pool.get_road_quality(seg_id)
+        d_R = pool.get_road_quality_array(seg_id)
         
         # Transfer back to CPU for verification
         U_check = d_U.copy_to_host()
@@ -231,9 +229,7 @@ class TestGPUMemoryPoolInitialization:
         
         pool.initialize_segment_state(seg_id, U_init, R_init)
         
-        # Verify data was transferred and extended
-        d_U = pool.get_segment_state(seg_id)
-        d_R = pool.get_road_quality(seg_id)
+        d_R = pool.get_road_quality_array(seg_id)
         
         U_check = d_U.copy_to_host()
         R_check = d_R.copy_to_host()

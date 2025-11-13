@@ -65,7 +65,7 @@ class NetworkSimulator:
             print("  - Initializing GPU Memory Pool for network...")
             
         segment_ids = list(self.network.segments.keys())
-        N_per_segment = {seg_id: segment['grid'].N for seg_id, segment in self.network.segments.items()}
+        N_per_segment = {seg_id: segment['grid'].N_physical for seg_id, segment in self.network.segments.items()}
         
         pool = GPUMemoryPool(
             segment_ids=segment_ids,

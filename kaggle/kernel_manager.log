@@ -1,0 +1,15 @@
+2025-11-13 13:52:48,368 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-13 13:52:48,495 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-13 13:52:48,555 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-13 13:52:48,555 - kernel_manager - INFO -   M  rz_model/numerics/gpu/memory_pool.py (Modified (staged))
+2025-11-13 13:52:48,557 - kernel_manager - INFO -    M arz_model/simulation/execution/network_simulator.py (Modified (unstaged))
+2025-11-13 13:52:48,557 - kernel_manager - INFO -    M arz_model/simulation/runner.py (Modified (unstaged))
+2025-11-13 13:52:48,557 - kernel_manager - INFO -   ?? arz_model/debug_test_runner.py (Untracked)
+2025-11-13 13:52:48,557 - kernel_manager - INFO -   ?? kaggle/kernel_manager.log (Untracked)
+2025-11-13 13:52:48,559 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-13 13:52:48,642 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-13 13:52:49,447 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-13 13:52:49,447 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-13 13:52:55,989 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-13 14:03:09,966 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-13 14:03:10,075 - kernel_manager - INFO - 📍 Current branch: main
