@@ -294,3 +294,14 @@
 2025-11-13 19:05:26,148 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-13 19:05:26,148 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-13 19:05:34,616 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-13 19:06:29,390 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-13 19:06:29,534 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-13 19:06:29,616 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-13 19:06:29,616 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-13 19:06:29,616 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/generic-test-runner-kernel.log (Modified (unstaged))
+2025-11-13 19:06:29,618 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/test_log.txt (Modified (unstaged))
+2025-11-13 19:06:29,618 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-13 19:06:29,704 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-13 19:06:30,622 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-13 19:06:30,623 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-13 19:06:37,992 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
