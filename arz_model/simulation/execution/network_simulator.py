@@ -75,8 +75,8 @@ class NetworkSimulator:
         pool = GPUMemoryPool(
             segment_ids=segment_ids,
             N_per_segment=N_per_segment,
-            ghost_cells=self.config.grid.num_ghost_cells,
-            compute_capability=self.compute_capability # Pass CC to pool
+            ghost_cells=self.config.grid.num_ghost_cells
+            # compute_capability defaults to (6,0) - sufficient for Kaggle P100
         )
         
         # Transfer initial states and road quality to the GPU

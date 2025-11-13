@@ -179,7 +179,9 @@ class TestGPUMemoryPoolAccess:
         
         for seg_id in simple_config['segment_ids']:
             stream = pool_no_streams.get_stream(seg_id)
-            assert stream == cuda.default_stream()
+            # When streams disabled, should return default stream (check both are default, not identity)
+            default = cuda.default_stream()
+            assert stream is default or (hasattr(stream, 'handle') and hasattr(default, 'handle') and stream.handle == default.handle)
         
         pool_no_streams.cleanup()
 
