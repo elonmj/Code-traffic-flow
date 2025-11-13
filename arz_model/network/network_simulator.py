@@ -13,9 +13,11 @@ import numpy as np
 import logging
 from typing import Dict, Any, Optional, Tuple, List
 from dataclasses import dataclass
+from tqdm import tqdm
 
 from .network_grid import NetworkGrid
 from ..core.parameters import ModelParameters
+
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +73,7 @@ class NetworkGridSimulator:
             dt_sim: Simulation timestep (seconds)
         """
         self.params = params
+        self.params.is_network_mode = True  # Add flag for network context
         self.scenario_config = scenario_config
         self.dt_sim = dt_sim
         
@@ -84,6 +87,7 @@ class NetworkGridSimulator:
         self.network: Optional[NetworkGrid] = None
         self.current_time: float = 0.0
         self.is_initialized: bool = False
+        self.history: Dict[str, Dict[str, Any]] = {}
         
         # Tracked segment IDs for observations
         self.observed_segment_ids: List[str] = []
@@ -119,7 +123,7 @@ class NetworkGridSimulator:
                 )
             else:
                 # Fallback: still build manually if legacy config format
-                self.network = NetworkGrid(self.params)
+                self.network = NetworkGrid(self.params, self.scenario_config)
                 self._build_network_from_config_simple(self.scenario_config)
         
         # Set initial conditions (if present)
@@ -198,14 +202,12 @@ class NetworkGridSimulator:
     def step(
         self,
         dt: float,
-        repeat_k: int = 1
     ) -> Tuple[SimulationState, float]:
         """
-        Advance simulation by dt * repeat_k seconds.
+        Advance simulation by dt seconds.
         
         Args:
             dt: Single timestep duration (seconds)
-            repeat_k: Number of timesteps to execute
             
         Returns:
             (new_state, new_timestamp) tuple
@@ -213,14 +215,22 @@ class NetworkGridSimulator:
         if not self.is_initialized:
             raise RuntimeError("Network not initialized - call reset() first")
         
-        # Execute k timesteps
-        for _ in range(repeat_k):
-            self.network.step(dt, current_time=self.current_time)
-            self.current_time += dt
+        # Execute single timestep
+        self.network.step(dt, current_time=self.current_time)
+        self.current_time += dt
         
         # Build state observation
         new_state = self._build_state(self.current_time)
         
+        # Store history for each segment
+        for seg_id, segment_data in self.network.segments.items():
+            if seg_id not in self.history:
+                self.history[seg_id] = {'times': [], 'states': [], 'grid': segment_data['grid'], 'params': self.params}
+            
+            self.history[seg_id]['times'].append(self.current_time)
+            # Store a copy of the physical state
+            self.history[seg_id]['states'].append(segment_data['U'][:, segment_data['grid'].physical_cell_indices].copy())
+
         return new_state, self.current_time
     
     def get_metrics(self) -> Dict[str, Any]:
@@ -254,6 +264,73 @@ class NetworkGridSimulator:
             'num_nodes': len(self.network.nodes) if self.network else 0
         }
     
+    def compute_adaptive_dt(self):
+        """
+        Calcule le pas de temps adaptatif (dt) pour l'ensemble du réseau en se basant sur la condition CFL.
+
+        Cette méthode parcourt tous les segments du réseau, calcule la vitesse d'onde maximale
+        pour chaque segment, puis détermine le dt global qui garantit la stabilité pour l'ensemble
+        du système.
+
+        Returns:
+            float: Le pas de temps (dt) stable calculé.
+        """
+        global_max_lambda = 0.0
+        global_dx_min = float('inf')
+        
+        # Itérer sur tous les segments pour trouver la vitesse d'onde maximale globale
+        for seg_id, segment_data in self.network.segments.items():
+            grid = segment_data['grid']
+            U = segment_data['U']
+            
+            # Extraire les cellules physiques pour le calcul CFL
+            U_physical = U[:, grid.physical_cell_indices]
+            
+            # Utiliser la fonction CFL existante pour calculer les vitesses d'onde
+            # Note: calculate_cfl_dt retourne dt, mais on peut extraire max_lambda
+            from ..core import physics
+            
+            rho_m = U_physical[0]
+            w_m = U_physical[1]
+            rho_c = U_physical[2]
+            w_c = U_physical[3]
+            
+            # Assurer densités non-négatives
+            rho_m_calc = np.maximum(rho_m, 0.0)
+            rho_c_calc = np.maximum(rho_c, 0.0)
+            
+            # Calculer pression et vitesse
+            p_m, p_c = physics.calculate_pressure(
+                rho_m_calc, rho_c_calc,
+                self.params.alpha, self.params.rho_jam, self.params.epsilon,
+                self.params.K_m, self.params.gamma_m,
+                self.params.K_c, self.params.gamma_c
+            )
+            v_m, v_c = physics.calculate_physical_velocity(w_m, w_c, p_m, p_c)
+            
+            # Calculer valeurs propres pour toutes les cellules
+            all_eigenvalues_list = physics.calculate_eigenvalues(
+                rho_m_calc, v_m, rho_c_calc, v_c, self.params
+            )
+            
+            # Trouver la vitesse d'onde maximale pour ce segment
+            max_abs_lambda_segment = np.max(np.abs(np.asarray(all_eigenvalues_list)))
+            global_max_lambda = max(global_max_lambda, max_abs_lambda_segment)
+            
+            # Suivre le dx minimum pour le calcul CFL
+            global_dx_min = min(global_dx_min, grid.dx)
+
+        # Si aucune vitesse d'onde n'est détectée (réseau vide ou statique), retourner un dt par défaut.
+        if global_max_lambda < self.params.epsilon:
+            # Utilise dt_sim comme fallback ou une valeur par défaut si non défini
+            return getattr(self.params, 'dt_sim', 0.1)
+
+        # Calculer le dt stable en utilisant la condition CFL avec le dx minimum
+        # (le dx minimum impose la contrainte la plus stricte)
+        stable_dt = self.params.cfl_number * global_dx_min / global_max_lambda
+
+        return stable_dt
+
     # === Private Helper Methods ===
     
     def _build_network_from_config_simple(self, config: Dict[str, Any]):
@@ -366,66 +443,55 @@ class NetworkGridSimulator:
         Extracts state for observed segments and computes derived quantities
         (velocities, queue lengths, flows) compatible with RL environment.
         """
-        network_state = self.network.get_network_state()
         branches = {}
         
-        print(f"[DEBUG] _build_state: observed_segment_ids = {self.observed_segment_ids}")
-        print(f"[DEBUG]   network_state keys = {list(network_state.keys())}")
-        
-        for seg_id in self.observed_segment_ids:
-            if seg_id not in network_state:
-                print(f"[DEBUG]   WARNING: {seg_id} not in network_state!")
+        # In the new architecture, NetworkGrid holds the full state.
+        # We iterate through its segments to build the observation.
+        for seg_id, segment_data in self.network.segments.items():
+            if seg_id not in self.observed_segment_ids:
                 continue
+
+            U = segment_data['U'] # Full state array with ghost cells
+            grid = segment_data['grid']
             
-            U = network_state[seg_id]  # Direct array: (4, N_total)
-            print(f"[DEBUG]   Processing {seg_id}: U.shape={U.shape}, U[0,5]={U[0,5]:.4f}, U[1,5]={U[1,5]:.4f}")
-            
-            # Extract state variables
-            rho_m = U[0, :]
-            w_m = U[1, :]
-            rho_c = U[2, :]
-            w_c = U[3, :]
-            
-            # Compute velocities (avoid division by zero)
-            v_m = np.where(rho_m > 1e-6, w_m / rho_m, 0.0)
-            v_c = np.where(rho_c > 1e-6, w_c / rho_c, 0.0)
-            
-            # Average over segment (exclude ghost cells)
-            N_real = len(rho_m) - 4  # 2 ghost cells on each side
-            rho_m_avg = np.mean(rho_m[2:-2])
-            v_m_avg = np.mean(v_m[2:-2])
-            rho_c_avg = np.mean(rho_c[2:-2])
-            v_c_avg = np.mean(v_c[2:-2])
-            
-            # Estimate queue length (vehicles with low speed near downstream end)
-            # Simple heuristic: count cells with v < 5 km/h in last 30% of segment
-            queue_start_idx = int(0.7 * N_real) + 2
+            # Extract physical state
+            state_physical = U[:, grid.physical_cell_indices]
+            rho_m, w_m, rho_c, w_c = state_physical
+
+            # Compute physical velocities
+            from ..core.physics import calculate_pressure, calculate_physical_velocity
+            p_m, p_c = calculate_pressure(rho_m, rho_c, self.params.alpha, self.params.rho_jam, self.params.epsilon, self.params.K_m, self.params.gamma_m, self.params.K_c, self.params.gamma_c)
+            v_m, v_c = calculate_physical_velocity(w_m, w_c, p_m, p_c)
+
+            # Average over segment
+            rho_m_avg = np.mean(rho_m)
+            v_m_avg = np.mean(v_m)
+            rho_c_avg = np.mean(rho_c)
+            v_c_avg = np.mean(v_c)
+
+            # Estimate queue length (simple version)
             v_low_threshold = 5.0 / 3.6  # 5 km/h in m/s
-            
-            queue_m = np.sum((v_m[queue_start_idx:-2] < v_low_threshold) * rho_m[queue_start_idx:-2])
-            queue_c = np.sum((v_c[queue_start_idx:-2] < v_low_threshold) * rho_c[queue_start_idx:-2])
-            queue_len = queue_m + queue_c
-            
-            # Flow at downstream boundary
-            flow_m = rho_m[-3] * v_m[-3]  # Cell before ghost
-            flow_c = rho_c[-3] * v_c[-3]
+            queue_cells = (v_m < v_low_threshold) | (v_c < v_low_threshold)
+            queue_len = np.sum(queue_cells * (rho_m + rho_c) * grid.dx)
+
+            # Flow at downstream boundary (last physical cell)
+            flow_m = rho_m[-1] * v_m[-1]
+            flow_c = rho_c[-1] * v_c[-1]
             flow_total = flow_m + flow_c
             
             branches[seg_id] = {
-                'rho_m': float(rho_m_avg),
-                'v_m': float(v_m_avg) * 3.6,  # Convert m/s to km/h for compatibility
-                'rho_c': float(rho_c_avg),
-                'v_c': float(v_c_avg) * 3.6,
+                'rho_m': float(rho_m_avg) / (1.0 / 1000.0), # veh/km
+                'v_m': float(v_m_avg) * 3.6,  # km/h
+                'rho_c': float(rho_c_avg) / (1.0 / 1000.0), # veh/km
+                'v_c': float(v_c_avg) * 3.6,  # km/h
                 'queue_len': float(queue_len),
                 'flow': float(flow_total)
             }
-        
+
         # Get current phase from first signalized node (if any)
         phase_id = None
         for node_id, node in self.network.nodes.items():
             if node.traffic_lights is not None:
-                # TrafficLightController.get_current_phase() returns Phase object
-                # Phase doesn't have an 'id' attribute, use phase index instead
                 phase_id = node.traffic_lights.current_phase_index
                 break
         

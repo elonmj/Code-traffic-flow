@@ -1,5 +1,5 @@
-"""State management."""
+"""State management for the GPU-only simulation architecture."""
 
-from .state_manager import StateManager
+from .state_manager import StateManagerGPUOnly
 
-__all__ = ['StateManager']
+__all__ = ['StateManagerGPUOnly']

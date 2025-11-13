@@ -2,21 +2,23 @@ import numpy as np
 import time
 import copy # For deep merging overrides
 import os
-import yaml # To load road quality if defined directly in scenario
 from tqdm import tqdm # For progress bar
 from numba import cuda # Import cuda for device arrays
 from typing import Union, Optional
 
-from ..analysis import metrics
+# from ..analysis import metrics
 from ..io import data_manager
 from ..core.parameters import ModelParameters, VEH_KM_TO_VEH_M # Import the constant
 from ..grid.grid1d import Grid1D
 from ..numerics import boundary_conditions, cfl, time_integration
-from . import initial_conditions # Import the initial conditions module
+
 
 # NEW: Import Pydantic config system
 try:
-    from ..config import SimulationConfig
+    from ..config import (
+        SimulationConfig, GridConfig, UniformIC, 
+        BoundaryConditionsConfig, PeriodicBC, PhysicsConfig
+    )
     from ..config.network_simulation_config import NetworkSimulationConfig
     PYDANTIC_AVAILABLE = True
 except ImportError:
@@ -24,287 +26,125 @@ except ImportError:
     SimulationConfig = None
     NetworkSimulationConfig = None
 
+from .execution.network_simulator import NetworkSimulator
+
+
+model_config = {"extra": "forbid"}
+
+
 class SimulationRunner:
     """
     Orchestrates the execution of a single simulation scenario.
 
-    Supports two initialization modes:
-    1. NEW (Pydantic): Pass SimulationConfig directly
-    2. LEGACY (YAML): Pass scenario/base config paths (backward compatible)
-
+    Supports GPU-only execution via Pydantic configuration objects.
     Initializes the grid, parameters, and initial state, then runs the
     time loop, applying numerical methods and storing results.
     """
 
-    def __init__(self, 
-                 config: Union['SimulationConfig', str, None] = None,
-                 scenario_config_path: Optional[str] = None,
-                 base_config_path: str = 'config/config_base.yml',
-                 override_params: dict = None,
+    def __init__(self,
+                 simulation_config: Optional[Union[SimulationConfig, NetworkSimulationConfig]] = None,
                  quiet: bool = False,
-                 device: Optional[str] = None):
+                 network_grid: Optional['NetworkGrid'] = None):
         """
         Initializes the simulation runner.
 
-        NEW USAGE (Pydantic):
-            runner = SimulationRunner(config=ConfigBuilder.section_7_6())
-        
-        LEGACY USAGE (YAML - backward compatible):
-            runner = SimulationRunner(scenario_config_path='scenarios/test.yml')
+        MODES:
+        1. Network Simulation (Pydantic):
+            runner = SimulationRunner(network_grid=my_network_grid, simulation_config=network_config)
+
+        2. Single-Segment Simulation (Pydantic):
+            runner = SimulationRunner(simulation_config=ConfigBuilder.section_7_6())
 
         Args:
-            config: NEW - SimulationConfig object (Pydantic)
-            scenario_config_path: LEGACY - Path to scenario YAML file
-            base_config_path: LEGACY - Path to base YAML file
-            override_params: LEGACY - Dict of parameter overrides
-            quiet: Suppress print statements
-            device: Override device ('cpu' or 'gpu')
+            network_grid: A fully built NetworkGrid object for multi-segment simulation.
+            simulation_config: Pydantic SimulationConfig or NetworkSimulationConfig instance.
+            quiet: Suppress print statements.
         """
         # ====================================================================
         # DETECT INITIALIZATION MODE
         # ====================================================================
         
-        # Case 1: NEW MODE - Pydantic NetworkSimulationConfig (multi-segment network)
-        if PYDANTIC_AVAILABLE and NetworkSimulationConfig and isinstance(config, NetworkSimulationConfig):
-            self._init_from_network_config(config, quiet, device)
+        # Case 1: Network Simulation Mode
+        if network_grid is not None:
+            if not isinstance(simulation_config, NetworkSimulationConfig):
+                raise TypeError("Network mode requires a `NetworkSimulationConfig` object.")
+            self._init_from_network_grid(network_grid, simulation_config, quiet)
             return
-        
-        # Case 2: NEW MODE - Pydantic SimulationConfig (single Grid1D)
-        if PYDANTIC_AVAILABLE and isinstance(config, SimulationConfig):
-            self._init_from_pydantic(config, quiet, device)
-            return
-        
-        # Case 3: LEGACY MODE - scenario_config_path provided (backward compatible)
-        if scenario_config_path is not None:
-            # Convert string in first arg to scenario_config_path for backward compat
-            if isinstance(config, str):
-                scenario_config_path = config
-                config = None
-            self._init_from_yaml(scenario_config_path, base_config_path, override_params, quiet, device)
-            return
-        
-        # Case 4: ERROR - No valid initialization mode
+
+        # Case 2: Single-Segment Pydantic Mode - DEPRECATED
+        # This mode is no longer supported in the GPU-only architecture.
+        # All simulations, including single-segment ones, should be run
+        # as a network simulation with one segment.
+        if PYDANTIC_AVAILABLE and isinstance(simulation_config, SimulationConfig):
+            raise NotImplementedError(
+                "Single-segment simulation mode is deprecated. "
+                "Please use the network simulation mode with a single segment."
+            )
+
+        # Case 3: ERROR - No valid initialization mode
         raise ValueError(
-            "SimulationRunner requires either:\n"
-            "  1. NEW (Network): config=NetworkSimulationConfig(...)\n"
-            "  2. NEW (Grid1D): config=SimulationConfig(...)\n"
-            "  3. LEGACY: scenario_config_path='path/to/scenario.yml'"
+            "SimulationRunner requires one of:\n"
+            "  1. network_grid: A built NetworkGrid object\n"
+            "  2. simulation_config: A Pydantic SimulationConfig object"
         )
-    
-    def _init_from_pydantic(self, config: 'SimulationConfig', quiet: bool, device: Optional[str]):
-        """Initialize from Pydantic SimulationConfig (NEW MODE)"""
-        self.config = config
-        self.quiet = quiet if quiet is not None else config.quiet
-        self.device = device if device is not None else config.device
-        
-        if not self.quiet:
-            print(f"✅ Initializing simulation with Pydantic config")
-            print(f"   Using device: {self.device}")
-        
-        # Create legacy params object for backward compatibility
-        # TODO Phase 3: Remove this after extracting classes
-        self.params = self._create_legacy_params_from_config(config)
-        self.params.device = self.device
-        
-        # Continue with common initialization
-        self._common_initialization()
-    
-    def _init_from_network_config(self, config: 'NetworkSimulationConfig', quiet: bool, device: Optional[str]):
-        """Initialize from Pydantic NetworkSimulationConfig (NEW MODE - multi-segment)"""
-        self.config = config
-        self.quiet = quiet if quiet is not None else False
-        self.device = device if device is not None else 'cpu'
-        
-        if not self.quiet:
-            print(f"✅ Initializing NETWORK simulation with Pydantic config")
-            print(f"   Segments: {len(config.segments)}")
-            print(f"   Nodes: {len(config.nodes)}")
-            print(f"   Using device: {self.device}")
-        
-        # Import NetworkGridSimulator
-        from ..network.network_simulator import NetworkGridSimulator
-        from ..core.parameters import ModelParameters
-        
-        # Create model parameters with defaults (Pydantic approach)
-        params = ModelParameters()
-        
-        # Set default physics parameters (from literature/calibration)
-        # These match the defaults in PhysicsConfig and _create_legacy_params_from_config
-        params.rho_jam = 0.2  # veh/m (200 veh/km)
-        params.gamma_m = 2.0
-        params.gamma_c = 2.0
-        params.K_m = 20.0 / 3.6  # m/s (20 km/h)
-        params.K_c = 20.0 / 3.6  # m/s
-        params.tau_m = 1.0  # s
-        params.tau_c = 1.0  # s
-        params.V_creeping = 0.1  # m/s
-        params.epsilon = 1e-10
-        params.alpha = 0.5  # Calibrated mixing parameter
-        
-        # Velocity tables (default to 50 km/h for all road qualities)
-        params.Vmax_m = {i: 50.0 / 3.6 for i in range(1, 11)}  # m/s
-        params.Vmax_c = {i: 50.0 / 3.6 for i in range(1, 11)}  # m/s
-        
-        # Numerical parameters
-        params.cfl_number = 0.9
-        params.ghost_cells = 2
-        params.num_ghost_cells = 2
-        params.spatial_scheme = 'first_order'
-        params.time_scheme = 'euler'
-        params.ode_solver = 'RK45'
-        params.ode_rtol = 1e-6
-        params.ode_atol = 1e-8
-        
-        # Override with global_params from NetworkSimulationConfig
-        if config.global_params:
-            for key, value in config.global_params.items():
-                if hasattr(params, key):
-                    setattr(params, key, value)
-            if not self.quiet:
-                print(f"   Applied {len(config.global_params)} global_params overrides")
-        
-        # ✅ FIX (2025-10-29): Transfer boundary_conditions from config to params
-        if config.boundary_conditions is not None:
-            params.boundary_conditions = self._convert_bc_to_legacy(config.boundary_conditions)
-            if not self.quiet:
-                print(f"   ✅ Boundary conditions transferred: left={config.boundary_conditions.left.type}, right={config.boundary_conditions.right.type}")
-        else:
-            # No BC = CLOSED network (warning!)
-            params.boundary_conditions = {}
-            if not self.quiet:
-                print(f"   ⚠️  WARNING: No boundary conditions (CLOSED network)")
-        
-        # Set device
-        params.device = self.device
-        
-        # Remove ODE solver overrides (already set above with defaults)
-        # These lines are no longer needed as defaults are set in the main params initialization
-        
-        # Build scenario config dict for NetworkGridSimulator
-        scenario_config = {
-            'segments': [
-                {
-                    'id': seg_id,
-                    'xmin': seg.x_min,
-                    'xmax': seg.x_max,
-                    'N': seg.N,
-                    'start_node': seg.start_node,  # ✅ FIX: Include node info for BC detection
-                    'end_node': seg.end_node       # ✅ FIX: Essential for boundary detection
-                }
-                for seg_id, seg in config.segments.items()
-            ],
-            'nodes': [
-                {
-                    'id': node_id,
-                    'type': node.type,
-                    'position': node.position,
-                    'incoming': node.incoming_segments or [],
-                    'outgoing': node.outgoing_segments or [],
-                    'traffic_light_config': node.traffic_light_config  # ✅ FIX: Pass traffic light config
-                }
-                for node_id, node in config.nodes.items()
-                if node.type != 'boundary'  # Exclude boundary placeholders
-            ],
-            'links': [
-                {
-                    'from': link.from_segment,
-                    'to': link.to_segment,
-                    'via': link.via_node
-                }
-                for link in config.links
-            ]
-        }
-        
-        # Add initial conditions from global_params if present
-        # NetworkGridSimulator.reset() expects: scenario_config['initial_conditions']
-        # Format: {seg_id: {'rho_m': val, 'rho_c': val, 'v_m': val, 'v_c': val}}
-        if config.global_params:
-            # Extract IC values (if present)
-            rho_m_init = config.global_params.get('rho_m_init', 0.02)  # Default 0.02 veh/m
-            rho_c_init = config.global_params.get('rho_c_init', 0.01)  # Default 0.01 veh/m
-            v_m_init = config.global_params.get('V0_m', 8.89)  # Default to free-flow speed
-            v_c_init = config.global_params.get('V0_c', 13.89)
-            
-            # Apply IC to all segments uniformly
-            initial_conditions = {}
-            for seg_id in config.segments.keys():
-                initial_conditions[seg_id] = {
-                    'rho_m': rho_m_init,
-                    'rho_c': rho_c_init,
-                    'v_m': v_m_init,
-                    'v_c': v_c_init
-                }
-            
-            scenario_config['initial_conditions'] = initial_conditions
-            
-            if not self.quiet:
-                print(f"   Initial conditions: ρ_m={rho_m_init:.4f}, ρ_c={rho_c_init:.4f}, "
-                      f"v_m={v_m_init:.2f}, v_c={v_c_init:.2f}")
-                print(f"   Applied IC to {len(initial_conditions)} segments")
-                print(f"   scenario_config keys: {list(scenario_config.keys())}")
-        
-        # Create NetworkGridSimulator
-        self.network_simulator = NetworkGridSimulator(
-            params=params,
-            scenario_config=scenario_config,
-            dt_sim=config.dt
-        )
-        
-        # Store reference to params for compatibility
-        self.params = params
-        
-        # For API compatibility with Grid1D mode, expose similar attributes
-        self.is_network_mode = True
-        self.t = 0.0  # Will be updated by network_simulator
-        
-        if not self.quiet:
-            print(f"✅ NetworkGridSimulator created")
-            print(f"   Decision interval: {config.decision_interval}s")
-        
-        # DON'T call _common_initialization() - NetworkGrid has different initialization
-    
-    def _init_from_yaml(self, scenario_config_path: str, base_config_path: str,
-                       override_params: dict, quiet: bool, device: Optional[str]):
-        """Initialize from YAML files (LEGACY MODE - backward compatible)"""
+
+    def _init_from_network_grid(self, network_grid: 'NetworkGrid', config: 'NetworkSimulationConfig', quiet: bool):
+        """Initializes the runner for a network simulation."""
+        self.mode = 'network'
+        self.is_network_simulation = True
         self.quiet = quiet
-        self.device = device if device is not None else 'cpu'
+        self.network_grid = network_grid
+        
+        # Use the provided Pydantic config
+        self.config = config
+        # This is a critical change: ModelParameters now gets its values from the Pydantic config
+        self.params = ModelParameters(config=config)
+        
+        # The `simulation_config` attribute is also required for other parts of the runner
+        self.simulation_config = config
+        
+        # GPU-only validation
+        self._validate_gpu_availability()
+        self.device = 'gpu'  # Hardcoded - no CPU fallback
         
         if not self.quiet:
-            print(f"Initializing simulation from scenario: {scenario_config_path}")
-            print(f"Using device: {self.device}")
+            print(f"   - Mode: Network Simulation")
+            print(f"   - Device: {self.device.upper()}")
+            print(f"   - Segments: {len(self.network_grid.segments)}")
+            print(f"   - Nodes: {len(self.network_grid.nodes)}")
+
+        # The NetworkSimulator will handle the time loop, including the GPU pool
+        self.network_simulator = NetworkSimulator(
+            network=self.network_grid,
+            config=self.config,
+            quiet=self.quiet
+        )
+    
+    @staticmethod
+    def _validate_gpu_availability():
+        """
+        Validates that CUDA is available for GPU-only execution.
         
-        # Load parameters
-        self.params = ModelParameters()
-        self.params.load_from_yaml(base_config_path, scenario_config_path)
+        Raises:
+            RuntimeError: If CUDA is not available
+        """
+        if not cuda.is_available():
+            raise RuntimeError(
+                "CUDA not available. This GPU-only build requires an NVIDIA GPU with CUDA support.\n"
+                "Please ensure your drivers and CUDA toolkit are correctly installed."
+            )
         
-        # ✅ ARCHITECTURAL FIX (2025-10-24): Load V0 overrides from network config if present
-        # This allows scenarios with network segments to specify V0_m/V0_c per segment
-        # For single-segment scenarios (like RL traffic light), use first segment's V0 parameters
-        self._load_network_v0_overrides(scenario_config_path)
-        
-        # Apply overrides if provided
-        if override_params:
-            if not self.quiet:
-                print(f"Applying parameter overrides: {override_params}")
-            for key, value in override_params.items():
-                # Simple override for top-level attributes
-                if hasattr(self.params, key):
-                    setattr(self.params, key, value)
-                else:
-                    # Handle potential nested overrides if needed in the future
-                    # For now, just warn if the key doesn't exist directly
-                    if not self.quiet:
-                        print(f"Warning: Override key '{key}' not found as a direct attribute of ModelParameters.")
-        
-        # --- Add the device setting to the parameters object ---
-        self.params.device = self.device
-        # -------------------------------------------------------
-        
-        if not self.quiet:
-            print(f"Parameters loaded for scenario: {getattr(self.params, 'scenario_name', 'unknown')}")
-        
-        # Continue with common initialization
-        self._common_initialization()
+        # Log GPU info for user awareness
+        try:
+            device = cuda.get_current_device()
+            print(f"✅ GPU Detected: {device.name.decode('utf-8')}")
+            print(f"   - Compute Capability: {device.compute_capability}")
+            print(f"   - Memory: {device.memory.total / (1024**3):.1f} GB")
+            if device.compute_capability[0] < 6:
+                print("   - ⚠️ WARNING: Compute Capability is below the recommended 6.0. Some performance features may be limited.")
+        except Exception:
+            print(f"✅ CUDA Available (device info unavailable)")
+
     
     def _create_legacy_params_from_config(self, config: 'SimulationConfig') -> ModelParameters:
         """
@@ -446,7 +286,7 @@ class SimulationRunner:
         return legacy_bc
     
     def _common_initialization(self):
-        """Common initialization logic for both Pydantic and YAML modes"""
+        """Common initialization logic for Pydantic-based configurations"""
         # Validate required scenario parameters
         if self.params.N is None or self.params.xmin is None or self.params.xmax is None:
             raise ValueError("Grid parameters (N, xmin, xmax) must be defined in the configuration.")
@@ -467,35 +307,81 @@ class SimulationRunner:
         if not self.quiet:
             print(f"Grid initialized: {self.grid}")
 
-        # Load road quality R(x)
+        # Road quality is now managed by the GPUMemoryPool.
+        # We need to load it from the grid if it exists and pass it during initialization.
         self._load_road_quality()
         if not self.quiet:
-            print("Road quality loaded.")
+            print("Road quality loaded from configuration.")
 
         # Create initial state U^0
         self.U = self._create_initial_state()
         if not self.quiet:
             print("Initial state created.")
 
-        # --- Transfer initial state and road quality to GPU if needed ---
-        self.d_U = None # Handle for GPU state array
-        self.d_R = None # Handle for GPU road quality array
-        if self.device == 'gpu':
+        # --- Initialize GPU Memory Pool (GPU-Only Architecture) ---
+        if not self.quiet:
+            print("Creating GPU memory pool...")
+        
+        # Import GPUMemoryPool
+        from ..numerics.gpu.memory_pool import GPUMemoryPool
+        
+        # Check if this is a network simulation
+        if hasattr(self, 'is_network_simulation') and self.is_network_simulation and hasattr(self, 'network_grid'):
+            # Network simulation: create pool from network grid
+            segment_ids = list(self.network_grid.segments.keys())
+            N_per_segment = {seg_id: segment.grid.N for seg_id, segment in self.network_grid.segments.items()}
+            
             if not self.quiet:
-                print("Transferring initial state and road quality to GPU...")
-            try:
-                self.d_U = cuda.to_device(self.U)
-                if self.grid.road_quality is not None:
-                    self.d_R = cuda.to_device(self.grid.road_quality)
-                else:
-                    # Should not happen if _load_road_quality succeeded, but handle defensively
-                    raise ValueError("Road quality not loaded, cannot transfer to GPU.")
-                if not self.quiet:
-                    print("GPU data transfer complete.")
-            except Exception as e:
-                print(f"Error transferring data to GPU: {e}")
-                # Fallback to CPU or raise error? For now, raise.
-                raise RuntimeError(f"Failed to initialize GPU data: {e}") from e
+                print(f"  Network simulation: {len(segment_ids)} segments")
+        else:
+            # Single-segment simulation: create simple pool
+            segment_ids = ['main_segment']
+            N_per_segment = {'main_segment': self.params.N}
+            
+            if not self.quiet:
+                print(f"  Single-segment simulation")
+        
+        try:
+            self.gpu_pool = GPUMemoryPool(
+                segment_ids=segment_ids,
+                N_per_segment=N_per_segment,
+                ghost_cells=self.params.ghost_cells
+            )
+            
+            # Initialize state and road quality in GPU pool
+            if hasattr(self, 'is_network_simulation') and self.is_network_simulation:
+                # Network simulation: initialize all segments
+                for seg_id, segment in self.network_grid.segments.items():
+                    # Get initial conditions for this segment
+                    U_seg = segment.get_initial_state()  # This method needs to exist
+                    R_seg = segment.grid.road_quality if hasattr(segment.grid, 'road_quality') else None
+                    
+                    self.gpu_pool.initialize_segment_state(seg_id, U_seg, R_seg)
+                    
+                # Legacy interface points to first segment for backward compatibility
+                first_seg_id = segment_ids[0]
+                self.d_U = self.gpu_pool.get_segment_state(first_seg_id)
+                self.d_R = self.gpu_pool.get_road_quality(first_seg_id)
+            else:
+                # Single-segment simulation
+                self.gpu_pool.initialize_segment_state(
+                    'main_segment',
+                    self.U,  # Initial state
+                    self.grid.road_quality if hasattr(self.grid, 'road_quality') else None
+                )
+                
+                # Legacy interface for backward compatibility
+                self.d_U = self.gpu_pool.get_segment_state('main_segment')
+                self.d_R = self.gpu_pool.get_road_quality('main_segment')
+            
+            if not self.quiet:
+                print("GPU memory pool initialized successfully.")
+                stats = self.gpu_pool.get_memory_stats()
+                print(f"  GPU memory allocated: {stats['allocated_mb']:.2f} MB")
+                
+        except Exception as e:
+            print(f"Error initializing GPU memory pool: {e}")
+            raise RuntimeError(f"Failed to initialize GPU memory pool: {e}") from e
         # ----------------------------------------------------------------
 
         # --- Initialize Boundary Condition Schedules and Current State ---
@@ -504,8 +390,8 @@ class SimulationRunner:
         # -------------------------------------------------------------
 
         # --- Apply initial boundary conditions ---
-        # Apply BCs *after* potential GPU transfer and *after* initializing BC schedules
-        initial_U_array = self.d_U if self.device == 'gpu' else self.U
+        # GPU-only: always use device array from GPU pool
+        initial_U_array = self.d_U
         # Use the initialized current_bc_params which has the correct type for t=0
         # Pass both params (for device, physics constants) and current_bc_params (for BC types/states), and t_current
         boundary_conditions.apply_boundary_conditions(initial_U_array, self.grid, self.params, self.current_bc_params, t_current=0.0)
@@ -520,30 +406,11 @@ class SimulationRunner:
         self.states = [np.copy(self.U[:, self.grid.physical_cell_indices])]
         self.step_count = 0
 
-        # --- Mass Conservation Check Initialization (uses CPU data) ---
-        self.mass_check_config = getattr(self.params, 'mass_conservation_check', None)
-        if self.mass_check_config:
-            if not self.quiet:
-                print("Initializing mass conservation check...")
-            self.mass_times = []
-            self.mass_m_data = []
-            self.mass_c_data = []
-            # Initial mass calculation
-            U_phys_initial = self.U[:, self.grid.physical_cell_indices]
-            try:
-                self.initial_mass_m = metrics.calculate_total_mass(U_phys_initial, self.grid, class_index=0)
-                self.initial_mass_c = metrics.calculate_total_mass(U_phys_initial, self.grid, class_index=2)
-                self.mass_times.append(0.0)
-                self.mass_m_data.append(self.initial_mass_m)
-                self.mass_c_data.append(self.initial_mass_c)
-                if not self.quiet:
-                    print(f"  Initial Mass (Motos): {self.initial_mass_m:.6e}")
-                    print(f"  Initial Mass (Cars):  {self.initial_mass_c:.6e}")
-            except Exception as e:
-                if not self.quiet:
-                    print(f"Error calculating initial mass: {e}")
-                # Decide how to handle this - maybe disable the check?
-                self.mass_check_config = None # Disable check if initial calc fails
+        # --- Mass Conservation Check Initialization (REMOVED) ---
+        # This legacy CPU-based check is obsolete and will be replaced by a
+        # GPU-native implementation as per Task 5.3.
+        self.mass_check_config = None
+        # -------------------------------------------------------------
 
         # --- Initialize Network System ---
         if self.params.has_network:
@@ -557,7 +424,7 @@ class SimulationRunner:
     def _initialize_network(self):
         """Initialize the network nodes and coupling system."""
         from ..core.intersection import create_intersection_from_config
-        from ..numerics.network_coupling import NetworkCoupling
+        from ..numerics.network_coupling_corrected import NetworkCouplingCorrected
 
         self.nodes = []
         if self.params.nodes:
@@ -565,167 +432,51 @@ class SimulationRunner:
                 intersection = create_intersection_from_config(node_config)
                 self.nodes.append(intersection)
 
-        self.network_coupling = NetworkCoupling(self.nodes, self.params)
+        self.network_coupling = NetworkCouplingCorrected(self.nodes, self.params)
 
         if not self.quiet:
             print(f"  Initialized {len(self.nodes)} network nodes")
             print(f"  Network coupling system ready")
 
     def _load_road_quality(self):
-        """ Loads road quality data based on the definition in params. """
-        # Check if 'road' config exists and is a dictionary
-        road_config = getattr(self.params, 'road', None)
-        if not isinstance(road_config, dict):
-            # Fallback or error? Let's try the old way for backward compatibility or raise error
-            # For now, let's raise an error if 'road' dict is missing or not a dict
-            # --- Check if the old attribute exists for backward compatibility ---
-            old_definition = getattr(self.params, 'road_quality_definition', None)
-            if old_definition is not None:
-                if not self.quiet:
-                    print("Warning: Using deprecated 'road_quality_definition'. Define road quality under 'road: {quality_type: ...}' instead.")
-                if isinstance(old_definition, list):
-                    road_config = {'quality_type': 'list', 'quality_values': old_definition}
-                elif isinstance(old_definition, str):
-                    road_config = {'quality_type': 'from_file', 'quality_file': old_definition}
-                elif isinstance(old_definition, int):
-                    road_config = {'quality_type': 'uniform', 'quality_value': old_definition}
-                else:
-                     raise TypeError("Invalid legacy 'road_quality_definition' type. Use list, file path (str), or uniform int.")
-            else:
-                raise ValueError("Configuration missing 'road' dictionary defining quality_type, and legacy 'road_quality_definition' not found.")
-            # --- End backward compatibility check ---
-
-
-        quality_type = road_config.get('quality_type', 'uniform').lower()
-        if not self.quiet:
-            print(f"  Loading road quality type: {quality_type}") # Debug print
+        """
+        Loads road quality data into the grid object based on configuration.
+        
+        This is a necessary step before the GPUMemoryPool is initialized,
+        as the pool will pull this data from the grid object.
+        """
+        road_config = self.params.road
+        quality_type = road_config.get('quality_type', 'uniform')
 
         if quality_type == 'uniform':
-            R_value = road_config.get('quality_value', 1) # Default to 1 if uniform but no value given
-            if not isinstance(R_value, int):
-                 raise ValueError(f"'quality_value' must be an integer for uniform road type, got {R_value}")
+            quality_value = road_config.get('quality_value', 10)
+            self.grid.set_road_quality(quality_value)
             if not self.quiet:
-                print(f"  Uniform road quality value: {R_value}") # Debug print
-            R_array = np.full(self.grid.N_physical, R_value, dtype=int)
-            self.grid.load_road_quality(R_array)
-
+                print(f"  - Uniform road quality set to: {quality_value}")
+        
         elif quality_type == 'from_file':
-            file_path = road_config.get('quality_file')
-            if not file_path or not isinstance(file_path, str):
-                raise ValueError("'quality_file' path (string) is required for 'from_file' road type.")
+            filepath = road_config.get('filepath')
+            if not filepath:
+                raise ValueError("Road quality type is 'from_file' but no filepath is provided.")
+            if not os.path.exists(filepath):
+                raise FileNotFoundError(f"Road quality file not found: {filepath}")
+            
+            # Assuming the file contains a single column of quality values
+            # matching the grid size N.
+            quality_data = np.loadtxt(filepath)
+            if quality_data.shape[0] != self.grid.N:
+                raise ValueError(
+                    f"Road quality data size ({quality_data.shape[0]}) does not match "
+                    f"grid size ({self.grid.N})."
+                )
+            self.grid.set_road_quality(quality_data)
             if not self.quiet:
-                print(f"  Loading road quality from file: {file_path}") # Debug print
-
-            # Assume file_path is relative to the project root (where the script is run)
-            # TODO: Consider resolving path relative to config file location or project root robustly
-            if not os.path.exists(file_path):
-                 raise FileNotFoundError(f"Road quality file not found: {file_path}")
-
-            try:
-                R_array = np.loadtxt(file_path, dtype=int)
-                if R_array.ndim == 0: # Handle case of single value file
-                    R_array = np.full(self.grid.N_physical, int(R_array))
-                elif R_array.ndim > 1:
-                     raise ValueError("Road quality file should contain a 1D list of integers.")
-                # Check length after potential expansion from single value
-                if len(R_array) != self.grid.N_physical:
-                     raise ValueError(f"Road quality file '{file_path}' length ({len(R_array)}) must match N_physical ({self.grid.N_physical}).")
-                self.grid.load_road_quality(R_array)
-            except Exception as e:
-                raise ValueError(f"Error loading road quality file '{file_path}': {e}") from e
-
-        elif quality_type == 'list': # Added option for direct list
-            value_list = road_config.get('quality_values')
-            if not isinstance(value_list, list):
-                 raise ValueError("'quality_values' (list) is required for 'list' road type.")
-            R_array = np.array(value_list, dtype=int)
-            if len(R_array) != self.grid.N_physical:
-                 raise ValueError(f"Road quality list length ({len(R_array)}) must match N_physical ({self.grid.N_physical}).")
-            self.grid.load_road_quality(R_array)
-
-        # Add elif for 'piecewise_constant' here if needed later
-
+                print(f"  - Road quality loaded from: {filepath}")
+        
         else:
-            raise ValueError(f"Unsupported road quality type: '{quality_type}'")
+            raise ValueError(f"Unsupported road quality type: {quality_type}")
 
-    def _load_network_v0_overrides(self, scenario_config_path: str):
-        """
-        Load V0_m/V0_c overrides from scenario config if present.
         
-        For scenarios with network config (e.g., RL traffic light control), reads
-        V0 parameters from the global 'parameters' section of the scenario YAML.
-        This allows scenarios to specify Lagos speeds (32 km/h, 28 km/h) without
-        modifying config_base.yml.
-        
-        Architectural Note (2025-10-24):
-            This bridges the gap between NetworkGrid (multi-segment) and SimulationRunner
-            (single-segment). For RL environments, the scenario has network config but
-            SimulationRunner treats it as a single domain. We extract V0 from the global
-            parameters section to honor the scenario's intended speeds.
-            
-        Supports two config formats:
-            1. Global parameters: config['parameters']['V0_m'] (Lagos format)
-            2. Segment parameters: config['network']['segments'][0]['parameters']['V0_m'] (NetworkGrid format)
-        """
-        if not os.path.exists(scenario_config_path):
-            return  # Scenario file doesn't exist, skip
-        
-        try:
-            with open(scenario_config_path, 'r') as f:
-                scenario_config = yaml.safe_load(f)
-            
-            V0_m = None
-            V0_c = None
-            source = None
-            
-            # Strategy 1: Check global 'parameters' section (Lagos config format)
-            if 'parameters' in scenario_config:
-                params = scenario_config['parameters']
-                V0_m = params.get('V0_m')
-                V0_c = params.get('V0_c')
-                if V0_m is not None or V0_c is not None:
-                    source = "global parameters"
-            
-            # Strategy 2: Check network.segments[0].parameters (NetworkGrid format)
-            if V0_m is None and V0_c is None:
-                if 'network' in scenario_config:
-                    network_config = scenario_config['network']
-                    if 'segments' in network_config:
-                        segments = network_config['segments']
-                        
-                        # Handle both list and dict formats
-                        if isinstance(segments, list) and len(segments) > 0:
-                            first_segment = segments[0]
-                            if 'parameters' in first_segment:
-                                V0_m = first_segment['parameters'].get('V0_m')
-                                V0_c = first_segment['parameters'].get('V0_c')
-                                source = f"segment '{first_segment.get('id', '0')}'"
-                        elif isinstance(segments, dict) and len(segments) > 0:
-                            first_segment_id = list(segments.keys())[0]
-                            first_segment = segments[first_segment_id]
-                            if 'parameters' in first_segment:
-                                V0_m = first_segment['parameters'].get('V0_m')
-                                V0_c = first_segment['parameters'].get('V0_c')
-                                source = f"segment '{first_segment_id}'"
-            
-            # Apply overrides if found
-            if V0_m is not None or V0_c is not None:
-                if V0_m is not None:
-                    self.params._V0_m_override = float(V0_m)
-                if V0_c is not None:
-                    self.params._V0_c_override = float(V0_c)
-                
-                if not self.quiet:
-                    print(f"[NETWORK V0 OVERRIDE] Loaded from {source}:")
-                    if V0_m is not None:
-                        print(f"  V0_m = {V0_m:.3f} m/s ({V0_m*3.6:.1f} km/h)")
-                    if V0_c is not None:
-                        print(f"  V0_c = {V0_c:.3f} m/s ({V0_c*3.6:.1f} km/h)")
-        
-        except Exception as e:
-            if not self.quiet:
-                print(f"Warning: Could not load network V0 overrides: {e}")
-            # Don't fail - just continue without overrides
 
 
     def _create_initial_state(self) -> np.ndarray:
@@ -754,7 +505,7 @@ class SimulationRunner:
         if ic_type == 'uniform':
             state_vals = ic_config.get('state')
             if state_vals is None or len(state_vals) != 4:
-                raise ValueError("Uniform IC requires 'state': [rho_m, w_m, rho_c, w_c]")
+                raise ValueError("Uniform IC requires 'state': [rho_m, rho_c, w_m, w_c]")
             U_init = initial_conditions.uniform_state(self.grid, *state_vals)
             # 🔥 ARCHITECTURAL FIX: Do NOT store IC state for BC use
             # IC is for t=0 ONLY - BC are independent
@@ -794,7 +545,7 @@ class SimulationRunner:
              rho_m_max = ic_config.get('rho_m_max')
              rho_c_max = ic_config.get('rho_c_max')
              if None in [bg_state, center, width, rho_m_max, rho_c_max] or len(bg_state)!=4:
-                  raise ValueError("Density Hump IC requires 'background_state' [rho_m, w_m, rho_c, w_c], 'center', 'width', 'rho_m_max', 'rho_c_max'.")
+                  raise ValueError("Density Hump IC requires 'background_state' [rho_m, rho_c, w_m, w_c], 'center', 'width', 'rho_m_max', 'rho_c_max'.")
              U_init = initial_conditions.density_hump(self.grid, *bg_state, center, width, rho_m_max, rho_c_max)
         elif ic_type == 'sine_wave_perturbation':
             # Access nested dictionaries
@@ -803,7 +554,7 @@ class SimulationRunner:
 
             rho_m_bg = bg_state_config.get('rho_m')
             rho_c_bg = bg_state_config.get('rho_c')
-            epsilon_rho_m = perturbation_config.get('amplitude') # Use 'amplitude' key from YAML
+            epsilon_rho_m = perturbation_config.get('amplitude') # Use 'amplitude' key from config
             wave_number = perturbation_config.get('wave_number')
 
             # R_val should be present if road_quality_definition is int, or explicitly defined
@@ -841,7 +592,7 @@ class SimulationRunner:
                     "❌ ARCHITECTURAL ERROR: Inflow BC requires explicit 'state' configuration.\n"
                     "Boundary conditions must be independently specified, not derived from initial conditions.\n"
                     "\n"
-                    "Add to your YAML config:\n"
+                    "Add to your simulation config:\n"
                     "  boundary_conditions:\n"
                     "    left:\n"
                     "      type: inflow\n"
@@ -861,7 +612,7 @@ class SimulationRunner:
                     "❌ ARCHITECTURAL ERROR: Inflow BC requires explicit 'state' configuration.\n"
                     "Boundary conditions must be independently specified, not derived from initial conditions.\n"
                     "\n"
-                    "Add to your YAML config:\n"
+                    "Add to your simulation config:\n"
                     "  boundary_conditions:\n"
                     "    right:\n"
                     "      type: inflow\n"
@@ -922,8 +673,8 @@ class SimulationRunner:
                 t_start = float(t_start_raw)
                 t_end = float(t_end_raw)
             except (ValueError, TypeError) as e:
-                 # Log error but try to continue with raw values for BC config? Or raise?
-                 # For now, log and keep raw type for bc_type, state
+                 # Log error but try to continue with raw values for bc_type, state
+                 # Or raise?
                  print(f"\nERROR: Could not convert schedule time for printing: entry={schedule[new_idx]}, error={e}")
                  t_start, t_end = t_start_raw, t_end_raw # Keep raw for message formatting attempt
             # ------------------------------------------------------
@@ -948,531 +699,182 @@ class SimulationRunner:
                     print(pbar_message)
 
 
-    def run(self, t_final: float = None, output_dt: float = None, max_steps: int = None) -> tuple[list[float], list[np.ndarray]]:
+    def run(self, t_final: Optional[float] = None):
         """
         Runs the simulation loop until t_final.
 
         Args:
-            t_final (float, optional): Simulation end time. Overrides config if provided. Defaults to None.
-            output_dt (float, optional): Time interval for storing results. Overrides config if provided. Defaults to None.
+            t_final (float, optional): Simulation end time. Overrides config if provided.
 
         Returns:
-            tuple[list[float], list[np.ndarray]]: List of times and list of corresponding state arrays (physical cells only).
+            A history object containing the simulation results.
         """
         # NetworkGrid mode: delegate to network_simulator
-        if hasattr(self, 'is_network_mode') and self.is_network_mode:
-            t_final = t_final if t_final is not None else 3600.0  # Default 1 hour
-            
-            # Calculate total time to advance
-            dt_to_advance = t_final - self.current_time
-            if dt_to_advance <= 0:
-                return [], []
-            
-            # Calculate number of simulation timesteps needed
-            n_steps = int(dt_to_advance / self.network_simulator.dt_sim)
-            
-            # Advance simulation
-            state, timestamp = self.network_simulator.step(
-                dt=self.network_simulator.dt_sim,
-                repeat_k=n_steps
-            )
-            
-            # Return minimal results (environment doesn't use them)
-            return [timestamp], [state]
-        
-        # Grid1D mode: original implementation
-        t_final = t_final if t_final is not None else self.params.t_final
-        output_dt = output_dt if output_dt is not None else self.params.output_dt
+        if self.is_network_simulation:
+            # Use the t_final from the runner's config if not overridden
+            sim_t_final = t_final if t_final is not None else self.simulation_config.time.t_final
+            return self.network_simulator.run(t_final=sim_t_final)
 
-        if t_final <= self.t:
-            print("Warning: t_final is less than or equal to current time. No steps taken.")
-            return self.times, self.states
-
-        if output_dt <= 0:
-            raise ValueError("output_dt must be positive.")
-
+        # --- LEGACY/SINGLE-SEGMENT SIMULATION ---
+        # This part remains for backward compatibility with single-segment models
+        sim_t_final = t_final if t_final is not None else self.config.t_final
         if not self.quiet:
-            print(f"Running simulation until t = {t_final:.2f} s, outputting every {output_dt:.2f} s")
+            print(f"Running single-segment simulation until t={sim_t_final}s...")
+        
         start_time = time.time()
-        last_output_time = self.t
+        
+        # Initialize history storage
+        history = data_manager.initialize_history(self.config, self.U)
+        
+        # Main time loop
+        pbar = tqdm(total=sim_t_final, desc="Simulating", disable=self.quiet)
+        
+        while self.current_time < sim_t_final:
+            self.step()
+            
+            # Store results at specified intervals
+            if self.time_step % self.config.output_frequency == 0:
+                data_manager.store_history_data(history, self)
+            
+            pbar.update(self.dt)
 
-        # Initialize tqdm progress bar, disable if quiet
-        # If quiet, set pbar to None to avoid encoding issues with tqdm.write
-        if self.quiet:
-            self.pbar = None
-        else:
-            pbar = tqdm(total=t_final, desc="Running Simulation", unit="s", initial=self.t, leave=True, disable=self.quiet)
-            self.pbar = pbar # Store pbar instance for writing messages
-
-        try: # Ensure pbar is closed even if errors occur
-            while self.t < t_final and (max_steps is None or self.step_count < max_steps):
-
-                # --- Select state array based on device ---
-                current_U = self.d_U if self.device == 'gpu' else self.U
-                # -----------------------------------------
-
-                # 1. Update Time-Dependent Boundary Conditions (if any)
-                self._update_bc_from_schedule('left', self.t)
-                self._update_bc_from_schedule('right', self.t)
-
-                # 2. Apply Boundary Conditions
-                # Ensures ghost cells are up-to-date before CFL calc and time step
-                # Use the potentially updated current_bc_params
-                # Pass both params (for device, physics constants) and current_bc_params (for BC types/states)
-                # --- DEBUG PRINT: Check BC type passed (Commented out) ---
-                # if self.t < 61.0 and not self.quiet: # Print for the first 60s + a bit
-                #     right_bc_type_passed = self.current_bc_params.get('right', {}).get('type', 'N/A')
-                #     print(f"DEBUG RUNNER @ t={self.t:.4f}: Passing right BC type '{right_bc_type_passed}' to apply_boundary_conditions")
-                # -----------------------------------------
-                # Pass both params (for device, physics constants) and current_bc_params (for BC types/states), and t_current
-                boundary_conditions.apply_boundary_conditions(current_U, self.grid, self.params, self.current_bc_params, t_current=self.t)
-
-                # 3. Calculate Stable Timestep
-                # NOTE: calculate_cfl_dt now handles GPU arrays directly
-                # Pass the appropriate array slice based on device
-                if self.device == 'gpu':
-                    # GPU function expects the full array (including ghosts)
-                    dt = cfl.calculate_cfl_dt(current_U, self.grid, self.params)
-                else: # CPU
-                    # CPU function expects only physical cells
-                    U_physical = current_U[:, self.grid.physical_cell_indices]
-                    dt = cfl.calculate_cfl_dt(U_physical, self.grid, self.params)
-
-                # 3. Adjust dt to not overshoot t_final or next output time
-                time_to_final = t_final - self.t
-                time_to_next_output = (last_output_time + output_dt) - self.t
-                # Ensure dt doesn't step over the next output time by more than a small tolerance
-                dt = min(dt, time_to_final, time_to_next_output + 1e-9) # Add tolerance for float comparison
-
-                # Prevent excessively small dt near the end
-                if dt < self.params.epsilon:
-                     # Add newline to avoid overwriting pbar
-                     if self.pbar is not None:
-                         self.pbar.write(f"\nTime step too small ({dt:.2e}), ending simulation slightly early at t={self.t:.4f}.")
-                     else:
-                         if not self.quiet:
-                             print(f"\nTime step too small ({dt:.2e}), ending simulation slightly early at t={self.t:.4f}.")
-                     break
-
-
-                # 4. Perform Time Step using Strang Splitting
-                # NOTE: strang_splitting_step will need modification to handle/return GPU arrays
-                if self.params.has_network:
-                    # Use network-aware time integration
-                    if self.device == 'gpu':
-                        self.d_U = time_integration.strang_splitting_step_with_network(
-                            self.d_U, dt, self.grid, self.params, self.nodes, self.network_coupling, self.current_bc_params
-                        )
-                        current_U = self.d_U
-                    else:
-                        self.U = time_integration.strang_splitting_step_with_network(
-                            self.U, dt, self.grid, self.params, self.nodes, self.network_coupling, self.current_bc_params
-                        )
-                        current_U = self.U
-                else:
-                    # Standard time integration
-                    if self.device == 'gpu':
-                        self.d_U = time_integration.strang_splitting_step(self.d_U, dt, self.grid, self.params, self.d_R, self.current_bc_params)
-                        current_U = self.d_U
-                    else:
-                        self.U = time_integration.strang_splitting_step(self.U, dt, self.grid, self.params, current_bc_params=self.current_bc_params)
-                        current_U = self.U
-
-
-                # 5. Update Time
-                self.t += dt
-                self.step_count += 1
-                
-                # Print périodique pour suivre l'avancement (tous les 50 steps)
-                if self.step_count % 50 == 0 and not self.quiet:
-                    progress_percent = (self.t / t_final) * 100 if t_final > 0 else 0
-                    print(f"[PROGRESS] Step {self.step_count}: t={self.t:.2f}/{t_final:.2f}s ({progress_percent:.1f}%) | dt={dt:.4f}s")
-                
-                # Update progress bar display
-                if self.pbar is not None:
-                    self.pbar.n = min(self.t, t_final) # Set current progress
-                    # self.pbar.refresh() # Let tqdm handle refresh automatically
-
-                # --- Mass Conservation Check ---
-                if self.mass_check_config and (self.step_count % self.mass_check_config['frequency_steps'] == 0):
-                    try:
-                        # If GPU, copy back physical cells temporarily for mass calc
-                        if self.device == 'gpu':
-                            U_phys_current = current_U[:, self.grid.physical_cell_indices].copy_to_host()
-                        else:
-                            U_phys_current = current_U[:, self.grid.physical_cell_indices]
-
-                        current_mass_m = metrics.calculate_total_mass(U_phys_current, self.grid, class_index=0)
-                        current_mass_c = metrics.calculate_total_mass(U_phys_current, self.grid, class_index=2)
-                        self.mass_times.append(self.t)
-                        self.mass_m_data.append(current_mass_m)
-                        self.mass_c_data.append(current_mass_c)
-                    except Exception as e:
-                        if self.pbar is not None:
-                            self.pbar.write(f"Warning: Error calculating mass at t={self.t:.4f}: {e}")
-                        else:
-                            if not self.quiet:
-                                print(f"Warning: Error calculating mass at t={self.t:.4f}: {e}")
-
-                # 6. Check for Numerical Issues (Positivity handled in hyperbolic step)
-                # If GPU, copy back temporarily to check for NaNs on CPU
-                if self.device == 'gpu':
-                    U_cpu_check = current_U.copy_to_host()
-                    nan_check_array = U_cpu_check
-                else:
-                    nan_check_array = current_U
-
-                if np.isnan(nan_check_array).any():
-                    error_msg = f"Error: NaN detected in state vector at t = {self.t:.4f}, step {self.step_count}."
-                    if self.pbar is not None:
-                        self.pbar.write(error_msg)
-                    else:
-                        if not self.quiet:
-                            print(error_msg)
-                    # Optionally save the state just before NaN for debugging
-                    # Consider saving the GPU state if possible, or the CPU copy
-                    # io.data_manager.save_simulation_data("nan_state.npz", self.times, self.states, self.grid, self.params) # Saves CPU states list
-                    raise ValueError("Simulation failed due to NaN values.")
-
-                # 7. Store Results if Output Time Reached
-                # Use a small tolerance for floating point comparison
-                if self.t >= last_output_time + output_dt - 1e-9 or abs(self.t - t_final) < 1e-9 :
-                    self.times.append(self.t)
-                    # If GPU, copy back only physical cells for storage
-                    if self.device == 'gpu':
-                        state_cpu = current_U[:, self.grid.physical_cell_indices].copy_to_host()
-                        self.states.append(state_cpu)
-                    else:
-                        self.states.append(np.copy(current_U[:, self.grid.physical_cell_indices]))
-                    last_output_time = self.t
-                    # Use pbar.write to print messages without breaking the bar
-                    # Check if pbar is available before writing
-                    if self.pbar is not None:
-                        self.pbar.write(f"  Stored output at t = {self.t:.4f} s (Step {self.step_count})")
-                    else:
-                        # In quiet mode or if pbar is None, we don't print this specific message
-                        # unless there's a specific need. For now, let's keep it quiet if quiet=True.
-                        if not self.quiet:
-                            print(f"  Stored output at t = {self.t:.4f} s (Step {self.step_count})")
-
-        finally:
-            if self.pbar is not None:
-                self.pbar.close() # Close the progress bar
-
+        pbar.close()
+        
         end_time = time.time()
-        # Add newline before final summary prints
         if not self.quiet:
-            print(f"\nSimulation finished at t = {self.t:.4f} s after {self.step_count} steps.")
-            print(f"Total runtime: {end_time - start_time:.2f} seconds.")
-
-        # --- Save Mass Conservation Data ---
-        if self.mass_check_config and self.mass_times:
-            try:
-                filename_pattern = self.mass_check_config['output_file_pattern']
-                output_filename = filename_pattern.format(N=self.grid.N_physical)
-                data_manager.save_mass_data(
-                    filename=output_filename,
-                    times=self.mass_times,
-                    mass_m_list=self.mass_m_data,
-                    mass_c_list=self.mass_c_data
-                )
-            except KeyError:
-                if not self.quiet:
-                    print("Error: 'output_file_pattern' not found in mass_conservation_check config.")
-            except Exception as e:
-                if not self.quiet:
-                    print(f"Error saving mass conservation data: {e}")
-
-        return self.times, self.states
-
-    # ========================================================================
-    # REINFORCEMENT LEARNING EXTENSIONS
-    # ========================================================================
-
-    def set_traffic_signal_state(self, intersection_id: str, phase_id: int) -> None:
-        """
-        Sets the traffic signal state for a specific intersection.
-        
-        This method is designed for RL environment integration, allowing
-        direct control of traffic signals by updating boundary conditions.
-        
-        Args:
-            intersection_id (str): Identifier for the intersection/boundary
-                                  (e.g., 'left', 'right', 'intersection_1')
-            phase_id (int): Traffic signal phase identifier
-                           (0 = red/stop, 1 = green/free flow, etc.)
-                           
-        Raises:
-            ValueError: If intersection_id is invalid or phase_id is out of bounds
+            print(f"Simulation finished in {end_time - start_time:.2f} seconds.")
             
-        Example:
-            >>> runner.set_traffic_signal_state('left', phase_id=1)  # Green phase
-            >>> runner.set_traffic_signal_state('right', phase_id=0)  # Red phase
-        """
-        # Validate intersection_id
-        valid_ids = ['left', 'right']
-        if intersection_id not in valid_ids:
-            raise ValueError(
-                f"Invalid intersection_id '{intersection_id}'. "
-                f"Must be one of {valid_ids}"
-            )
-        
-        # Validate phase_id (basic range check)
-        if not isinstance(phase_id, int) or phase_id < 0:
-            raise ValueError(
-                f"Invalid phase_id {phase_id}. Must be non-negative integer."
-            )
-        
-        # Map phase_id to boundary condition configuration
-        # BUG #4 FIX: ALWAYS use inflow at upstream boundary
-        # Traffic always arrives from upstream - phase controls inflow characteristics, not BC type
-        # Phase 0 = red (reduced velocity inflow - models queue formation)
-        # Phase 1 = green (normal inflow - free flow)
-        
-        # ✅ ARCHITECTURAL FIX: Use INFLOW BC state (traffic_signal_base_state) ONLY
-        # Traffic signal modulates the INFLOW boundary, which is INDEPENDENT of initial conditions
-        # Example: IC = light congestion (40 veh/km), Inflow = heavy demand (120 veh/km)
-        # 
-        # 🔥 NO FALLBACK to IC - traffic signal REQUIRES explicit BC configuration
-        if not hasattr(self, 'traffic_signal_base_state') or self.traffic_signal_base_state is None:
-            raise RuntimeError(
-                "❌ ARCHITECTURAL ERROR: Traffic signal control requires explicit inflow BC configuration.\n"
-                "Traffic signals modulate BOUNDARY CONDITIONS, not initial conditions.\n"
-                "\n"
-                "Add to your YAML config:\n"
-                "  boundary_conditions:\n"
-                "    left:\n"
-                "      type: inflow\n"
-                "      state: [rho_m, w_m, rho_c, w_c]  # Example: [0.150, 8.0, 0.120, 6.0]\n"
-                "\n"
-                "This state will be modulated by traffic signal phases (red/green)."
-            )
-        
-        base_state = self.traffic_signal_base_state
-        
-        if not self.quiet:
-            print(f"  ✅ ARCHITECTURE: Traffic signal using BC state = {base_state}")
-        
-        if phase_id == 0:
-            # ✅ CRITICAL FIX (2025-10-24): Red phase MUST maintain inflow with CREEPING velocity
-            # 
-            # CONCEPTUAL ERROR CORRECTED:
-            #   BEFORE: phase_id=0 → state=[0,0,0,0] → NO vehicles arrive
-            #   PROBLEM: Removes traffic instead of creating queue!
-            #   AFTER: phase_id=0 → state=[rho, V_creeping*rho, ...] → Vehicles arrive slowly
-            #   RESULT: Queue forms upstream (realistic traffic signal behavior)
-            # 
-            # Physics rationale:
-            #   - Red light doesn't STOP vehicles from arriving at the intersection
-            #   - Red light forces vehicles to SLOW DOWN and queue upstream
-            #   - Inflow continues at V_creeping (~0.1 m/s), creating congestion wave
-            #   - This generates the learning signal for RL agent!
-            if base_state:
-                # Extract base densities
-                rho_m_base = base_state[0]
-                rho_c_base = base_state[2]
-                
-                # Use V_creeping for momentum (models slow arrival rate at red light)
-                V_creeping = self.params.V_creeping  # ~0.1 m/s from config_base.yml
-                
-                red_state = [
-                    rho_m_base,                      # rho_m = base density (vehicles CONTINUE arriving)
-                    rho_m_base * V_creeping,         # w_m = rho * V_creeping (SLOW inflow)
-                    rho_c_base,                      # rho_c = base density
-                    rho_c_base * V_creeping          # w_c = rho * V_creeping
-                ]
-                bc_config = {'type': 'inflow', 'state': red_state}
-            else:
-                bc_config = {'type': 'inflow', 'state': None}
-        elif phase_id == 1:
-            # Green phase: Normal inflow (free flow)
-            bc_config = {
-                'type': 'inflow',
-                'state': base_state if base_state else None
-            }
-        else:
-            # For phase_id > 1, treat as variations
-            # Default to reduced inflow (like red phase)
-            # 🔥 ARCHITECTURAL FIX: Use BC state only, no IC fallback
-            reduced_state = [
-                base_state[0],
-                base_state[1] * 0.5,
-                base_state[2],
-                base_state[3] * 0.5
-            ]
-            bc_config = {'type': 'inflow', 'state': reduced_state}
-        
-        # Update current boundary condition parameters
-        if not hasattr(self, 'current_bc_params'):
-            self.current_bc_params = copy.deepcopy(self.params.boundary_conditions)
-        
-        self.current_bc_params[intersection_id] = bc_config
-        
-        # SENSITIVITY FIX: Enhanced logging to verify BC updates
-        if not self.quiet:
-            phase_name = "RED (reduced inflow)" if phase_id == 0 else "GREEN (normal inflow)"
-            print(f"[BC UPDATE] {intersection_id} à phase {phase_id} {phase_name}", flush=True)
-            if bc_config['type'] == 'inflow' and bc_config.get('state') is not None:
-                state = bc_config['state']
-                print(f"  └─ Inflow state: rho_m={state[0]:.4f}, w_m={state[1]:.1f}, "
-                      f"rho_c={state[2]:.4f}, w_c={state[3]:.1f}", flush=True)
-            elif bc_config['type'] == 'outflow':
-                print(f"  └─ Outflow: zero-order extrapolation", flush=True)
+        return history
 
-    def get_segment_observations(self, segment_indices: list) -> dict:
+
+    def step(self):
         """
-        Extracts traffic state observations from specified road segments.
+        Advances the simulation by one time step (dt).
         
-        This method is designed for RL environment integration, providing
-        normalized traffic state variables for agent observation.
+        This method performs the core numerical integration:
+        1. Calculates the stable time step (dt) using CFL condition.
+        2. Updates boundary conditions if they are time-dependent.
+        3. Applies the chosen time integration scheme (e.g., SSP-RK3).
+        4. Updates the current time and step count.
+        """
+        # Ensure we don't overshoot t_final
+        if self.t >= self.params.t_final:
+            return
+
+        # --- Determine dt using CFL condition ---
+        # Use GPU data if available, otherwise CPU
+        U_for_cfl = self.d_U if self.device == 'gpu' else self.U
+        self.dt = cfl.get_dt(U_for_cfl, self.grid, self.params)
         
-        Args:
-            segment_indices (list): List of cell indices to observe
-                                   (must be within physical cells range)
-                                   
+        # Adjust last step to hit t_final exactly
+        if self.t + self.dt > self.params.t_final:
+            self.dt = self.params.t_final - self.t
+        # ----------------------------------------
+
+        # --- Update time-dependent boundary conditions ---
+        self._update_bc_from_schedule('left', self.t)
+        self._update_bc_from_schedule('right', self.t)
+        # ---------------------------------------------
+
+        # --- Perform time integration step ---
+        # The time integration function will handle device-specific kernels
+        time_integration.step(
+            self.U, self.grid, self.params, self.dt, self.t,
+            self.current_bc_params, self.device, self.d_U, self.d_R,
+            self.network_coupling # Pass the network coupling system
+        )
+        # -----------------------------------
+
+        # --- Update time and step count ---
+        self.t += self.dt
+        self.step_count += 1
+        # ----------------------------------
+
+        # --- Store mass conservation data if enabled ---
+        if self.mass_check_config and self.step_count % self.mass_check_config.get('frequency', 10) == 0:
+            # Always calculate from CPU data for consistency
+            U_phys = self.U[:, self.grid.physical_cell_indices]
+            mass_m = metrics.calculate_total_mass(U_phys, self.grid, class_index=0)
+            mass_c = metrics.calculate_total_mass(U_phys, self.grid, class_index=2)
+            self.mass_times.append(self.t)
+            self.mass_m_data.append(mass_m)
+            self.mass_c_data.append(mass_c)
+        # ---------------------------------------------
+
+    def get_results(self):
+        """
+        Returns the simulation results.
+
         Returns:
-            dict: Dictionary with keys:
-                - 'rho_m': motorcycle densities (veh/m) - ndarray shape (len(segment_indices),)
-                - 'q_m': motorcycle momenta (veh/s) - ndarray
-                - 'rho_c': car densities (veh/m) - ndarray
-                - 'q_c': car momenta (veh/s) - ndarray
-                - 'v_m': motorcycle velocities (m/s) - ndarray
-                - 'v_c': car velocities (m/s) - ndarray
-                
-        Raises:
-            ValueError: If segment_indices are out of bounds
-            
-        Example:
-            >>> obs = runner.get_segment_observations([10, 11, 12])
-            >>> print(obs['rho_m'])  # Motorcycle densities for cells 10-12
+            A dictionary containing the time points and state history.
         """
-        # Validate indices
-        if not segment_indices:
-            raise ValueError("segment_indices cannot be empty")
-        
-        segment_indices = np.array(segment_indices, dtype=int)
-        
-        # Check bounds (physical cells only)
-        physical_start = self.grid.num_ghost_cells
-        physical_end = self.grid.num_ghost_cells + self.grid.N_physical
-        
-        if np.any(segment_indices < physical_start) or np.any(segment_indices >= physical_end):
-            raise ValueError(
-                f"Segment indices {segment_indices} out of bounds. "
-                f"Must be in range [{physical_start}, {physical_end})"
-            )
-        
-        # Extract state from appropriate array (CPU or GPU)
-        if self.device == 'gpu':
-            # CUDA arrays don't support fancy indexing - must loop
-            # Allocate output array
-            U_obs = np.zeros((4, len(segment_indices)), dtype=np.float64)
-            for i, seg_idx in enumerate(segment_indices):
-                U_obs[:, i] = self.d_U[:, seg_idx].copy_to_host()
-        else:
-            U_obs = self.U[:, segment_indices]
-        
-        # Extract components (U = [rho_m, q_m, rho_c, q_c])
-        rho_m = U_obs[0, :]
-        q_m = U_obs[1, :]
-        rho_c = U_obs[2, :]
-        q_c = U_obs[3, :]
-        
-        # Calculate velocities with epsilon to avoid division by zero
-        epsilon = 1e-10
-        v_m = q_m / (rho_m + epsilon)
-        v_c = q_c / (rho_c + epsilon)
-        
-        # Return as dictionary
-        return {
-            'rho_m': rho_m,
-            'q_m': q_m,
-            'rho_c': rho_c,
-            'q_c': q_c,
-            'v_m': v_m,
-            'v_c': v_c
+        results = {
+            'times': self.times,
+            'states': self.states,
+            'grid': self.grid,
+            'params': self.params
         }
+        # Add mass conservation data if it was collected
+        if hasattr(self, 'mass_times') and self.mass_times:
+            results['mass_conservation'] = {
+                'times': self.mass_times,
+                'mass_m': self.mass_m_data,
+                'mass_c': self.mass_c_data,
+                'initial_mass_m': self.initial_mass_m,
+                'initial_mass_c': self.initial_mass_c
+            }
+        return results
 
-    # ========================================================================
-    # UNIFIED API FOR GRID1D AND NETWORKGRID
-    # ========================================================================
-    
-    def initialize_simulation(self):
+    def save_results(self, filename: str):
         """
-        Initialize simulation - handles both Grid1D and NetworkGrid modes.
+        Saves the simulation results to a file.
+
+        Args:
+            filename (str): The path to the output file.
+        """
+        results = self.get_results()
+        data_manager.save_results(results, filename)
+        if not self.quiet:
+            print(f"Results saved to {filename}")
+
+    def plot_results(self, t_indices: list = None, show: bool = True, save_path: str = None):
+        """
+        Generates and displays plots of the simulation results.
+
+        Args:
+            t_indices (list, optional): A list of time indices to plot.
+                                        If None, plots a few snapshots.
+            show (bool): Whether to display the plot.
+            save_path (str, optional): Path to save the plot image.
+        """
+        from ..visualization import plotting # Lazy import
         
-        For Grid1D: Already initialized in __init__
-        For NetworkGrid: Calls network_simulator.reset()
+        if t_indices is None:
+            # Default to plotting a few snapshots
+            num_snapshots = min(5, len(self.times))
+            t_indices = np.linspace(0, len(self.times) - 1, num_snapshots, dtype=int)
+
+        plotting.plot_simulation_snapshots(
+            self.get_results(),
+            t_indices,
+            show=show,
+            save_path=save_path
+        )
+
+    def animate_results(self, save_path: str = 'simulation.mp4', interval: int = 50):
         """
-        if hasattr(self, 'is_network_mode') and self.is_network_mode:
-            # NetworkGrid mode: initialize network
-            initial_state, timestamp = self.network_simulator.reset()
-            self.network = self.network_simulator.network
-            self.t = timestamp
-            if not self.quiet:
-                print(f"✅ NetworkGrid initialized at t={timestamp}s")
-        else:
-            # Grid1D mode: already initialized in _common_initialization()
-            pass
-    
-    @property
-    def grid(self):
-        """Access grid - returns Grid1D for single-segment mode"""
-        if hasattr(self, '_grid'):
-            return self._grid
-        return None
-    
-    @grid.setter
-    def grid(self, value):
-        """Set grid"""
-        self._grid = value
-    
-    @property
-    def network(self):
-        """Access network - returns NetworkGrid for multi-segment mode"""
-        if hasattr(self, 'is_network_mode') and self.is_network_mode:
-            return self.network_simulator.network
-        return None
-    
-    @network.setter
-    def network(self, value):
-        """Set network (for NetworkGrid mode)"""
-        self._network = value
-    
-    @property
-    def current_time(self):
-        """Get current simulation time - unified API"""
-        if hasattr(self, 'is_network_mode') and self.is_network_mode:
-            return self.network_simulator.current_time
-        return self.t
-    
-    def reset(self):
-        """Reset simulation - NetworkGrid API compatibility"""
-        if hasattr(self, 'is_network_mode') and self.is_network_mode:
-            return self.network_simulator.reset()
-        else:
-            raise NotImplementedError("reset() only available in NetworkGrid mode")
-    
-    def step(self, dt: float, repeat_k: int = 1):
-        """Step simulation - NetworkGrid API compatibility"""
-        if hasattr(self, 'is_network_mode') and self.is_network_mode:
-            result = self.network_simulator.step(dt, repeat_k)
-            self.t = self.network_simulator.current_time
-            return result
-        else:
-            raise NotImplementedError("step() only available in NetworkGrid mode. Use run() for Grid1D")
-    
-    def set_signal(self, signal_plan: dict):
-        """Set traffic signal - NetworkGrid API"""
-        if hasattr(self, 'is_network_mode') and self.is_network_mode:
-            return self.network_simulator.set_signal(signal_plan)
-        else:
-            raise NotImplementedError("set_signal() only available in NetworkGrid mode")
-    
-    @property
-    def dt_sim(self):
-        """Get simulation timestep - unified API"""
-        if hasattr(self, 'is_network_mode') and self.is_network_mode:
-            return self.network_simulator.dt_sim
-        return None  # Grid1D uses adaptive timestep
+        Creates an animation of the simulation results.
+
+        Args:
+            save_path (str): The path to save the animation file.
+            interval (int): The delay between frames in milliseconds.
+        """
+        from ..visualization import plotting # Lazy import
+        plotting.animate_simulation(self.get_results(), save_path=save_path, interval=interval)
+        if not self.quiet:
+            print(f"Animation saved to {save_path}")
+
+    def __repr__(self):
+        scenario = getattr(self.params, 'scenario_name', 'N/A')
+        return f"SimulationRunner(scenario='{scenario}', t={self.t:.2f}/{self.params.t_final}, device='{self.device}')"
 

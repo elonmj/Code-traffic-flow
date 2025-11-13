@@ -1,54 +1,66 @@
-# Kaggle Validation Workflow
+# Generic Kaggle Runner Workflow
 
-**Architecture CI/CD pour tests ARZ-RL sur GPU Kaggle**
+**A CI/CD architecture for running tests and experiments on Kaggle Kernels.**
 
-## Problème résolu
+This workflow automates the process of running code on Kaggle, handling everything from environment setup to artifact retrieval. It is designed to be a generic tool for executing either `pytest` test suites or standalone Python scripts on a Kaggle GPU/CPU environment.
 
-Après 10 itérations manuelles de debugging (Kernels 1-10), ce workflow élimine :
-- ✅ Création de multiples kernels (xpwy, cjsh, gfax...) → **UN kernel, updates multiples**
-- ✅ Monitoring manuel des artifacts → **Auto-download avec paths explicites**
-- ✅ Configuration floue → **Séparation config/tests/execution**
-- ✅ Git add manuel → **Auto-commit/push avant Kaggle**
+## Core Algorithm
+
+The workflow operates as follows:
+
+1.  **Invocation**: The user invokes the runner via `executor.py`, specifying a `--target` (a directory for `pytest` or a Python script).
+2.  **Git Sync**: The `kernel_manager` ensures all local changes are committed and pushed to the `main` branch on GitHub.
+3.  **Kernel Script Generation**: A dynamic Python script is generated for the Kaggle Kernel. This script is responsible for:
+    *   Cloning the GitHub repository.
+    *   Installing all necessary dependencies (including `pytest`).
+    *   Executing the specified target (running `pytest` or a Python script).
+4.  **Kaggle Kernel Update**: The runner updates a persistent Kaggle Kernel (e.g., `generic-test-runner-kernel`) with the newly generated script. This avoids creating a new kernel for each run.
+5.  **Monitoring & Artifacts**: The runner monitors the kernel's execution in real-time. Once complete, it automatically downloads all output artifacts (logs, plots, etc.) to a local `kaggle_runner/results/` directory.
+
+## Solved Problems
+
+-   **Manual Kernel Management**: Eliminates the need to manually create, update, and monitor Kaggle kernels.
+-   **Environment Discrepancies**: Ensures tests are run in a consistent, clean Kaggle environment.
+-   **Code Sync Issues**: Guarantees that the latest version of the code from the `main` branch is always used.
+-   **Artifact Retrieval**: Automates the download and organization of results.
 
 ## Architecture
 
 ```
-/kaggle
-├── config/                      # Configurations de tests (YAML)
-│   └── gpu_stability_test.yml   # Spécification test GPU
-├── tests/                       # Tests copiés depuis validation_ch7
-│   └── test_gpu_stability.py    # Code de test (COPIÉ, pas réécrit)
-├── executor.py                  # Point d'entrée unique (CLI)
-├── kernel_manager.py            # Gestion kernel (`update` pas `push`)
-├── artifact_downloader.py       # Téléchargement automatique
-└── README.md                    # Ce fichier
+/kaggle_runner
+├── config/                      # Optional: Specific configs for experiments
+│   └── my_experiment.yml
+├── experiments/                 # For standalone experiment scripts
+│   └── gpu_stability_experiment.py
+├── executor.py                  # Single entry point (CLI)
+├── kernel_manager.py            # Manages the Kaggle API and kernel generation
+└── README.md                    # This file
 ```
 
-## Utilisation
+## Usage
+
+### Running a Pytest Suite
+
+To run all tests within the `arz_model/tests` directory:
 
 ```bash
-# Test GPU stability (Experiment A)
-python kaggle/executor.py --test gpu_stability
-
-# Résultats téléchargés automatiquement vers :
-# kaggle/results/<timestamp>/
+python kaggle_runner/executor.py --target arz_model/tests/
 ```
 
-## API Kaggle
+### Running a Specific Experiment
 
-**CORRECT** (utilisé ici):
+To run a standalone experiment script:
+
 ```bash
-kaggle kernels update -p /kaggle  # MAJ kernel existant
-kaggle kernels output <kernel> -p kaggle/results/<timestamp>
+python kaggle_runner/executor.py --target kaggle_runner/experiments/gpu_stability_experiment.py
 ```
 
-**INCORRECT** (ancien système):
+### Using Quick Mode
+
+For experiments that support it, you can enable quick mode:
+
 ```bash
-kaggle kernels push -p /path  # ❌ Crée nouveau kernel chaque fois
+python kaggle_runner/executor.py --target path/to/experiment.py --quick
 ```
 
-## Références
-
-- Kaggle API officielle : https://github.com/Kaggle/kaggle-api
-- Kernel 10 (succès technique) : v_max=172.11 m/s @ t=1.0s
-- Experiment A : Test θ coupling causality hypothesis
+Results are automatically downloaded to `kaggle_runner/results/<kernel-slug>`.

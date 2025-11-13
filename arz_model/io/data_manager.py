@@ -1,5 +1,4 @@
 import numpy as np
-import yaml
 import os
 import pickle # Needed if saving/loading ModelParameters object directly
 import pandas as pd
@@ -138,56 +137,62 @@ def load_simulation_data(filename: str) -> dict:
             print("Error: No parameters information (params_object or params_dict) found in file.")
             loaded_data['params'] = None # Indicate failure
 
+        # Check for legacy params_info and load if present
+        if 'params_info' in loaded_data:
+            # Fallback for older files that might have params_info
+            loaded_data['params'] = ModelParameters(**loaded_data['params_info'])
+    
+        # Final check
+        if 'grid' not in loaded_data or loaded_data['grid'] is None or \
+           'params' not in loaded_data or loaded_data['params'] is None:
+            raise ValueError("Failed to load or reconstruct grid and params objects.")
 
-        print(f"Simulation data successfully loaded from: {filename}")
         return loaded_data
-    except Exception as e:
-        print(f"Error loading simulation data from {filename}: {e}")
-        raise # Re-raise the exception
 
-def load_yaml_config(filepath: str) -> dict:
-    """ Loads a YAML configuration file. """
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Configuration file not found: {filepath}")
-    try:
-        with open(filepath, 'r') as f:
-            config = yaml.safe_load(f)
-        return config
     except Exception as e:
-        print(f"Error loading YAML file {filepath}: {e}")
-        raise
+        print(f"An error occurred while loading the simulation data from {filename}: {e}")
+        raise ValueError(f"Failed to load data from {filename}.") from e
 
-def load_road_quality_file(filepath: str, N_physical: int) -> np.ndarray:
+
+def load_road_quality_file(file_path: str, grid: 'Grid1D') -> np.ndarray:
     """
-    Loads road quality data from a simple text file (one integer R per line).
+    Loads road quality data from a CSV file and maps it to the simulation grid.
 
     Args:
-        filepath (str): Path to the road quality file.
-        N_physical (int): Expected number of physical cells.
+        file_path (str): Path to the road quality CSV file.
+        grid (Grid1D): The grid object used for the simulation.
 
     Returns:
-        np.ndarray: Array of road quality indices.
+        np.ndarray: Array of road quality indices mapped to the grid.
 
     Raises:
         FileNotFoundError, ValueError
     """
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Road quality file not found: {filepath}")
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Road quality file not found: {file_path}")
     try:
-        R_array = np.loadtxt(filepath, dtype=int)
-        if R_array.ndim == 0: # Handle single value file
-            R_array = np.full(N_physical, int(R_array))
-        elif R_array.ndim > 1:
-            raise ValueError("Road quality file should contain a 1D list of integers.")
+        # Load the road quality data
+        R_array = np.loadtxt(file_path, delimiter=',')
+        
+        # Check if the data is a single value (broadcast to grid size)
+        if R_array.ndim == 0:
+            R_array = np.full(grid.N_physical, R_array.item())
+        elif R_array.ndim == 1:
+            if len(R_array) != grid.N_physical:
+                raise ValueError(f"Road quality data length ({len(R_array)}) does not match grid size ({grid.N_physical}).")
+        else:
+            raise ValueError("Road quality data should be a 1D array or a single value.")
 
-        if len(R_array) != N_physical:
-            raise ValueError(f"Road quality file length ({len(R_array)}) must match N_physical ({N_physical}).")
-        return R_array
+        # Assign the road quality data to the grid
+        grid.road_quality = R_array
+
+        print(f"Road quality data loaded and assigned to grid: {file_path}")
     except Exception as e:
-        raise ValueError(f"Error loading road quality file '{filepath}': {e}") from e
+        print(f"Error processing road quality file {file_path}: {e}")
+        raise
 
 
-def save_mass_data(filename: str, times: list | np.ndarray, mass_m_list: list | np.ndarray, mass_c_list: list | np.ndarray):
+def save_mass_data(filename: str, times: list, mass_m: list, mass_c: list, total_mass: list):
     """Saves time series of mass data to a CSV file.
 
     Args:
@@ -202,11 +207,13 @@ def save_mass_data(filename: str, times: list | np.ndarray, mass_m_list: list | 
             os.makedirs(output_dir, exist_ok=True)
         df = pd.DataFrame({
             'time_sec': times,
-            'mass_m': mass_m_list,
-            'mass_c': mass_c_list
+            'mass_m': mass_m,
+            'mass_c': mass_c,
+            'total_mass': total_mass
         })
         df.to_csv(filename, index=False, encoding='utf-8-sig')
         print(f"Mass conservation data saved to: {filename}")
     except Exception as e:
-        print(f"ERROR saving mass data to {filename}: {e}")
+        print(f"Error saving mass data to {filename}: {e}")
+        raise
 

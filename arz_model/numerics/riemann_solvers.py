@@ -18,10 +18,27 @@ try:
 except ImportError:
     JunctionInfo = None
 
+# Import logging utilities for frequency-based debug output
+from .logging_utils import should_log
+
+# Module-level current time (updated externally from time integration)
+_current_sim_time = 0.0
+
+def set_current_time(time: float):
+    """Update the current simulation time for logging purposes."""
+    global _current_sim_time
+    _current_sim_time = time
+
 def central_upwind_flux(
     U_L: np.ndarray, 
     U_R: np.ndarray, 
-    params: ModelParameters,
+    alpha: float,
+    rho_jam: float,
+    epsilon: float,
+    k_m: float,
+    gamma_m: float,
+    k_c: float,
+    gamma_c: float,
     junction_info: Optional['JunctionInfo'] = None
 ) -> np.ndarray:
     """
@@ -34,6 +51,9 @@ def central_upwind_flux(
     
     Junction-aware flux blocking: When junction_info is provided with a traffic signal,
     the computed flux is reduced by light_factor to physically block flow during RED signals.
+    Additionally, queue congestion effects are applied via queue_factor to model velocity
+    reduction at congested junctions.
+    
     Based on Daganzo (1995) supply-demand junction model adapted to numerical flux calculation.
 
     Args:
@@ -42,9 +62,10 @@ def central_upwind_flux(
         params (ModelParameters): Model parameters object.
         junction_info (Optional[JunctionInfo]): Junction metadata for flux blocking.
             If None, normal flux calculation (backward compatible).
-            If provided with is_junction=True, flux is multiplied by light_factor:
-                - RED signal: light_factor ≈ 0.01 (1% flow, 99% blocked)
-                - GREEN signal: light_factor = 1.0 (100% flow, no blocking)
+            If provided with is_junction=True, flux is modified by:
+                - light_factor: Traffic signal blocking (RED ≈ 0.01, GREEN = 1.0)
+                - queue_factor: Queue congestion reduction (1.0 = no queue, <1.0 = congested)
+                - theta_k: Behavioral coupling (driver memory preservation)
 
     Returns:
         np.ndarray: The numerical flux vector F_CU at the interface. Shape (4,).
@@ -52,15 +73,17 @@ def central_upwind_flux(
     References:
         - Kurganov & Tadmor (2000): New high-resolution central schemes for nonlinear conservation laws
         - Daganzo (1995): The cell transmission model, part II: Network traffic
+        - Kolb et al. (2018): Behavioral coupling at network junctions
         
     Example:
         >>> # Normal flux calculation (no junction)
         >>> F = central_upwind_flux(U_L, U_R, params)
         >>> 
-        >>> # Junction with RED signal (99% blocked)
-        >>> junction = JunctionInfo(is_junction=True, light_factor=0.01, node_id=1)
+        >>> # Junction with RED signal and queue (99% blocked + 70% velocity reduction)
+        >>> junction = JunctionInfo(is_junction=True, light_factor=0.01, 
+        ...                         queue_factor=0.7, node_id=1)
         >>> F_red = central_upwind_flux(U_L, U_R, params, junction)
-        >>> # F_red ≈ 0.01 * F (flux reduced by 99%)
+        >>> # F_red ≈ 0.01 * 0.7 * F = 0.007 * F (99.3% total reduction)
     """
     # Ensure inputs are numpy arrays
     U_L = np.asarray(U_L)
@@ -78,27 +101,64 @@ def central_upwind_flux(
 
     # Calculate pressures and velocities for L and R states
     p_m_L, p_c_L = physics.calculate_pressure(rho_m_L_calc, rho_c_L_calc,
-                                              params.alpha, params.rho_jam, params.epsilon,
-                                              params.K_m, params.gamma_m,
-                                              params.K_c, params.gamma_c)
+                                              alpha, rho_jam, epsilon,
+                                              k_m, gamma_m,
+                                              k_c, gamma_c)
     v_m_L, v_c_L = physics.calculate_physical_velocity(w_m_L, w_c_L, p_m_L, p_c_L)
 
     p_m_R, p_c_R = physics.calculate_pressure(rho_m_R_calc, rho_c_R_calc,
-                                              params.alpha, params.rho_jam, params.epsilon,
-                                              params.K_m, params.gamma_m,
-                                              params.K_c, params.gamma_c)
+                                              alpha, rho_jam, epsilon,
+                                              k_m, gamma_m,
+                                              k_c, gamma_c)
     v_m_R, v_c_R = physics.calculate_physical_velocity(w_m_R, w_c_R, p_m_R, p_c_R)
 
     # Calculate eigenvalues for L and R states
     # Note: physics.calculate_eigenvalues expects arrays, so pass scalars wrapped
     lambda_L_list = physics.calculate_eigenvalues(np.array([rho_m_L_calc]), np.array([v_m_L]),
-                                                 np.array([rho_c_L_calc]), np.array([v_c_L]), params)
+                                                 np.array([rho_c_L_calc]), np.array([v_c_L]), 
+                                                 alpha, rho_jam, epsilon, k_m, gamma_m, k_c, gamma_c)
     lambda_R_list = physics.calculate_eigenvalues(np.array([rho_m_R_calc]), np.array([v_m_R]),
-                                                 np.array([rho_c_R_calc]), np.array([v_c_R]), params)
+                                                 np.array([rho_c_R_calc]), np.array([v_c_R]), 
+                                                 alpha, rho_jam, epsilon, k_m, gamma_m, k_c, gamma_c)
     # Flatten the list of single-element arrays back to scalars for max/min
     lambda_L = [l[0] for l in lambda_L_list]
     lambda_R = [l[0] for l in lambda_R_list]
 
+
+    # Apply behavioral coupling (theta_k) if at a junction
+    if junction_info is not None and junction_info.is_junction and junction_info.theta_k:
+        # Modify the upstream state U_L based on theta_k values
+        # This models driver memory/adaptation BEFORE flux is calculated.
+        
+        # Original upstream state
+        rho_m_L_orig, w_m_L_orig, rho_c_L_orig, w_c_L_orig = U_L
+        
+        # Get theta_k values for each class, default to 1.0 (no change)
+        theta_m = junction_info.theta_k.get('motorcycle', 1.0)
+        theta_c = junction_info.theta_k.get('car', 1.0)
+        
+        # Apply coupling: w_coupled = theta * w_upstream + (1 - theta) * w_downstream_equilibrium
+        # For simplicity, we approximate w_downstream_equilibrium with w_R (downstream state)
+        # This is a common simplification in network models.
+        w_m_L = theta_m * w_m_L_orig + (1 - theta_m) * w_m_R
+        w_c_L = theta_c * w_c_L_orig + (1 - theta_c) * w_c_R
+        
+        # Update the state vector U_L with the behaviorally-coupled momentum
+        U_L = np.array([rho_m_L_orig, w_m_L, rho_c_L_orig, w_c_L])
+        
+        # Recalculate dependent variables for the modified U_L
+        rho_m_L_calc = max(U_L[0], 0.0)
+        rho_c_L_calc = max(U_L[2], 0.0)
+        p_m_L, p_c_L = physics.calculate_pressure(rho_m_L_calc, rho_c_L_calc,
+                                                  alpha, rho_jam, epsilon,
+                                                  k_m, gamma_m,
+                                                  k_c, gamma_c)
+        v_m_L, v_c_L = physics.calculate_physical_velocity(U_L[1], U_L[3], p_m_L, p_c_L)
+        
+        lambda_L_list = physics.calculate_eigenvalues(np.array([rho_m_L_calc]), np.array([v_m_L]),
+                                                     np.array([rho_c_L_calc]), np.array([v_c_L]),
+                                                     alpha, rho_jam, epsilon, k_m, gamma_m, k_c, gamma_c)
+        lambda_L = [l[0] for l in lambda_L_list]
 
     # Calculate local one-sided wave speeds (a+ and a-)
     a_plus = max(max(lambda_L, default=0), max(lambda_R, default=0), 0.0)
@@ -112,7 +172,7 @@ def central_upwind_flux(
 
     # Calculate the Central-Upwind numerical flux
     denominator = a_plus - a_minus
-    if abs(denominator) < params.epsilon:
+    if abs(denominator) < epsilon:
         # Handle case where a+ approx equals a- (e.g., vacuum state or zero speeds)
         # In this case, the flux is often taken as the average or simply F(U_L) or F(U_R).
         # Let's use the average as a reasonable default.
@@ -125,15 +185,22 @@ def central_upwind_flux(
     # Apply junction-aware flux blocking if at junction interface
     if junction_info is not None and junction_info.is_junction:
         # [PHASE 3 DEBUG - Junction flux blocking verification]
-        if junction_info.light_factor < 0.5:  # RED or YELLOW signal
-            print("[JUNCTION FLUX BLOCKING]")
-            print("  light_factor =", junction_info.light_factor)
-            print("  F_before (momentum) =", F_CU[1])
+        # Log only every 50 seconds for readability
+        if junction_info.light_factor < 0.5 and should_log(_current_sim_time):  # RED or YELLOW signal
+            print(f"[JUNCTION FLUX BLOCKING] t={_current_sim_time:.1f}s")
+            print(f"  light_factor = {junction_info.light_factor}")
+            print(f"  F_before (momentum) = {F_CU[1]}")
         
+        # Apply traffic light blocking
         F_CU = F_CU * junction_info.light_factor
         
-        if junction_info.light_factor < 0.5:
-            print("  F_after (momentum, blocked) =", F_CU[1])
+        # Apply queue congestion reduction (NEW - 2025-11-08)
+        # Queue factor reduces effective velocity/momentum at congested junctions
+        if hasattr(junction_info, 'queue_factor') and junction_info.queue_factor < 1.0:
+            F_CU = F_CU * junction_info.queue_factor
+        
+        if junction_info.light_factor < 0.5 and should_log(_current_sim_time):
+            print(f"  F_after (momentum, blocked) = {F_CU[1]}")
     
     return F_CU
 
@@ -141,7 +208,13 @@ def central_upwind_flux(
 def godunov_flux_upwind(
     U_L: np.ndarray,
     U_R: np.ndarray,
-    params: ModelParameters,
+    alpha: float,
+    rho_jam: float,
+    epsilon: float,
+    k_m: float,
+    gamma_m: float,
+    k_c: float,
+    gamma_c: float,
     junction_info: Optional['JunctionInfo'] = None
 ) -> np.ndarray:
     """
@@ -200,13 +273,13 @@ def godunov_flux_upwind(
     # 2. Calculate pressures (REUSE physics.py)
     p_m_L, p_c_L = physics.calculate_pressure(
         np.array([rho_m_L]), np.array([rho_c_L]),
-        params.alpha, params.rho_jam, params.epsilon,
-        params.K_m, params.gamma_m, params.K_c, params.gamma_c
+        alpha, rho_jam, epsilon,
+        k_m, gamma_m, k_c, gamma_c
     )
     p_m_R, p_c_R = physics.calculate_pressure(
         np.array([rho_m_R]), np.array([rho_c_R]),
-        params.alpha, params.rho_jam, params.epsilon,
-        params.K_m, params.gamma_m, params.K_c, params.gamma_c
+        alpha, rho_jam, epsilon,
+        k_m, gamma_m, k_c, gamma_c
     )
     
     # 3. Calculate velocities
@@ -217,12 +290,12 @@ def godunov_flux_upwind(
     lambda_L_list = physics.calculate_eigenvalues(
         np.array([rho_m_L]), np.array([v_m_L]),
         np.array([rho_c_L]), np.array([v_c_L]),
-        params
+        alpha, rho_jam, epsilon, k_m, gamma_m, k_c, gamma_c
     )
     lambda_R_list = physics.calculate_eigenvalues(
         np.array([rho_m_R]), np.array([v_m_R]),
         np.array([rho_c_R]), np.array([v_c_R]),
-        params
+        alpha, rho_jam, epsilon, k_m, gamma_m, k_c, gamma_c
     )
     
     # 5. Flatten (calculate_eigenvalues returns list of arrays)
@@ -251,7 +324,7 @@ def godunov_flux_upwind(
         ])
     else:
         # Mixed waves → fallback to Central-Upwind (handles complex wave interactions)
-        F = central_upwind_flux(U_L, U_R, params)
+        F = central_upwind_flux(U_L, U_R, alpha, rho_jam, epsilon, k_m, gamma_m, k_c, gamma_c)
     
     # 7. Junction blocking (REUSE logic)
     if junction_info is not None and junction_info.is_junction:

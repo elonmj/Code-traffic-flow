@@ -41,7 +41,8 @@ class InflowBC(BaseModel):
     """Inflow boundary condition"""
     
     type: Literal[BCType.INFLOW] = BCType.INFLOW
-    state: BCState = Field(description="Inflow state")
+    density: float = Field(..., description="Inflow density.")
+    velocity: float = Field(..., description="Inflow velocity.")
     schedule: Optional[List[BCScheduleItem]] = Field(
         None,
         description="Optional time-dependent schedule"
@@ -52,7 +53,8 @@ class OutflowBC(BaseModel):
     """Outflow boundary condition"""
     
     type: Literal[BCType.OUTFLOW] = BCType.OUTFLOW
-    state: BCState = Field(description="Outflow state")
+    density: float = Field(..., description="Outflow density.")
+    velocity: float = Field(..., description="Outflow velocity.")
 
 
 class PeriodicBC(BaseModel):

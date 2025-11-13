@@ -28,7 +28,7 @@ class Grid1D:
             Set by NetworkGrid during multi-segment evolution to enable traffic signal blocking.
     """
 
-    def __init__(self, N: int, xmin: float, xmax: float, num_ghost_cells: int):
+    def __init__(self, N: int, xmin: float, xmax: float, ghost_cells: int):
         """
         Initializes the 1D grid.
 
@@ -36,15 +36,15 @@ class Grid1D:
             N (int): Number of physical cells.
             xmin (float): Coordinate of the left boundary.
             xmax (float): Coordinate of the right boundary.
-            num_ghost_cells (int): Number of ghost cells on each side.
+            ghost_cells (int): Number of ghost cells on each side.
 
         Raises:
-            ValueError: If N or num_ghost_cells are not positive integers,
+            ValueError: If N or ghost_cells are not positive integers,
                         or if xmax <= xmin.
         """
         if not isinstance(N, int) or N <= 0:
             raise ValueError("Number of physical cells N must be a positive integer.")
-        if not isinstance(num_ghost_cells, int) or num_ghost_cells < 0:
+        if not isinstance(ghost_cells, int) or ghost_cells < 0:
             raise ValueError("Number of ghost cells must be a non-negative integer.")
         if xmax <= xmin:
             raise ValueError("xmax must be greater than xmin.")
@@ -52,7 +52,7 @@ class Grid1D:
         self.N_physical = N
         self.xmin = float(xmin)
         self.xmax = float(xmax)
-        self.num_ghost_cells = num_ghost_cells
+        self.num_ghost_cells = ghost_cells
 
         self.dx = (self.xmax - self.xmin) / self.N_physical
         self.N_total = self.N_physical + 2 * self.num_ghost_cells
@@ -95,10 +95,8 @@ class Grid1D:
         Raises:
             ValueError: If the length of R_array does not match N_physical.
         """
-        if len(R_array) != self.N_physical:
-            raise ValueError(f"Length of R_array ({len(R_array)}) must match N_physical ({self.N_physical}).")
-        # Ensure it's stored as integers if not already
-        self.road_quality = np.array(R_array, dtype=int)
+        # This is now handled by the GPUMemoryPool. The grid itself does not hold this state.
+        pass
 
     def get_road_quality_for_cell(self, physical_cell_index: int) -> int:
         """

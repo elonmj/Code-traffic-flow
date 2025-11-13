@@ -4,9 +4,9 @@ Kaggle Test Executor - Point d'entrée unique
 COPIÉ et refactorisé depuis validation_ch7/scripts/validation_cli.py
 
 USAGE:
-    python kaggle/executor.py --test gpu_stability
-    python kaggle/executor.py --test gpu_stability --quick
-    python kaggle/executor.py --test gpu_stability --commit-message "Fix BC inflow"
+    python kaggle_runner/executor.py --target arz_model/tests/
+    python kaggle_runner/executor.py --target kaggle_runner/experiments/gpu_stability_experiment.py --quick
+    python kaggle_runner/executor.py --target arz_model/tests/ --commit-message "Run all tests"
 """
 
 import argparse
@@ -22,29 +22,29 @@ from kaggle_runner.kernel_manager import KernelManager
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Kaggle Test Executor - Production CI/CD Workflow',
+        description='Kaggle Test Executor - Generic CI/CD Workflow',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
 Examples:
-  # Full GPU stability test (15s simulation)
-  python kaggle/executor.py --test gpu_stability
-  
-  # Quick test (5s simulation)
-  python kaggle/executor.py --test gpu_stability --quick
+  # Run all tests in a directory using pytest
+  python kaggle_runner/executor.py --target arz_model/tests/
+
+  # Run a specific experiment script
+  python kaggle_runner/executor.py --target kaggle_runner/experiments/gpu_stability_experiment.py
+
+  # Run an experiment in quick mode
+  python kaggle_runner/executor.py --target kaggle_runner/experiments/gpu_stability_experiment.py --quick
   
   # Custom commit message
-  python kaggle/executor.py --test gpu_stability --commit-message "Test Experiment A"
-  
-  # No timeout (let it run to completion)
-  python kaggle/executor.py --test gpu_stability --no-timeout
+  python kaggle_runner/executor.py --target arz_model/tests/ --commit-message "Run all tests before release"
 '''
     )
     
     parser.add_argument(
-        '--test',
+        '--target',
         required=True,
-        choices=['gpu_stability'],  # Extensible pour autres tests
-        help='Test to run (currently: gpu_stability for Experiment A)'
+        type=str,
+        help='Test target to run on Kaggle (e.g., a directory for pytest or a specific script)'
     )
     
     parser.add_argument(
@@ -76,10 +76,10 @@ Examples:
     args = parser.parse_args()
     
     print("=" * 80)
-    print("KAGGLE TEST EXECUTOR - PRODUCTION WORKFLOW")
+    print("KAGGLE TEST EXECUTOR - GENERIC WORKFLOW")
     print("=" * 80)
-    print(f"Test: {args.test}")
-    print(f"Mode: {'QUICK (5s)' if args.quick else 'FULL (15s)'}")
+    print(f"Target: {args.target}")
+    print(f"Mode: {'QUICK' if args.quick else 'FULL'}")
     if args.commit_message:
         print(f"Custom commit: {args.commit_message}")
     if args.no_timeout:
@@ -93,19 +93,34 @@ Examples:
         # Initialize manager
         manager = KernelManager()
         
-        # Load test config
-        config_path = Path(__file__).parent / "config" / f"{args.test}.yml"
-        if not config_path.exists():
-            print(f"[ERROR] Config not found: {config_path}")
-            return 1
+        # --- CONFIGURATION LOADING ---
+        # Try to find a specific config file, otherwise use a default
+        target_path = Path(args.target)
+        config_name = target_path.stem  # e.g., 'gpu_stability_experiment' from the script name
+        config_path = Path(__file__).parent / "config" / f"{config_name}.yml"
         
-        config = manager.load_test_config(str(config_path))
-        
-        # Override quick test mode if requested
+        if config_path.exists():
+            print(f"[INFO] Found specific config file: {config_path}")
+            config = manager.load_test_config(str(config_path))
+        else:
+            print(f"[INFO] No specific config found. Using default config for a generic run.")
+            # Create a default config for generic runs (like pytest)
+            config = {
+                'test_name': f"generic_test_{target_path.name.replace('.', '_')}",
+                'kernel': {
+                    'slug': 'generic-test-runner-kernel',
+                    'title': 'Generic Test Runner Kernel',
+                    'enable_gpu': True,
+                    'enable_internet': True
+                }
+            }
+
+        # Add runtime arguments to config
+        config['target'] = args.target
         if args.quick:
             config['quick_test'] = True
         
-        # Update kernel (replaces CREATE pattern from validation_cli.py)
+        # Update kernel
         kernel_slug = manager.update_kernel(config, args.commit_message)
         
         if not kernel_slug:
@@ -117,23 +132,18 @@ Examples:
         
         # Monitor execution
         timeout = None if args.no_timeout else args.timeout
-        if timeout:
-            print(f"\n[MONITORING] Starting monitor with {timeout}s timeout...")
-            success = manager.monitor_kernel(kernel_slug, timeout)
-        else:
-            print(f"\n[MONITORING] Starting monitor (NO TIMEOUT)...")
-            success = manager.monitor_kernel(kernel_slug, timeout=999999)
+        print(f"\n[MONITORING] Starting monitor with {timeout or 'infinite'}s timeout...")
+        success = manager.monitor_kernel(kernel_slug, timeout)
         
         if not success:
             print("\n[FAILED] Kernel execution failed or timed out")
             return 1
         
         # Note: Artifacts are automatically downloaded during monitoring
-        # via _retrieve_and_analyze_logs() method (copied from validation_kaggle_manager.py)
         print("\n✅ Artifacts automatically persisted to: kaggle/results/<kernel-slug>/")
         
         print("\n" + "=" * 80)
-        print("SUCCESS - TEST COMPLETED")
+        print("SUCCESS - KAGGLE EXECUTION COMPLETED")
         print(f"Kernel: https://www.kaggle.com/code/{kernel_slug}")
         print("=" * 80)
         return 0

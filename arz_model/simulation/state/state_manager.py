@@ -1,203 +1,152 @@
 """
-State Manager
+State Manager for GPU-Only Architecture
 
-Centralizes simulation state management (U, times, results storage).
-Handles CPU/GPU memory transfers.
+This module provides `StateManagerGPUOnly`, a class designed to manage the entire
+simulation state on the GPU, interacting with a `GPUMemoryPool` to handle
+multiple simulation segments. It eliminates CPU-GPU transfers during the main
+simulation loop, restricting them to periodic, configurable checkpoints and the
+final export of results. This approach is fundamental to the performance gains
+of the GPU-only architecture.
 """
 
 import numpy as np
+import pickle
 from typing import List, Dict, Optional
-try:
-    import cupy as cp
-except ImportError:
-    cp = None
 
+# Local imports
+from numerics.gpu.memory_pool import GPUMemoryPool
 
-class StateManager:
+class StateManagerGPUOnly:
     """
-    Manages simulation state including:
-    - Current state array U (CPU or GPU)
-    - Time tracking
-    - Result storage
-    - Mass conservation tracking
+    Manages simulation state entirely on the GPU for multiple segments.
+    
+    This class tracks time, step counts, and orchestrates state updates
+    and checkpointing for a multi-segment simulation via a GPUMemoryPool.
     """
     
     def __init__(self, 
-                 U0: np.ndarray,
-                 device: str = 'cpu',
+                 gpu_pool: GPUMemoryPool,
+                 checkpoint_interval: int = 100,
                  quiet: bool = False):
         """
-        Initialize state manager.
+        Initializes the state manager for a GPU-only, multi-segment simulation.
         
         Args:
-            U0: Initial state array [4, N_total] (CPU)
-            device: 'cpu' or 'gpu'
-            quiet: If True, suppress informational messages
+            gpu_pool: An initialized GPUMemoryPool holding all GPU arrays.
+            checkpoint_interval: The number of steps between saving a checkpoint.
+            quiet: If True, suppress informational messages.
         """
-        self.device = device
-        self.quiet = quiet
-        
-        # Current state
-        self.U = U0.copy()  # Always keep CPU copy
-        self.d_U = None  # GPU copy (if device='gpu')
-        
-        # Time tracking
+        self.gpu_pool = gpu_pool
         self.t = 0.0
         self.step_count = 0
+        self.quiet = quiet
         
-        # Results storage
-        self.times: List[float] = []
-        self.states: List[np.ndarray] = []
+        # Checkpoint buffer (stores CPU copies of the state)
+        self.checkpoint_interval = checkpoint_interval
+        self.checkpoints: List[Dict] = []
         
-        # Mass conservation tracking
-        self.mass_data = {
-            'times': [],
-            'total_mass_m': [],
-            'total_mass_c': [],
-            'mass_change_m': [],
-            'mass_change_c': []
-        }
-        self.initial_total_mass_m = None
-        self.initial_total_mass_c = None
-        
-        # Transfer to GPU if needed
-        if device == 'gpu':
-            if cp is None:
-                raise ImportError("CuPy not available. Install with: pip install cupy-cuda11x")
-            self.d_U = cp.asarray(self.U)
-            if not quiet:
-                print(f"  ✅ State transferred to GPU")
-    
-    def get_current_state(self) -> np.ndarray:
-        """
-        Get current state array (device-appropriate).
-        
-        Returns:
-            U: State array (CPU numpy or GPU cupy array)
-        """
-        if self.device == 'gpu':
-            return self.d_U
-        else:
-            return self.U
-    
-    def update_state(self, U_new: np.ndarray):
-        """
-        Update current state.
-        
-        Args:
-            U_new: New state array (same device as current)
-        """
-        if self.device == 'gpu':
-            self.d_U = U_new
-        else:
-            self.U = U_new
-    
+        if not quiet:
+            print(f"  ✅ StateManagerGPUOnly initialized.")
+            print(f"     - Checkpoint interval: {self.checkpoint_interval} steps")
+
     def advance_time(self, dt: float):
         """
-        Advance time counter.
+        Advances the simulation time and step count.
+        
+        Triggers a checkpoint save if the interval is reached.
         
         Args:
-            dt: Time step
+            dt: The time step for the current iteration.
         """
         self.t += dt
         self.step_count += 1
-    
-    def store_output(self, dx: float, ghost_cells: int = 2):
+        
+        # Conditionally save a checkpoint to CPU memory
+        if self.checkpoint_interval > 0 and self.step_count % self.checkpoint_interval == 0:
+            self._save_checkpoint_to_memory()
+
+    def _save_checkpoint_to_memory(self):
         """
-        Store current state for output.
+        Saves the current state of all segments to a CPU-based checkpoint list.
+        This is one of the few methods that performs a GPU-to-CPU transfer.
+        """
+        if not self.quiet:
+            print(f"  -> Saving in-memory checkpoint at t={self.t:.2f}s (step {self.step_count})")
+            
+        checkpoint_data = {}
+        for seg_id in self.gpu_pool.get_segment_ids():
+            # This is a controlled GPU -> CPU transfer
+            u_cpu = self.gpu_pool.checkpoint_to_cpu(seg_id)
+            checkpoint_data[seg_id] = u_cpu
+        
+        self.checkpoints.append({
+            'time': self.t,
+            'step': self.step_count,
+            'states': checkpoint_data
+        })
+
+    def save_checkpoint_to_disk(self, path: str):
+        """
+        Saves the current simulation state to a file.
+        This includes the GPU state array U, time t, and step_count for all segments.
         
         Args:
-            dx: Grid spacing (for mass calculation)
-            ghost_cells: Number of ghost cells to exclude
+            path (str): Path to the checkpoint file.
         """
-        # Sync from GPU if needed
-        if self.device == 'gpu':
-            U_cpu = cp.asnumpy(self.d_U)
-        else:
-            U_cpu = self.U
-        
-        # Extract physical cells only
-        U_phys = U_cpu[:, ghost_cells:-ghost_cells]
-        
-        # Store time and state
-        self.times.append(self.t)
-        self.states.append(U_phys.copy())
-        
-        # Update mass tracking
-        self._update_mass_tracking(U_phys, dx)
-    
-    def _update_mass_tracking(self, U_phys: np.ndarray, dx: float):
+        checkpoint_data = {
+            't': self.t,
+            'step_count': self.step_count,
+            'states': {}
+        }
+        for seg_id in self.gpu_pool.get_segment_ids():
+            checkpoint_data['states'][seg_id] = self.gpu_pool.checkpoint_to_cpu(seg_id)
+
+        with open(path, 'wb') as f:
+            pickle.dump(checkpoint_data, f)
+            
+        if not self.quiet:
+            print(f"  💾 Checkpoint saved to {path} at t={self.t:.2f}s")
+
+    def load_checkpoint_from_disk(self, path: str):
         """
-        Update mass conservation tracking.
+        Loads the simulation state from a checkpoint file.
+        The CPU state arrays are transferred to the GPU.
         
         Args:
-            U_phys: Physical cells state array [4, N]
-            dx: Grid spacing
+            path (str): Path to the checkpoint file.
         """
-        # Calculate total mass
-        rho_m = U_phys[0, :]
-        rho_c = U_phys[2, :]
-        total_mass_m = np.sum(rho_m) * dx
-        total_mass_c = np.sum(rho_c) * dx
+        with open(path, 'rb') as f:
+            checkpoint_data = pickle.load(f)
         
-        # Initialize if first call
-        if self.initial_total_mass_m is None:
-            self.initial_total_mass_m = total_mass_m
-            self.initial_total_mass_c = total_mass_c
+        self.t = checkpoint_data['t']
+        self.step_count = checkpoint_data['step_count']
         
-        # Calculate changes
-        mass_change_m = ((total_mass_m - self.initial_total_mass_m) / 
-                        self.initial_total_mass_m * 100 if self.initial_total_mass_m != 0 else 0.0)
-        mass_change_c = ((total_mass_c - self.initial_total_mass_c) / 
-                        self.initial_total_mass_c * 100 if self.initial_total_mass_c != 0 else 0.0)
+        for seg_id, u_cpu in checkpoint_data['states'].items():
+            self.gpu_pool.load_state_from_cpu(seg_id, u_cpu)
         
-        # Store
-        self.mass_data['times'].append(self.t)
-        self.mass_data['total_mass_m'].append(total_mass_m)
-        self.mass_data['total_mass_c'].append(total_mass_c)
-        self.mass_data['mass_change_m'].append(mass_change_m)
-        self.mass_data['mass_change_c'].append(mass_change_c)
+        # Reset in-memory checkpoints as they are now invalid
+        self.checkpoints = []
+
+        if not self.quiet:
+            print(f"  ✅ Checkpoint loaded from {path}. Resuming at t={self.t:.2f}s")
     
-    def sync_from_gpu(self):
-        """Transfer state from GPU to CPU."""
-        if self.device == 'gpu' and self.d_U is not None:
-            self.U = cp.asnumpy(self.d_U)
-    
-    def sync_to_gpu(self):
-        """Transfer state from CPU to GPU."""
-        if self.device == 'gpu' and cp is not None:
-            self.d_U = cp.asarray(self.U)
-    
-    def get_results(self) -> Dict:
+    def get_final_results(self) -> Dict:
         """
-        Get simulation results.
+        Gets the final simulation results.
+        
+        This involves a final GPU-to-CPU transfer for all segments.
         
         Returns:
-            results: Dictionary with times, states, and mass data
+            A dictionary containing the final time, step count, final states
+            for all segments, and any in-memory checkpoints.
         """
-        # Ensure CPU state is up-to-date
-        if self.device == 'gpu':
-            self.sync_from_gpu()
-        
+        final_states = {}
+        for seg_id in self.gpu_pool.get_segment_ids():
+            final_states[seg_id] = self.gpu_pool.checkpoint_to_cpu(seg_id)
+            
         return {
-            'times': self.times,
-            'states': self.states,
             'final_time': self.t,
             'total_steps': self.step_count,
-            'mass_data': self.mass_data
+            'final_states': final_states,
+            'checkpoints': self.checkpoints
         }
-    
-    def print_mass_conservation_summary(self):
-        """Print mass conservation summary."""
-        if not self.mass_data['times']:
-            return
-        
-        final_change_m = self.mass_data['mass_change_m'][-1]
-        final_change_c = self.mass_data['mass_change_c'][-1]
-        
-        print(f"\n{'='*60}")
-        print(f"Mass Conservation Summary")
-        print(f"{'='*60}")
-        print(f"  Motorcycles: {final_change_m:+.6f}%")
-        print(f"  Cars:        {final_change_c:+.6f}%")
-        print(f"{'='*60}")

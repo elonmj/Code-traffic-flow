@@ -14,7 +14,7 @@ from typing import Optional
 import numpy as np
 
 from ..core.parameters import ModelParameters
-from ..core.node_solver import _get_coupling_parameter, _apply_behavioral_coupling
+
 from .node import Node
 
 
@@ -171,6 +171,14 @@ class Link:
             time
         )
         
+    def apply_behavioral_coupling(self, other_link: 'Link'):
+        """
+        Applies behavioral coupling effects between this link and another.
+        This is a placeholder for advanced driver behavior models.
+        """
+        # Placeholder for future behavioral coupling logic
+        pass
+
     def __repr__(self) -> str:
         """String representation for debugging."""
         return (f"Link(id={self.link_id}, {self.from_segment}→{self.to_segment}, "

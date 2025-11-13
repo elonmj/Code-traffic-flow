@@ -1,65 +1,40 @@
 """
 Grid Configuration Module
 
-Defines spatial discretization parameters with validation
+Defines global spatial discretization parameters.
 """
 
-from pydantic import BaseModel, Field, field_validator
-
+from pydantic import BaseModel, Field
 
 class GridConfig(BaseModel):
     """
-    Spatial grid configuration
+    Global grid configuration settings.
     
-    Defines the 1D spatial domain [xmin, xmax] discretized into N cells
+    Defines parameters that are common across all simulation grids, such as
+    the number of ghost cells for handling boundary conditions.
     """
     
-    N: int = Field(
-        ...,  # Required
-        gt=0,
-        le=10000,
-        description="Number of spatial cells"
-    )
-    
-    xmin: float = Field(
-        0.0,
-        description="Left boundary of domain (km)"
-    )
-    
-    xmax: float = Field(
-        ...,  # Required
-        gt=0,
-        description="Right boundary of domain (km)"
-    )
-    
-    ghost_cells: int = Field(
-        2,
+    num_ghost_cells: int = Field(
+        3,
         ge=1,
         le=4,
         description="Number of ghost cells for boundary conditions"
     )
     
-    @field_validator('xmax')
-    @classmethod
-    def xmax_must_be_greater_than_xmin(cls, v, info):
-        """Validate xmax > xmin"""
-        if 'xmin' in info.data and v <= info.data['xmin']:
-            raise ValueError(f'xmax ({v}) must be > xmin ({info.data["xmin"]})')
-        return v
+    spatial_scheme: str = Field(
+        "weno5",
+        description="Spatial reconstruction scheme (e.g., 'weno5', 'upwind')"
+    )
     
-    @property
-    def dx(self) -> float:
-        """Grid spacing (km)"""
-        return (self.xmax - self.xmin) / self.N
+    numerical_flux: str = Field(
+        "godunov",
+        description="Numerical flux function (e.g., 'godunov', 'lax-friedrichs')"
+    )
     
-    @property
-    def total_cells(self) -> int:
-        """Total cells including ghost cells"""
-        return self.N + 2 * self.ghost_cells
-    
-    def __repr__(self):
-        return (f"GridConfig(N={self.N}, domain=[{self.xmin}, {self.xmax}] km, "
-                f"dx={self.dx:.4f} km, ghost_cells={self.ghost_cells})")
+    time_scheme: str = Field(
+        "ssprk3",
+        description="Time integration scheme (e.g., 'ssprk3', 'forward-euler')"
+    )
 
 
 # ============================================================================
@@ -68,13 +43,13 @@ class GridConfig(BaseModel):
 
 if __name__ == '__main__':
     # Valid configuration
-    grid = GridConfig(N=200, xmin=0.0, xmax=20.0)
+    grid = GridConfig(num_ghost_cells=2)
     print(grid)
-    # Output: GridConfig(N=200, domain=[0.0, 20.0] km, dx=0.1000 km, ghost_cells=2)
+    # Output: GridConfig(num_ghost_cells=2)
     
     # Invalid configuration (caught immediately!)
     try:
-        grid_bad = GridConfig(N=-100, xmin=0.0, xmax=20.0)
+        grid_bad = GridConfig(num_ghost_cells=5)
     except Exception as e:
         print(f"❌ Validation error: {e}")
-        # ValidationError: N must be > 0
+        # ValidationError: num_ghost_cells must be <= 4

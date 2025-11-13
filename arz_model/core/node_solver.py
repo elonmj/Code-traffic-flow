@@ -1,345 +1,54 @@
-import numpy as np
-from typing import Dict, List, Any, Optional
-from ..core.parameters import ModelParameters
-from ..core.intersection import Intersection
-from ..core.traffic_lights import TrafficLightController
-from ..numerics.riemann_solvers import central_upwind_flux
+"""
+GPU-Native Node Solver
+======================
 
+Provides a CUDA device function to solve fluxes at network nodes directly on the GPU.
+This is a critical component for the zero-transfer network coupling architecture.
+"""
+from numba import cuda
+import numba as nb
 
-def solve_node_fluxes(node: Intersection, incoming_states: Dict[str, np.ndarray],
-                     dt: float, params: ModelParameters, time: float) -> Dict[str, np.ndarray]:
+@cuda.jit(device=True)
+def solve_node_fluxes_gpu(node_id, incoming_states, num_outgoing_links, params):
     """
-    Résout les flux aux nœuds pour un pas de temps donné.
+    (Device Function) Solves fluxes for a single node on the GPU.
+    
+    This is a placeholder implementation. A real implementation would involve
+    complex logic based on node type (junction, roundabout, etc.), traffic
+    light status, and priority rules.
 
-    Cette fonction gère la résolution des problèmes de Riemann aux intersections,
-    en tenant compte des feux de circulation, des priorités et des files d'attente.
+    For now, it implements a simple proportional distribution of incoming flux
+    to outgoing links.
 
     Args:
-        node: Objet intersection
-        incoming_states: États entrants par segment (clé: segment_id, valeur: état U[4])
-        dt: Pas de temps
-        params: Paramètres du modèle
-        time: Temps actuel de simulation
+        node_id (int): The ID of the node being processed.
+        incoming_states (cuda.device_array): A view or array of the states
+                                             from all links feeding into this node.
+        num_outgoing_links (int): The number of links leaving this node.
+        params (object): A device-accessible object with model parameters.
 
     Returns:
-        Dict[str, np.ndarray]: Flux sortants par segment
+        tuple(float, float): A tuple containing the calculated outgoing flux
+                             magnitudes for motorcycles (q_m) and cars (q_c).
+                             The calling kernel is responsible for creating the
+                             full flux vectors for each outgoing link.
     """
-    outgoing_fluxes = {}
-
-    # Obtenir l'état des feux de circulation
-    green_segments = node.traffic_lights.get_current_green_segments(time)
-
-    # Pour chaque segment connecté au nœud
-    for segment_id in node.segments:
-        if segment_id in incoming_states:
-            # État entrant depuis ce segment
-            U_in = incoming_states[segment_id]
-
-            # Calculer le flux sortant selon les règles du nœud
-            outgoing_fluxes[segment_id] = _calculate_outgoing_flux(
-                node, segment_id, U_in, green_segments, dt, params
-            )
-        else:
-            # Pas d'état entrant pour ce segment (segment vide ou boundary)
-            outgoing_fluxes[segment_id] = _get_default_flux(segment_id, params)
-
-    return outgoing_fluxes
-
-
-def _calculate_outgoing_flux(node: Intersection, segment_id: str, U_in: np.ndarray,
-                           green_segments: List[str], dt: float,
-                           params: ModelParameters) -> np.ndarray:
-    """
-    Calculate outgoing flux for a specific segment at a junction.
+    # 1. Aggregate incoming fluxes
+    total_incoming_flux_m = 0.0
+    total_incoming_flux_c = 0.0
     
-    Note: Junction flux blocking is now handled by the junction-aware Riemann solver
-    (Bug #8 fix in riemann_solvers.py). This function provides state transmission for
-    behavioral coupling (θ_k) and queue management, NOT physical flux blocking.
+    for i in range(incoming_states.shape[0]):
+        # incoming_states[i] is a state vector [rho_m, q_m, rho_c, q_c]
+        # We approximate flux with momentum q.
+        total_incoming_flux_m += incoming_states[i, 1] # q_m
+        total_incoming_flux_c += incoming_states[i, 3] # q_c
+
+    # 2. Handle case with no outgoing links
+    if num_outgoing_links == 0:
+        return 0.0, 0.0
+
+    # 3. Distribute fluxes proportionally (simple split)
+    outgoing_flux_m = total_incoming_flux_m / num_outgoing_links
+    outgoing_flux_c = total_incoming_flux_c / num_outgoing_links
     
-    Args:
-        node: Intersection node
-        segment_id: Segment identifier
-        U_in: Incoming conserved state [rho_m, w_m, rho_c, w_c]
-        green_segments: List of segments with green light
-        dt: Timestep size
-        params: Model parameters
-        
-    Returns:
-        U_out: Outgoing conserved state [rho_m, w_m, rho_c, w_c]
-        
-    Academic Reference:
-        - Kolb et al. (2018): Behavioral coupling via θ_k parameter
-        - Note: Physical flux blocking handled by junction-aware Riemann solver
-    """
-    # Extract densities and momenta
-    rho_m, w_m, rho_c, w_c = U_in
-
-    # Calculate physical velocities
-    p_m, p_c = _calculate_pressures(rho_m, rho_c, params)
-    v_m, v_c = _calculate_velocities(w_m, w_c, p_m, p_c)
-
-    # Check queue effects at the node
-    queue_factor = _calculate_queue_factor(node, segment_id)
-
-    # Apply queue reduction to velocities (behavioral effect)
-    # Note: Physical flux blocking is handled by Riemann solver, not here
-    w_m_out = w_m * queue_factor
-    w_c_out = w_c * queue_factor
-    
-    # Create outgoing state vector (densities unchanged, velocities adjusted for queues)
-    U_out = np.array([
-        rho_m,      # Density (unchanged - flux blocking handled by Riemann solver)
-        w_m_out,    # Velocity (adjusted for queue effects)
-        rho_c,      # Density (unchanged)
-        w_c_out     # Velocity (adjusted for queue effects)
-    ])
-
-    return U_out
-
-
-def _calculate_pressures(rho_m: float, rho_c: float, params: ModelParameters) -> tuple:
-    """
-    Calcule les pressions pour les deux classes de véhicules.
-    """
-    from ..core import physics
-    return physics.calculate_pressure(
-        rho_m, rho_c, params.alpha, params.rho_jam, params.epsilon,
-        params.K_m, params.gamma_m, params.K_c, params.gamma_c
-    )
-
-
-def _calculate_velocities(w_m: float, w_c: float, p_m: float, p_c: float) -> tuple:
-    """
-    Calcule les vitesses physiques.
-    """
-    from ..core import physics
-    return physics.calculate_physical_velocity(w_m, w_c, p_m, p_c)
-
-
-def _calculate_queue_factor(node: Intersection, segment_id: str) -> float:
-    """
-    Calcule le facteur de réduction dû aux files d'attente.
-    """
-    # Logique simplifiée: réduction linéaire avec la longueur de la file
-    # À affiner selon le modèle de files d'attente
-    total_queue = (node.queues.get('motorcycle', 0.0) +
-                   node.queues.get('car', 0.0))
-
-    # Paramètre de réduction maximale
-    max_reduction = 0.1  # 10% du flux normal si file très longue
-    queue_threshold = 50.0  # Longueur de file pour réduction maximale
-
-    if total_queue >= queue_threshold:
-        return max_reduction
-    else:
-        # Réduction linéaire
-        return 1.0 - (total_queue / queue_threshold) * (1.0 - max_reduction)
-
-
-def _get_coupling_parameter(node: Intersection, 
-                            segment_id: str,
-                            vehicle_class: str, 
-                            params: ModelParameters,
-                            time: float) -> float:
-    """
-    Determine θ_k coupling parameter for behavioral transmission.
-    
-    Based on:
-        - Kolb et al. (2018): Phenomenological coupling for ARZ networks
-        - Göttlich et al. (2021): Memory preservation at junctions
-        - Thesis Section 4.2: θ_k specialization by junction type
-    
-    Args:
-        node: Intersection object
-        segment_id: Outgoing segment identifier
-        vehicle_class: 'motorcycle' or 'car'
-        params: Model parameters with θ_k values
-        time: Current simulation time (s)
-    
-    Returns:
-        θ_k ∈ [0,1]: Coupling parameter (0=reset, 1=preserve)
-    """
-    # Signalized intersection (traffic lights active)
-    if node.traffic_lights is not None:
-        green_segments = node.traffic_lights.get_current_green_segments(time)
-        
-        if segment_id in green_segments:
-            # Green light: moderate memory (acceleration scenario)
-            # Motos accelerate more aggressively than cars
-            if vehicle_class == 'motorcycle':
-                # ✅ FIX: Use default 0.8 if params.theta_moto_signalized is None
-                return params.theta_moto_signalized if params.theta_moto_signalized is not None else 0.8
-            else:
-                # ✅ FIX: Use default 0.5 if params.theta_car_signalized is None
-                return params.theta_car_signalized if params.theta_car_signalized is not None else 0.5
-        else:
-            # Red light: complete behavioral reset (vehicles stopped)
-            return 0.0
-    
-    # Unsignalized junction: check priority hierarchy
-    # Note: priority_segments attribute to be added to Intersection in future
-    if hasattr(node, 'priority_segments') and segment_id in node.priority_segments:
-        # Priority road: minimal behavioral disruption
-        if vehicle_class == 'motorcycle':
-            # ✅ FIX: Use default 0.9 if params.theta_moto_priority is None
-            return params.theta_moto_priority if params.theta_moto_priority is not None else 0.9
-        else:
-            # ✅ FIX: Use default 0.9 if params.theta_car_priority is None
-            return params.theta_car_priority if params.theta_car_priority is not None else 0.9
-    else:
-        # Secondary road (stop/yield): strong behavioral reset
-        if vehicle_class == 'motorcycle':
-            # ✅ FIX: Use default 0.1 if params.theta_moto_secondary is None
-            return params.theta_moto_secondary if params.theta_moto_secondary is not None else 0.1
-        else:
-            # ✅ FIX: Use default 0.1 if params.theta_car_secondary is None
-            return params.theta_car_secondary if params.theta_car_secondary is not None else 0.1
-
-
-def _apply_behavioral_coupling(U_in: np.ndarray,
-                               U_out: np.ndarray,
-                               theta_k: float,
-                               params: ModelParameters,
-                               vehicle_class: str) -> np.ndarray:
-    """
-    Apply phenomenological behavioral coupling at junction.
-    
-    Implements thesis equation (Section 4, line 28):
-        w_out = (V_e(ρ_out) + p(ρ_out)) + θ_k * [w_in - (V_e(ρ_in) + p(ρ_in))]
-    
-    Simplifies to: w_out = w_eq_out + θ_k * (w_in - w_eq_in)
-    
-    Based on:
-        - Kolb et al. (2018): ARZ junction coupling conditions
-        - Göttlich et al. (2021): Second-order network coupling
-        - Herty & Klar (2003): Behavioral memory framework
-    
-    Args:
-        U_in: Incoming state [ρ_m, w_m, ρ_c, w_c] at segment end
-        U_out: Downstream state [ρ_m, w_m, ρ_c, w_c] at segment start
-        theta_k: Coupling parameter ∈ [0,1]
-        params: Model parameters
-        vehicle_class: 'motorcycle' or 'car'
-    
-    Returns:
-        Modified state vector with coupled w value
-    """
-    # State vector indices
-    if vehicle_class == 'motorcycle':
-        rho_idx, w_idx = 0, 1
-        gamma = params.gamma_m
-        K = params.K_m
-    else:  # car
-        rho_idx, w_idx = 2, 3
-        gamma = params.gamma_c
-        K = params.K_c
-    
-    # Extract densities and w values
-    rho_in = U_in[rho_idx]
-    w_in = U_in[w_idx]
-    rho_out = U_out[rho_idx]
-    
-    # Compute equilibrium w values (w_eq = V_e + p)
-    # Pressure term: p(ρ) = K * ρ^γ (from thesis Section 2)
-    p_in = K * (rho_in ** gamma) if rho_in > params.epsilon else 0.0
-    p_out = K * (rho_out ** gamma) if rho_out > params.epsilon else 0.0
-    
-    # Equilibrium velocity V_e(ρ) from fundamental diagram
-    # Note: Simplified version using default Vmax, full implementation needs road quality R(x)
-    Vmax = params.Vmax_c.get(3, 35/3.6)  # Default to category 3 (urban)
-    V_e_in = Vmax * (1 - rho_in/params.rho_jam) if rho_in < params.rho_jam else 0.0
-    V_e_out = Vmax * (1 - rho_out/params.rho_jam) if rho_out < params.rho_jam else 0.0
-    
-    w_eq_in = V_e_in + p_in
-    w_eq_out = V_e_out + p_out
-    
-    # Apply coupling formula (thesis Section 4, Equation after line 28)
-    w_out_coupled = w_eq_out + theta_k * (w_in - w_eq_in)
-    
-    # Create output state (preserve ρ, update w)
-    U_coupled = U_out.copy()
-    U_coupled[w_idx] = w_out_coupled
-    
-    return U_coupled
-
-
-def _get_default_flux(segment_id: str, params: ModelParameters) -> np.ndarray:
-    """
-    Retourne un flux par défaut pour les segments sans état entrant.
-    """
-    # État d'équilibre avec faible densité
-    return np.array([
-        params.rho_eq_m,  # Densité moto d'équilibre
-        0.0,              # Vitesse moto nulle
-        params.rho_eq_c,  # Densité voiture d'équilibre
-        0.0               # Vitesse voiture nulle
-    ])
-
-
-def solve_intersection_riemann(node: Intersection,
-                              incoming_states: Dict[str, np.ndarray],
-                              params: ModelParameters) -> Dict[str, np.ndarray]:
-    """
-    Résout le problème de Riemann à une intersection en utilisant
-    les solveurs de Riemann standards pour chaque paire de segments.
-    """
-    outgoing_fluxes = {}
-
-    # Pour une intersection simple à 4 branches
-    if len(node.segments) == 4:
-        # Résoudre les problèmes de Riemann par paires opposées
-        pairs = [
-            (node.segments[0], node.segments[2]),  # Nord-Sud
-            (node.segments[1], node.segments[3])   # Est-Ouest
-        ]
-
-        for seg1, seg2 in pairs:
-            if seg1 in incoming_states and seg2 in incoming_states:
-                # Résoudre Riemann entre seg1 et seg2
-                U_L = incoming_states[seg1]
-                U_R = incoming_states[seg2]
-
-                # Calculer le flux numérique
-                flux = central_upwind_flux(U_L, U_R, params)
-
-                # Distribuer le flux aux segments sortants
-                outgoing_fluxes[seg1] = flux
-                outgoing_fluxes[seg2] = -flux  # Flux opposé
-
-    return outgoing_fluxes
-
-
-def apply_priority_rules(node: Intersection, fluxes: Dict[str, np.ndarray],
-                        time: float) -> Dict[str, np.ndarray]:
-    """
-    Applique les règles de priorité aux flux (feux de circulation, etc.).
-    """
-    modified_fluxes = fluxes.copy()
-
-    # Obtenir les segments avec priorité (feu vert)
-    green_segments = node.traffic_lights.get_current_green_segments(time)
-
-    # Réduire les flux des segments sans priorité
-    for segment_id in modified_fluxes:
-        if segment_id not in green_segments:
-            # Appliquer une forte réduction pour simuler l'arrêt
-            modified_fluxes[segment_id] *= 0.1  # 10% du flux
-
-    return modified_fluxes
-
-
-def update_node_queues(node: Intersection, incoming_fluxes: Dict[str, float],
-                      outgoing_fluxes: Dict[str, float], dt: float):
-    """
-    Met à jour les files d'attente au nœud.
-    """
-    for vehicle_class in ['motorcycle', 'car']:
-        # Calculer la différence entre flux entrant et sortant
-        incoming = incoming_fluxes.get(vehicle_class, 0.0)
-        outgoing = outgoing_fluxes.get(vehicle_class, 0.0)
-
-        # Accumulation dans la file
-        delta_queue = (incoming - outgoing) * dt
-
-        # Mettre à jour la file (ne peut pas être négative)
-        node.queues[vehicle_class] = max(0.0, node.queues[vehicle_class] + delta_queue)
+    return outgoing_flux_m, outgoing_flux_c

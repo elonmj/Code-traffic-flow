@@ -2,8 +2,9 @@ import numpy as np
 from numba import cuda, float64, int32 # Import cuda and types
 import math # For ceil
 from ..grid.grid1d import Grid1D
-from ..core.parameters import ModelParameters
-from ..core import physics # Import the physics module
+from arz_model.core.physics import _calculate_pressure_cuda, _calculate_physical_velocity_cuda, _calculate_eigenvalues_cuda
+from arz_model.core.parameters import ModelParameters
+from arz_model.config.network_simulation_config import NetworkSimulationConfig
 
 # Global counter for CFL correction messages
 _cfl_correction_count = 0
@@ -17,14 +18,15 @@ TPB_REDUCE = 256 # Threads per block for reduction kernel
 def _calculate_max_wavespeed_kernel(d_U, n_ghost, n_phys,
                                     # Physics parameters needed for eigenvalues
                                     alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c,
+                                    dx,
                                     # Output array (size 1) for the global max
-                                    d_max_lambda_out):
+                                    d_max_ratio_out):
     """
-    Calculates the maximum absolute eigenvalue across all physical cells on the GPU.
-    Uses a parallel reduction pattern.
+    Calculates the maximum ratio (lambda / dx) across all physical cells on the GPU
+    and updates a global maximum.
     """
     # Shared memory for block-level reduction
-    s_max_lambda = cuda.shared.array(shape=(TPB_REDUCE,), dtype=float64)
+    s_max_ratio = cuda.shared.array(shape=(TPB_REDUCE,), dtype=float64)
 
     # Global thread index and corresponding physical cell index
     idx_global = cuda.grid(1)
@@ -34,282 +36,204 @@ def _calculate_max_wavespeed_kernel(d_U, n_ghost, n_phys,
     tx = cuda.threadIdx.x
 
     # Initialize shared memory for this thread
-    s_max_lambda[tx] = 0.0
+    s_max_ratio[tx] = 0.0
 
-    # --- Calculate max lambda for cells handled by this thread ---
-    # Each thread might process multiple cells if n_phys > blocks * threads
-    # This is a grid-stride loop pattern
-    max_lambda_thread = 0.0
+    # --- Calculate max ratio for cells handled by this thread ---
+    max_ratio_thread = 0.0
     while phys_idx < n_phys:
         j_total = n_ghost + phys_idx # Index in the full d_U array
 
         # 1. Get state for the current physical cell
-        rho_m = d_U[0, j_total]
-        w_m   = d_U[1, j_total]
-        rho_c = d_U[2, j_total]
-        w_c   = d_U[3, j_total]
+        rho_m, w_m, rho_c, w_c = d_U[0, j_total], d_U[1, j_total], d_U[2, j_total], d_U[3, j_total]
 
         # Ensure densities are non-negative
         rho_m_calc = max(rho_m, 0.0)
         rho_c_calc = max(rho_c, 0.0)
 
-        # 2. Calculate intermediate values (pressure, velocity) using device functions
-        # Use the correct @cuda.jit(device=True) functions
-        p_m, p_c = physics._calculate_pressure_cuda(rho_m_calc, rho_c_calc,
-                                                    alpha, rho_jam, epsilon,
-                                                    K_m, gamma_m, K_c, gamma_c)
-        v_m, v_c = physics._calculate_physical_velocity_cuda(w_m, w_c, p_m, p_c)
+        # 2. Calculate intermediate values using device functions
+        p_m, p_c = _calculate_pressure_cuda(rho_m_calc, rho_c_calc,
+                                            alpha, rho_jam, epsilon,
+                                            K_m, gamma_m, K_c, gamma_c)
+        v_m, v_c = _calculate_physical_velocity_cuda(w_m, w_c, p_m, p_c)
 
         # 3. Calculate eigenvalues using device function
-        # Use the correct @cuda.jit(device=True) function
-        lambda1, lambda2, lambda3, lambda4 = physics._calculate_eigenvalues_cuda(
+        lambda1, lambda2, lambda3, lambda4 = _calculate_eigenvalues_cuda(
             rho_m_calc, v_m, rho_c_calc, v_c,
-            alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c # Pass params again
+            alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c
         )
 
         # 4. Find max absolute eigenvalue for this cell
         max_lambda_cell = max(abs(lambda1), abs(lambda2), abs(lambda3), abs(lambda4))
+        
+        # 5. Calculate ratio for this cell
+        ratio_cell = max_lambda_cell / dx if dx > 0 else 0.0
 
-        # 5. Update the maximum for this thread
-        max_lambda_thread = max(max_lambda_thread, max_lambda_cell)
+        # 6. Update the maximum for this thread
+        max_ratio_thread = max(max_ratio_thread, ratio_cell)
 
         # Move to the next cell this thread is responsible for
         phys_idx += cuda.gridDim.x * cuda.blockDim.x
 
     # Store the thread's maximum in shared memory
-    s_max_lambda[tx] = max_lambda_thread
+    s_max_ratio[tx] = max_ratio_thread
 
-    # Synchronize threads within the block to ensure all writes to shared memory are done
+    # Synchronize threads within the block
     cuda.syncthreads()
 
     # --- Perform reduction in shared memory ---
-    # Reduce within the block (stride reducing)
     stride = TPB_REDUCE // 2
     while stride > 0:
         if tx < stride:
-            s_max_lambda[tx] = max(s_max_lambda[tx], s_max_lambda[tx + stride])
-        cuda.syncthreads() # Sync after each reduction step
+            s_max_ratio[tx] = max(s_max_ratio[tx], s_max_ratio[tx + stride])
+        cuda.syncthreads()
         stride //= 2
 
     # --- Write block's maximum to global memory ---
-    # The first thread in the block writes the block's maximum result
-    # using an atomic operation to update the global maximum safely.
     if tx == 0:
-        cuda.atomic.max(d_max_lambda_out, 0, s_max_lambda[0])
+        cuda.atomic.max(d_max_ratio_out, 0, s_max_ratio[0])
+
 
 
 # --- Main Function ---
 
-def calculate_cfl_dt(U_or_d_U_physical, grid: Grid1D, params: ModelParameters) -> float:
+def calculate_cfl_dt(U, grid, params: 'NetworkSimulationConfig'):
     """
-    Calculates the maximum stable time step (dt) based on the CFL condition.
-    Works for both CPU (NumPy) and GPU (Numba DeviceNDArray) physical cell arrays.
+    Calculates the stable time step dt for a single segment based on the CFL condition.
 
     Args:
-        U_or_d_U_physical (np.ndarray or numba.cuda.DeviceNDArray):
-                                 State vector array for physical cells only.
-                                 Shape (4, N_physical). Assumes SI units.
-                                 If GPU, this should be a slice/view of the full d_U array.
-                                 *** IMPORTANT: For GPU, the full d_U (including ghosts)
-                                     must be passed, not just the physical slice, as the
-                                     kernel needs n_ghost to calculate the correct index.
-                                     The function signature is kept similar for consistency,
-                                     but the GPU path expects the full array. ***
-        grid (Grid1D): The computational grid object.
-        params (ModelParameters): Object containing parameters (esp. cfl_number, device).
+        U (np.ndarray): The state vector for the segment.
+        grid (Grid1D): The grid for the segment.
+        params (NetworkSimulationConfig): The simulation configuration object.
 
     Returns:
-        float: The calculated maximum stable time step dt (in seconds).
-
-    Raises:
-        ValueError: If grid.dx is not positive.
+        float: The stable time step dt.
     """
-    if grid.dx <= 0:
-        raise ValueError("Grid cell width dx must be positive.")
+    if U.shape[1] == 0:
+        return float('inf')
 
-    # --- Determine Device ---
-    is_gpu = hasattr(params, 'device') and params.device == 'gpu'
+    # Directly access physics parameters from the Pydantic config
+    # No 'g' parameter in the current PhysicsConfig. The eigenvalue calculation
+    # depends on other parameters like K_m, gamma_m, etc.
+    # Let's pass the required ones to the eigenvalue function.
+    alpha = params.physics.alpha
+    rho_jam = params.physics.rho_jam / 1000.0
+    epsilon = params.physics.epsilon
+    K_m = params.physics.k_m
+    gamma_m = params.physics.gamma_m
+    K_c = params.physics.k_c
+    gamma_c = params.physics.gamma_c
 
-    if is_gpu:
-        # --- GPU Implementation ---
-        d_U = U_or_d_U_physical # Expecting the full d_U array here
-        if not cuda.is_cuda_array(d_U):
-             raise TypeError("Device is 'gpu' but input array is not a Numba CUDA device array.")
-        if d_U.shape[1] != grid.N_total:
-             raise ValueError(f"GPU CFL calculation expects the full state array (N_total={grid.N_total}), got shape {d_U.shape}")
+    rho_m, rho_c, v_m, v_c = U[0, :], U[1, :], U[2, :], U[3, :]
+    dx = grid.dx
+    
+    # Calculate eigenvalues - pass the full params object
+    phys = params.physics
+    lambda1, lambda2, lambda3, lambda4 = calculate_eigenvalues(
+        rho_m, v_m, rho_c, v_c, 
+        phys.alpha, phys.rho_jam, phys.epsilon,
+        phys.k_m, phys.gamma_m, phys.k_c, phys.gamma_c
+    )
+    
+    max_abs_lambda = np.maximum(np.abs(lambda1), np.abs(lambda2))
+    max_abs_lambda = np.maximum(max_abs_lambda, np.abs(lambda3))
+    max_abs_lambda = np.maximum(max_abs_lambda, np.abs(lambda4))
+    
+    max_speed = np.max(max_abs_lambda)
+    
+    if max_speed == 0:
+        return float('inf')
+        
+    return dx / max_speed
 
-        # Check if required GPU *device* functions exist
-        if not hasattr(physics, '_calculate_eigenvalues_cuda') or \
-           not hasattr(physics, '_calculate_pressure_cuda') or \
-           not hasattr(physics, '_calculate_physical_velocity_cuda'):
-            raise NotImplementedError("Required CUDA device functions (_cuda suffix) for CFL are not available in the physics module.")
 
-        # Allocate device memory for the result (max lambda)
-        d_max_lambda_out = cuda.device_array(1, dtype=np.float64)
-        # Initialize to zero explicitly (needed for atomic.max)
-        d_max_lambda_out[0] = 0.0
+def cfl_condition(network: 'NetworkGrid') -> (float, str):
+    """
+    Calculates the CFL-stable time step for the entire network.
 
-        # Configure kernel launch
-        # Use the reduction-specific block size
+    Iterates over all segments, calculates the stable dt for each,
+    and returns the minimum dt to ensure stability for the whole network.
+
+    Args:
+        network: The NetworkGrid object.
+
+    Returns:
+        A tuple containing:
+        - The minimum stable dt for the network.
+        - The ID of the segment that is limiting the time step.
+    """
+    min_dt = float('inf')
+    limiting_segment = None
+
+    for seg_id, segment_data in network.segments.items():
+        U = segment_data['U']
+        grid = segment_data['grid']
+        
+        # ARCHITECTURAL FIX (2025-11-04): The concept of per-segment 'params' is deprecated.
+        # The simulation now operates with a single, unified configuration object.
+        # Always use the config from the parent network object to ensure consistency.
+        params = network.simulation_config
+        if params is None:
+            raise ValueError(f"FATAL: NetworkGrid.simulation_config is not set. Cannot run simulation.")
+
+        # Get physical cells
+        physical_U = U[:, grid.physical_cell_indices]
+        
+        # Calculate stable dt for this segment
+        dt_segment = calculate_cfl_dt(physical_U, grid, params)
+        
+        if dt_segment < min_dt:
+            min_dt = dt_segment
+            limiting_segment = seg_id
+            
+    return min_dt, limiting_segment
+
+
+def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', params: 'ModelParameters', cfl_max: float) -> float:
+    """
+    Calculates the maximum stable time step (dt) across all segments on the GPU.
+
+    This function orchestrates the following steps:
+    1. Launches a kernel on each segment to find its local maximum eigenvalue.
+    2. Reduces the results on the GPU to find the global maximum eigenvalue.
+    3. Calculates and returns the stable dt.
+
+    Args:
+        gpu_pool: The GPUMemoryPool containing the state of all segments.
+        network: The NetworkGrid object to get grid information (dx).
+        params: The model parameters.
+        cfl_max: The maximum CFL number.
+
+    Returns:
+        The calculated stable time step.
+    """
+    # Create a single-element device array to store the global maximum of (lambda / dx)
+    d_global_max_ratio = cuda.to_device(np.array([0.0], dtype=np.float64))
+    phys_params = params.physics
+
+    for seg_id in gpu_pool.segment_ids:
+        d_U = gpu_pool.get_segment_state(seg_id)
+        grid = network.segments[seg_id]['grid']
+        
         threadsperblock = TPB_REDUCE
-        # Calculate blocks needed to cover all physical cells
-        blockspergrid = math.ceil(grid.N_physical / threadsperblock)
+        blockspergrid = (grid.N_physical + (threadsperblock - 1)) // threadsperblock
 
-        # Launch kernel
+        # Launch kernel for each segment
         _calculate_max_wavespeed_kernel[blockspergrid, threadsperblock](
             d_U, grid.num_ghost_cells, grid.N_physical,
-            # Pass physics parameters
-            params.alpha, params.rho_jam, params.epsilon,
-            params.K_m, params.gamma_m, params.K_c, params.gamma_c,
-            # Pass output array
-            d_max_lambda_out
+            phys_params.alpha, phys_params.rho_jam, phys_params.epsilon,
+            phys_params.k_m, phys_params.gamma_m, phys_params.k_c, phys_params.gamma_c,
+            grid.dx,
+            d_global_max_ratio
         )
-        cuda.synchronize() # Ensure kernel finishes before copying back
 
-        # Copy result back to CPU
-        max_abs_lambda = d_max_lambda_out.copy_to_host()[0]
+    # Copy the final result back to the host
+    global_max_ratio = d_global_max_ratio.copy_to_host()[0]
 
-        # --- DEBUGGING: Check for extreme values and raise error ---
-        if max_abs_lambda > 1000.0: # Threshold for unusually large wave speed (adjust if needed)
-            # Raise an error to stop the simulation immediately
-            raise ValueError(f"CFL Check (GPU): Extremely large max_abs_lambda detected ({max_abs_lambda:.4e} m/s), stopping simulation.")
-        # --- END DEBUGGING ---
-
-    else:
-        # --- CPU Implementation (Original Logic) ---
-        U_physical = U_or_d_U_physical # Expecting only physical cells here
-        if cuda.is_cuda_array(U_physical):
-             raise TypeError("Device is 'cpu' but input array is a Numba CUDA device array.")
-        if U_physical.shape[1] != grid.N_physical:
-             raise ValueError(f"CPU CFL calculation expects physical cells array (N_physical={grid.N_physical}), got shape {U_physical.shape}")
-
-
-        rho_m = U_physical[0]
-        w_m = U_physical[1]
-        rho_c = U_physical[2]
-        w_c = U_physical[3]
-
-        # Ensure densities are non-negative for calculations
-        rho_m_calc = np.maximum(rho_m, 0.0)
-        rho_c_calc = np.maximum(rho_c, 0.0)
-
-        # Calculate pressure and velocity needed for eigenvalues
-        p_m, p_c = physics.calculate_pressure(rho_m_calc, rho_c_calc,
-                                              params.alpha, params.rho_jam, params.epsilon,
-                                              params.K_m, params.gamma_m,
-                                              params.K_c, params.gamma_c)
-        v_m, v_c = physics.calculate_physical_velocity(w_m, w_c, p_m, p_c)
-
-        # Calculate eigenvalues for all physical cells
-        all_eigenvalues_list = physics.calculate_eigenvalues(rho_m_calc, v_m, rho_c_calc, v_c, params)
-
-        # Find the maximum absolute eigenvalue
-        # Convert list of arrays into a single 2D array and find the global max absolute value
-        max_abs_lambda = np.max(np.abs(np.asarray(all_eigenvalues_list)))
-
-        # --- DEBUGGING: Check for extreme values, find location, and raise error ---
-        if max_abs_lambda > 1000.0: # Threshold for unusually large wave speed (adjust if needed)
-            # Find the index where the maximum occurred
-            max_val_index = -1
-            problematic_eigenvalues = []
-            for i, eigenvalues in enumerate(all_eigenvalues_list):
-                if eigenvalues is not None:
-                    abs_eigenvalues = np.abs(eigenvalues)
-                    current_max_in_cell = np.max(abs_eigenvalues) if abs_eigenvalues.size > 0 else 0.0
-                    if np.isclose(current_max_in_cell, max_abs_lambda):
-                         max_val_index = i # Physical index (adjusting for ghost cells later if needed)
-                         problematic_eigenvalues = eigenvalues
-                         break # Found the first occurrence
-
-            # Retrieve the state variables at the problematic index for the error message
-            problematic_rho_m = rho_m_calc[max_val_index]
-            problematic_v_m = v_m[max_val_index]
-            problematic_rho_c = rho_c_calc[max_val_index]
-            problematic_v_c = v_c[max_val_index]
-
-            # ARCHITECTURE FIX (2025-11-02): Don't crash on extreme wavespeeds
-            # Instead, clamp and warn - let apply_physical_state_bounds() fix the state
-            import warnings
-            warnings.warn(
-                f"CFL Check (CPU): Extremely large max_abs_lambda detected ({max_abs_lambda:.4e} m/s) "
-                f"at physical cell index {max_val_index}. "
-                f"State: rho_m={problematic_rho_m:.4e}, v_m={problematic_v_m:.4e}, "
-                f"rho_c={problematic_rho_c:.4e}, v_c={problematic_v_c:.4e}. "
-                f"Eigenvalues: {problematic_eigenvalues}. "
-                f"CLAMPING wavespeed to 100 m/s for dt calculation."
-            )
-            max_abs_lambda = 100.0  # Clamp to realistic maximum (360 km/h)
-        # --- END DEBUGGING ---
-
-    # Calculate dt based on CFL condition
-    if max_abs_lambda < params.epsilon:
-        # If max speed is effectively zero, return a large dt (or handle as appropriate)
-        # Avoid division by zero. A very large dt might be suitable,
-        # or perhaps a default max dt from params if specified.
-        # For now, let's return a reasonably large number, assuming simulation
-        # might stop based on t_final anyway.
-        dt = 1.0 # Or params.max_dt if defined
-    else:
-        dt = params.cfl_number * grid.dx / max_abs_lambda
-
-    # --- Validate and Correct CFL ---
-    dt_corrected, cfl_actual, warning_message = validate_and_correct_cfl(dt, max_abs_lambda, grid, params)
-
-    # Optionally, print or log the warning message if correction was applied
-    if warning_message:
-        print(warning_message) # Or use a logging framework
-
-    return dt_corrected
-
-
-def validate_and_correct_cfl(dt, max_abs_lambda, grid, params, tolerance=0.5):
-    """
-    Valide et corrige automatiquement le pas de temps pour respecter la condition CFL.
+    if global_max_ratio < 1e-9:
+        # If max speed is near zero, can use a large dt, but not infinite
+        return 1.0
     
-    Args:
-        dt (float): Pas de temps calculé
-        max_abs_lambda (float): Vitesse maximale absolue détectée
-        grid (Grid1D): Grille de calcul
-        params (ModelParameters): Paramètres du modèle
-        tolerance (float): Facteur de sécurité CFL (défaut: 0.5 pour WENO5+SSP-RK3)
+    # dt = CFL / max(lambda/dx)
+    stable_dt = cfl_max / global_max_ratio
     
-    Returns:
-        tuple: (dt_corrected, cfl_actual, warning_message)
-    """
-    # Calculer le CFL effectif
-    if max_abs_lambda > params.epsilon:
-        cfl_actual = max_abs_lambda * dt / grid.dx
-    else:
-        cfl_actual = 0.0
-    
-    # Vérifier si correction nécessaire
-    cfl_limit = tolerance
-    warning_message = ""
-    
-    # Compteur global pour limiter l'affichage (1 message sur 100)
-    global _cfl_correction_count
-    if '_cfl_correction_count' not in globals():
-        _cfl_correction_count = 0
-    
-    if cfl_actual > cfl_limit:
-        # ⚠️ CORRECTION CRITIQUE CFL
-        dt_corrected = cfl_limit * grid.dx / max_abs_lambda if max_abs_lambda > params.epsilon else dt
-        
-        _cfl_correction_count += 1
-        
-        # Afficher seulement le 1er message, puis 1 sur 100
-        if _cfl_correction_count == 1 or _cfl_correction_count % 100 == 0:
-            warning_message = (
-                f"[WARNING] Automatic CFL correction applied (count: {_cfl_correction_count}):\n"
-                f"  Calculated CFL: {cfl_actual:.3f} > Limit: {cfl_limit:.3f}\n"
-                f"  Original dt: {dt:.6e} s\n"
-                f"  Corrected dt: {dt_corrected:.6e} s\n"
-                f"  Correction factor: {dt/dt_corrected:.1f}x\n"
-                f"  Max wave speed detected: {max_abs_lambda:.2f} m/s"
-            )
-    else:
-        dt_corrected = dt
-        if cfl_actual > 0.1:  # Afficher info si CFL significatif
-            #warning_message = f"[OK] CFL OK: {cfl_actual:.3f} <= {cfl_limit:.3f}"
-            pass
-    return dt_corrected, cfl_actual, warning_message
+    return stable_dt

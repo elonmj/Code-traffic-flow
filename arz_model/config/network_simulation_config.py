@@ -17,6 +17,11 @@ Date: 2025-10-28 (Phase 6 - NetworkGrid Integration)
 from pydantic import BaseModel, Field, field_validator
 from typing import Dict, List, Optional, Any
 from .bc_config import BoundaryConditionsConfig
+from .grid_config import GridConfig
+from .physics_config import PhysicsConfig
+from .time_config import TimeConfig
+from .ic_config import ICConfig
+from .bc_config import BoundaryConditionsConfig
 
 
 class SegmentConfig(BaseModel):
@@ -41,9 +46,12 @@ class SegmentConfig(BaseModel):
         ...     parameters={'V0_c': 13.89, 'tau_c': 18.0}
         ... )
     """
+    id: str = Field(..., description="Unique identifier for the segment.")
     x_min: float = Field(ge=0, description="Segment start position (m)")
     x_max: float = Field(gt=0, description="Segment end position (m)")
     N: int = Field(ge=10, description="Number of spatial cells")
+    initial_conditions: ICConfig = Field(..., description="Initial conditions for the segment.")
+    boundary_conditions: BoundaryConditionsConfig = Field(..., description="Boundary conditions for the segment.")
     start_node: Optional[str] = Field(default=None, description="Upstream node ID (None for boundary)")
     end_node: Optional[str] = Field(default=None, description="Downstream node ID (None for boundary)")
     parameters: Optional[Dict[str, float]] = Field(
@@ -69,7 +77,6 @@ class SegmentConfig(BaseModel):
     
     model_config = {"extra": "forbid"}
 
-
 class NodeConfig(BaseModel):
     """
     Configuration for a junction or boundary node.
@@ -84,6 +91,7 @@ class NodeConfig(BaseModel):
         position: [x, y] coordinates for visualization
         incoming_segments: List of segment IDs entering this node
         outgoing_segments: List of segment IDs leaving this node
+        boundary_condition: Boundary condition configuration for source/sink nodes
         traffic_light_config: Traffic light parameters (cycle, phases, etc.)
     
     Example:
@@ -102,8 +110,9 @@ class NodeConfig(BaseModel):
         ...     }
         ... )
     """
+    id: str = Field(..., description="Unique identifier for the node.")
     type: str = Field(description="Node type: boundary/signalized/stop_sign")
-    position: List[float] = Field(description="[x, y] position coordinates")
+    position: Optional[List[float]] = Field(default=None, description="[x, y] position coordinates")
     incoming_segments: Optional[List[str]] = Field(
         default=None,
         description="Segment IDs entering this node"
@@ -111,6 +120,10 @@ class NodeConfig(BaseModel):
     outgoing_segments: Optional[List[str]] = Field(
         default=None,
         description="Segment IDs leaving this node"
+    )
+    boundary_condition: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Boundary condition configuration for source/sink nodes"
     )
     traffic_light_config: Optional[Dict[str, Any]] = Field(
         default=None,
@@ -121,7 +134,7 @@ class NodeConfig(BaseModel):
     @classmethod
     def validate_type(cls, v):
         """Validate node type is recognized."""
-        valid_types = ['boundary', 'signalized', 'stop_sign']
+        valid_types = ['boundary', 'signalized', 'stop_sign', 'junction']
         if v not in valid_types:
             raise ValueError(f'type must be one of {valid_types}, got {v}')
         return v
@@ -130,10 +143,11 @@ class NodeConfig(BaseModel):
     @classmethod
     def validate_position(cls, v):
         """Validate position is [x, y] format."""
-        if len(v) != 2:
-            raise ValueError('position must be [x, y] with exactly 2 values')
-        if not all(isinstance(coord, (int, float)) for coord in v):
-            raise ValueError('position coordinates must be numeric')
+        if v is not None:
+            if len(v) != 2:
+                raise ValueError('position must be [x, y] with exactly 2 values')
+            if not all(isinstance(coord, (int, float)) for coord in v):
+                raise ValueError('position coordinates must be numeric')
         return v
     
     @field_validator('traffic_light_config')
@@ -143,11 +157,17 @@ class NodeConfig(BaseModel):
         if 'type' in info.data and info.data['type'] == 'signalized':
             if v is None:
                 raise ValueError('signalized nodes must have traffic_light_config')
-            # Validate required keys
-            required_keys = ['cycle_time', 'green_time', 'phases']
-            missing = [k for k in required_keys if k not in v]
-            if missing:
-                raise ValueError(f'traffic_light_config missing keys: {missing}')
+        return v
+
+    @field_validator('boundary_condition')
+    @classmethod
+    def validate_boundary_condition(cls, v, info):
+        """Validate boundary condition is present for boundary nodes."""
+        if 'type' in info.data and info.data['type'] == 'boundary':
+            if v is None:
+                raise ValueError('boundary nodes must have a boundary_condition config')
+            if 'type' not in v or v['type'] not in ['inflow', 'outflow']:
+                raise ValueError("Boundary condition must have a 'type' of 'inflow' or 'outflow'")
         return v
     
     model_config = {"extra": "forbid"}
@@ -196,147 +216,27 @@ class LinkConfig(BaseModel):
 
 class NetworkSimulationConfig(BaseModel):
     """
-    Complete network simulation configuration (Pydantic).
-    
-    This is the Pydantic equivalent of NetworkConfig (YAML loader).
-    Used for programmatic creation of network configurations without YAML files.
-    
-    Replaces the 2-file YAML architecture:
-    - network.yml → segments, nodes, links (THIS CLASS)
-    - traffic_control.yml → traffic_light_config in NodeConfig
-    
-    Benefits over YAML:
-    - Type safety: Errors caught at config creation, not runtime
-    - No file I/O: Faster, no serialization bugs
-    - Programmatic: Easy to generate variations for experiments
-    - IDE support: Autocomplete, type hints
-    
-    Attributes:
-        segments: Dictionary of segment configurations
-        nodes: Dictionary of node configurations
-        links: List of segment connections
-        global_params: Global default parameters (V0, tau, rho_max, etc.)
-        dt: Simulation timestep (seconds)
-        t_final: Final simulation time (seconds)
-        output_dt: Output interval (seconds)
-        device: Computation device ('cpu' or 'gpu')
-        decision_interval: RL agent decision interval (seconds)
-        controlled_nodes: Node IDs controlled by RL agent
-    
-    Usage:
-        >>> # Simple corridor (2 segments, 1 signal)
-        >>> config = RLNetworkConfigBuilder.simple_corridor(segments=2)
-        >>> 
-        >>> # Medium network (10 segments, 3 signals)
-        >>> config = RLNetworkConfigBuilder.medium_network(segments=10)
-        >>> 
-        >>> # Use in RL environment
-        >>> env = TrafficSignalEnvDirect(simulation_config=config)
-    
-    Academic Reference:
-        - Garavello & Piccoli (2005): "Traffic Flow on Networks"
-        - Network formulation: I (segments) + J (junctions) + conservation laws
+    Complete configuration for a network simulation.
+
+    This model aggregates all other configuration models (time, physics, grid,
+    segments, nodes, links, and boundary conditions) into a single, unified
+    object that can be passed throughout the simulation system.
     """
-    segments: Dict[str, SegmentConfig] = Field(
-        description="Dictionary of segment configurations {seg_id: SegmentConfig}"
-    )
-    nodes: Dict[str, NodeConfig] = Field(
-        description="Dictionary of node configurations {node_id: NodeConfig}"
-    )
-    links: List[LinkConfig] = Field(
-        default_factory=list,
-        description="List of segment connections (directional)"
-    )
-    
-    # Global parameters (shared across network)
-    global_params: Dict[str, float] = Field(
-        default_factory=lambda: {
-            'V0_c': 13.89,      # 50 km/h free-flow speed cars (m/s)
-            'V0_m': 15.28,      # 55 km/h free-flow speed motorcycles (m/s)
-            'tau_c': 18.0,      # Relaxation time cars (s)
-            'tau_m': 20.0,      # Relaxation time motorcycles (s)
-            'rho_max_c': 200.0, # Max density cars (veh/km)
-            'rho_max_m': 150.0, # Max density motorcycles (veh/km)
-            'kappa': 1.5,       # Anticipation coefficient
-            'nu': 2.0,          # Interaction exponent
-            'delta': 0.3        # Anisotropy parameter
-        },
-        description="Global default parameters for all segments"
-    )
-    
-    # Simulation parameters
-    dt: float = Field(default=0.1, gt=0, description="Simulation timestep (s)")
-    t_final: float = Field(default=3600.0, gt=0, description="Final time (s)")
-    output_dt: float = Field(default=1.0, gt=0, description="Output interval (s)")
-    device: str = Field(default='cpu', description="Computation device: cpu or gpu")
-    
-    # RL-specific parameters
-    decision_interval: float = Field(
-        default=15.0,
-        gt=0,
-        description="Agent decision interval (s) - from Bug #27 validation"
-    )
-    controlled_nodes: Optional[List[str]] = Field(
-        default=None,
-        description="Node IDs controlled by RL agent (default: all signalized)"
-    )
-    
-    # Boundary conditions
-    boundary_conditions: Optional[BoundaryConditionsConfig] = Field(
-        default=None,
-        description="Boundary conditions for network edges (inflow/outflow)"
-    )
-    
-    @field_validator('device')
+    # device parameter removed - GPU-only build
+    time: TimeConfig
+    physics: PhysicsConfig
+    grid: GridConfig = Field(default_factory=GridConfig, description="Global grid and numerical scheme parameters.")
+    segments: List[SegmentConfig]
+    nodes: List[NodeConfig]
+
+    @field_validator('segments')
     @classmethod
-    def validate_device(cls, v):
-        """Validate device is recognized."""
-        valid_devices = ['cpu', 'gpu']
-        if v not in valid_devices:
-            raise ValueError(f'device must be one of {valid_devices}, got {v}')
+    def validate_segments(cls, v: List['SegmentConfig']) -> List['SegmentConfig']:
+        """Validate that segment IDs are unique."""
+        ids = [s.id for s in v]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Segment IDs must be unique.")
         return v
-    
-    @field_validator('controlled_nodes')
-    @classmethod
-    def validate_controlled_nodes(cls, v, info):
-        """Auto-populate controlled_nodes with all signalized nodes if None."""
-        if v is None and 'nodes' in info.data:
-            # Extract all signalized node IDs
-            signalized = [
-                node_id for node_id, node in info.data['nodes'].items()
-                if node.type == 'signalized'
-            ]
-            return signalized if signalized else None
-        return v
-    
-    def validate_network_topology(self) -> None:
-        """
-        Validate network topology consistency.
-        
-        Checks:
-        - All links reference existing segments and nodes
-        - Segment start/end nodes exist
-        - No orphaned segments
-        
-        Raises:
-            ValueError: If topology is invalid
-        """
-        # Check link references
-        for link in self.links:
-            if link.from_segment not in self.segments:
-                raise ValueError(f"Link references unknown from_segment: {link.from_segment}")
-            if link.to_segment not in self.segments:
-                raise ValueError(f"Link references unknown to_segment: {link.to_segment}")
-            if link.via_node not in self.nodes:
-                raise ValueError(f"Link references unknown via_node: {link.via_node}")
-        
-        # Check segment node references
-        for seg_id, segment in self.segments.items():
-            # Allow None for boundary segments
-            if segment.start_node is not None and segment.start_node not in self.nodes:
-                raise ValueError(f"Segment {seg_id} references unknown start_node: {segment.start_node}")
-            if segment.end_node is not None and segment.end_node not in self.nodes:
-                raise ValueError(f"Segment {seg_id} references unknown end_node: {segment.end_node}")
     
     model_config = {"extra": "forbid"}
 

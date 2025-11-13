@@ -1,7 +1,7 @@
 """
 Simulation runner and initial conditions.
 """
-from .runner import *
-from .initial_conditions import *
+from . import runner
+from . import initial_conditions
 __all__ = ['runner', 'initial_conditions']
 # code/simulation/__init__.py

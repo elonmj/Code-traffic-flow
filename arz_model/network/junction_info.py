@@ -10,7 +10,7 @@ References:
 """
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Dict
 
 
 @dataclass
@@ -34,6 +34,14 @@ class JunctionInfo:
             - 0.01 = RED signal (1% capacity, 99% blocked)
             - Values between 0 and 1 for partial blocking
         node_id: Network node identifier for debugging and tracking
+        queue_factor: Velocity reduction factor from queue congestion (0.0 to 1.0)
+            - 1.0 = no queue, full speed
+            - <1.0 = queue present, reduced speed
+            - Default: 1.0 (no reduction)
+        theta_k: Optional behavioral coupling parameters by vehicle class
+            - Dict mapping 'motorcycle'/'car' to coupling strength [0, 1]
+            - Used for driver memory preservation (Kolb et al., 2018)
+            - Default: None (no behavioral coupling)
     
     Examples:
         >>> # RED signal - 99% flux blocking
@@ -43,11 +51,22 @@ class JunctionInfo:
         ...     node_id=1
         ... )
         >>> 
-        >>> # GREEN signal - normal flow
-        >>> green_junction = JunctionInfo(
+        >>> # GREEN signal with queue congestion
+        >>> congested_junction = JunctionInfo(
         ...     is_junction=True,
         ...     light_factor=1.0,
-        ...     node_id=1
+        ...     node_id=1,
+        ...     queue_factor=0.7  # 30% speed reduction from queues
+        ... )
+        >>> 
+        >>> # Complete junction with all effects
+        >>> full_junction = JunctionInfo(
+        ...     is_junction=True,
+        ...     light_factor=1.0,
+        ...     node_id=1,
+        ...     queue_factor=0.8,
+        ...     theta_k={'motorcycle': 0.9, 'car': 0.7}
+        ... )
         ... )
         >>> 
         >>> # No junction - used for interior segment boundaries
@@ -61,6 +80,8 @@ class JunctionInfo:
     is_junction: bool
     light_factor: float  # Range: [0.0, 1.0]
     node_id: int
+    queue_factor: float = 1.0  # NEW: Queue congestion velocity reduction [0.0, 1.0]
+    theta_k: Optional[Dict[str, float]] = None  # NEW: Behavioral coupling by vehicle class
     
     def __post_init__(self):
         """Validate junction metadata after initialization."""
@@ -68,15 +89,21 @@ class JunctionInfo:
             raise ValueError(
                 f"light_factor must be in [0.0, 1.0], got {self.light_factor}"
             )
+        if not 0.0 <= self.queue_factor <= 1.0:
+            raise ValueError(
+                f"queue_factor must be in [0.0, 1.0], got {self.queue_factor}"
+            )
     
     def __str__(self) -> str:
         """Human-readable representation for debugging."""
         signal_state = "GREEN" if self.light_factor >= 0.99 else "RED"
         blocking_pct = (1.0 - self.light_factor) * 100
+        queue_info = f", queue={self.queue_factor:.2f}" if self.queue_factor < 1.0 else ""
+        theta_info = f", θ_k={self.theta_k}" if self.theta_k else ""
         return (
             f"JunctionInfo(node={self.node_id}, "
             f"signal={signal_state}, "
-            f"blocking={blocking_pct:.0f}%)"
+            f"blocking={blocking_pct:.0f}%{queue_info}{theta_info})"
         )
     
     def __repr__(self) -> str:
@@ -84,5 +111,7 @@ class JunctionInfo:
         return (
             f"JunctionInfo(is_junction={self.is_junction}, "
             f"light_factor={self.light_factor:.4f}, "
-            f"node_id={self.node_id})"
+            f"node_id={self.node_id}, "
+            f"queue_factor={self.queue_factor:.4f}, "
+            f"theta_k={self.theta_k})"
         )

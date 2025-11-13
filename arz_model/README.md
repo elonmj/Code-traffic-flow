@@ -1,100 +1,101 @@
+# ARZ Traffic Model - GPU-Only Build
 
-# ARZ Traffic Simulation Code
+**🔥 IMPORTANT: This is a GPU-only version of the ARZ traffic model. 🔥**
 
-This directory contains the Python code for the multi-class ARZ traffic flow simulation.
+This repository contains a high-performance, **GPU-only** implementation of the multi-class ARZ traffic flow simulation. The CPU fallback has been completely removed to maximize performance by eliminating CPU/GPU data transfer overhead.
+
+**CUDA is now a mandatory requirement.** If you do not have a compatible NVIDIA GPU and the CUDA Toolkit installed, this code will not run.
+
+## Requirements
+
+- NVIDIA GPU with CUDA Compute Capability 6.0+
+- CUDA Toolkit 11.x or 12.x
+- Python 3.9+
+- Numba 0.56+
+- CuPy (matching your CUDA version, e.g., `cupy-cuda11x`)
+- Pydantic
 
 ## Running a Simulation
 
-The main entry point for running a single simulation scenario is `main_simulation.py`. It requires a scenario configuration file and optionally a base configuration file.
+Simulations are now configured and run directly in Python using Pydantic configuration objects, not YAML files. The main entry point is the `SimulationRunner` class.
+
+**Example Usage:**
+
+```python
+# main_network_simulation.py
+
+from arz_model.config import NetworkSimulationConfig # ... and other configs
+from arz_model.simulation.runner import SimulationRunner
+from arz_model.network.network_grid import NetworkGrid
+
+# 1. Create a detailed simulation configuration
+config = NetworkSimulationConfig(
+    # ... define your network, physics, time, etc.
+)
+
+# 2. Initialize the network grid from the configuration
+network_grid = NetworkGrid.from_config(config)
+
+# 3. Initialize the runner
+# The runner will automatically detect and use the GPU.
+runner = SimulationRunner(
+    network_grid=network_grid,
+    simulation_config=config,
+    quiet=False
+)
+
+# 4. Run the simulation
+results = runner.run()
+
+# 5. Process results
+print("Simulation finished!")
+print(f"Final time: {results['final_time']}")
+
+```
+
+## Benchmarking & Profiling
+
+A dedicated script is available to benchmark performance and profile memory usage, ensuring the GPU-only architecture meets its performance targets and is free of memory leaks.
 
 **Usage:**
 
-Run the script as a module from the project root directory (the directory containing the `code` folder):
+Run the benchmark script as a module from the project's parent directory (`Code project`):
 
 ```bash
-python -m code.main_simulation --scenario <path_to_scenario.yml> [options]
+cd 'd:\\Projets\\Alibi\\Code project'
+python -m arz_model.benchmarks.benchmark_gpu_only
 ```
 
-**Arguments:**
+The script will:
+1.  Run a performance test to measure simulation steps per second.
+2.  Run a memory profiling test to check for memory leaks.
 
-*   `--scenario` (Required): Path to the scenario configuration YAML file (e.g., `config/scenario_riemann_test.yml`).
-*   `--base_config` (Optional): Path to the base configuration YAML file (default: `config/config_base.yml`).
-*   `--output_dir` (Optional): Directory to save the simulation results (`.npz` file) (default: `results`).
-
-**Example:**
-
-```bash
-python -m code.main_simulation --scenario config/scenario_riemann_test.yml --output_dir results
-```
-### Additional Simulation Options
-
-#### Runtime Estimation
-
-You can estimate the total runtime of a scenario using the `--estimate` flag. This runs a short simulation (default: 1000 steps) and reports an estimated total runtime for the full scenario.
-
-**Usage:**
-```bash
-python -m code.main_simulation --scenario <path_to_scenario.yml> --estimate
-```
-
-**Options:**
-- `--estimate_steps N` : Number of steps for the estimation run (default: 1000).
-- `--quiet` : Suppress most output during the simulation or estimation.
-
-**Examples:**
-```bash
-python -m code.main_simulation --scenario config/scenario_degraded_road.yml --estimate
-python -m code.main_simulation --scenario config/scenario_degraded_road.yml --estimate --estimate_steps 5000 --quiet
-python -m code.main_simulation --scenario config/scenario_degraded_road.yml --quiet
-```
-
-The initial simulation configuration summary is always printed. The `--quiet` flag only affects progress and result output during the simulation itself.
-
-This command runs the simulation defined in `config/scenario_riemann_test.yml`, using parameters from `config/config_base.yml`, and saves the output `.npz` file in the `results` directory.
+The script will automatically skip the tests if a compatible GPU is not found.
 
 ## Visualizing Results
 
-The `visualize_results.py` script is used to generate plots from the simulation output (`.npz` files).
+The `visualization/plotting.py` and `visualization/network_visualizer.py` modules provide tools to plot simulation outputs.
 
-**Usage:**
+**Example:**
 
-Run the script as a module from the project root directory:
+```python
+# Assuming 'results' is the output from runner.run()
 
-```bash
-python -m code.visualize_results [options]
+from arz_model.visualization.plotting import plot_spacetime_density
+from arz_model.visualization.network_visualizer import plot_network
+
+# Plot the network topology
+plot_network(runner.network_grid)
+
+# Plot the density for a specific segment
+plot_spacetime_density(
+    U=results['states']['seg-0'],
+    grid=runner.network_grid.segments['seg-0'].grid,
+    params=runner.params,
+    class_index=0, # 0 for motorways, 1 for cars
+    title="Spacetime Density (Motorways) on Segment 0"
+)
 ```
-
-**Arguments:**
-
-*   `-i`, `--input`: Path to a specific simulation result (`.npz`) file. If omitted, the script will automatically use the most recently created `.npz` file in the `--results_dir`.
-*   `--results_dir`: Directory containing simulation result files (default: `results`).
-*   `--plots`: List of plots to generate. Choices: `profile`, `spacetime_density_m`, `spacetime_velocity_m`, `spacetime_density_c`, `spacetime_velocity_c`, `all`. (default: `all`).
-*   `--output_dir`: Directory to save the plots (default: same as `--results_dir`).
-*   `--show`: Display plots interactively instead of just saving them.
-*   `--no_save`: Do not save the generated plots.
-
-**Examples:**
-
-*   Plot all default plots using the latest results file in the `results` directory:
-    ```bash
-    python -m code.visualize_results
-    ```
-*   Plot only the final profile and car density spacetime using the latest results:
-    ```bash
-    python -m code.visualize_results --plots profile spacetime_density_c
-    ```
-*   Plot all default plots using a specific results file:
-    ```bash
-    python -m code.visualize_results -i results/scenario_riemann_test_20250423_220837.npz
-    ```
-*   Show plots interactively (using the latest results file) without saving them:
-    ```bash
-    python -m code.visualize_results --show --no_save
-    ```
-*   Save plots from the latest results file to a different directory:
-    ```bash
-    python -m code.visualize_results --output_dir plots_archive
-    ```
 
 ## Code Structure
 

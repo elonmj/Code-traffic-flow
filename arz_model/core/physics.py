@@ -1,7 +1,6 @@
 import numpy as np
 from numba import njit, cuda # Import cuda
-from .parameters import ModelParameters # Use absolute import
-
+import math # Needed for CUDA device functions
 
 # --- Physical Constants and Conversions ---
 KM_TO_M = 1000.0  # meters per kilometer
@@ -17,63 +16,6 @@ MS_TO_KMH = H_TO_S / KM_TO_M  # m/s to km/h
 VEH_KM_TO_VEH_M = 1.0 / KM_TO_M # veh/km to veh/m
 VEH_M_TO_VEH_KM = KM_TO_M       # veh/m to veh/km
 # ----------------------------------------
-
-@njit
-def calculate_pressure(rho_m: np.ndarray, rho_c: np.ndarray,
-                       alpha: float, rho_jam: float, epsilon: float,
-                       K_m: float, gamma_m: float,
-                       K_c: float, gamma_c: float) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Calculates the pressure terms for motorcycles (m) and cars (c).
-    (Numba-optimized version)
-
-    Args:
-        rho_m: Density of motorcycles (veh/m).
-        rho_c: Density of cars (veh/m).
-        alpha: Interaction parameter.
-        rho_jam: Jam density (veh/m).
-        epsilon: Small number for numerical stability.
-        K_m: Pressure coefficient for motorcycles (m/s).
-        gamma_m: Pressure exponent for motorcycles.
-        K_c: Pressure coefficient for cars (m/s).
-        gamma_c: Pressure exponent for cars.
-
-
-    Returns:
-        A tuple (p_m, p_c) containing pressure terms (m/s).
-    """
-    # Numba doesn't support raising ValueError with strings easily in nopython mode
-    # Validation should happen before calling this njit function
-    # if rho_jam <= 0:
-    #     raise ValueError("Jam density rho_jam must be positive.")
-
-    # Ensure densities are non-negative
-    rho_m = np.maximum(rho_m, 0.0)
-    rho_c = np.maximum(rho_c, 0.0)
-
-    rho_eff_m = rho_m + alpha * rho_c
-    rho_total = rho_m + rho_c
-
-    # Avoid division by zero or issues near rho_jam
-    # Calculate normalized densities.
-    norm_rho_eff_m = rho_eff_m / rho_jam
-    norm_rho_total = rho_total / rho_jam
-
-    # Ensure base of power is non-negative
-    norm_rho_eff_m = np.maximum(norm_rho_eff_m, 0.0)
-    norm_rho_total = np.maximum(norm_rho_total, 0.0)
-
-    p_m = K_m * (norm_rho_eff_m ** gamma_m)
-    p_c = K_c * (norm_rho_total ** gamma_c)
-
-    # Ensure pressure is zero if respective density is zero
-    p_m = np.where(rho_m <= epsilon, 0.0, p_m)
-    p_c = np.where(rho_c <= epsilon, 0.0, p_c)
-    # Also ensure p_m is zero if rho_eff_m is zero (can happen if rho_m=0 and rho_c=0)
-    p_m = np.where(rho_eff_m <= epsilon, 0.0, p_m)
-
-
-    return p_m, p_c
 
 # --- CUDA Kernel for Pressure Calculation ---
 # This kernel calculates pressure for a single element (thread)
@@ -115,105 +57,6 @@ def _calculate_pressure_cuda(rho_m_i, rho_c_i, alpha, rho_jam, epsilon, K_m, gam
 # other kernels.
 
 
-def calculate_equilibrium_speed(rho_m: np.ndarray, rho_c: np.ndarray, R_local: np.ndarray, params: ModelParameters, 
-                              V0_m_override: float = None, V0_c_override: float = None) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Calculates the equilibrium speeds for motorcycles (m) and cars (c).
-    
-    ARCHITECTURAL NOTE (2025-10-24):
-        This function now supports segment-specific speed overrides via V0_m_override and V0_c_override.
-        When provided, these values REPLACE the Vmax[R] lookup, enabling heterogeneous networks
-        where different segments have different speed limits (e.g., Lagos arterial = 32 km/h,
-        highway = 80 km/h) regardless of road quality R.
-        
-        Use case: NetworkGrid with ParameterManager for per-segment parameters.
-
-    Args:
-        rho_m: Density of motorcycles (veh/m).
-        rho_c: Density of cars (veh/m).
-        R_local: Array of local road quality indices for each cell.
-        params: ModelParameters object.
-        V0_m_override: Optional override for motorcycle free-flow speed (m/s).
-                       If provided, replaces Vmax_m[R_local] calculation.
-        V0_c_override: Optional override for car free-flow speed (m/s).
-                       If provided, replaces Vmax_c[R_local] calculation.
-
-    Returns:
-        A tuple (Ve_m, Ve_c) containing equilibrium speeds (m/s).
-    """
-    if params.rho_jam <= 0:
-        raise ValueError("Jam density rho_jam must be positive.")
-
-    # Ensure densities are non-negative
-    rho_m = np.maximum(rho_m, 0.0)
-    rho_c = np.maximum(rho_c, 0.0)
-
-    rho_total = rho_m + rho_c
-
-    # Calculate reduction factor g, ensuring it's between 0 and 1
-    g = np.maximum(0.0, 1.0 - rho_total / params.rho_jam)
-
-    # Determine Vmax values: Use overrides if provided, else fall back to Vmax[R]
-    if V0_m_override is not None:
-        # Use segment-specific override (scalar, broadcast to array if needed)
-        Vmax_m_local = V0_m_override if np.isscalar(rho_m) else np.full_like(rho_m, V0_m_override)
-    else:
-        # Get Vmax based on local road quality R_local
-        # Use np.vectorize or direct array indexing if R_local is an array of indices
-        try:
-            Vmax_m_local = np.array([params.Vmax_m[int(r)] for r in R_local])
-        except KeyError as e:
-            raise ValueError(f"Invalid road category index found in R_local: {e}. Valid keys: {list(params.Vmax_m.keys())}") from e
-        except TypeError: # Handle scalar R_local
-             Vmax_m_local = params.Vmax_m[int(R_local)]
-    
-    if V0_c_override is not None:
-        # Use segment-specific override (scalar, broadcast to array if needed)
-        Vmax_c_local = V0_c_override if np.isscalar(rho_c) else np.full_like(rho_c, V0_c_override)
-    else:
-        # Get Vmax based on local road quality R_local
-        try:
-            Vmax_c_local = np.array([params.Vmax_c[int(r)] for r in R_local])
-        except KeyError as e:
-            raise ValueError(f"Invalid road category index found in R_local: {e}. Valid keys: {list(params.Vmax_c.keys())}") from e
-        except TypeError: # Handle scalar R_local
-             Vmax_c_local = params.Vmax_c[int(R_local)]
-
-
-    # [PHASE 2 DEBUG - Hypothesis B: Equilibrium speed calculation]
-    # TEMPORARILY DISABLED - too much output, will re-enable with cell_index filter
-    # Debug for scalar case (single cell from ODE solver)
-    # if np.isscalar(rho_m) and np.isscalar(rho_c):
-    #     print("[EQUILIBRIUM DEBUG - SCALAR]")
-    #     print("  rho_total =", rho_total, ", rho_jam =", params.rho_jam)
-    #     print("  g =", g, "(congestion factor)")
-    #     if V0_m_override is not None:
-    #         print("  Using V0_m_override =", V0_m_override)
-    #     else:
-    #         R_idx = int(R_local)
-    #         print("  R_local =", R_local, ", R_idx =", R_idx)
-    #         print("  Vmax_m[R] =", params.Vmax_m[R_idx])
-    #         print("  Vmax_m_local =", Vmax_m_local)
-    #     print("  V_creeping =", params.V_creeping)
-    
-    Ve_m = params.V_creeping + (Vmax_m_local - params.V_creeping) * g
-    Ve_c = Vmax_c_local * g
-
-    # [PHASE 2 DEBUG - Hypothesis B cont'd: Final Ve_m value]
-    # TEMPORARILY DISABLED
-    # if np.isscalar(rho_m) and np.isscalar(rho_c):
-    #     print("  Ve_m (before clipping) =", Ve_m)
-    
-    # Ensure speeds are non-negative
-    Ve_m = np.maximum(Ve_m, 0.0)
-    Ve_c = np.maximum(Ve_c, 0.0)
-
-    # [PHASE 2 DEBUG - Hypothesis B final: After clipping]
-    # TEMPORARILY DISABLED
-    # if np.isscalar(rho_m) and np.isscalar(rho_c):
-    #     print("  Ve_m (final) =", Ve_m)
-    
-    return Ve_m, Ve_c
 # --- CUDA Device Function for Equilibrium Speed ---
 @cuda.jit(device=True)
 def calculate_equilibrium_speed_gpu(rho_m_i: float, rho_c_i: float, R_local_i: int,
@@ -249,8 +92,8 @@ def calculate_equilibrium_speed_gpu(rho_m_i: float, rho_c_i: float, R_local_i: i
         Vmax_m_local_i = v_max_m_cat1
         Vmax_c_local_i = v_max_c_cat1
     elif R_local_i == 2:
-         Vmax_m_local_i = v_max_m_cat2 # Assuming category 2 exists
-         Vmax_c_local_i = v_max_c_cat2
+        Vmax_m_local_i = v_max_m_cat2 # Assuming category 2 exists
+        Vmax_c_local_i = v_max_c_cat2
     elif R_local_i == 3:
         Vmax_m_local_i = v_max_m_cat3
         Vmax_c_local_i = v_max_c_cat3
@@ -283,47 +126,6 @@ def calculate_relaxation_time_gpu(rho_m_i: float, rho_c_i: float,
     # rho_m_i and rho_c_i are unused for now, but kept for signature consistency
     # Future: Could implement density-dependent relaxation times here
     return tau_m, tau_c
-def calculate_relaxation_time(rho_m: np.ndarray, rho_c: np.ndarray, params: ModelParameters) -> tuple[float, float]:
-    """
-    Calculates the relaxation times for motorcycles (m) and cars (c).
-    Currently returns constant values based on params.
-
-    Args:
-        rho_m: Density of motorcycles (veh/m). (Currently unused)
-        rho_c: Density of cars (veh/m). (Currently unused)
-        params: ModelParameters object.
-
-    Returns:
-        A tuple (tau_m, tau_c) containing relaxation times (s).
-    """
-    # Future: Could implement density-dependent relaxation times here
-    return params.tau_m, params.tau_c
-
-@njit
-def calculate_physical_velocity(w_m: np.ndarray, w_c: np.ndarray, p_m: np.ndarray, p_c: np.ndarray, v_max: float = 50.0) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Calculates the physical velocities from Lagrangian variables and pressure.
-    
-    Applies bounds to prevent numerical instability from extreme velocity values
-    that can arise when density approaches zero (velocity explosion).
-
-    Args:
-        w_m: Lagrangian variable for motorcycles (m/s).
-        w_c: Lagrangian variable for cars (m/s).
-        p_m: Pressure term for motorcycles (m/s).
-        p_c: Pressure term for cars (m/s).
-        v_max: Maximum realistic velocity magnitude (m/s). Default 50 m/s = 180 km/h.
-
-    Returns:
-        A tuple (v_m, v_c) containing physical velocities (m/s), bounded to [-v_max, v_max].
-    """
-    v_m = w_m - p_m
-    v_c = w_c - p_c
-    # Apply physical bounds to prevent numerical explosion
-    # Numba-compatible element-wise clipping using maximum/minimum
-    v_m = np.maximum(np.minimum(v_m, v_max), -v_max)
-    v_c = np.maximum(np.minimum(v_c, v_max), -v_max)
-    return v_m, v_c
 
 # --- CUDA Kernel for Physical Velocity Calculation ---
 # This kernel calculates physical velocity for a single element (thread)
@@ -340,66 +142,7 @@ def _calculate_physical_velocity_cuda(w_m_i, w_c_i, p_m_i, p_c_i):
 # other kernels.
 
 
-@njit
-def _calculate_pressure_derivative(rho_vals, K, gamma, rho_jam, epsilon):
-    """ Helper to calculate dP/d(rho_eff) or dP/d(rho_total) for an array of densities. """
-    if rho_jam <= 0 or gamma <= 0:
-        return np.zeros_like(rho_vals)
-
-    # Ensure non-negative before processing
-    rho_vals_safe = np.maximum(rho_vals, 0.0)
-
-    # Calculate normalized density
-    norm_rho = rho_vals_safe / rho_jam
-
-    # Derivative calculation
-    derivative = (K * gamma / rho_jam) * (norm_rho**(gamma - 1.0))
-
-    # Set derivative to zero where density is close to zero
-    derivative = np.where(rho_vals_safe <= epsilon, 0.0, derivative)
-
-    return np.maximum(derivative, 0.0) # Ensure non-negative derivative
-
-def calculate_eigenvalues(rho_m: np.ndarray, v_m: np.ndarray, rho_c: np.ndarray, v_c: np.ndarray, params: ModelParameters) -> list[np.ndarray]:
-    """
-    Calculates the four eigenvalues (characteristic speeds) of the system.
-
-    Args:
-        rho_m: Density of motorcycles (veh/m).
-        v_m: Velocity of motorcycles (m/s).
-        rho_c: Density of cars (veh/m).
-        v_c: Velocity of cars (m/s).
-        params: ModelParameters object.
-
-    Returns:
-        A list containing four numpy arrays: [lambda1, lambda2, lambda3, lambda4] (m/s).
-        Each array has the same shape as the input density/velocity arrays.
-    """
-    if params.rho_jam <= 0:
-        raise ValueError("Jam density rho_jam must be positive.")
-
-    # Ensure densities are non-negative
-    rho_m = np.maximum(rho_m, params.epsilon) # Use epsilon to avoid issues in derivative calc
-    rho_c = np.maximum(rho_c, params.epsilon)
-
-    rho_eff_m = rho_m + params.alpha * rho_c
-    rho_total = rho_m + rho_c
-
-    # Calculate pressure derivatives dP/d(arg) where arg is rho_eff_m or rho_total
-    # Need to handle scalar vs array inputs if vectorizing
-    P_prime_m = _calculate_pressure_derivative(rho_eff_m, params.K_m, params.gamma_m, params.rho_jam, params.epsilon)
-    P_prime_c = _calculate_pressure_derivative(rho_total, params.K_c, params.gamma_c, params.rho_jam, params.epsilon)
-
-
-    lambda1 = v_m
-    lambda2 = v_m - rho_m * P_prime_m
-    lambda3 = v_c
-    lambda4 = v_c - rho_c * P_prime_c
-
-    return [lambda1, lambda2, lambda3, lambda4]
-
 # --- CUDA Device Functions for Eigenvalue Calculation ---
-import math # Needed for CUDA device functions
 
 @cuda.jit(device=True)
 def _calculate_pressure_derivative_cuda(rho_val, K, gamma, rho_jam, epsilon):
@@ -441,83 +184,6 @@ def _calculate_eigenvalues_cuda(rho_m_i, v_m_i, rho_c_i, v_c_i,
 
     return lambda1, lambda2, lambda3, lambda4
 
-
-@njit
-def calculate_source_term(U: np.ndarray,
-                          # Pressure params
-                          alpha: float, rho_jam: float, K_m: float, gamma_m: float, K_c: float, gamma_c: float,
-                          # Equilibrium speeds (pre-calculated)
-                          Ve_m: np.ndarray, Ve_c: np.ndarray,
-                          # Relaxation times (pre-calculated)
-                          tau_m: float, tau_c: float,
-                          # Epsilon
-                          epsilon: float) -> np.ndarray:
-    """
-    Calculates the source term vector S = (0, Sm, 0, Sc) for the ODE step.
-    (Numba-optimized version)
-
-    Args:
-        U: State vector (or array of state vectors) [rho_m, w_m, rho_c, w_c].
-           Shape (4,) or (4, N). Assumes SI units.
-        alpha, rho_jam, K_m, gamma_m, K_c, gamma_c: Parameters for pressure calculation.
-        Ve_m, Ve_c: Pre-calculated equilibrium speeds (m/s).
-        tau_m, tau_c: Pre-calculated relaxation times (s).
-        epsilon: Small number for numerical stability.
-
-
-    Returns:
-        Source term vector S (or array of source vectors). Shape (4,) or (4, N).
-    """
-    rho_m = U[0]
-    w_m = U[1]
-    rho_c = U[2]
-    w_c = U[3]
-
-    # Ensure densities are non-negative for calculations
-    rho_m_calc = np.maximum(rho_m, 0.0)
-    rho_c_calc = np.maximum(rho_c, 0.0)
-
-    # Calculate pressure using the Numba-fied function
-    p_m, p_c = calculate_pressure(rho_m_calc, rho_c_calc,
-                                  alpha, rho_jam, epsilon,
-                                  K_m, gamma_m, K_c, gamma_c)
-
-    # Calculate physical velocity (this function is simple NumPy, likely okay for Numba)
-    v_m, v_c = calculate_physical_velocity(w_m, w_c, p_m, p_c)
-
-    # Equilibrium speeds (Ve_m, Ve_c) and relaxation times (tau_m, tau_c) are now inputs
-
-    # Avoid division by zero if relaxation times are zero
-    Sm = (Ve_m - v_m) / (tau_m + epsilon)
-    Sc = (Ve_c - v_c) / (tau_c + epsilon)
-
-    # [PHASE 2 DEBUG - Hypothesis A: Zero-density guard triggering] - TEMPORARILY DISABLED
-    # Debug for cell index 5 (if scalar U, skip this debug)
-    # if U.ndim == 1:  # Scalar case (single cell from ODE solver)
-    #     # For scalar debugging, check if we're being called with near-zero density
-    #     if rho_m_calc > 0 and rho_m_calc <= epsilon:
-    #         print("[SOURCE TERM DEBUG - SCALAR]")
-    #         print("  rho_m =", rho_m, ", epsilon =", epsilon)
-    #         print("  Ve_m =", Ve_m, ", v_m =", v_m)
-    #         print("  Sm_before_guard =", Sm)
-    #         print("  GUARD WILL TRIGGER: rho_m_calc <= epsilon")
-    
-    # Source term is zero if density is zero
-    Sm = np.where(rho_m_calc <= epsilon, 0.0, Sm)
-    Sc = np.where(rho_c_calc <= epsilon, 0.0, Sc)
-
-    # Construct the full source vector S = [0, Sm, 0, Sc]
-    # Need to handle scalar vs array inputs for U
-    if U.ndim == 1: # Scalar input (single cell)
-        # Initialize S and assign values (more Numba-friendly)
-        S = np.zeros(4, dtype=U.dtype)
-        S[1] = Sm # Sm and Sc should be scalars here if U.ndim == 1
-        S[3] = Sc
-    else: # Array input (multiple cells)
-        S = np.zeros_like(U)
-        S[1, :] = Sm
-        S[3, :] = Sc
-    return S
 
 # --- CUDA Device Function for Source Term Calculation ---
 @cuda.jit(device=True)
@@ -569,3 +235,112 @@ def calculate_source_term_gpu(y, # Local state vector [rho_m, w_m, rho_c, w_c]
 # Removed redundant CUDA source term functions (_calculate_source_term_cuda,
 # calculate_source_term_cuda_kernel, and the wrapper calculate_source_term_gpu)
 # as they are not used by the current _ode_step_kernel approach.
+
+# --- CUDA Device Function for Physical Flux Calculation ---
+@cuda.jit(device=True)
+def _calculate_physical_flux_cuda(rho_m_i, w_m_i, rho_c_i, w_c_i, p_m_i, p_c_i):
+    """CUDA device function to calculate the physical flux F(U) for a single cell."""
+    v_m_i, v_c_i = _calculate_physical_velocity_cuda(w_m_i, w_c_i, p_m_i, p_c_i)
+    
+    # F(U) = [rho_m * v_m, w_m, rho_c * v_c, w_c]
+    # Note: The flux for the w components is just w itself, which is an
+    # approximation for the non-conservative part of the system.
+    flux_rho_m = rho_m_i * v_m_i
+    flux_w_m = w_m_i
+    flux_rho_c = rho_c_i * v_c_i
+    flux_w_c = w_c_i
+    
+    return flux_rho_m, flux_w_m, flux_rho_c, flux_w_c
+
+@cuda.jit(device=True)
+def _calculate_demand_flux_cuda(rho_m_i, w_m_i, rho_c_i, w_c_i,
+                                alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c):
+    """
+    CUDA device function to calculate the demand flux for a single cell state.
+    Demand is the physical flux F(U) for a given state U.
+    """
+    rho_m_calc = max(rho_m_i, 0.0)
+    rho_c_calc = max(rho_c_i, 0.0)
+    
+    p_m_i, p_c_i = _calculate_pressure_cuda(rho_m_calc, rho_c_calc,
+                                            alpha, rho_jam, epsilon,
+                                            K_m, gamma_m, K_c, gamma_c)
+                                            
+    flux_rho_m, flux_w_m, flux_rho_c, flux_w_c = _calculate_physical_flux_cuda(
+        rho_m_calc, w_m_i, rho_c_calc, w_c_i, p_m_i, p_c_i
+    )
+    
+    return flux_rho_m, flux_rho_c
+
+@cuda.jit(device=True)
+def _calculate_supply_flux_cuda(rho_jam, K_m, gamma_m, K_c, gamma_c):
+    """
+    CUDA device function to calculate the supply (capacity) of a link.
+    This is the maximum possible physical flux, which occurs at the critical density.
+    """
+    # This is a simplification. A true supply function depends on the downstream state.
+    # Here, we approximate it with the maximum possible flux (capacity).
+    # The critical density rho_crit where flux is maximum is found by solving d(F)/d(rho) = 0.
+    # For the ARZ model, this is complex. We use an approximation.
+    # For a single class model rho*v(rho), where v(rho) = Vmax(1-rho/rho_jam), the max
+    # flux is at rho_crit = rho_jam/2.
+    # Let's assume a similar behavior and calculate flux at a fraction of rho_jam.
+    
+    rho_crit_m = rho_jam / 2.0  # Approximation
+    rho_crit_c = rho_jam / 2.0  # Approximation
+
+    # We need to find the state U that corresponds to this.
+    # Assume w = v, so p=0. This is another simplification.
+    v_crit_m = 0.0 # Placeholder
+    v_crit_c = 0.0 # Placeholder
+
+    # A simpler, more robust approach is to define capacity directly.
+    # For now, returning a high, constant value is a placeholder.
+    # Let's use a value based on typical highway capacity (e.g., 2000 veh/hr/lane)
+    # 2000 veh/hr -> 0.55 veh/s.
+    # This is a placeholder until a better supply function is derived.
+    supply_m = 0.55 
+    supply_c = 0.55
+    
+    return supply_m, supply_c
+
+@cuda.jit(device=True)
+def _invert_flux_function_cuda(flux, rho_jam, Vmax, epsilon):
+    """
+    Inverts the flux function F(rho) = rho * V_e(rho) to find rho for a given flux.
+    This assumes a simplified equilibrium velocity V_e(rho) = Vmax * (1 - rho/rho_jam).
+    The flux function is F(rho) = Vmax * rho * (1 - rho/rho_jam), which is a quadratic.
+    
+    flux = -Vmax/rho_jam * rho^2 + Vmax * rho
+    => Vmax/rho_jam * rho^2 - Vmax * rho + flux = 0
+    
+    This is a quadratic equation of the form a*x^2 + b*x + c = 0, where:
+    x = rho
+    a = Vmax / rho_jam
+    b = -Vmax
+    c = flux
+    
+    The solutions are rho = (-b ± sqrt(b^2 - 4ac)) / 2a.
+    We choose the solution that is less than the critical density rho_jam/2,
+    as this corresponds to the free-flow branch of the fundamental diagram.
+    """
+    a = Vmax / rho_jam
+    b = -Vmax
+    c = flux
+    
+    discriminant = b*b - 4*a*c
+    
+    if discriminant < 0:
+        # No real solution, implies flux is greater than capacity.
+        # Return critical density, where capacity is reached.
+        return rho_jam / 2.0
+        
+    sqrt_discriminant = math.sqrt(discriminant)
+    
+    # Two possible solutions for rho
+    rho1 = (-b + sqrt_discriminant) / (2 * a)
+    rho2 = (-b - sqrt_discriminant) / (2 * a)
+    
+    # The physically correct state for the ghost cell of an outgoing link
+    # corresponds to the free-flow condition, which is the lower density.
+    return min(rho1, rho2)

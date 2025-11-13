@@ -12,8 +12,19 @@ ecoles.md
 .copilot-tracking/
 
 
+
+
 #ignorer tout ce qui est git
 .git/
 **/.git/*
 **/.github/*
 .github/
+.github/
+
+
+
+#ignorer tous les fichiers dans _archive
+_arxiv/
+_arxiv/*
+
+

@@ -1,20 +1,21 @@
 """
 Node class: Junction wrapper with network topology.
 
-This class wraps the existing Intersection class and adds network topology
-information (incoming/outgoing segments, node connectivity). It follows the
-SUMO MSJunction pattern where nodes are connection points between road segments.
+This class manages the state and logic of a junction in the traffic network.
 
-Academic Reference:
-    - Garavello & Piccoli (2005), Section 2.2: "Nodes and Junctions"
-    - SUMO's MSJunction design pattern
+Attributes:
+    node_id: Unique identifier for this node
+    position: (x, y) coordinates in network space
+    node_type: Type of node (e.g., 'junction', 'source', 'sink')
+    incoming_segments: List of Link objects entering this node
+    outgoing_segments: List of Link objects leaving this node
+    traffic_light_controller: Optional controller for traffic lights
 """
 
 from typing import Dict, List, Optional, Tuple
 import numpy as np
 
-from ..core.intersection import Intersection
-from ..core.traffic_lights import TrafficLightController
+from ..core.node_solver_gpu import solve_node_fluxes_gpu
 from ..core.parameters import ModelParameters
 
 
@@ -22,147 +23,113 @@ class Node:
     """
     Network node representing a junction between road segments.
     
-    This class wraps an Intersection object and adds explicit network topology,
-    enabling multi-segment network simulation following Garavello & Piccoli (2005).
+    This class manages the state and logic of a junction in the traffic network.
     
     Attributes:
         node_id: Unique identifier for this node
         position: (x, y) coordinates in network space
-        intersection: Wrapped Intersection object (handles flux resolution)
-        incoming_segments: List of segment IDs feeding into this node
-        outgoing_segments: List of segment IDs leaving this node
-        node_type: Junction type ('signalized', 'priority', 'secondary', 'roundabout')
-        traffic_lights: Optional traffic light controller
-        
-    Academic Note:
-        This implements the "node" concept from Garavello & Piccoli (2005),
-        where nodes are connection points with conservation laws:
-            ∑ flux_in = ∑ flux_out  (mass conservation at junctions)
+        node_type: Type of node (e.g., 'junction', 'source', 'sink')
+        incoming_segments: List of Link objects entering this node
+        outgoing_segments: List of Link objects leaving this node
+        traffic_light_controller: Optional controller for traffic lights
     """
-    
-    def __init__(
-        self,
-        node_id: str,
-        position: Tuple[float, float],
-        intersection: Intersection,
-        incoming_segments: List[str],
-        outgoing_segments: List[str],
-        node_type: str = 'signalized',
-        traffic_lights: Optional[TrafficLightController] = None
-    ):
+    @classmethod
+    def from_config(cls, config: 'NodeConfig') -> 'Node':
         """
-        Initialize network node with topology.
-        
-        Args:
-            node_id: Unique node identifier (e.g., 'node_1', 'junction_A')
-            position: (x, y) spatial coordinates
-            intersection: Existing Intersection object for flux resolution
-            incoming_segments: List of segment IDs entering this node
-            outgoing_segments: List of segment IDs leaving this node
-            node_type: Junction type ('signalized', 'priority', 'secondary', 'roundabout')
-            traffic_lights: Optional traffic light controller
-            
-        Raises:
-            ValueError: If incoming/outgoing segments are empty
+        Creates a Node instance from a NodeConfig object.
         """
-        if not incoming_segments:
-            raise ValueError(f"Node {node_id} must have at least one incoming segment")
-        if not outgoing_segments:
-            raise ValueError(f"Node {node_id} must have at least one outgoing segment")
-            
+        return cls(
+            node_id=config.id,
+            position=config.position if config.position else (0.0, 0.0),
+            node_type=config.type,
+            incoming_segments=config.incoming_segments,
+            outgoing_segments=config.outgoing_segments
+        )
+
+    def __init__(self, node_id: str, position: Tuple[float, float] = (0.0, 0.0), node_type: str = 'junction', incoming_segments: List[str] = None, outgoing_segments: List[str] = None):
         self.node_id = node_id
         self.position = position
-        self.intersection = intersection
-        self.incoming_segments = incoming_segments
-        self.outgoing_segments = outgoing_segments
         self.node_type = node_type
-        self.traffic_lights = traffic_lights
-        
-    def get_incoming_states(self, segments: Dict) -> Dict[str, np.ndarray]:
+        self.incoming_segments: List[str] = incoming_segments or []
+        self.outgoing_segments: List[str] = outgoing_segments or []
+
+    def add_incoming_segment(self, segment: 'Link'):
+        self.incoming_segments.append(segment)
+
+    def add_outgoing_segment(self, segment: 'Link'):
+        self.outgoing_segments.append(segment)
+
+    def get_boundary_states(self) -> Dict[str, np.ndarray]:
         """
-        Get boundary states from all incoming segments.
-        
-        Args:
-            segments: Dictionary {segment_id: segment_dict} from NetworkGrid
-                     where segment_dict = {'grid': Grid1D, 'U': np.ndarray, ...}
-            
-        Returns:
-            Dictionary {segment_id: U_boundary} where U_boundary is the
-            4-component state [ρ_m, w_m, ρ_c, w_c] at segment exit
-            
-        Academic Note:
-            These are the "upstream conditions" U^-(x_node) from each
-            incoming road in Garavello & Piccoli notation.
+        Gathers the boundary states from all incoming segments.
+        This is the input for the Riemann solver at the junction.
         """
         states = {}
-        for seg_id in self.incoming_segments:
-            segment = segments[seg_id]
-            # Get rightmost cell state (segment exit = node entrance)
-            U_boundary = segment['U'][:, -1]  # Shape: (4,)
-            states[seg_id] = U_boundary
+        for seg in self.incoming_segments:
+            # The boundary state is the last physical cell of the incoming segment
+            states[seg.segment_id] = seg.grid.get_downstream_boundary_state()
         return states
-        
-    def get_outgoing_capacities(self, segments: Dict) -> Dict[str, float]:
+
+    def get_outgoing_capacities(self) -> Dict[str, float]:
         """
-        Get receiving capacities from all outgoing segments.
-        
-        Args:
-            segments: Dictionary {segment_id: segment_dict} from NetworkGrid
-            
-        Returns:
-            Dictionary {segment_id: capacity} where capacity is the
-            maximum inflow the segment can accept (Daganzo's "demand")
-            
-        Academic Note:
-            These are the supply/demand values S(ρ) from Daganzo (1995)
-            used for flux distribution at junctions.
+        Gathers the capacities of all outgoing segments.
+        This determines the maximum flow that can be accepted by each outgoing road.
         """
         capacities = {}
-        for seg_id in self.outgoing_segments:
-            segment = segments[seg_id]
-            grid = segment['grid']
-            U = segment['U']
-            
-            # Get leftmost cell state (segment entrance)
-            first_ghost = grid.num_ghost_cells
-            rho_m = U[0, first_ghost]
-            rho_c = U[2, first_ghost]
-            
-            # Compute receiving capacity (simplified: free-flow - current)
-            # TODO Phase 5: Use proper Daganzo supply function
-            rho_jam = 0.2  # Should come from params
-            capacity = max(0.0, (rho_jam - rho_m - rho_c))
-            capacities[seg_id] = capacity
+        for seg in self.outgoing_segments:
+            # Capacity is related to the maximum density and speed
+            capacities[seg.segment_id] = seg.grid.get_capacity()
         return capacities
-        
-    def is_signalized(self) -> bool:
-        """Check if this is a signalized junction."""
-        return self.node_type == 'signalized' and self.traffic_lights is not None
-        
-    def get_traffic_light_state(self) -> Optional[str]:
+
+    def solve_fluxes(self, params: ModelParameters, t: float) -> Dict[str, np.ndarray]:
         """
-        Get current traffic light state if signalized.
+        Solves the Riemann problem at the junction to determine outgoing fluxes.
         
-        Returns:
-            'green', 'yellow', 'red', or None if not signalized
+        This is the core of the network coupling logic. It takes the state of all
+        incoming roads and calculates the resulting flow into each outgoing road.
         """
-        if self.traffic_lights is None:
-            return None
-        return self.traffic_lights.current_state
+        incoming_states = self.get_boundary_states()
+        outgoing_capacities = self.get_outgoing_capacities()
         
-    def update_traffic_lights(self, dt: float):
-        """
-        Update traffic light controller (if present).
+        # Get traffic light state if applicable
+        green_mask = None
         
-        Note: TrafficLightController is stateless and doesn't need updates.
-        This method is kept for API compatibility and future extensions.
-        """
-        if self.traffic_lights is not None:
-            # TrafficLightController is stateless - phase is computed from time
-            # No update needed, but we could call update_stats() if needed
-            self.traffic_lights.update_stats(dt)
-            
-    def __repr__(self) -> str:
-        """String representation for debugging."""
-        return (f"Node(id={self.node_id}, type={self.node_type}, "
-                f"in={len(self.incoming_segments)}, out={len(self.outgoing_segments)})")
+        # Prepare input for the GPU node solver
+        # This part will be adapted for the GPU-native solver
+        
+        # For now, we simulate the logic that will be on the GPU
+        # The actual GPU call will be in `apply_network_coupling_gpu`
+        
+        # This is a placeholder for the complex logic of solve_node_fluxes_gpu
+        # In the real implementation, this would involve a sophisticated solver.
+        
+        # The actual `solve_node_fluxes_gpu` would be a GPU kernel
+        # Here we call a placeholder for the logic
+        outgoing_fluxes_flat = solve_node_fluxes_gpu(
+            self.node_id, 
+            np.array(list(incoming_states.values())), 
+            len(self.outgoing_segments), 
+            params
+        )
+        
+        # Map the flat array of fluxes back to the outgoing segments
+        # This logic needs to be adapted based on the actual return of the GPU solver
+        # For now, assuming it returns a tuple of (q_m, q_c) per outgoing link
+        
+        outgoing_fluxes = {}
+        for i, seg in enumerate(self.outgoing_segments):
+            # This is a simplified placeholder
+            # The real implementation would construct a full flux vector
+            q_m, q_c = outgoing_fluxes_flat # Simplified assumption
+            # This needs to be a full state vector, not just fluxes
+            # This part of the code is incomplete and needs the real GPU solver logic
+            flux_vector = np.zeros(4) 
+            outgoing_fluxes[seg.segment_id] = flux_vector
+        
+        return outgoing_fluxes
+
+    def __repr__(self):
+        return (
+            f"Node(id={self.node_id}, type={self.node_type}, "
+            f"in={len(self.incoming_segments)}, out={len(self.outgoing_segments)})"
+        )

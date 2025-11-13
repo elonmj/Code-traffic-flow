@@ -5,12 +5,13 @@ This is the main configuration object that contains all simulation parameters
 """
 
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, Literal
+from typing import Optional, List
 
-from arz_model.config.grid_config import GridConfig
-from arz_model.config.ic_config import InitialConditionsConfig
-from arz_model.config.bc_config import BoundaryConditionsConfig
-from arz_model.config.physics_config import PhysicsConfig
+from .grid_config import GridConfig
+from .physics_config import PhysicsConfig
+from .ic_config import InitialConditionsConfig
+from .bc_config import BoundaryConditionsConfig
+from .time_config import TimeConfig
 
 
 class SimulationConfig(BaseModel):
@@ -39,42 +40,16 @@ class SimulationConfig(BaseModel):
         description="Physical parameters"
     )
     
-    # ========================================================================
-    # TIME INTEGRATION
-    # ========================================================================
-    
-    t_final: float = Field(
-        gt=0,
-        description="Final simulation time (s)"
-    )
-    
-    output_dt: float = Field(
-        1.0,
-        gt=0,
-        description="Output interval (s)"
-    )
-    
-    cfl_number: float = Field(
-        0.5,
-        gt=0,
-        le=1.0,
-        description="CFL number for adaptive time stepping"
-    )
-    
-    max_iterations: int = Field(
-        100000,
-        gt=0,
-        description="Maximum number of time steps"
+    time: TimeConfig = Field(
+        default_factory=TimeConfig,
+        description="Time integration parameters"
     )
     
     # ========================================================================
     # COMPUTATIONAL OPTIONS
     # ========================================================================
     
-    device: Literal['cpu', 'gpu'] = Field(
-        'cpu',
-        description="Computation device"
-    )
+    # device parameter removed - GPU-only build
     
     quiet: bool = Field(
         False,
@@ -94,13 +69,7 @@ class SimulationConfig(BaseModel):
     # VALIDATION
     # ========================================================================
     
-    @field_validator('output_dt')
-    @classmethod
-    def output_dt_must_be_less_than_t_final(cls, v, info):
-        """Validate output_dt < t_final"""
-        if 't_final' in info.data and v > info.data['t_final']:
-            raise ValueError(f'output_dt ({v}) must be < t_final ({info.data["t_final"]})')
-        return v
+    # The validation is now handled in the TimeConfig model
     
     def __repr__(self):
         return (f"SimulationConfig(\n"

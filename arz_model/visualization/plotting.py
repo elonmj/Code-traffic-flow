@@ -102,18 +102,14 @@ def plot_profiles(state_physical: np.ndarray, grid: Grid1D, time: float, params:
     plt.close(fig) # Close the figure to free memory
 
 
-def plot_spacetime(times: np.ndarray | list, states: np.ndarray | list, grid: Grid1D, params: ModelParameters,
-                   variable: str = 'density', class_index: int = 0, # 0 for rho_m/v_m, 2 for rho_c/v_c
+def plot_spacetime(dm, variable: str = 'density', class_index: int = 0,
                    output_dir: str = "results", filename: str = None, show: bool = False, save: bool = True,
-                   cmap: str = 'viridis', vmin=None, vmax=None):
+                   cmap: str = 'viridis', vmin=None, vmax=None, title: str = None):
     """
     Creates a space-time heatmap for a chosen variable (density or velocity) and class.
 
     Args:
-        times (np.ndarray | list): Array or list of time points.
-        states (np.ndarray | list): 3D array (num_times, 4, N_physical) or list of 2D arrays.
-        grid (Grid1D): The grid object.
-        params (ModelParameters): Model parameters object.
+        dm: DataManager-like object with times, states, grid, params.
         variable (str): Variable to plot ('density' or 'velocity').
         class_index (int): Index of the class variable (0 for motorcycles, 2 for cars).
         output_dir (str): Directory to save the plot.
@@ -123,22 +119,23 @@ def plot_spacetime(times: np.ndarray | list, states: np.ndarray | list, grid: Gr
         cmap (str): Colormap for the heatmap.
         vmin (float, optional): Minimum value for the color scale.
         vmax (float, optional): Maximum value for the color scale.
+        title (str, optional): Custom title for the plot.
     """
-    times = np.asarray(times)
+    times = np.asarray(dm.times)
     # Stack states if provided as a list
-    if isinstance(states, list):
+    if isinstance(dm.states, list):
         try:
-            states_array = np.stack(states, axis=0) # Shape (num_times, 4, N_physical)
+            states_array = np.stack(dm.states, axis=0) # Shape (num_times, 4, N_physical)
         except ValueError:
              print("Error: Cannot stack states for spacetime plot, shapes might be inconsistent.")
              return
     else:
-        states_array = states
+        states_array = dm.states
 
-    if states_array.ndim != 3 or states_array.shape[1] != 4 or states_array.shape[2] != grid.N_physical:
+    if states_array.ndim != 3 or states_array.shape[1] != 4 or states_array.shape[2] != dm.grid.N_physical:
         raise ValueError("States array must have shape (num_times, 4, N_physical).")
 
-    x_coords = grid.cell_centers(include_ghost=False)
+    x_coords = dm.grid.cell_centers(include_ghost=False)
     t_coords = times
 
     class_label = "Motorcycles" if class_index == 0 else "Cars"
@@ -151,53 +148,53 @@ def plot_spacetime(times: np.ndarray | list, states: np.ndarray | list, grid: Gr
         var_label = f"Density $\\rho_{'m' if class_index==0 else 'c'}$"
         unit = "veh/km"
         if vmin is None: vmin = 0
-        if vmax is None: vmax = params.rho_jam / VEH_KM_TO_VEH_M # Use jam density as max
-
-        # --- Debugging Prints for Density ---
-        print(f"  DEBUG: Density data_to_plot shape: {data_to_plot.shape}")
-        print(f"  DEBUG: Density data_to_plot min: {np.min(data_to_plot):.4e}, max: {np.max(data_to_plot):.4e}, mean: {np.mean(data_to_plot):.4e}")
-        # Print a few sample values (e.g., corners and center)
-        if data_to_plot.shape[0] > 1 and data_to_plot.shape[1] > 1:
-             print(f"  DEBUG: Sample density values: TL={data_to_plot[0, 0]:.4e}, TR={data_to_plot[0, -1]:.4e}, BL={data_to_plot[-1, 0]:.4e}, BR={data_to_plot[-1, -1]:.4e}, Center={data_to_plot[data_to_plot.shape[0]//2, data_to_plot.shape[1]//2]:.4e}")
-        elif data_to_plot.shape[0] > 0 and data_to_plot.shape[1] > 0:
-             print(f"  DEBUG: Sample density value: {data_to_plot[0, 0]:.4e}")
-        # --- End Debugging Prints ---
+        if vmax is None: vmax = dm.params.rho_jam / VEH_KM_TO_VEH_M # Use jam density as max
 
     elif variable.lower() == 'velocity':
         # Need to calculate velocity for all times
-        velocities = np.zeros((len(times), grid.N_physical))
-        w_vals = states_array[:, class_index + 1, :]
+        velocities = np.zeros((len(times), dm.grid.N_physical))
         rho_m_all = states_array[:, 0, :]
+        w_m_all = states_array[:, 1, :]
         rho_c_all = states_array[:, 2, :]
+        w_c_all = states_array[:, 3, :]
+
         for i in range(len(times)):
-             p_m, p_c = physics.calculate_pressure(rho_m_all[i], rho_c_all[i],
-                                                   params.alpha, params.rho_jam, params.epsilon,
-                                                   params.K_m, params.gamma_m,
-                                                   params.K_c, params.gamma_c)
-             pressure = p_m if class_index == 0 else p_c
-             # Calculate physical velocity for the specific class
-             # Note: calculate_physical_velocity returns (v_m, v_c)
-             v_m_i, v_c_i = physics.calculate_physical_velocity(w_vals[i], w_vals[i], p_m, p_c) # Calculate both
-             velocities[i, :] = v_m_i if class_index == 0 else v_c_i # Select the correct one
+            # We need to calculate pressure for both classes to get physical velocity
+            p_m, p_c = physics.calculate_pressure(
+                rho_m_all[i], rho_c_all[i],
+                dm.params.alpha, dm.params.rho_jam, dm.params.epsilon,
+                dm.params.K_m, dm.params.gamma_m,
+                dm.params.K_c, dm.params.gamma_c
+            )
+            # Then calculate physical velocities for both
+            v_m_i, v_c_i = physics.calculate_physical_velocity(
+                w_m_all[i], w_c_all[i], p_m, p_c
+            )
+            # Select the one we want to plot
+            velocities[i, :] = v_m_i if class_index == 0 else v_c_i
 
         data_to_plot = velocities / KMH_TO_MS # Convert to km/h
         var_label = f"Velocity $v_{'m' if class_index==0 else 'c'}$"
         unit = "km/h"
-        if vmin is None: vmin = 0 # Or slightly negative?
-        if vmax is None: vmax = max(max(params.Vmax_m.values()), max(params.Vmax_c.values())) / KMH_TO_MS # Use max Vmax
+        if vmin is None: vmin = 0
+        if vmax is None: vmax = max(max(dm.params.Vmax_m.values()), max(dm.params.Vmax_c.values())) / KMH_TO_MS
     else:
         raise ValueError("Variable must be 'density' or 'velocity'.")
 
     fig, ax = plt.subplots(figsize=(10, 6))
     pcm = ax.pcolormesh(x_coords, t_coords, data_to_plot, cmap=cmap, shading='nearest', vmin=vmin, vmax=vmax)
-    # Use shading='auto' or 'nearest' if 'gouraud' causes issues with non-monotonic coords (shouldn't here)
 
     fig.colorbar(pcm, ax=ax, label=f"{var_label} ({unit})")
     ax.set_xlabel('Position x (m)')
     ax.set_ylabel('Time t (s)')
-    ax.set_title(f'Space-Time Evolution of {var_label} ({class_label})')
-    # Set axis limits if needed
-    ax.set_xlim(grid.xmin, grid.xmax)
+    
+    # Use custom title if provided, otherwise generate a default one
+    if title:
+        ax.set_title(title)
+    else:
+        ax.set_title(f'Space-Time Evolution of {var_label} ({class_label})')
+        
+    ax.set_xlim(dm.grid.xmin, dm.grid.xmax)
     ax.set_ylim(times[0], times[-1])
 
     plt.tight_layout()

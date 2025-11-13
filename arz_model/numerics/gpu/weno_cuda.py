@@ -13,7 +13,7 @@ from numba import cuda
 import math
 
 @cuda.jit
-def weno5_reconstruction_naive_kernel(v_in, v_left_out, v_right_out, N, epsilon):
+def weno5_reconstruction_kernel(v_in, v_left_out, v_right_out, N, epsilon):
     """
     Kernel CUDA naïf pour la reconstruction WENO5.
     
@@ -108,44 +108,38 @@ def apply_boundary_conditions_kernel(v_left, v_right, v_in, N):
         v_right[i] = v_in[i]
 
 
-def reconstruct_weno5_gpu_naive(v_host, epsilon=1e-6):
+def reconstruct_weno5_gpu(d_v_in, epsilon=1e-6):
     """
     Interface Python pour la reconstruction WENO5 GPU naïve.
     
     Args:
-        v_host (np.ndarray): Valeurs aux centres des cellules (CPU)
+        d_v_in (cuda.device_array): Valeurs aux centres des cellules (GPU)
         epsilon (float): Paramètre de régularisation
         
     Returns:
-        tuple: (v_left, v_right) - reconstructions aux interfaces (CPU)
+        tuple: (d_v_left, d_v_right) - reconstructions aux interfaces (GPU)
     """
-    N = len(v_host)
+    N = d_v_in.shape[0]
     
-    # Allocation mémoire GPU
-    v_device = cuda.to_device(v_host)
-    v_left_device = cuda.device_array(N, dtype=np.float64)
-    v_right_device = cuda.device_array(N, dtype=np.float64)
+    # Allouer les tableaux de sortie sur le GPU
+    d_v_left = cuda.device_array(N, dtype=d_v_in.dtype)
+    d_v_right = cuda.device_array(N, dtype=d_v_in.dtype)
     
-    # Configuration des blocs et grilles
-    threads_per_block = 256
-    blocks_per_grid = (N + threads_per_block - 1) // threads_per_block
+    # Configuration du lancement du kernel
+    threadsperblock = 256
+    blockspergrid = (N + threadsperblock - 1) // threadsperblock
     
-    # Lancement du kernel principal
-    weno5_reconstruction_naive_kernel[blocks_per_grid, threads_per_block](
-        v_device, v_left_device, v_right_device, N, epsilon
+    # Lancer le kernel de reconstruction
+    weno5_reconstruction_kernel[blockspergrid, threadsperblock](
+        d_v_in, d_v_left, d_v_right, N, epsilon
     )
     
-    # Application des conditions aux limites
-    apply_boundary_conditions_kernel[blocks_per_grid, threads_per_block](
-        v_left_device, v_right_device, v_device, N
+    # Lancer le kernel pour les conditions aux limites
+    apply_boundary_conditions_kernel[blockspergrid, threadsperblock](
+        d_v_left, d_v_right, d_v_in, N
     )
     
-    # Synchronisation et copie vers CPU
-    cuda.synchronize()
-    v_left_host = v_left_device.copy_to_host()
-    v_right_host = v_right_device.copy_to_host()
-    
-    return v_left_host, v_right_host
+    return d_v_left, d_v_right
 
 
 @cuda.jit
@@ -258,23 +252,22 @@ def weno5_reconstruction_optimized_kernel(v_in, v_left_out, v_right_out, N, epsi
     v_right_out[i_global] = w0_r*p0_r + w1_r*p1_r + w2_r*p2_r
 
 
-def reconstruct_weno5_gpu_optimized(v_host, epsilon=1e-6):
+def reconstruct_weno5_gpu_optimized(d_v_in, epsilon=1e-6):
     """
     Interface Python pour la reconstruction WENO5 GPU optimisée.
     
     Args:
-        v_host (np.ndarray): Valeurs aux centres des cellules (CPU)
+        d_v_in (cuda.device_array): Valeurs aux centres des cellules (GPU)
         epsilon (float): Paramètre de régularisation
         
     Returns:
-        tuple: (v_left, v_right) - reconstructions aux interfaces (CPU)
+        tuple: (d_v_left, d_v_right) - reconstructions aux interfaces (GPU)
     """
-    N = len(v_host)
+    N = d_v_in.shape[0]
     
     # Allocation mémoire GPU
-    v_device = cuda.to_device(v_host)
-    v_left_device = cuda.device_array(N, dtype=np.float64)
-    v_right_device = cuda.device_array(N, dtype=np.float64)
+    d_v_left = cuda.device_array(N, dtype=d_v_in.dtype)
+    d_v_right = cuda.device_array(N, dtype=d_v_in.dtype)
     
     # Configuration optimisée des blocs 
     threads_per_block = 128  # Taille réduite pour la mémoire partagée
@@ -282,17 +275,12 @@ def reconstruct_weno5_gpu_optimized(v_host, epsilon=1e-6):
     
     # Lancement du kernel optimisé
     weno5_reconstruction_optimized_kernel[blocks_per_grid, threads_per_block](
-        v_device, v_left_device, v_right_device, N, epsilon
+        d_v_in, d_v_left, d_v_right, N, epsilon
     )
     
     # Application des conditions aux limites
     apply_boundary_conditions_kernel[blocks_per_grid, threads_per_block](
-        v_left_device, v_right_device, v_device, N
+        d_v_left, d_v_right, d_v_in, N
     )
     
-    # Synchronisation et copie vers CPU
-    cuda.synchronize()
-    v_left_host = v_left_device.copy_to_host()
-    v_right_host = v_right_device.copy_to_host()
-    
-    return v_left_host, v_right_host
+    return d_v_left, d_v_right

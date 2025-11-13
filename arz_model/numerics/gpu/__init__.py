@@ -5,4 +5,9 @@ Ce module contient les implémentations CUDA pour :
 - Reconstruction WENO5 (naïve et optimisée avec mémoire partagée)
 - Intégrateur SSP-RK3 
 - Utilitaires GPU (gestion mémoire, synchronisation)
+- GPUMemoryPool: Gestionnaire centralisé de mémoire GPU persistante
 """
+
+from .memory_pool import GPUMemoryPool
+
+__all__ = ['GPUMemoryPool']

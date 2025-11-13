@@ -23,69 +23,143 @@ def _deep_merge_dicts(base, update):
 class ModelParameters:
     """
     Loads, stores, and provides access to model parameters, handling unit conversions.
+    This class is being refactored to act as a bridge between the new Pydantic
+    configuration system and the legacy simulation engine code.
+
+    NEW (Pydantic-based initialization):
+        params = ModelParameters(config=my_network_simulation_config)
+    
+    LEGACY (YAML-based initialization):
+        params = ModelParameters()
+        params.load_from_yaml(...)
+
     Internal units are SI: meters (m), seconds (s), vehicles/meter (veh/m).
     """
-    def __init__(self):
+    def __init__(self, config: Optional['NetworkSimulationConfig'] = None, **kwargs):
+        """
+        Initializes parameters. If a Pydantic config object is provided,
+        it populates the parameters from it. Otherwise, initializes with defaults.
+        """
+        # Initialize all attributes to None or default values
+        self._initialize_defaults()
+
+        if config:
+            self.load_from_pydantic(config)
+        else:
+            # Allow legacy kwargs like num_lanes, Vmax_c_kmh for backward compatibility
+            if 'num_lanes' in kwargs:
+                self.num_lanes = kwargs['num_lanes']
+            if 'Vmax_c_kmh' in kwargs:
+                self.Vmax_c = {1: kwargs['Vmax_c_kmh'] * KMH_TO_MS}
+            if 'Vmax_m_kmh' in kwargs:
+                self.Vmax_m = {1: kwargs['Vmax_m_kmh'] * KMH_TO_MS}
+
+    def _initialize_defaults(self):
+        """Sets all parameter attributes to their default state before loading."""
         # Physical Parameters (SI units)
         self.alpha: float = None
-        self.V_creeping: float = None # m/s
-        self.rho_jam: float = None    # veh/m
+        self.V_creeping: float = None
+        self.rho_jam: float = None
         self.gamma_m: float = None
         self.gamma_c: float = None
-        self.K_m: float = None        # m/s (pressure units assumed velocity)
-        self.K_c: float = None        # m/s
-        self.tau_m: float = None      # s
-        self.tau_c: float = None      # s
-        self.Vmax_c: dict = {}      # m/s, keyed by road category index
-        self.Vmax_m: dict = {}      # m/s, keyed by road category index
-        self.flux_composition: dict = {} # { 'urban': {'m': %, 'c': %}, ...}
+        self.K_m: float = None
+        self.K_c: float = None
+        self.tau_m: float = None
+        self.tau_c: float = None
+        self.Vmax_c: dict = {1: 50.0 * KMH_TO_MS}
+        self.Vmax_m: dict = {1: 50.0 * KMH_TO_MS}
+        self.flux_composition: dict = {}
+        self.num_lanes = 1
 
         # Numerical Parameters
-        self.cfl_number: float = None
-        self.ghost_cells: int = None
-        self.num_ghost_cells: int = None  # Alias for compatibility
-        self.spatial_scheme: str = None  # 'first_order' or 'weno5'
-        self.time_scheme: str = None     # 'euler' or 'ssprk3'
-        self.ode_solver: str = None
-        self.ode_rtol: float = None
-        self.ode_atol: float = None
-        self.epsilon: float = None
+        self.cfl_number: float = 0.8
+        self.ghost_cells: int = 3
+        self.num_ghost_cells: int = 3
+        self.spatial_scheme: str = 'weno5'
+        self.numerical_flux: str = 'godunov'
+        self.time_scheme: str = 'ssprk3'
+        self.ode_solver: str = 'RK45'
+        self.ode_rtol: float = 1e-3
+        self.ode_atol: float = 1e-6
+        self.epsilon: float = 1e-6
 
-        # Scenario specific (can be added/overridden)
+        # Scenario specific
         self.scenario_name: str = "default"
-        self.N: int = None # Grid cells
-        self.xmin: float = None # Grid min coord (m)
-        self.xmax: float = None # Grid max coord (m)
-        self.t_final: float = None # Simulation end time (s)
-        self.output_dt: float = None # Output time interval (s)
-        self.initial_conditions: dict = {} # e.g., {'type': 'riemann', 'UL': ..., 'UR': ...}
-        self.boundary_conditions: dict = {} # e.g., {'left': {'type': 'inflow', ...}, 'right': ...}
-        self.road_quality_definition: list | str = None # List of R values or path to file
+        self.N: int = None
+        self.xmin: float = None
+        self.xmax: float = None
+        self.t_final: float = 3600.0
+        self.output_dt: float = 1.0
+        self.initial_conditions: dict = {}
+        self.boundary_conditions: dict = {}
+        self.road_quality_definition: list | str = None
 
         # Network parameters
-        self.has_network: bool = False  # Enable/disable network simulation
-        self.nodes: Optional[List[Dict]] = []     # Node configurations
-        self.network_segments: Optional[List[Dict]] = []  # Network segment configurations
-        self.enable_traffic_lights: bool = True   # Enable traffic lights
-        self.enable_creeping: bool = True         # Enable creeping behavior
-        self.enable_queue_management: bool = True # Enable queue management
-        self.max_queue_length: Optional[float] = 100.0      # Maximum queue length (m)
-        self.red_light_factor: Optional[float] = 0.1        # Flow reduction factor at red lights
-        self.rho_eq_m: Optional[float] = 0.01               # Equilibrium density motorcycles (veh/m)
-        self.rho_eq_c: Optional[float] = 0.01               # Equilibrium density cars (veh/m)
+        self.has_network: bool = False
+        self.nodes: Optional[List[Dict]] = []
+        self.network_segments: Optional[List[Dict]] = []
+        self.enable_traffic_lights: bool = True
+        self.enable_creeping: bool = True
+        self.enable_queue_management: bool = True
+        self.max_queue_length: Optional[float] = 100.0
+        self.red_light_factor: Optional[float] = 0.1
+        self.rho_eq_m: Optional[float] = 0.01
+        self.rho_eq_c: Optional[float] = 0.01
+        
+        # Behavioral coupling parameters
+        self.theta_moto_insertion: Optional[float] = 0.5
+        self.theta_moto_circulation: Optional[float] = 0.5
+        self.theta_moto_signalized: Optional[float] = 0.5
+        self.theta_car_signalized: Optional[float] = 0.5
+        self.theta_moto_priority: Optional[float] = 0.5
+        self.theta_car_priority: Optional[float] = 0.5
+        self.theta_moto_secondary: Optional[float] = 0.5
+        self.theta_car_secondary: Optional[float] = 0.5
 
-        # Behavioral coupling parameters (θ_k) - Kolb et al. (2018), Göttlich et al. (2021)
-        # Controls memory preservation of w variable through junctions
-        # θ ≈ 0: Strong adaptation (vehicles reset behavior)
-        # θ ≈ 1: Weak adaptation (vehicles preserve behavior)
-        self.theta_moto_insertion: Optional[float] = None       # Roundabout entry
-        self.theta_moto_circulation: Optional[float] = None     # Roundabout circulation
-        self.theta_moto_signalized: Optional[float] = None      # Traffic light (green)
-        self.theta_car_signalized: Optional[float] = None       # Traffic light (green)
-        self.theta_moto_priority: Optional[float] = None        # Priority road through
-        self.theta_car_priority: Optional[float] = None         # Priority road through
-        self.theta_moto_secondary: Optional[float] = None       # Stop/yield entry
-        self.theta_car_secondary: Optional[float] = None        # Stop/yield entry
+    def load_from_pydantic(self, config: 'NetworkSimulationConfig'):
+        """
+        Populates parameters from a Pydantic NetworkSimulationConfig object.
+        """
+        # Physics parameters
+        phys = config.physics
+        self.alpha = phys.alpha
+        self.V_creeping = phys.v_creeping_kmh * KMH_TO_MS
+        self.rho_jam = phys.rho_max
+        self.gamma_m = phys.gamma_m
+        self.gamma_c = phys.gamma_c
+        self.K_m = phys.k_m * KMH_TO_MS
+        self.K_c = phys.k_c * KMH_TO_MS
+        self.tau_m = phys.tau_m
+        self.tau_c = phys.tau_c
+        self.red_light_factor = phys.red_light_factor
+        self.enable_creeping = phys.enable_creeping
+        self.enable_queue_management = phys.enable_queue_management
+        self.max_queue_length = phys.max_queue_length_m
+        
+        self.Vmax_c = {1: phys.v_max_c_kmh * KMH_TO_MS}
+        self.Vmax_m = {1: phys.v_max_m_kmh * KMH_TO_MS}
+
+        # Numerical parameters
+        grid_cfg = config.grid
+        self.num_ghost_cells = grid_cfg.num_ghost_cells
+        self.ghost_cells = grid_cfg.num_ghost_cells
+        self.spatial_scheme = grid_cfg.spatial_scheme
+        self.numerical_flux = grid_cfg.numerical_flux
+        self.time_scheme = grid_cfg.time_scheme
+        self.epsilon = phys.epsilon
+
+        # Simulation parameters
+        time_cfg = config.time
+        self.t_final = time_cfg.t_final
+        self.output_dt = time_cfg.output_dt
+        self.cfl_number = time_cfg.cfl_factor
+        
+        # Network flag
+        self.has_network = True
+        
+        # These are now handled at the segment level
+        self.initial_conditions = {}
+        self.boundary_conditions = {}
 
     def load_from_yaml(self, base_config_path, scenario_config_path=None):
         """

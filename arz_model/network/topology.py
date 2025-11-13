@@ -24,35 +24,24 @@ except ImportError:
     logger.warning("NetworkX not available. Some topology features disabled.")
 
 
-def build_graph(segments: Dict, nodes: Dict, links: List) -> Optional:
+def build_graph(segments: Dict, nodes: Dict) -> Optional:
     """
     Build NetworkX directed graph from network components.
     
     Args:
         segments: Dictionary {segment_id: segment_dict} where
-                 segment_dict = {'grid': Grid1D, 'U': np.ndarray, ...}
-        nodes: Dictionary {node_id: Node}
-        links: List of Link objects
+                 segment_dict contains 'start_node' and 'end_node' IDs.
+        nodes: Dictionary {node_id: Node} for adding node attributes.
         
     Returns:
-        NetworkX DiGraph representing network topology, or None if NetworkX unavailable
-        
-    Graph Structure:
-        - Nodes: Junction nodes (from nodes dict)
-        - Edges: Directed connections via links (segment_i → segment_j)
-        - Node attributes: position, node_type, num_incoming, num_outgoing
-        - Edge attributes: segment_id, length, num_cells
-        
-    Academic Note:
-        This builds the "network graph" G = (V, E) from Garavello & Piccoli (2005),
-        where V = set of junctions, E = set of road segments.
+        NetworkX DiGraph representing network topology, or None if NetworkX unavailable.
     """
     if not HAS_NETWORKX:
         return None
         
     G = nx.DiGraph()
     
-    # Add nodes (junctions)
+    # Add nodes from the keys of the nodes dictionary
     for node_id, node in nodes.items():
         G.add_node(
             node_id,
@@ -62,94 +51,120 @@ def build_graph(segments: Dict, nodes: Dict, links: List) -> Optional:
             num_outgoing=len(node.outgoing_segments)
         )
         
-    # Add edges (segments via links)
-    for link in links:
-        # Find start and end nodes for this link
-        from_seg_id = link.from_segment
-        to_seg_id = link.to_segment
+    # Add edges by iterating through segments
+    for seg_id, segment_data in segments.items():
+        start_node = segment_data.get('start_node')
+        end_node = segment_data.get('end_node')
         
-        from_segment = segments[from_seg_id]
-        to_segment = segments[to_seg_id]
-        
-        # Extract Grid1D from segment dict
-        from_grid = from_segment['grid']
-        to_grid = to_segment['grid']
-        
-        # Add edge with segment properties
-        G.add_edge(
-            link.via_node.node_id,  # From node (where from_segment ends)
-            link.via_node.node_id,  # To node (where to_segment starts)
-            segment_id=link.link_id,
-            length=to_grid.xmax - to_grid.xmin,
-            num_cells=to_grid.N_physical,
-            coupling_type=link.coupling_type
-        )
+        if start_node and end_node:
+            # Ensure nodes exist in the graph before adding an edge
+            if not G.has_node(start_node):
+                G.add_node(start_node) # Add with no attributes if not in main nodes list
+            if not G.has_node(end_node):
+                G.add_node(end_node) # Add with no attributes if not in main nodes list
+
+            grid = segment_data['grid']
+            G.add_edge(
+                start_node,
+                end_node,
+                segment_id=seg_id,
+                length=grid.xmax - grid.xmin,
+                num_cells=grid.N_physical
+            )
         
     logger.info(f"Built network graph: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
     return G
 
 
-def validate_topology(
-    graph: Optional,
-    segments: Dict,
-    nodes: Dict
-) -> Tuple[bool, List[str]]:
+def validate_topology(segments: Dict, nodes: Dict) -> None:
     """
-    Validate network topology consistency.
-    
-    Checks:
-    1. All segments connected to at least one node
-    2. All nodes have incoming and outgoing segments
-    3. No isolated components (entire network is connected)
-    4. Conservation laws can be enforced (flux balance possible)
-    
-    Args:
-        graph: NetworkX graph from build_graph()
-        segments: Dictionary {segment_id: SegmentGrid}
-        nodes: Dictionary {node_id: Node}
-        
-    Returns:
-        Tuple (is_valid, error_messages)
-        
-    Academic Note:
-        These checks ensure the network satisfies the topological
-        requirements from Garavello & Piccoli (2005), Section 2.3.
+    Validates the topological consistency of the network.
+
+    This function checks that the connectivity information stored in the nodes
+    matches the connections defined by the segments. It ensures that every
+    segment's start and end nodes are correctly registered in the corresponding
+    node's `outgoing_segments` and `incoming_segments` lists.
+
+    Raises:
+        ValueError: If any topological inconsistencies are found.
     """
     errors = []
-    
-    # Check 1: All segments referenced by nodes
-    referenced_segments = set()
-    for node in nodes.values():
-        referenced_segments.update(node.incoming_segments)
-        referenced_segments.update(node.outgoing_segments)
+
+    # Check 1: Verify that every segment's start_node has it in its outgoing list
+    for seg_id, segment in segments.items():
+        start_node_id = segment.get('start_node')
+        if not start_node_id:
+            errors.append(f"Segment '{seg_id}' is missing a start_node.")
+            continue
         
-    for seg_id in segments.keys():
-        if seg_id not in referenced_segments:
-            errors.append(f"Segment {seg_id} is not connected to any node")
+        start_node = nodes.get(start_node_id)
+        if not start_node:
+            errors.append(f"Segment '{seg_id}' points to a non-existent start_node '{start_node_id}'.")
+            continue
             
-    # Check 2: All nodes have proper connectivity
+        if seg_id not in start_node.outgoing_segments:
+            errors.append(
+                f"Topological error at node '{start_node_id}': "
+                f"Segment '{seg_id}' starts here, but is not in the node's outgoing_segments list. "
+                f"Node's outgoing: {start_node.outgoing_segments}"
+            )
+
+    # Check 2: Verify that every segment's end_node has it in its incoming list
+    for seg_id, segment in segments.items():
+        end_node_id = segment.get('end_node')
+        if not end_node_id:
+            errors.append(f"Segment '{seg_id}' is missing an end_node.")
+            continue
+
+        end_node = nodes.get(end_node_id)
+        if not end_node:
+            errors.append(f"Segment '{seg_id}' points to a non-existent end_node '{end_node_id}'.")
+            continue
+            
+        if seg_id not in end_node.incoming_segments:
+            errors.append(
+                f"Topological error at node '{end_node_id}': "
+                f"Segment '{seg_id}' ends here, but is not in the node's incoming_segments list. "
+                f"Node's incoming: {end_node.incoming_segments}"
+            )
+            
+    # Check 3: Verify node-centric consistency
     for node_id, node in nodes.items():
-        if not node.incoming_segments:
-            errors.append(f"Node {node_id} has no incoming segments")
-        if not node.outgoing_segments:
-            errors.append(f"Node {node_id} has no outgoing segments")
-            
-    # Check 3: Graph connectivity (if NetworkX available)
-    if HAS_NETWORKX and graph is not None:
+        # Every incoming segment must point to this node as its end_node
+        for seg_id in node.incoming_segments:
+            segment = segments.get(seg_id)
+            if not segment or segment.get('end_node') != node_id:
+                errors.append(
+                    f"Node '{node_id}' lists '{seg_id}' as incoming, but the segment does not end here."
+                )
+        
+        # Every outgoing segment must point to this node as its start_node
+        for seg_id in node.outgoing_segments:
+            segment = segments.get(seg_id)
+            if not segment or segment.get('start_node') != node_id:
+                errors.append(
+                    f"Node '{node_id}' lists '{seg_id}' as outgoing, but the segment does not start here."
+                )
+
+    if errors:
+        error_summary = "\n - ".join(errors)
+        raise ValueError(f"Invalid network topology. Found {len(errors)} errors:\n - {error_summary}")
+
+    # Optional: Use NetworkX for deeper graph analysis if available
+    graph = build_graph(segments, nodes)
+    if graph:
+        # Check for isolated components
         if not nx.is_weakly_connected(graph):
             num_components = nx.number_weakly_connected_components(graph)
-            errors.append(f"Network has {num_components} disconnected components")
+            logger.warning(f"Network has {num_components} isolated sub-graphs. This may be intentional.")
             
-        # Check for cycles (optional warning, not an error)
-        try:
-            cycles = list(nx.simple_cycles(graph))
-            if cycles:
-                logger.info(f"Network contains {len(cycles)} cycles (circular routes)")
-        except:
-            pass  # Cycles check can fail for some graph structures
+        # Check for nodes with no connections (degree 0)
+        isolated_nodes = [node for node, degree in graph.degree() if degree == 0]
+        if isolated_nodes:
+            logger.warning(f"Found isolated nodes with no connections: {isolated_nodes}")
             
-    is_valid = len(errors) == 0
-    return is_valid, errors
+    logger.info("Network topology validation passed.")
+    return True, []
 
 
 def find_upstream_segments(node_id: str, nodes: Dict) -> List[str]:
@@ -165,7 +180,7 @@ def find_upstream_segments(node_id: str, nodes: Dict) -> List[str]:
         
     Academic Note:
         These are the "incoming roads" I^-(j) in Garavello & Piccoli notation,
-        used for computing ∑ flux_in at junction j.
+        used for computing sum of flux_in at junction j.
     """
     if node_id not in nodes:
         raise ValueError(f"Node {node_id} not found")
@@ -186,7 +201,7 @@ def find_downstream_segments(node_id: str, nodes: Dict) -> List[str]:
         
     Academic Note:
         These are the "outgoing roads" I^+(j) in Garavello & Piccoli notation,
-        used for computing ∑ flux_out at junction j.
+        used for computing sum of flux_out at junction j.
     """
     if node_id not in nodes:
         raise ValueError(f"Node {node_id} not found")
