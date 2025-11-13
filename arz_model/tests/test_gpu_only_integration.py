@@ -85,7 +85,7 @@ def test_simulation_runs_end_to_end_on_gpu():
     try:
         config = create_test_config()
         network_grid = NetworkGrid.from_config(config)
-        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True, device='cpu')
+        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)
         results = runner.run()
 
         # Verify results structure
@@ -145,7 +145,7 @@ def test_no_cpu_transfers_in_loop():
         cuda.devicearray.DeviceNDArray.copy_to_host = tracked_copy_to_host
         
         network_grid = NetworkGrid.from_config(config)
-        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True, device='cpu')
+        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)
         
         # Test 1: Check transfers during the main `run()` method
         transfer_log.clear()
@@ -192,7 +192,7 @@ def test_mass_conservation_gpu():
             # Mass = density * length
             initial_mass += ic_config.density * (segment['grid'].xmax - segment['grid'].xmin)
 
-    runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True, device='cpu')
+    runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)
     results = runner.run()
     
     # Calculate final mass from the results

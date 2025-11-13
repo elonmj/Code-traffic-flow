@@ -1,27 +1,26 @@
-2025-11-13 13:12:34,419 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
-2025-11-13 13:12:34,420 - INFO - Branch: main
-2025-11-13 13:12:34,420 - INFO - Target: arz_model/tests/
-2025-11-13 13:12:39,735 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
-2025-11-13 13:12:39,735 - INFO - PyTorch: 2.6.0+cu124
-2025-11-13 13:12:39,790 - INFO - CUDA available: True
-2025-11-13 13:12:39,812 - INFO - CUDA device: Tesla P100-PCIE-16GB
-2025-11-13 13:12:39,812 - INFO - 
+2025-11-13 15:39:07,150 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-11-13 15:39:07,150 - INFO - Branch: main
+2025-11-13 15:39:07,150 - INFO - Target: arz_model/tests/
+2025-11-13 15:39:11,511 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-11-13 15:39:11,512 - INFO - PyTorch: 2.6.0+cu124
+2025-11-13 15:39:11,558 - INFO - CUDA available: True
+2025-11-13 15:39:11,578 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-11-13 15:39:11,578 - INFO - 
 [STEP 1/4] Cloning repository from GitHub...
-2025-11-13 13:12:39,812 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
-2025-11-13 13:12:41,270 - INFO - [OK] Repository cloned successfully
-2025-11-13 13:12:41,270 - INFO - 
+2025-11-13 15:39:11,578 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-11-13 15:39:12,790 - INFO - [OK] Repository cloned successfully
+2025-11-13 15:39:12,790 - INFO - 
 [STEP 2/4] Installing dependencies...
-2025-11-13 13:12:41,270 - INFO - Installing pytest...
-2025-11-13 13:12:45,397 - INFO - [OK] Dependencies installed
-2025-11-13 13:12:45,397 - INFO - 
+2025-11-13 15:39:12,790 - INFO - Installing pytest...
+2025-11-13 15:39:16,577 - INFO - [OK] Dependencies installed
+2025-11-13 15:39:16,577 - INFO - 
 [STEP 3/4] Running Target...
-2025-11-13 13:12:47,476 - INFO - GPUMemoryPool __init__ signature: ('self', 'segment_ids', 'N_per_segment', 'ghost_cells', 'compute_capability')
-2025-11-13 13:12:47,476 - INFO - Target is a directory. Executing pytest...
-2025-11-13 13:12:47,476 - INFO - Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests
-2025-11-13 13:12:54,536 - WARNING - [WARNING] Target execution returned code: 1
-2025-11-13 13:12:54,536 - INFO - 
+2025-11-13 15:39:16,577 - INFO - Target is a directory. Executing pytest...
+2025-11-13 15:39:16,577 - INFO - Command: /usr/bin/python3 -m pytest -v /kaggle/working/Code-traffic-flow/arz_model/tests
+2025-11-13 15:39:23,724 - WARNING - [WARNING] Target execution returned code: 1
+2025-11-13 15:39:23,724 - INFO - 
 [STEP 4/4] Cleanup...
-2025-11-13 13:12:54,537 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
-2025-11-13 13:12:54,544 - INFO - [OK] Repository cleaned up.
-2025-11-13 13:12:54,544 - INFO - 
+2025-11-13 15:39:23,724 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
+2025-11-13 15:39:23,732 - INFO - [OK] Repository cleaned up.
+2025-11-13 15:39:23,732 - INFO - 
 [FINAL] Test workflow completed

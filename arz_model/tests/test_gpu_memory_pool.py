@@ -58,7 +58,7 @@ class TestGPUMemoryPoolInitialization:
     
     def test_valid_initialization(self, simple_config):
         """Test successful initialization with valid inputs."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         # Check basic attributes
         assert pool.segment_ids == simple_config['segment_ids']
@@ -99,7 +99,7 @@ class TestGPUMemoryPoolInitialization:
     def test_streams_configuration(self, simple_config):
         """Test CUDA streams configuration."""
         # Test with streams enabled
-        pool_with_streams = GPUMemoryPool(**simple_config, compute_capability=(6,0), device='cpu')
+        pool_with_streams = GPUMemoryPool(**simple_config, compute_capability=(6,0))
         assert pool_with_streams.enable_streams is True
         assert len(pool_with_streams.streams) == 2
         for stream in pool_with_streams.streams.values():
@@ -107,7 +107,7 @@ class TestGPUMemoryPoolInitialization:
         pool_with_streams.cleanup()
         
         # Test with streams disabled
-        pool_no_streams = GPUMemoryPool(**simple_config, compute_capability=(2,0), device='cpu')
+        pool_no_streams = GPUMemoryPool(**simple_config, compute_capability=(2,0))
         assert pool_no_streams.enable_streams is False
         assert len(pool_no_streams.streams) == 0
         pool_no_streams.cleanup()
@@ -118,7 +118,7 @@ class TestGPUMemoryPoolAccess:
     
     def test_segment_state_access(self, simple_config):
         """Test zero-copy access to segment states."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         # Test valid access
         for seg_id in simple_config['segment_ids']:
@@ -138,7 +138,7 @@ class TestGPUMemoryPoolAccess:
     
     def test_road_quality_access(self, simple_config):
         """Test access to road quality arrays."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         # Test valid access
         for seg_id in simple_config['segment_ids']:
@@ -159,7 +159,7 @@ class TestGPUMemoryPoolAccess:
     def test_stream_access(self, simple_config):
         """Test CUDA stream access."""
         # Test with streams enabled
-        pool = GPUMemoryPool(**simple_config, compute_capability=(6,0), device='cpu')
+        pool = GPUMemoryPool(**simple_config, compute_capability=(6,0))
         
         for seg_id in simple_config['segment_ids']:
             stream = pool.get_stream(seg_id)
@@ -171,7 +171,7 @@ class TestGPUMemoryPoolAccess:
         pool.cleanup()
         
         # Test with streams disabled
-        pool_no_streams = GPUMemoryPool(**simple_config, compute_capability=(2,0), device='cpu')
+        pool_no_streams = GPUMemoryPool(**simple_config, compute_capability=(2,0))
         
         for seg_id in simple_config['segment_ids']:
             stream = pool_no_streams.get_stream(seg_id)
@@ -185,7 +185,7 @@ class TestGPUMemoryPoolInitialization:
     
     def test_state_initialization_full_array(self, simple_config):
         """Test initialization with full-sized arrays."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         seg_id = 'seg1'
         N_phys = simple_config['N_per_segment'][seg_id]
@@ -211,7 +211,7 @@ class TestGPUMemoryPoolInitialization:
     
     def test_state_initialization_physical_only(self, simple_config):
         """Test initialization with physical cells only."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         seg_id = 'seg1'
         N_phys = simple_config['N_per_segment'][seg_id]
@@ -241,7 +241,7 @@ class TestGPUMemoryPoolInitialization:
     
     def test_invalid_initialization(self, simple_config):
         """Test error handling for invalid initialization."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         # Invalid segment ID
         with pytest.raises(KeyError, match="not found"):
@@ -262,7 +262,7 @@ class TestGPUMemoryPoolCheckpointing:
     
     def test_synchronous_checkpoint(self, simple_config):
         """Test synchronous checkpointing."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         seg_id = 'seg1'
         N_phys = simple_config['N_per_segment'][seg_id]
@@ -283,7 +283,7 @@ class TestGPUMemoryPoolCheckpointing:
     
     def test_asynchronous_checkpoint(self, simple_config):
         """Test asynchronous checkpointing."""
-        pool = GPUMemoryPool(**simple_config, compute_capability=(6,0), device='cpu')
+        pool = GPUMemoryPool(**simple_config, compute_capability=(6,0))
         
         seg_id = 'seg1'
         N_phys = simple_config['N_per_segment'][seg_id]
@@ -307,7 +307,7 @@ class TestGPUMemoryPoolCheckpointing:
     
     def test_checkpoint_invalid_segment(self, simple_config):
         """Test checkpoint error handling."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         with pytest.raises(KeyError, match="not found"):
             pool.checkpoint_to_cpu('invalid_seg')
@@ -320,7 +320,7 @@ class TestGPUMemoryPoolStreams:
     
     def test_stream_synchronization(self, simple_config):
         """Test stream synchronization."""
-        pool = GPUMemoryPool(**simple_config, compute_capability=(6,0), device='cpu')
+        pool = GPUMemoryPool(**simple_config, compute_capability=(6,0))
         
         # This should not raise any errors
         pool.synchronize_all_streams()
@@ -329,7 +329,7 @@ class TestGPUMemoryPoolStreams:
     
     def test_no_streams_synchronization(self, simple_config):
         """Test synchronization when streams are disabled."""
-        pool = GPUMemoryPool(**simple_config, compute_capability=(2,0), device='cpu')
+        pool = GPUMemoryPool(**simple_config, compute_capability=(2,0))
         
         # This should use cuda.synchronize() instead
         pool.synchronize_all_streams()
@@ -342,7 +342,7 @@ class TestGPUMemoryPoolMonitoring:
     
     def test_memory_statistics(self, simple_config):
         """Test memory usage statistics."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         stats = pool.get_memory_stats()
         
@@ -362,7 +362,7 @@ class TestGPUMemoryPoolMonitoring:
     
     def test_string_representation(self, simple_config):
         """Test string representation."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         repr_str = repr(pool)
         assert 'GPUMemoryPool' in repr_str
@@ -378,7 +378,7 @@ class TestGPUMemoryPoolCleanup:
     
     def test_explicit_cleanup(self, simple_config):
         """Test explicit cleanup."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         # Verify resources are allocated
         assert len(pool.d_U_pool) > 0
@@ -397,7 +397,7 @@ class TestGPUMemoryPoolCleanup:
     
     def test_destructor_cleanup(self, simple_config):
         """Test cleanup via destructor."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         # Delete the pool - destructor should handle cleanup
         del pool
@@ -411,7 +411,7 @@ class TestGPUMemoryPoolIntegration:
     
     def test_multi_segment_workflow(self, complex_config):
         """Test complete workflow with multiple segments."""
-        pool = GPUMemoryPool(**complex_config, device='cpu')
+        pool = GPUMemoryPool(**complex_config)
         
         # Initialize all segments
         for seg_id in complex_config['segment_ids']:
@@ -448,7 +448,7 @@ class TestGPUMemoryPoolIntegration:
     
     def test_memory_persistence(self, simple_config):
         """Test that memory persists across operations."""
-        pool = GPUMemoryPool(**simple_config, device='cpu')
+        pool = GPUMemoryPool(**simple_config)
         
         seg_id = 'seg1'
         N_phys = simple_config['N_per_segment'][seg_id]
