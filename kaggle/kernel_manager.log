@@ -274,3 +274,14 @@
 2025-11-13 18:57:12,876 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-13 18:57:18,847 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
 2025-11-13 19:04:55,791 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-13 19:04:56,020 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-13 19:04:56,101 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-13 19:04:56,101 - kernel_manager - INFO -   M  rz_model/numerics/time_integration.py (Modified (staged))
+2025-11-13 19:04:56,103 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-13 19:04:56,103 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/generic-test-runner-kernel.log (Modified (unstaged))
+2025-11-13 19:04:56,104 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/test_log.txt (Modified (unstaged))
+2025-11-13 19:04:56,104 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-13 19:04:56,198 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-13 19:04:57,397 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-13 19:04:57,397 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-13 19:05:04,336 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
