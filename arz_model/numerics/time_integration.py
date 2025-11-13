@@ -1239,24 +1239,30 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     d_U1 = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype)
     d_U2 = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype)
 
+    # Configure kernel launch grid for RK stages
+    threadsperblock = (16, 16)  # 2D grid for state array (4 x N_total)
+    blockspergrid_x = (d_U_in.shape[0] + threadsperblock[0] - 1) // threadsperblock[0]
+    blockspergrid_y = (d_U_in.shape[1] + threadsperblock[1] - 1) // threadsperblock[1]
+    blockspergrid = (blockspergrid_x, blockspergrid_y)
+    
     # --- RK Stage 1 ---
     # L_U0 = L(U_n)
     L_U0 = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, gpu_pool, seg_id, current_time)
     # U_1 = U_n + dt * L(U_n)
-    ssp_rk3_stage_1_kernel(d_U_in, L_U0, dt, d_U1)
+    ssp_rk3_stage_1_kernel[blockspergrid, threadsperblock](d_U_in, L_U0, dt, d_U1)
 
     # --- RK Stage 2 ---
     # L_U1 = L(U_1)
     L_U1 = calculate_spatial_discretization_weno_gpu_native(d_U1, grid, params, gpu_pool, seg_id, current_time)
     # U_2 = (3/4)U_n + (1/4)U_1 + (1/4)dt * L(U_1)
-    ssp_rk3_stage_2_kernel(d_U_in, d_U1, L_U1, dt, d_U2)
+    ssp_rk3_stage_2_kernel[blockspergrid, threadsperblock](d_U_in, d_U1, L_U1, dt, d_U2)
 
     # --- RK Stage 3 ---
     # L_U2 = L(U_2)
     L_U2 = calculate_spatial_discretization_weno_gpu_native(d_U2, grid, params, gpu_pool, seg_id, current_time)
     # U_np1 = (1/3)U_n + (2/3)U_2 + (2/3)dt * L(U_2)
     d_U_out = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype) # Get a new array for the output
-    ssp_rk3_stage_3_kernel(d_U_in, d_U2, L_U2, dt, d_U_out)
+    ssp_rk3_stage_3_kernel[blockspergrid, threadsperblock](d_U_in, d_U2, L_U2, dt, d_U_out)
 
     # Release temporary arrays back to the pool for reuse
     gpu_pool.release_temp_array(d_U1)
