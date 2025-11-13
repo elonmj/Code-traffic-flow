@@ -292,7 +292,6 @@ class KernelManager:
 
 import os
 import sys
-import json
 import subprocess
 import shutil
 import logging
@@ -444,12 +443,11 @@ finally:
     # ========== STEP 4: CLEANUP ==========
     log_and_print("info", "\\n[STEP 4/4] Cleanup...")
     
-    # Create a dummy session summary for success detection
-    # A more robust solution would parse pytest output
-    summary = {{'status': 'completed', 'success': True}}
-    with open('/kaggle/working/session_summary.json', 'w') as f:
-        json.dump(summary, f, indent=2)
-    log_and_print("info", "Created dummy session_summary.json for monitoring.")
+    # Clean up the cloned repository
+    if os.path.exists(REPO_DIR):
+        log_and_print("info", f"Cleaning up cloned repository at {{REPO_DIR}}...")
+        shutil.rmtree(REPO_DIR)
+        log_and_print("info", "[OK] Repository cleaned up.")
 
     # Finalize logging
     log_and_print("info", "\\n[FINAL] Test workflow completed")
@@ -590,7 +588,7 @@ print("=" * 80)
             "TRACKING_SUCCESS: Training execution finished successfully",
             "TRACKING_SUCCESS: Repository cloned",
             "TRACKING_SUCCESS: Requirements installation completed",
-            "TRACKING_SUCCESS: Session summary created",
+            "[SUCCESS] Target executed successfully",
             "[SUCCESS] Validation completed successfully",
             "[OK] Training completed successfully!"
         ]
@@ -760,34 +758,9 @@ print("=" * 80)
                     except Exception as e:
                         print(f"[WARNING] Could not parse remote log: {e}")
 
-                # PRIORITY 2: Look for session_summary.json (COPIÉ ligne 1045-1068)
-                session_summary_found = False
-                for root, dirs, files in os.walk(temp_dir):
-                    if 'session_summary.json' in files:
-                        summary_path = os.path.join(root, 'session_summary.json')
-                        print(f"[SESSION_SUMMARY] Found session_summary.json at: {summary_path}")
-                        
-                        try:
-                            with open(summary_path, 'r', encoding='utf-8') as f:
-                                summary_data = json.load(f)
-                            
-                            status = summary_data.get('status', 'unknown')
-                            print(f"[STATUS] Session status: {status}")
-                            
-                            # Copy to persist directory
-                            shutil.copy2(summary_path, persist_dir / 'session_summary.json')
-                            
-                            if status == 'completed':
-                                print("[SUCCESS] session_summary.json indicates successful completion!")
-                                session_summary_found = True
-                                break
-                                
-                        except Exception as e:
-                            print(f"[WARNING] Could not parse session_summary.json: {e}")
-
                 # PRIORITY 3: Analyze other log files (COPIÉ ligne 1070-1093)
                 stdout_log_found = False
-                if not remote_log_found and not session_summary_found:
+                if not remote_log_found:
                     log_files = []
                     for file in os.listdir(temp_dir):
                         if file.endswith(('.log', '.txt')) and file not in ['log.txt', 'test_log.txt']:
@@ -812,9 +785,6 @@ print("=" * 80)
                 # Final decision (COPIÉ ligne 1095-1108)
                 if remote_log_found:
                     print("[CONFIRMED] Success confirmed via remote log (FileHandler)")
-                    return True
-                elif session_summary_found:
-                    print("[CONFIRMED] Success confirmed via session_summary.json")
                     return True
                 elif stdout_log_found:
                     print("[CONFIRMED] Success detected via fallback log analysis")

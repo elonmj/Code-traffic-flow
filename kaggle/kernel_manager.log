@@ -1322,3 +1322,7 @@
 2025-11-13 13:02:47,747 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-13 13:02:47,748 - kernel_manager - INFO - 📤 Pushing to remote branch: gpu-only-migration
 2025-11-13 13:02:54,838 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-13 13:12:37,889 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-13 13:12:37,967 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-13 13:12:38,100 - kernel_manager - INFO - ✅ Git repository is clean and up to date
+2025-11-13 13:27:04,323 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
