@@ -829,20 +829,16 @@ def solve_ode_step_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_ode: float, gr
        not hasattr(physics, 'calculate_relaxation_time_gpu'):
         raise NotImplementedError("GPU versions (_gpu suffix) of required physics functions are not available in the physics module.")
 
-    # --- Extract category-specific Vmax values ---
-    # Assuming categories 1, 2, 3 exist. Add error handling or defaults if needed.
-    try:
-        v_max_m_cat1 = params.physics.Vmax_m[1]
-        v_max_m_cat2 = params.physics.Vmax_m.get(2, params.physics.Vmax_m[1]) # Default cat 2 to 1 if missing
-        v_max_m_cat3 = params.physics.Vmax_m.get(3, params.physics.Vmax_m[1]) # Default cat 3 to 1 if missing
-
-        v_max_c_cat1 = params.physics.Vmax_c[1]
-        v_max_c_cat2 = params.physics.Vmax_c.get(2, params.physics.Vmax_c[1]) # Default cat 2 to 1 if missing
-        v_max_c_cat3 = params.physics.Vmax_c.get(3, params.physics.Vmax_c[1]) # Default cat 3 to 1 if missing
-    except KeyError as e:
-        raise ValueError(f"Missing required Vmax for category {e} in parameters (Vmax_m/Vmax_c dictionaries)") from e
-    except AttributeError as e:
-         raise AttributeError(f"Could not find Vmax_m or Vmax_c dictionaries in parameters object: {e}") from e
+    # --- Extract max speed values ---
+    # PhysicsConfig has single values for each vehicle type (no categories)
+    # Convert from km/h to m/s (divide by 3.6)
+    v_max_m_cat1 = params.v_max_m_kmh / 3.6
+    v_max_m_cat2 = params.v_max_m_kmh / 3.6
+    v_max_m_cat3 = params.v_max_m_kmh / 3.6
+    
+    v_max_c_cat1 = params.v_max_c_kmh / 3.6
+    v_max_c_cat2 = params.v_max_c_kmh / 3.6
+    v_max_c_cat3 = params.v_max_c_kmh / 3.6
 
 
     # --- 1. Allocate output array on GPU ---
@@ -866,16 +862,16 @@ def solve_ode_step_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_ode: float, gr
     _ode_step_kernel[blockspergrid, threadsperblock](
         d_U_in, d_U_out, dt_ode, d_R, grid.N_physical, grid.num_ghost_cells,
         # Pass all necessary parameters explicitly from the params object
-        # Pressure params
-        params.physics.alpha, params.physics.rho_jam, params.physics.K_m, params.physics.gamma_m, params.physics.K_c, params.physics.gamma_c,
+        # Pressure params (params is already PhysicsConfig, no .physics accessor needed)
+        params.alpha, params.rho_max, params.k_m, params.gamma_m, params.k_c, params.gamma_c,
         # Equilibrium speed params (base + extracted category Vmax)
-        params.physics.rho_jam, params.physics.V_creeping, # Note: rho_jam passed twice, once for pressure, once for eq speed
+        params.rho_max, params.v_creeping_kmh / 3.6, # Convert creeping speed from km/h to m/s
         v_max_m_cat1, v_max_m_cat2, v_max_m_cat3,
         v_max_c_cat1, v_max_c_cat2, v_max_c_cat3,
         # Relaxation times
-        params.physics.tau_m, params.physics.tau_c,
+        params.tau_m, params.tau_c,
         # Epsilon
-        params.physics.epsilon
+        params.epsilon
     )
     # cuda.synchronize() # No sync needed here, let subsequent steps handle it
 
