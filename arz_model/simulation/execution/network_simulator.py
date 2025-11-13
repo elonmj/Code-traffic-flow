@@ -41,10 +41,27 @@ class NetworkSimulator:
         self.t = 0.0
         self.time_step = 0
         
-        # Create simple params wrapper for legacy functions that expect ModelParameters
+        # Create params wrapper for legacy functions that expect ModelParameters
+        # Maps new PhysicsConfig attribute names to legacy parameter names
         class ParamsWrapper:
             def __init__(self, config):
-                self.physics = config.physics
+                phys = config.physics
+                
+                # Create a physics object with legacy attribute names
+                class LegacyPhysics:
+                    pass
+                
+                legacy = LegacyPhysics()
+                legacy.alpha = phys.alpha
+                legacy.rho_jam = phys.rho_max  # rho_max → rho_jam
+                legacy.epsilon = phys.epsilon
+                legacy.k_m = phys.k_m
+                legacy.gamma_m = phys.gamma_m
+                legacy.k_c = phys.k_c
+                legacy.gamma_c = phys.gamma_c
+                
+                self.physics = legacy
+                
         self.params = ParamsWrapper(config)
         
         if not self.quiet:
