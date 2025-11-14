@@ -570,14 +570,16 @@ except Exception as e:
 
             try:
                 status_response = self.api.kernels_status(f"{self.username}/{kernel_slug}")
-                status = status_response.status
+                # The response is an object with a 'status' attribute which is an enum.
+                # We convert the enum to a string for comparison.
+                status = str(status_response.status).lower()
                 self.logger.info(f"Current status: {status} (Elapsed: {int(elapsed_time)}s)")
 
-                if status == 'complete':
+                if 'complete' in status:
                     self.logger.info("✅ Kernel execution completed successfully.")
                     self._download_artifacts(kernel_slug)
                     return True
-                elif status in ['error', 'cancelled']:
+                elif 'error' in status or 'cancelled' in status:
                     self.logger.error(f"❌ Kernel execution failed with status: {status}")
                     self._download_artifacts(kernel_slug) # Download logs even on failure
                     return False

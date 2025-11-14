@@ -731,3 +731,27 @@
 2025-11-14 19:40:53,850 - kernel_manager - ERROR - Error checking kernel status: 'KaggleApi' object has no attribute 'kernel_status'
 2025-11-14 19:41:23,852 - kernel_manager - ERROR - Error checking kernel status: 'KaggleApi' object has no attribute 'kernel_status'
 2025-11-14 19:41:53,853 - kernel_manager - ERROR - Error checking kernel status: 'KaggleApi' object has no attribute 'kernel_status'
+2025-11-14 19:44:27,140 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-14 19:44:27,142 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-14 19:44:27,275 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-14 19:44:27,372 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-14 19:44:27,372 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-14 19:44:27,372 - kernel_manager - INFO -    M kaggle_runner/kernel_manager.py (Modified (unstaged))
+2025-11-14 19:44:27,373 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-14 19:44:27,438 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-14 19:44:28,233 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-14 19:44:28,233 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-14 19:44:36,372 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-14 19:44:36,372 - kernel_manager - INFO - Building kernel script...
+2025-11-14 19:44:36,376 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpf4q2re35
+2025-11-14 19:44:36,377 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-14 19:44:36,378 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-14 19:44:36,379 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-14 19:44:38,048 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-14 19:44:38,050 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-14 19:44:38,568 - kernel_manager - INFO - Current status: KernelWorkerStatus.QUEUED (Elapsed: 0s)
+2025-11-14 19:45:09,095 - kernel_manager - INFO - Current status: KernelWorkerStatus.RUNNING (Elapsed: 30s)
+2025-11-14 19:45:39,625 - kernel_manager - INFO - Current status: KernelWorkerStatus.COMPLETE (Elapsed: 61s)
+2025-11-14 19:46:10,148 - kernel_manager - INFO - Current status: KernelWorkerStatus.COMPLETE (Elapsed: 91s)
+2025-11-14 19:46:40,688 - kernel_manager - INFO - Current status: KernelWorkerStatus.COMPLETE (Elapsed: 122s)
+2025-11-14 19:47:11,234 - kernel_manager - INFO - Current status: KernelWorkerStatus.COMPLETE (Elapsed: 152s)
