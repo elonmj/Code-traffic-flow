@@ -134,7 +134,7 @@ def main():
     print("\n[PHASE 3] Initializing simulation runner...", flush=True)
     try:
         # The runner now requires both the grid and the config
-        runner = SimulationRunner(network_grid=network_grid, simulation_config=config)
+        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, debug=True)
         print("✅ Simulation runner initialized.", flush=True)
     except Exception as e:
         print(f"❌ Error initializing runner: {e}", flush=True)

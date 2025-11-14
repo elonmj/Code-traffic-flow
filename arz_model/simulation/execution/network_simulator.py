@@ -201,6 +201,14 @@ class NetworkSimulator:
             # 3. Apply network coupling on the GPU
             self.network_coupling.apply_coupling(self.config.physics)
 
+            # DEBUGGING BLOCK: Stop and dump state if dt collapses
+            if self.debug and stable_dt < 0.01 and self.time_step > 10:
+                print(f"!!! DEBUG: dt collapsed to {stable_dt:.6f} at t={self.t:.4f}s. Dumping state.", flush=True)
+                self._debug_dump_state("State at dt collapse")
+                # You might want to save the full state to a file here for later analysis
+                # For now, we just stop the simulation to inspect the log.
+                break
+
             # 4. Log data (requires transferring data from GPU to CPU)
             if self.time_step % max(1, int(self.config.time.output_dt / stable_dt)) == 0:
                 self._log_state()
