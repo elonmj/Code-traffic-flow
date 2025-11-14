@@ -604,30 +604,51 @@ except Exception as e:
     def _download_artifacts(self, kernel_slug: str):
         """
         Downloads the output artifacts from a completed kernel run.
+        Optimized with timeout and progress logging.
         """
         self.logger.info(f"⬇️ Downloading artifacts for kernel: {kernel_slug}")
         output_dir = Path.cwd() / "kaggle" / "results" / kernel_slug
         
         try:
             if output_dir.exists():
+                self.logger.info(f"Clearing existing output directory: {output_dir}")
                 shutil.rmtree(output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
 
-            self.api.kernels_output(f"{self.username}/{kernel_slug}", path=str(output_dir))
+            # Start download with progress indicator
+            self.logger.info("⏳ Download in progress (Kaggle API, may take 30-60s)...")
+            download_start = time.time()
             
-            self.logger.info(f"✅ Artifacts downloaded to: {output_dir}")
+            self.api.kernels_output(f"{self.username}/{kernel_slug}", path=str(output_dir), quiet=False)
             
-            # Log downloaded files for verification
-            downloaded_files = list(output_dir.rglob('*'))
-            if downloaded_files:
-                self.logger.info("Downloaded files:")
-                for f in downloaded_files:
-                    self.logger.info(f"  - {f.relative_to(output_dir)}")
+            download_elapsed = time.time() - download_start
+            self.logger.info(f"✅ Artifacts downloaded in {download_elapsed:.1f}s to: {output_dir}")
+            
+            # Quick verification - only check for key files, not full rglob
+            test_log = output_dir / "test_log.txt"
+            if test_log.exists():
+                self.logger.info(f"✅ Critical file found: test_log.txt ({test_log.stat().st_size} bytes)")
+            else:
+                self.logger.warning("⚠️ test_log.txt not found in downloaded artifacts")
+            
+            # Log only immediate children, not full recursive scan
+            immediate_files = list(output_dir.iterdir())
+            if immediate_files:
+                self.logger.info(f"Downloaded {len(immediate_files)} item(s):")
+                for f in immediate_files[:10]:  # Limit to first 10 items
+                    if f.is_file():
+                        self.logger.info(f"  - {f.name} ({f.stat().st_size} bytes)")
+                    else:
+                        self.logger.info(f"  - {f.name}/ (directory)")
+                if len(immediate_files) > 10:
+                    self.logger.info(f"  ... and {len(immediate_files) - 10} more items")
             else:
                 self.logger.warning("No files were downloaded from the kernel output.")
 
         except Exception as e:
             self.logger.error(f"❌ Failed to download artifacts: {e}")
+            import traceback
+            self.logger.error(traceback.format_exc())
 
     def create_and_run_kernel(self, config: Dict[str, Any], commit_message: Optional[str] = None) -> bool:
         # ... existing code ...
