@@ -140,10 +140,17 @@ class NetworkCouplingGPU:
             self.d_node_outgoing_offsets,
             self.d_segment_n_phys,
             self.d_segment_n_ghost,
-            params.p_m,
-            params.p_c,
-            params.v_m,
-            params.v_c,
+            # Pass all physics params required by the node solver
+            params.alpha,
+            params.rho_max,
+            params.epsilon,
+            params.k_m,
+            params.gamma_m,
+            params.k_c,
+            params.gamma_c,
+            params.v_max_m_ms,
+            params.v_max_c_ms,
+            params.v_creeping_ms,
             self.d_fluxes,  # Output array for fluxes
             *self.gpu_pool.get_all_segment_states_tuple()
         )
@@ -169,7 +176,9 @@ def _apply_coupling_kernel(
     node_outgoing_offsets,
     segment_n_phys,
     segment_n_ghost,
-    p_m, p_c, v_m, v_c,
+    # Physics parameters now passed directly
+    alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c,
+    v_max_m, v_max_c, v_creeping,
     d_fluxes_out,
     *d_U_segments
 ):
@@ -214,7 +223,11 @@ def _apply_coupling_kernel(
             U_L_c[i, 1] = d_U[3, last_idx]
 
         # --- 3. Solve for the intermediate state (fluxes) ---
-        flux_m, flux_c = solve_node_fluxes_gpu(U_L_m, U_L_c, num_incoming, p_m, p_c, v_m, v_c)
+        flux_m, flux_c = solve_node_fluxes_gpu(
+            U_L_m, U_L_c, num_incoming, num_outgoing,
+            alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c,
+            v_max_m, v_max_c, v_creeping
+        )
 
         # --- 4. Apply the resulting state to the ghost cells of outgoing segments ---
         for i in range(num_outgoing):
