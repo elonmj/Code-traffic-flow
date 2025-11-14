@@ -27,4 +27,7 @@ ecoles.md
 _arxiv/
 _arxiv/*
 
+# Ignore Kaggle results
+kaggle/results/
+
 
