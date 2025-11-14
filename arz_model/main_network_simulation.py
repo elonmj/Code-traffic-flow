@@ -56,6 +56,8 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
         x_min=0.0,
         x_max=1000.0,
         N=100,
+        start_node=None,  # No upstream node (boundary inflow)
+        end_node="node1",  # Connects to node1
         initial_conditions=ICConfig(config=UniformIC(density=50.0, velocity=40.0)),  # 50 veh/km, 40 km/h
         boundary_conditions=BoundaryConditionsConfig(
             left=InflowBC(density=50.0, velocity=40.0),  # Inflow from outside: 50 veh/km, 40 km/h
@@ -68,6 +70,8 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
         x_min=0.0,
         x_max=1000.0,
         N=100,
+        start_node="node1",  # Connects from node1
+        end_node=None,  # No downstream node (boundary outflow)
         initial_conditions=ICConfig(config=UniformIC(density=20.0, velocity=50.0)),  # 20 veh/km, 50 km/h
         boundary_conditions=BoundaryConditionsConfig(
             left=OutflowBC(density=20.0, velocity=50.0), # This will be overridden by the node

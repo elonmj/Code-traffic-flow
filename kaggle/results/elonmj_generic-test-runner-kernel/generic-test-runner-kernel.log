@@ -1,71 +1,115 @@
-[{"stream_name":"stdout","time":0.621692891,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.621762436,"data":"GENERIC_TEST_MAIN_NETWORK_SIMULATION_PY\n"}
-,{"stream_name":"stdout","time":0.621767918,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.621771593,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
-,{"stream_name":"stdout","time":0.621775098,"data":"Branch: main\n"}
-,{"stream_name":"stdout","time":0.621778754,"data":"Target: arz_model/main_network_simulation.py\n"}
-,{"stream_name":"stdout","time":6.6106945459999995,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
-,{"stream_name":"stdout","time":6.610804699,"data":"PyTorch: 2.6.0+cu124\n"}
-,{"stream_name":"stdout","time":6.657836948,"data":"CUDA available: True\n"}
-,{"stream_name":"stdout","time":6.680234928,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
-,{"stream_name":"stdout","time":6.680279276,"data":"\n"}
-,{"stream_name":"stdout","time":6.6802856760000004,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
-,{"stream_name":"stdout","time":6.68048681,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
-,{"stream_name":"stdout","time":7.859130035,"data":"[OK] Repository cloned successfully\n"}
-,{"stream_name":"stdout","time":7.859179355,"data":"\n"}
-,{"stream_name":"stdout","time":7.859194904,"data":"[STEP 2/4] Installing dependencies...\n"}
-,{"stream_name":"stdout","time":7.859315348,"data":"Installing pytest...\n"}
-,{"stream_name":"stdout","time":12.255864982,"data":"[OK] Dependencies installed\n"}
-,{"stream_name":"stdout","time":12.255894046,"data":"\n"}
-,{"stream_name":"stdout","time":12.255898647,"data":"[STEP 3/4] Running Target...\n"}
-,{"stream_name":"stdout","time":12.255903712,"data":"Target is a file. Executing script...\n"}
-,{"stream_name":"stdout","time":12.255984523,"data":"Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py\n"}
-,{"stream_name":"stdout","time":17.562870454,"data":"\n"}
-,{"stream_name":"stdout","time":17.562899729,"data":"======================================================================\n"}
-,{"stream_name":"stdout","time":17.562904595,"data":"=== SCRIPT MAIN STARTING ===\n"}
-,{"stream_name":"stdout","time":17.562908851,"data":"======================================================================\n"}
-,{"stream_name":"stdout","time":17.562912367,"data":"\n"}
-,{"stream_name":"stdout","time":17.562915739,"data":"======================================================================\n"}
-,{"stream_name":"stdout","time":17.562919098,"data":"=== DÉBUT DU SCRIPT main_network_simulation.py ===\n"}
-,{"stream_name":"stdout","time":17.562923417,"data":"======================================================================\n"}
-,{"stream_name":"stdout","time":17.56292689,"data":"======================================================\n"}
-,{"stream_name":"stdout","time":17.56293031,"data":"= Full Network Simulation Execution (GPU-Only/Pydantic) =\n"}
-,{"stream_name":"stdout","time":17.562933757,"data":"======================================================\n"}
-,{"stream_name":"stdout","time":17.562937199,"data":"\n"}
-,{"stream_name":"stdout","time":17.5629405,"data":"[PHASE 1] Defining simulation configuration...\n"}
-,{"stream_name":"stdout","time":17.562944027,"data":"   - Creating Pydantic config for a two-segment corridor...\n"}
-,{"stream_name":"stdout","time":17.564249074,"data":"   - Pydantic config created.\n"}
-,{"stream_name":"stdout","time":17.564285197,"data":"✅ Network configuration defined successfully.\n"}
-,{"stream_name":"stdout","time":17.564291074,"data":"\n"}
-,{"stream_name":"stdout","time":17.564295289,"data":"[PHASE 2] Building NetworkGrid from Pydantic config...\n"}
-,{"stream_name":"stdout","time":17.564410865,"data":"[DEBUG] add_segment_from_config called for segment: seg1\n"}
-,{"stream_name":"stdout","time":17.564485725,"data":"[DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=50.0, velocity=40.0)\n"}
-,{"stream_name":"stdout","time":17.564497428,"data":"[DEBUG] seg_config.initial_conditions type = \u003cclass 'arz_model.config.ic_config.ICConfig'\u003e\n"}
-,{"stream_name":"stdout","time":17.564502324,"data":"[DEBUG] IC is NOT None, proceeding with application...\n"}
-,{"stream_name":"stdout","time":17.564505585,"data":"[DEBUG] ic_config = config=UniformIC(type='uniform', density=50.0, velocity=40.0)\n"}
-,{"stream_name":"stdout","time":17.564511618,"data":"[DEBUG] ic extracted = type='uniform' density=50.0 velocity=40.0\n"}
-,{"stream_name":"stdout","time":17.564516023,"data":"[DEBUG] ic type = \u003cclass 'arz_model.config.ic_config.UniformIC'\u003e\n"}
-,{"stream_name":"stdout","time":17.564520015,"data":"[DEBUG] IC has density and velocity attributes\n"}
-,{"stream_name":"stdout","time":17.564523485,"data":"[DEBUG] density=50.0, velocity=40.0\n"}
-,{"stream_name":"stdout","time":17.564621456,"data":"❌ Error building NetworkGrid: 'PhysicsConfig' object has no attribute 'rho_jam'\n"}
-,{"stream_name":"stdout","time":17.564627887,"data":"\n"}
-,{"stream_name":"stdout","time":17.564631511,"data":"======================================================================\n"}
-,{"stream_name":"stdout","time":17.564635385,"data":"=== SCRIPT MAIN COMPLETED ===\n"}
-,{"stream_name":"stdout","time":17.56463912,"data":"======================================================================\n"}
-,{"stream_name":"stdout","time":17.794041685,"data":"[SUCCESS] Target executed successfully\n"}
-,{"stream_name":"stdout","time":17.794157379,"data":"\n"}
-,{"stream_name":"stdout","time":17.794165800000002,"data":"[STEP 4/4] Persisting results and cleaning up...\n"}
-,{"stream_name":"stdout","time":17.794317169,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
-,{"stream_name":"stdout","time":17.807259387,"data":"[OK] Repository cleaned up.\n"}
-,{"stream_name":"stdout","time":17.807279292,"data":"\n"}
-,{"stream_name":"stdout","time":17.807284817,"data":"[FINAL] Test workflow completed\n"}
-,{"stream_name":"stdout","time":17.807408759,"data":"\n"}
-,{"stream_name":"stdout","time":17.80742098,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":17.807425199,"data":"EXECUTION COMPLETED\n"}
-,{"stream_name":"stdout","time":17.807428927,"data":"Check /kaggle/working/test_log.txt for details.\n"}
-,{"stream_name":"stdout","time":17.80743424,"data":"================================================================================\n"}
-,{"stream_name":"stderr","time":21.980517623,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
-,{"stream_name":"stderr","time":21.980571622,"data":"  warn(\n"}
-,{"stream_name":"stderr","time":22.027925244,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
-,{"stream_name":"stderr","time":23.214382232,"data":"[NbConvertApp] Writing 301979 bytes to __results__.html\n"}
+[{"stream_name":"stdout","time":0.622973507,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.623044185,"data":"GENERIC_TEST_MAIN_NETWORK_SIMULATION_PY\n"}
+,{"stream_name":"stdout","time":0.623048549,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.623051612,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.62319732,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":0.623261242,"data":"Target: arz_model/main_network_simulation.py\n"}
+,{"stream_name":"stdout","time":6.542571502,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":6.542650972,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":6.593912635,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":6.615122315,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":6.615144656,"data":"\n"}
+,{"stream_name":"stdout","time":6.615149704,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":6.615304784,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":9.011934272,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":9.011962819,"data":"\n"}
+,{"stream_name":"stdout","time":9.011969388,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":9.0119731,"data":"Installing pytest...\n"}
+,{"stream_name":"stdout","time":13.322851024,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":13.322905358,"data":"\n"}
+,{"stream_name":"stdout","time":13.322914364,"data":"[STEP 3/4] Running Target...\n"}
+,{"stream_name":"stdout","time":13.323379982,"data":"Target is a file. Executing script...\n"}
+,{"stream_name":"stdout","time":13.32345253,"data":"Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py\n"}
+,{"stream_name":"stdout","time":18.672097612,"data":"\n"}
+,{"stream_name":"stdout","time":18.672130923,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":18.672136522,"data":"=== SCRIPT MAIN STARTING ===\n"}
+,{"stream_name":"stdout","time":18.672140768,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":18.672144848,"data":"\n"}
+,{"stream_name":"stdout","time":18.672148829,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":18.672152437,"data":"=== DÉBUT DU SCRIPT main_network_simulation.py ===\n"}
+,{"stream_name":"stdout","time":18.672157058,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":18.672161658,"data":"======================================================\n"}
+,{"stream_name":"stdout","time":18.672165812,"data":"= Full Network Simulation Execution (GPU-Only/Pydantic) =\n"}
+,{"stream_name":"stdout","time":18.672170229,"data":"======================================================\n"}
+,{"stream_name":"stdout","time":18.672174442,"data":"\n"}
+,{"stream_name":"stdout","time":18.672177905,"data":"[PHASE 1] Defining simulation configuration...\n"}
+,{"stream_name":"stdout","time":18.672181703,"data":"   - Creating Pydantic config for a two-segment corridor...\n"}
+,{"stream_name":"stdout","time":18.673543288,"data":"   - Pydantic config created.\n"}
+,{"stream_name":"stdout","time":18.673577863,"data":"✅ Network configuration defined successfully.\n"}
+,{"stream_name":"stdout","time":18.673581888,"data":"\n"}
+,{"stream_name":"stdout","time":18.673584206,"data":"[PHASE 2] Building NetworkGrid from Pydantic config...\n"}
+,{"stream_name":"stdout","time":18.673732715,"data":"[DEBUG] add_segment_from_config called for segment: seg1\n"}
+,{"stream_name":"stdout","time":18.673738341,"data":"[DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=50.0, velocity=40.0)\n"}
+,{"stream_name":"stdout","time":18.673742134,"data":"[DEBUG] seg_config.initial_conditions type = \u003cclass 'arz_model.config.ic_config.ICConfig'\u003e\n"}
+,{"stream_name":"stdout","time":18.67376774,"data":"[DEBUG] IC is NOT None, proceeding with application...\n"}
+,{"stream_name":"stdout","time":18.673828419,"data":"[DEBUG] ic_config = config=UniformIC(type='uniform', density=50.0, velocity=40.0)\n"}
+,{"stream_name":"stdout","time":18.673836423,"data":"[DEBUG] ic extracted = type='uniform' density=50.0 velocity=40.0\n"}
+,{"stream_name":"stdout","time":18.673840297,"data":"[DEBUG] ic type = \u003cclass 'arz_model.config.ic_config.UniformIC'\u003e\n"}
+,{"stream_name":"stdout","time":18.673844304,"data":"[DEBUG] IC has density and velocity attributes\n"}
+,{"stream_name":"stdout","time":18.67387146,"data":"[DEBUG] density=50.0, velocity=40.0\n"}
+,{"stream_name":"stdout","time":23.289450836,"data":"[IC APPLIED] Segment seg1:\n"}
+,{"stream_name":"stdout","time":23.289489136,"data":"   ρ_total = 50.0 veh/km → 0.050000 veh/m\n"}
+,{"stream_name":"stdout","time":23.289496171,"data":"   v = 40.0 km/h → 11.111 m/s\n"}
+,{"stream_name":"stdout","time":23.2895009,"data":"   α = 0.600 → ρ_m=0.030000, ρ_c=0.020000\n"}
+,{"stream_name":"stdout","time":23.289505135,"data":"   U[0] (ρ_m): min=0.030000, max=0.030000, mean=0.030000\n"}
+,{"stream_name":"stdout","time":23.289512473,"data":"   U[1] (w_m): min=11.331611, max=11.331611, mean=11.331611\n"}
+,{"stream_name":"stdout","time":23.289532175,"data":"   U[2] (ρ_c): min=0.020000, max=0.020000, mean=0.020000\n"}
+,{"stream_name":"stdout","time":23.289624996,"data":"   U[3] (w_c): min=11.736111, max=11.736111, mean=11.736111\n"}
+,{"stream_name":"stdout","time":23.289641969,"data":"[DEBUG] Final U array for seg1:\n"}
+,{"stream_name":"stdout","time":23.28964641,"data":"   U shape: (4, 106)\n"}
+,{"stream_name":"stdout","time":23.289650065,"data":"   U[0] (ρ_m): min=0.030000, max=0.030000\n"}
+,{"stream_name":"stdout","time":23.289654085,"data":"   U[1] (w_m): min=11.331611, max=11.331611\n"}
+,{"stream_name":"stdout","time":23.289657308,"data":"   U[2] (ρ_c): min=0.020000, max=0.020000\n"}
+,{"stream_name":"stdout","time":23.289677505,"data":"   U[3] (w_c): min=11.736111, max=11.736111\n"}
+,{"stream_name":"stdout","time":23.289831174,"data":"[DEBUG] add_segment_from_config called for segment: seg2\n"}
+,{"stream_name":"stdout","time":23.289857309,"data":"[DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=20.0, velocity=50.0)\n"}
+,{"stream_name":"stdout","time":23.28986208,"data":"[DEBUG] seg_config.initial_conditions type = \u003cclass 'arz_model.config.ic_config.ICConfig'\u003e\n"}
+,{"stream_name":"stdout","time":23.28991618,"data":"[DEBUG] IC is NOT None, proceeding with application...\n"}
+,{"stream_name":"stdout","time":23.289959082,"data":"[DEBUG] ic_config = config=UniformIC(type='uniform', density=20.0, velocity=50.0)\n"}
+,{"stream_name":"stdout","time":23.289986719,"data":"[DEBUG] ic extracted = type='uniform' density=20.0 velocity=50.0\n"}
+,{"stream_name":"stdout","time":23.290020917,"data":"[DEBUG] ic type = \u003cclass 'arz_model.config.ic_config.UniformIC'\u003e\n"}
+,{"stream_name":"stdout","time":23.290026292,"data":"[DEBUG] IC has density and velocity attributes\n"}
+,{"stream_name":"stdout","time":23.290031099,"data":"[DEBUG] density=20.0, velocity=50.0\n"}
+,{"stream_name":"stdout","time":23.290154656,"data":"[IC APPLIED] Segment seg2:\n"}
+,{"stream_name":"stdout","time":23.290162938,"data":"   ρ_total = 20.0 veh/km → 0.020000 veh/m\n"}
+,{"stream_name":"stdout","time":23.290167144,"data":"   v = 50.0 km/h → 13.889 m/s\n"}
+,{"stream_name":"stdout","time":23.290170805,"data":"   α = 0.600 → ρ_m=0.012000, ρ_c=0.008000\n"}
+,{"stream_name":"stdout","time":23.290176096,"data":"   U[0] (ρ_m): min=0.012000, max=0.012000, mean=0.012000\n"}
+,{"stream_name":"stdout","time":23.29022806,"data":"   U[1] (w_m): min=13.924169, max=13.924169, mean=13.924169\n"}
+,{"stream_name":"stdout","time":23.290263738,"data":"   U[2] (ρ_c): min=0.008000, max=0.008000, mean=0.008000\n"}
+,{"stream_name":"stdout","time":23.290295401,"data":"   U[3] (w_c): min=13.988889, max=13.988889, mean=13.988889\n"}
+,{"stream_name":"stdout","time":23.290300125,"data":"[DEBUG] Final U array for seg2:\n"}
+,{"stream_name":"stdout","time":23.290304436,"data":"   U shape: (4, 106)\n"}
+,{"stream_name":"stdout","time":23.290373509,"data":"   U[0] (ρ_m): min=0.012000, max=0.012000\n"}
+,{"stream_name":"stdout","time":23.290381118,"data":"   U[1] (w_m): min=13.924169, max=13.924169\n"}
+,{"stream_name":"stdout","time":23.290385016,"data":"   U[2] (ρ_c): min=0.008000, max=0.008000\n"}
+,{"stream_name":"stdout","time":23.290388431,"data":"   U[3] (w_c): min=13.988889, max=13.988889\n"}
+,{"stream_name":"stdout","time":23.29044775,"data":"Finalizing network structure and validating topology...\n"}
+,{"stream_name":"stdout","time":23.290475543,"data":"❌ Error building NetworkGrid: Invalid network topology. Found 6 errors:\n"}
+,{"stream_name":"stdout","time":23.290482787,"data":" - Segment 'seg1' is missing a start_node.\n"}
+,{"stream_name":"stdout","time":23.290486792,"data":" - Segment 'seg2' is missing a start_node.\n"}
+,{"stream_name":"stdout","time":23.290491244,"data":" - Segment 'seg1' is missing an end_node.\n"}
+,{"stream_name":"stdout","time":23.290495124,"data":" - Segment 'seg2' is missing an end_node.\n"}
+,{"stream_name":"stdout","time":23.290499092,"data":" - Node 'node1' lists 'seg1' as incoming, but the segment does not end here.\n"}
+,{"stream_name":"stdout","time":23.290503414,"data":" - Node 'node1' lists 'seg2' as outgoing, but the segment does not start here.\n"}
+,{"stream_name":"stdout","time":23.290522059,"data":"\n"}
+,{"stream_name":"stdout","time":23.29052597,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":23.290529865,"data":"=== SCRIPT MAIN COMPLETED ===\n"}
+,{"stream_name":"stdout","time":23.290533206,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":23.668482567,"data":"[SUCCESS] Target executed successfully\n"}
+,{"stream_name":"stdout","time":23.668506623,"data":"\n"}
+,{"stream_name":"stdout","time":23.668510423,"data":"[STEP 4/4] Persisting results and cleaning up...\n"}
+,{"stream_name":"stdout","time":23.668513486,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
+,{"stream_name":"stdout","time":23.6814471,"data":"[OK] Repository cleaned up.\n"}
+,{"stream_name":"stdout","time":23.681517347,"data":"\n"}
+,{"stream_name":"stdout","time":23.681532103,"data":"[FINAL] Test workflow completed\n"}
+,{"stream_name":"stdout","time":23.681602191,"data":"\n"}
+,{"stream_name":"stdout","time":23.681607499,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":23.68161138,"data":"EXECUTION COMPLETED\n"}
+,{"stream_name":"stdout","time":23.681614726,"data":"Check /kaggle/working/test_log.txt for details.\n"}
+,{"stream_name":"stdout","time":23.681618005,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":27.800940261,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":27.800999805,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":27.892836147,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":29.118721832,"data":"[NbConvertApp] Writing 301979 bytes to __results__.html\n"}
 ]
