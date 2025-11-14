@@ -29,6 +29,11 @@ class PhysicsConfig(BaseModel):
     v_m: float = Field(0.0, description="Derived parameter v_m for motorcycles")
     v_c: float = Field(0.0, description="Derived parameter v_c for cars")
 
+    # Velocities in m/s explicitly exposed for GPU kernels
+    v_max_c_ms: float = Field(0.0, description="Max speed for cars (m/s)")
+    v_max_m_ms: float = Field(0.0, description="Max speed for motorcycles (m/s)")
+    v_creeping_ms: float = Field(0.0, description="Creeping speed in traffic jams (m/s)")
+
     rho_max: float = Field(200.0 / 1000.0, ge=0, description="Max density (veh/m)")
     v_creeping_kmh: float = Field(5.0, ge=0, description="Creeping speed in traffic jams (km/h)")
     default_road_quality: float = Field(1.0, ge=0, le=1, description="Default road quality index (0 to 1)")
@@ -49,10 +54,18 @@ class PhysicsConfig(BaseModel):
 
     def _calculate_derived_params(self):
         """Calculate derived physics parameters used in the Riemann solver."""
+        # Pressure-like terms
         self.p_m = self.k_m * (self.rho_max ** self.gamma_m)
         self.p_c = self.k_c * (self.rho_max ** self.gamma_c)
+
+        # Characteristic speeds in m/s (for solvers using generic names)
         self.v_m = self.v_max_m_kmh / 3.6
         self.v_c = self.v_max_c_kmh / 3.6
+
+        # Explicit m/s velocities with names used in GPU code
+        self.v_max_m_ms = self.v_max_m_kmh / 3.6
+        self.v_max_c_ms = self.v_max_c_kmh / 3.6
+        self.v_creeping_ms = self.v_creeping_kmh / 3.6
     
     def __repr__(self):
         return (f"PhysicsConfig(alpha={self.alpha}, v_max_c={self.v_max_c_kmh} km/h, "
@@ -70,10 +83,8 @@ if __name__ == '__main__':
     
     # Custom parameters
     physics_custom = PhysicsConfig(
-        lambda_m=1.5,
-        lambda_c=1.2,
-        V_max_m=50.0,
-        V_max_c=70.0,
+        v_max_m_kmh=50.0,
+        v_max_c_kmh=70.0,
         alpha=0.7
     )
     print(physics_custom)
