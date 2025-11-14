@@ -1,125 +1,49 @@
-[{"stream_name":"stdout","time":0.254178409,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.254234492,"data":"GENERIC_TEST_RUN_SIMULATION_SAVE_NPZ_PY\n"}
-,{"stream_name":"stdout","time":0.254242031,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.254247226,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
-,{"stream_name":"stdout","time":0.254403564,"data":"Branch: main\n"}
-,{"stream_name":"stdout","time":0.254411488,"data":"Target: run_simulation_save_npz.py\n"}
-,{"stream_name":"stdout","time":4.707187716,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
-,{"stream_name":"stdout","time":4.707335199,"data":"PyTorch: 2.6.0+cu124\n"}
-,{"stream_name":"stdout","time":4.768188231,"data":"CUDA available: True\n"}
-,{"stream_name":"stdout","time":4.790264416,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
-,{"stream_name":"stdout","time":4.790389248,"data":"\n"}
-,{"stream_name":"stdout","time":4.790396595,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
-,{"stream_name":"stdout","time":4.790581242,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
-,{"stream_name":"stdout","time":6.250122972,"data":"[OK] Repository cloned successfully\n"}
-,{"stream_name":"stdout","time":6.250153461,"data":"\n"}
-,{"stream_name":"stdout","time":6.250158472,"data":"[STEP 2/4] Installing dependencies...\n"}
-,{"stream_name":"stdout","time":6.250234656,"data":"Installing pytest...\n"}
-,{"stream_name":"stdout","time":10.5734896,"data":"[OK] Dependencies installed\n"}
-,{"stream_name":"stdout","time":10.573527521,"data":"\n"}
-,{"stream_name":"stdout","time":10.573533165,"data":"[STEP 3/4] Running Target...\n"}
-,{"stream_name":"stdout","time":10.573537705,"data":"Target is a file. Executing script...\n"}
-,{"stream_name":"stdout","time":10.573551989,"data":"Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/run_simulation_save_npz.py\n"}
-,{"stream_name":"stdout","time":15.427390369,"data":"============================================================\n"}
-,{"stream_name":"stdout","time":15.427427367,"data":"🚗 SIMULATION RÉSEAU GPU - SAUVEGARDE NPZ\n"}
-,{"stream_name":"stdout","time":15.427435576,"data":"============================================================\n"}
-,{"stream_name":"stdout","time":15.427441328,"data":"\n"}
-,{"stream_name":"stdout","time":15.427446981,"data":"[1/4] Création de la configuration...\n"}
-,{"stream_name":"stdout","time":15.428444148,"data":"   - Temps final: 60.0s\n"}
-,{"stream_name":"stdout","time":15.4284583,"data":"   - Segments: 2\n"}
-,{"stream_name":"stdout","time":15.428464173,"data":"   - Noeuds: 3\n"}
-,{"stream_name":"stdout","time":15.428470124,"data":"\n"}
-,{"stream_name":"stdout","time":15.428476388,"data":"[2/4] Initialisation de la grille réseau...\n"}
-,{"stream_name":"stdout","time":15.428736036,"data":"Finalizing network structure and validating topology...\n"}
-,{"stream_name":"stdout","time":15.429354147,"data":"✅ Network topology is valid.\n"}
-,{"stream_name":"stdout","time":15.429363461,"data":"\n"}
-,{"stream_name":"stdout","time":15.429369637,"data":"[3/4] Lancement de la simulation GPU...\n"}
-,{"stream_name":"stdout","time":15.649558628,"data":"   - Mode: Network Simulation\n"}
-,{"stream_name":"stdout","time":15.649596429,"data":"   - Device: GPU (Compute Capability: (6, 0))\n"}
-,{"stream_name":"stdout","time":15.649603944,"data":"   - Segments: 2\n"}
-,{"stream_name":"stdout","time":15.649628388,"data":"   - Nodes: 3\n"}
-,{"stream_name":"stdout","time":15.649631397,"data":"Initializing GPU Network Simulator...\n"}
-,{"stream_name":"stdout","time":15.649634027,"data":"  - Initializing GPU Memory Pool for network...\n"}
-,{"stream_name":"stdout","time":15.654021054,"data":"✅ GPUMemoryPool initialized:\n"}
-,{"stream_name":"stdout","time":15.654040837,"data":"   - Segments: 2\n"}
-,{"stream_name":"stdout","time":15.65404644,"data":"   - Total cells: 350\n"}
-,{"stream_name":"stdout","time":15.654049514,"data":"   - Ghost cells: 3\n"}
-,{"stream_name":"stdout","time":15.654052958,"data":"   - Compute Capability: (6, 0)\n"}
-,{"stream_name":"stdout","time":15.654058255,"data":"   - CUDA streams: Enabled\n"}
-,{"stream_name":"stdout","time":15.65406283,"data":"   - GPU memory allocated: 0.00 MB\n"}
-,{"stream_name":"stdout","time":15.656085709,"data":"    - GPU Memory Pool created. Allocated: 0.00 MB\n"}
-,{"stream_name":"stdout","time":15.656098965,"data":"  - Initializing GPU-native network coupling...\n"}
-,{"stream_name":"stdout","time":15.656104672,"data":"  - Preparing GPU topology for network coupling...\n"}
-,{"stream_name":"stdout","time":15.65915501,"data":"    - GPU topology prepared and transferred.\n"}
-,{"stream_name":"stdout","time":15.65916803,"data":"    - GPU Coupling Manager created.\n"}
-,{"stream_name":"stdout","time":15.659172228,"data":"✅ GPU Network Simulator initialized.\n"}
-,{"stream_name":"stdout","time":15.659176203,"data":"Starting GPU network simulation from t=0 to t=60.0s...\n"}
-,{"stream_name":"stderr","time":15.663140021,"data":"\rSimulating on GPU:   0%|          | 0/60.0 [00:00\u003c?, ?it/s]/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":15.663171082,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":16.974793059,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":16.974829224,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":17.227271881,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":17.227301306,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":17.359659283,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":17.35969169,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":17.614100487,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":17.614128008,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":17.675195981999998,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":17.675238875,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":18.183822693,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":18.183854636,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":18.25637638,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 13 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":18.256410964,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":18.320941433,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 13 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":18.320970618,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":18.394236364,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 13 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":18.394268081,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":18.465607658,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":18.465638666,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":18.470207586,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 10 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":18.470229255,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stderr","time":18.509838574,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
-,{"stream_name":"stderr","time":18.509862702,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
-,{"stream_name":"stdout","time":19.918731801,"data":"GPU network simulation finished.\n"}
-,{"stream_name":"stderr","time":19.918658073,"data":"\rSimulating on GPU:   2%|▏         | 1.0/60.0 [00:02\u003c02:48,  2.85s/it]\rSimulating on GPU:   2%|▏         | 1.0/60.0 [00:02\u003c02:48,  2.85s/it, Time=1.00s, dt=1.0000s]\rSimulating on GPU:   3%|▎         | 2.0/60.0 [00:02\u003c02:45,  2.85s/it, Time=2.00s, dt=1.0000s]\rSimulating on GPU:   5%|▌         | 3.0/60.0 [00:02\u003c02:42,  2.85s/it, Time=3.00s, dt=1.0000s]\rSimulating on GPU:   7%|▋         | 4.0/60.0 [00:02\u003c02:39,  2.85s/it, Time=4.00s, dt=1.0000s]\rSimulating on GPU:   8%|▊         | 5.0/60.0 [00:02\u003c02:36,  2.85s/it, Time=5.00s, dt=1.0000s]\rSimulating on GPU:  10%|█         | 6.0/60.0 [00:02\u003c00:20,  2.69it/s, Time=5.00s, dt=1.0000s]\rSimulating on GPU:  10%|█         | 6.0/60.0 [00:02\u003c00:20,  2.69it/s, Time=6.00s, dt=1.0000s]\rSimulating on GPU:  12%|█▏        | 7.0/60.0 [00:02\u003c00:19,  2.69it/s, Time=7.00s, dt=1.0000s]\rSimulating on GPU:  13%|█▎        | 8.0/60.0 [00:03\u003c00:19,  2.69it/s, Time=8.00s, dt=1.0000s]\rSimulating on GPU:  15%|█▌        | 9.0/60.0 [00:03\u003c00:18,  2.69it/s, Time=9.00s, dt=1.0000s]\rSimulating on GPU:  17%|█▋        | 10.0/60.0 [00:03\u003c00:18,  2.69it/s, Time=10.00s, dt=1.0000s]\rSimulating on GPU:  18%|█▊        | 11.0/60.0 [00:03\u003c00:08,  5.60it/s, Time=10.00s, dt=1.0000s]\rSimulating on GPU:  18%|█▊        | 11.0/60.0 [00:03\u003c00:08,  5.60it/s, Time=11.00s, dt=1.0000s]\rSimulating on GPU:  20%|██        | 12.0/60.0 [00:03\u003c00:08,  5.60it/s, Time=12.00s, dt=1.0000s]\rSimulating on GPU:  22%|██▏       | 13.0/60.0 [00:03\u003c00:08,  5.60it/s, Time=13.00s, dt=1.0000s]\rSimulating on GPU:  23%|██▎       | 14.0/60.0 [00:03\u003c00:08,  5.60it/s, Time=14.00s, dt=1.0000s]\rSimulating on GPU:  25%|██▌       | 15.0/60.0 [00:03\u003c00:08,  5.60it/s, Time=15.00s, dt=1.0000s]\rSimulating on GPU:  27%|██▋       | 16.0/60.0 [00:03\u003c00:04,  9.07it/s, Time=15.00s, dt=1.0000s]\rSimulating on GPU:  27%|██▋       | 16.0/60.0 [00:03\u003c00:04,  9.07it/s, Time=16.00s, dt=1.0000s]\rSimulating on GPU:  28%|██▊       | 17.0/60.0 [00:03\u003c00:04,  9.07it/s, Time=17.00s, dt=1.0000s]\rSimulating on GPU:  30%|███       | 18.0/60.0 [00:03\u003c00:04,  9.07it/s, Time=18.00s, dt=1.0000s]\rSimulating on GPU:  32%|███▏      | 19.0/60.0 [00:03\u003c00:04,  9.07it/s, Time=19.00s, dt=1.0000s]\rSimulating on GPU:  33%|███▎      | 20.0/60.0 [00:03\u003c00:04,  9.07it/s, Time=20.00s, dt=1.0000s]\rSimulating on GPU:  35%|███▌      | 21.0/60.0 [00:03\u003c00:02, 13.03it/s, Time=20.00s, dt=1.0000s]\rSimulating on GPU:  35%|███▌      | 21.0/60.0 [00:03\u003c00:02, 13.03it/s, Time=21.00s, dt=1.0000s]\rSimulating on GPU:  37%|███▋      | 22.0/60.0 [00:03\u003c00:02, 13.03it/s, Time=22.00s, dt=1.0000s]\rSimulating on GPU:  38%|███▊      | 23.0/60.0 [00:03\u003c00:02, 13.03it/s, Time=23.00s, dt=1.0000s]\rSimulating on GPU:  40%|████      | 24.0/60.0 [00:03\u003c00:02, 13.03it/s, Time=24.00s, dt=1.0000s]\rSimulating on GPU:  42%|████▏     | 25.0/60.0 [00:03\u003c00:02, 13.03it/s, Time=25.00s, dt=1.0000s]\rSimulating on GPU:  43%|████▎     | 26.0/60.0 [00:03\u003c00:01, 17.31it/s, Time=25.00s, dt=1.0000s]\rSimulating on GPU:  43%|████▎     | 26.0/60.0 [00:03\u003c00:01, 17.31it/s, Time=26.00s, dt=1.0000s]\rSimulating on GPU:  45%|████▌     | 27.0/60.0 [00:03\u003c00:01, 17.31it/s, Time=27.00s, dt=1.0000s]\rSimulating on GPU:  47%|████▋     | 28.0/60.0 [00:03\u003c00:01, 17.31it/s, Time=28.00s, dt=1.0000s]\rSimulating on GPU:  48%|████▊     | 29.0/60.0 [00:03\u003c00:01, 17.31it/s, Time=29.00s, dt=1.0000s]\rSimulating on GPU:  50%|█████     | 30.0/60.0 [00:03\u003c00:01, 17.31it/s, Time=30.00s, dt=1.0000s]\rSimulating on GPU:  52%|█████▏    | 31.0/60.0 [00:03\u003c00:01, 21.65it/s, Time=30.00s, dt=1.0000s]\rSimulating on GPU:  52%|█████▏    | 31.0/60.0 [00:03\u003c00:01, 21.65it/s, Time=31.00s, dt=1.0000s]\rSimulating on GPU:  53%|█████▎    | 32.0/60.0 [00:03\u003c00:01, 21.65it/s, Time=32.00s, dt=1.0000s]\rSimulating on GPU:  55%|█████▌    | 33.0/60.0 [00:03\u003c00:01, 21.65it/s, Time=33.00s, dt=1.0000s]\rSimulating on GPU:  57%|█████▋    | 34.0/60.0 [00:03\u003c00:01, 21.65it/s, Time=34.00s, dt=1.0000s]\rSimulating on GPU:  58%|█████▊    | 35.0/60.0 [00:03\u003c00:01, 21.65it/s, Time=35.00s, dt=1.0000s]\rSimulating on GPU:  60%|██████    | 36.0/60.0 [00:03\u003c00:00, 25.76it/s, Time=35.00s, dt=1.0000s]\rSimulating on GPU:  60%|██████    | 36.0/60.0 [00:03\u003c00:00, 25.76it/s, Time=36.00s, dt=1.0000s]\rSimulating on GPU:  62%|██████▏   | 37.0/60.0 [00:03\u003c00:00, 25.76it/s, Time=37.00s, dt=1.0000s]\rSimulating on GPU:  63%|██████▎   | 38.0/60.0 [00:03\u003c00:00, 25.76it/s, Time=38.00s, dt=1.0000s]\rSimulating on GPU:  65%|██████▌   | 39.0/60.0 [00:03\u003c00:00, 25.76it/s, Time=39.00s, dt=1.0000s]\rSimulating on GPU:  67%|██████▋   | 40.0/60.0 [00:03\u003c00:00, 25.76it/s, Time=40.00s, dt=1.0000s]\rSimulating on GPU:  68%|██████▊   | 41.0/60.0 [00:03\u003c00:00, 29.49it/s, Time=40.00s, dt=1.0000s]\rSimulating on GPU:  68%|██████▊   | 41.0/60.0 [00:03\u003c00:00, 29.49it/s, Time=41.00s, dt=1.0000s]\rSimulating on GPU:  70%|███████   | 42.0/60.0 [00:03\u003c00:00, 29.49it/s, Time=42.00s, dt=1.0000s]\rSimulating on GPU:  72%|███████▏  | 43.0/60.0 [00:03\u003c00:00, 29.49it/s, Time=43.00s, dt=1.0000s]\rSimulating on GPU:  73%|███████▎  | 44.0/60.0 [00:03\u003c00:00, 29.49it/s, Time=44.00s, dt=1.0000s]\rSimulating on GPU:  75%|███████▌  | 45.0/60.0 [00:03\u003c00:00, 29.49it/s, Time=45.00s, dt=1.0000s]\rSimulating on GPU:  77%|███████▋  | 46.0/60.0 [00:03\u003c00:00, 32.57it/s, Time=45.00s, dt=1.0000s]\rSimulating on GPU:  77%|███████▋  | 46.0/60.0 [00:03\u003c00:00, 32.57it/s, Time=46.00s, dt=1.0000s]\rSimulating on GPU:  78%|███████▊  | 47.0/60.0 [00:03\u003c00:00, 32.57it/s, Time=47.00s, dt=1.0000s]\rSimulating on GPU:  80%|████████  | 48.0/60.0 [00:03\u003c00:00, 32.57it/s, Time=48.00s, dt=1.0000s]\rSimulating on GPU:  82%|████████▏ | 49.0/60.0 [00:03\u003c00:00, 32.57it/s, Time=49.00s, dt=1.0000s]\rSimulating on GPU:  83%|████████▎ | 50.0/60.0 [00:04\u003c00:00, 32.57it/s, Time=50.00s, dt=1.0000s]\rSimulating on GPU:  85%|████████▌ | 51.0/60.0 [00:04\u003c00:00, 35.11it/s, Time=50.00s, dt=1.0000s]\rSimulating on GPU:  85%|████████▌ | 51.0/60.0 [00:04\u003c00:00, 35.11it/s, Time=51.00s, dt=1.0000s]\rSimulating on GPU:  87%|████████▋ | 52.0/60.0 [00:04\u003c00:00, 35.11it/s, Time=52.00s, dt=1.0000s]\rSimulating on GPU:  88%|████████▊ | 53.0/60.0 [00:04\u003c00:00, 35.11it/s, Time=53.00s, dt=1.0000s]\rSimulating on GPU:  90%|█████████ | 54.0/60.0 [00:04\u003c00:00, 35.11it/s, Time=54.00s, dt=1.0000s]\rSimulating on GPU:  92%|█████████▏| 55.0/60.0 [00:04\u003c00:00, 35.11it/s, Time=55.00s, dt=1.0000s]\rSimulating on GPU:  93%|█████████▎| 56.0/60.0 [00:04\u003c00:00, 36.84it/s, Time=55.00s, dt=1.0000s]\rSimulating on GPU:  93%|█████████▎| 56.0/60.0 [00:04\u003c00:00, 36.84it/s, Time=56.00s, dt=1.0000s]\rSimulating on GPU:  95%|█████████▌| 57.0/60.0 [00:04\u003c00:00, 36.84it/s, Time=57.00s, dt=1.0000s]\rSimulating on GPU:  97%|█████████▋| 58.0/60.0 [00:04\u003c00:00, 36.84it/s, Time=58.00s, dt=1.0000s]\rSimulating on GPU:  98%|█████████▊| 59.0/60.0 [00:04\u003c00:00, 36.84it/s, Time=59.00s, dt=1.0000s]\rSimulating on GPU: 100%|██████████| 60.0/60.0 [00:04\u003c00:00, 36.84it/s, Time=60.00s, dt=1.0000s]\rSimulating on GPU: 100%|██████████| 60.0/60.0 [00:04\u003c00:00, 14.10it/s, Time=60.00s, dt=1.0000s]\n"}
-,{"stream_name":"stdout","time":19.919053976,"data":"\n"}
-,{"stream_name":"stdout","time":19.919063085,"data":"[4/4] Sauvegarde des résultats...\n"}
-,{"stream_name":"stdout","time":19.919753571,"data":"✅ Sauvegardé: simulation_results/final_state_seg-1.npz\n"}
-,{"stream_name":"stdout","time":19.92017621,"data":"✅ Sauvegardé: simulation_results/final_state_seg-2.npz\n"}
-,{"stream_name":"stdout","time":19.920530766,"data":"✅ Sauvegardé: simulation_results/simulation_times.npz\n"}
-,{"stream_name":"stdout","time":19.922300803,"data":"✅ Sauvegardé: simulation_results/history_seg-1.npz\n"}
-,{"stream_name":"stdout","time":19.923700357,"data":"✅ Sauvegardé: simulation_results/history_seg-2.npz\n"}
-,{"stream_name":"stdout","time":19.924134702,"data":"✅ Sauvegardé: simulation_results/simulation_metadata.npz\n"}
-,{"stream_name":"stdout","time":19.924144322,"data":"\n"}
-,{"stream_name":"stdout","time":19.924148594000002,"data":"============================================================\n"}
-,{"stream_name":"stdout","time":19.924152572,"data":"✅ SIMULATION TERMINÉE\n"}
-,{"stream_name":"stdout","time":19.924166666,"data":"============================================================\n"}
-,{"stream_name":"stdout","time":19.924169434,"data":"\n"}
-,{"stream_name":"stdout","time":19.924171698,"data":"📊 Résultats:\n"}
-,{"stream_name":"stdout","time":19.924174099,"data":"   - Temps final: 60.00s\n"}
-,{"stream_name":"stdout","time":19.924176491,"data":"   - Nombre de pas: 60\n"}
-,{"stream_name":"stdout","time":19.924245449,"data":"   - Fichiers sauvegardés dans: /kaggle/working/Code-traffic-flow/simulation_results\n"}
-,{"stream_name":"stdout","time":19.924258121,"data":"\n"}
-,{"stream_name":"stdout","time":19.924262257,"data":"💡 Pour visualiser:\n"}
-,{"stream_name":"stdout","time":19.924266514,"data":"   1. Télécharge le dossier 'simulation_results/'\n"}
-,{"stream_name":"stdout","time":19.924270197,"data":"   2. Utilise un script de visualisation Python avec matplotlib\n"}
-,{"stream_name":"stdout","time":19.924286511,"data":"   3. Charge les fichiers NPZ avec np.load()\n"}
-,{"stream_name":"stdout","time":20.417033143,"data":"[SUCCESS] Target executed successfully\n"}
-,{"stream_name":"stdout","time":20.417099609,"data":"\n"}
-,{"stream_name":"stdout","time":20.417105786,"data":"[STEP 4/4] Persisting results and cleaning up...\n"}
-,{"stream_name":"stdout","time":20.417258212,"data":"Found results directory at /kaggle/working/Code-traffic-flow/simulation_results.\n"}
-,{"stream_name":"stdout","time":20.417384854,"data":"[OK] Moved results to /kaggle/working/simulation_results for persistence.\n"}
-,{"stream_name":"stdout","time":20.417491753,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
-,{"stream_name":"stdout","time":20.426050833,"data":"[OK] Repository cleaned up.\n"}
-,{"stream_name":"stdout","time":20.426075938,"data":"\n"}
-,{"stream_name":"stdout","time":20.426080741,"data":"[FINAL] Test workflow completed\n"}
-,{"stream_name":"stdout","time":20.426192761,"data":"\n"}
-,{"stream_name":"stdout","time":20.426203973,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":20.426208274,"data":"EXECUTION COMPLETED\n"}
-,{"stream_name":"stdout","time":20.42621212,"data":"Check /kaggle/working/test_log.txt for details.\n"}
-,{"stream_name":"stdout","time":20.426215901,"data":"================================================================================\n"}
-,{"stream_name":"stderr","time":24.384301925,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
-,{"stream_name":"stderr","time":24.384340612,"data":"  warn(\n"}
-,{"stream_name":"stderr","time":24.420862349,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
-,{"stream_name":"stderr","time":25.521897489,"data":"[NbConvertApp] Writing 301969 bytes to __results__.html\n"}
+[{"stream_name":"stdout","time":0.465113582,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.465188525,"data":"GENERIC_TEST_RUN_SIMULATION_SAVE_NPZ_PY\n"}
+,{"stream_name":"stdout","time":0.465195399,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.465199884,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.465204144,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":0.465210047,"data":"Target: run_simulation_save_npz.py\n"}
+,{"stream_name":"stdout","time":5.324955751,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.325083673,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.37419743,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.396267846,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.396315292,"data":"\n"}
+,{"stream_name":"stdout","time":5.396323579,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.396528372,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":7.081085227,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":7.081131118,"data":"\n"}
+,{"stream_name":"stdout","time":7.081136305,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":7.081191061,"data":"Installing pytest...\n"}
+,{"stream_name":"stdout","time":10.949084427,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":10.949121422,"data":"\n"}
+,{"stream_name":"stdout","time":10.949126193,"data":"[STEP 3/4] Running Target...\n"}
+,{"stream_name":"stdout","time":10.949129957,"data":"Target is a file. Executing script...\n"}
+,{"stream_name":"stdout","time":10.949133645,"data":"Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/run_simulation_save_npz.py\n"}
+,{"stream_name":"stderr","time":15.884317493,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":15.884383689,"data":"  File \"/kaggle/working/Code-traffic-flow/run_simulation_save_npz.py\", line 19, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":15.884392324,"data":"    from arz_model.simulation.runner import SimulationRunner\n"}
+,{"stream_name":"stderr","time":15.884396451,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/__init__.py\", line 4, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":15.884400908,"data":"    from . import runner\n"}
+,{"stream_name":"stderr","time":15.884404488,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 29, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":15.884408528,"data":"    from .execution.network_simulator import NetworkSimulator\n"}
+,{"stream_name":"stderr","time":15.884411985,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/execution/network_simulator.py\", line 45\n"}
+,{"stream_name":"stderr","time":15.884415882999999,"data":"    self.params = config.physics\n"}
+,{"stream_name":"stderr","time":15.88441954,"data":"IndentationError: unexpected indent\n"}
+,{"stream_name":"stdout","time":16.171716149,"data":"[WARNING] Target execution returned code: 1\n"}
+,{"stream_name":"stdout","time":16.171744274,"data":"\n"}
+,{"stream_name":"stdout","time":16.171749062,"data":"[STEP 4/4] Persisting results and cleaning up...\n"}
+,{"stream_name":"stdout","time":16.171776894,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
+,{"stream_name":"stdout","time":16.18112111,"data":"[OK] Repository cleaned up.\n"}
+,{"stream_name":"stdout","time":16.181149589,"data":"\n"}
+,{"stream_name":"stdout","time":16.181154427,"data":"[FINAL] Test workflow completed\n"}
+,{"stream_name":"stdout","time":16.181277966,"data":"\n"}
+,{"stream_name":"stdout","time":16.181284387,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":16.181288051,"data":"EXECUTION COMPLETED\n"}
+,{"stream_name":"stdout","time":16.181291614,"data":"Check /kaggle/working/test_log.txt for details.\n"}
+,{"stream_name":"stdout","time":16.181294977,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":20.148177576,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":20.148210147,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":20.186762994,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":21.241856684,"data":"[NbConvertApp] Writing 301969 bytes to __results__.html\n"}
 ]

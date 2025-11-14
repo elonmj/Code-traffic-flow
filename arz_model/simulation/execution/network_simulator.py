@@ -38,9 +38,9 @@ class NetworkSimulator:
         self.config = config
         self.quiet = quiet
         self.device = device
-    self.t = 0.0
-    self.time_step = 0
-    self.debug = debug
+        self.t = 0.0
+        self.time_step = 0
+        self.debug = debug
         
         self.params = config.physics
         
