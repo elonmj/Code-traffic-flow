@@ -480,8 +480,8 @@ try:
 
     # Clean up the cloned repository
     log_and_print("info", f"Cleaning up cloned repository at {{REPO_DIR}}...")
-    # shutil.rmtree(REPO_DIR)
-    log_and_print("info", "[OK] Repository cleanup skipped for debugging.")
+    shutil.rmtree(REPO_DIR)
+    log_and_print("info", "[OK] Repository cleaned up successfully.")
     
     log_and_print("info", "\\n[FINAL] Test workflow completed")
     
