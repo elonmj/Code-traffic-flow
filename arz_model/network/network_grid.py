@@ -139,11 +139,11 @@ class NetworkGrid:
                 p_m, p_c = calculate_pressure(
                     U[0, :], U[2, :],
                     self.simulation_config.physics.alpha,
-                    self.simulation_config.physics.rho_jam,
+                    self.simulation_config.physics.rho_max,
                     self.simulation_config.physics.epsilon,
-                    self.simulation_config.physics.K_m,
+                    self.simulation_config.physics.k_m,
                     self.simulation_config.physics.gamma_m,
-                    self.simulation_config.physics.K_c,
+                    self.simulation_config.physics.k_c,
                     self.simulation_config.physics.gamma_c
                 )
                 
