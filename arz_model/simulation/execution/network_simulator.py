@@ -77,9 +77,12 @@ class NetworkSimulator:
 
         from ...core.physics import calculate_pressure
         
+        print(f"[DEBUG_IC] Number of segments in config: {len(self.config.segments)}")
+        
         # Iterate through segments and apply their ICs from the config
         for seg_config in self.config.segments:
             seg_id = seg_config.id
+            print(f"[DEBUG_IC] Processing segment: {seg_id}")
             
             if seg_id not in self.network.segments:
                 if not self.quiet:
@@ -91,32 +94,55 @@ class NetworkSimulator:
             
             # Get IC configuration from the segment's config
             ic_config = seg_config.initial_conditions
+            print(f"[DEBUG_IC]   ic_config: {ic_config}")
+            print(f"[DEBUG_IC]   ic_config type: {type(ic_config)}")
+            
             if ic_config is None:
                 if not self.quiet:
                     print(f"    - Segment {seg_id} has no initial conditions defined. Skipping.")
                 continue
             
             # The actual IC data is nested inside the 'config' attribute
-            ic = ic_config.config
+            print(f"[DEBUG_IC]   Checking for 'config' attribute...")
+            if hasattr(ic_config, 'config'):
+                ic = ic_config.config
+                print(f"[DEBUG_IC]   ic (from .config): {ic}")
+                print(f"[DEBUG_IC]   ic type: {type(ic)}")
+            else:
+                ic = ic_config
+                print(f"[DEBUG_IC]   ic (direct): {ic}")
+                print(f"[DEBUG_IC]   ic type: {type(ic)}")
             
             # Apply based on IC type (currently handles UniformIC)
+            print(f"[DEBUG_IC]   Checking for density and velocity attributes...")
+            print(f"[DEBUG_IC]   hasattr(ic, 'density'): {hasattr(ic, 'density')}")
+            print(f"[DEBUG_IC]   hasattr(ic, 'velocity'): {hasattr(ic, 'velocity')}")
+            
             if hasattr(ic, 'density') and hasattr(ic, 'velocity'):
                 # UniformIC case
                 density = ic.density  # Total density in veh/km
                 velocity = ic.velocity  # Velocity in km/h
                 
+                print(f"[DEBUG_IC]   density={density}, velocity={velocity}")
+                
                 # Convert to model units (veh/m, m/s)
                 density_m = density / 1000.0  # veh/km -> veh/m
                 velocity_ms = velocity / 3.6  # km/h -> m/s
+                
+                print(f"[DEBUG_IC]   density_m={density_m:.6f}, velocity_ms={velocity_ms:.6f}")
                 
                 # Split between motorcycles and cars (using alpha ratio)
                 alpha = self.config.physics.alpha
                 rho_m = alpha * density_m
                 rho_c = (1.0 - alpha) * density_m
                 
+                print(f"[DEBUG_IC]   alpha={alpha}, rho_m={rho_m:.6f}, rho_c={rho_c:.6f}")
+                
                 # Set densities
                 U[0, :] = rho_m  # Motorcycle density
                 U[2, :] = rho_c  # Car density
+                
+                print(f"[DEBUG_IC]   After setting densities: U[0,5]={U[0,5]:.6f}, U[2,5]={U[2,5]:.6f}")
                 
                 # Calculate pressure using the correct parameter names from the Pydantic model
                 p_m, p_c = calculate_pressure(
@@ -130,9 +156,13 @@ class NetworkSimulator:
                     self.config.physics.gamma_c
                 )
                 
+                print(f"[DEBUG_IC]   Pressure calculated: p_m[5]={p_m[5]:.6f}, p_c[5]={p_c[5]:.6f}")
+                
                 # Set Lagrangian momentum w = v + p
                 U[1, :] = velocity_ms + p_m  # Motorcycle momentum
                 U[3, :] = velocity_ms + p_c  # Car momentum
+                
+                print(f"[DEBUG_IC]   After setting momentum: U[1,5]={U[1,5]:.6f}, U[3,5]={U[3,5]:.6f}")
                 
                 if not self.quiet:
                     print(f"    ✓ Applied IC to {seg_id}: ρ={density:.1f} veh/km, v={velocity:.1f} km/h")
