@@ -155,24 +155,10 @@ class NetworkCouplingGPU:
 
 # --- CUDA Kernel and Device Functions ---
 
-@cuda.jit(device=True)
-def _get_boundary_states(gids, offsets, d_U_flat, segment_offsets, segment_n_phys, segment_n_ghost, U_L_m, U_L_c):
-    """Device function to gather boundary states for a set of segments."""
-    count = 0
-    for i in range(gids.shape[0]):
-        gid = gids[i]
-        seg_offset = segment_offsets[gid]
-        n_phys = segment_n_phys[gid]
-        n_ghost = segment_n_ghost[gid]
-        
-        last_idx = seg_offset + n_ghost + n_phys - 1
-        
-        U_L_m[i, 0] = d_U_flat[0, last_idx]  # rho_m
-        U_L_m[i, 1] = d_U_flat[1, last_idx]  # w_m
-        U_L_c[i, 0] = d_U_flat[2, last_idx]  # rho_c
-        U_L_c[i, 1] = d_U_flat[3, last_idx]  # w_c
-        count += 1
-    return count
+# The _get_boundary_states function is no longer needed as the logic is
+# integrated into the main kernel and uses the new data structure.
+# By removing it, we prevent potential Numba compilation errors due to
+# its obsolete signature.
 
 @cuda.jit
 def _apply_coupling_kernel(
