@@ -207,7 +207,7 @@ class NetworkSimulator:
             self.t += stable_dt
             self.time_step += 1
             pbar.update(stable_dt)
-            pbar.set_postfix({"Time": f"{self.t:.2f}s", "dt": f"{stable_dt:.4f}s"})
+            pbar.set_postfix({"Time": f"{self.t:.2f}s", "dt": f"{stable_dt:.4f}s", "step": self.time_step})
 
         pbar.close()
         if not self.quiet:
