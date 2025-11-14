@@ -1,0 +1,232 @@
+[{"stream_name":"stdout","time":0.540769843,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.540835707,"data":"GENERIC_TEST_MAIN_NETWORK_SIMULATION_PY\n"}
+,{"stream_name":"stdout","time":0.540842071,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.540846714,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.540981551,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":0.54099136,"data":"Target: arz_model/main_network_simulation.py\n"}
+,{"stream_name":"stdout","time":5.656100384,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.656249853,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.705339095,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.726819302,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.727000249,"data":"\n"}
+,{"stream_name":"stdout","time":5.727007681,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.727059621,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":6.865866442,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":6.865925772,"data":"\n"}
+,{"stream_name":"stdout","time":6.86594647,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":6.865979369,"data":"Installing pytest...\n"}
+,{"stream_name":"stdout","time":10.863423402,"data":"Installing pydantic...\n"}
+,{"stream_name":"stdout","time":13.896748451,"data":"Installing tqdm...\n"}
+,{"stream_name":"stdout","time":16.864060508,"data":"Installing numba...\n"}
+,{"stream_name":"stdout","time":19.844010076,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":19.844090513,"data":"\n"}
+,{"stream_name":"stdout","time":19.844096717,"data":"[STEP 3/4] Running Target...\n"}
+,{"stream_name":"stdout","time":19.844542154,"data":"Target is a file. Executing script...\n"}
+,{"stream_name":"stdout","time":19.84460135,"data":"Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py\n"}
+,{"stream_name":"stdout","time":24.692571643,"data":"\n"}
+,{"stream_name":"stdout","time":24.692711742,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":24.692731685,"data":"=== SCRIPT MAIN STARTING ===\n"}
+,{"stream_name":"stdout","time":24.692811376999998,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":24.692865643,"data":"\n"}
+,{"stream_name":"stdout","time":24.692981314,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":24.693073447,"data":"=== DÉBUT DU SCRIPT main_network_simulation.py ===\n"}
+,{"stream_name":"stdout","time":24.69309462,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":24.693149659,"data":"======================================================\n"}
+,{"stream_name":"stdout","time":24.693247613,"data":"= Full Network Simulation Execution (GPU-Only/Pydantic) =\n"}
+,{"stream_name":"stdout","time":24.69331036,"data":"======================================================\n"}
+,{"stream_name":"stdout","time":24.693315776,"data":"\n"}
+,{"stream_name":"stdout","time":24.693458146,"data":"[PHASE 1] Defining simulation configuration...\n"}
+,{"stream_name":"stdout","time":24.693463829,"data":"- Creating Pydantic config for a two-segment corridor...\n"}
+,{"stream_name":"stdout","time":24.693784406,"data":"- Pydantic config created.\n"}
+,{"stream_name":"stdout","time":24.693882953,"data":"✅ Network configuration defined successfully.\n"}
+,{"stream_name":"stdout","time":24.693935104,"data":"\n"}
+,{"stream_name":"stdout","time":24.694026681,"data":"[PHASE 2] Building NetworkGrid from Pydantic config...\n"}
+,{"stream_name":"stdout","time":24.694144118,"data":"[DEBUG] add_segment_from_config called for segment: seg1\n"}
+,{"stream_name":"stdout","time":24.694202854,"data":"[DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=50.0, velocity=40.0)\n"}
+,{"stream_name":"stdout","time":24.694222365999998,"data":"[DEBUG] seg_config.initial_conditions type = \u003cclass 'arz_model.config.ic_config.ICConfig'\u003e\n"}
+,{"stream_name":"stdout","time":24.69429502,"data":"[DEBUG] IC is NOT None, proceeding with application...\n"}
+,{"stream_name":"stdout","time":24.694447707,"data":"[DEBUG] ic_config = config=UniformIC(type='uniform', density=50.0, velocity=40.0)\n"}
+,{"stream_name":"stdout","time":24.694512561,"data":"[DEBUG] ic extracted = type='uniform' density=50.0 velocity=40.0\n"}
+,{"stream_name":"stdout","time":24.694570238,"data":"[DEBUG] ic type = \u003cclass 'arz_model.config.ic_config.UniformIC'\u003e\n"}
+,{"stream_name":"stdout","time":24.69463431,"data":"[DEBUG] IC has density and velocity attributes\n"}
+,{"stream_name":"stdout","time":24.69472582,"data":"[DEBUG] density=50.0, velocity=40.0\n"}
+,{"stream_name":"stdout","time":29.073855302,"data":"[IC APPLIED] Segment seg1:\n"}
+,{"stream_name":"stdout","time":29.073921115,"data":"ρ_total = 50.0 veh/km → 0.050000 veh/m\n"}
+,{"stream_name":"stdout","time":29.074016399,"data":"v = 40.0 km/h → 11.111 m/s\n"}
+,{"stream_name":"stdout","time":29.074033225,"data":"α = 0.600 → ρ_m=0.030000, ρ_c=0.020000\n"}
+,{"stream_name":"stdout","time":29.074105954,"data":"U[0] (ρ_m): min=0.030000, max=0.030000, mean=0.030000\n"}
+,{"stream_name":"stdout","time":29.074248851,"data":"U[1] (w_m): min=11.331611, max=11.331611, mean=11.331611\n"}
+,{"stream_name":"stdout","time":29.074306763,"data":"U[2] (ρ_c): min=0.020000, max=0.020000, mean=0.020000\n"}
+,{"stream_name":"stdout","time":29.076195644,"data":"U[3] (w_c): min=11.736111, max=11.736111, mean=11.736111\n"}
+,{"stream_name":"stdout","time":29.076210074,"data":"[DEBUG] Final U array for seg1:\n"}
+,{"stream_name":"stdout","time":29.076214985,"data":"U shape: (4, 106)\n"}
+,{"stream_name":"stdout","time":29.076219127,"data":"U[0] (ρ_m): min=0.030000, max=0.030000\n"}
+,{"stream_name":"stdout","time":29.076224009,"data":"U[1] (w_m): min=11.331611, max=11.331611\n"}
+,{"stream_name":"stdout","time":29.076228429,"data":"U[2] (ρ_c): min=0.020000, max=0.020000\n"}
+,{"stream_name":"stdout","time":29.076232566,"data":"U[3] (w_c): min=11.736111, max=11.736111\n"}
+,{"stream_name":"stdout","time":29.076237441,"data":"[DEBUG] add_segment_from_config called for segment: seg2\n"}
+,{"stream_name":"stdout","time":29.076241301,"data":"[DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=20.0, velocity=50.0)\n"}
+,{"stream_name":"stdout","time":29.076245728,"data":"[DEBUG] seg_config.initial_conditions type = \u003cclass 'arz_model.config.ic_config.ICConfig'\u003e\n"}
+,{"stream_name":"stdout","time":29.076249943,"data":"[DEBUG] IC is NOT None, proceeding with application...\n"}
+,{"stream_name":"stdout","time":29.076255514,"data":"[DEBUG] ic_config = config=UniformIC(type='uniform', density=20.0, velocity=50.0)\n"}
+,{"stream_name":"stdout","time":29.076270994,"data":"[DEBUG] ic extracted = type='uniform' density=20.0 velocity=50.0\n"}
+,{"stream_name":"stdout","time":29.076273782,"data":"[DEBUG] ic type = \u003cclass 'arz_model.config.ic_config.UniformIC'\u003e\n"}
+,{"stream_name":"stdout","time":29.076276381,"data":"[DEBUG] IC has density and velocity attributes\n"}
+,{"stream_name":"stdout","time":29.076278761,"data":"[DEBUG] density=20.0, velocity=50.0\n"}
+,{"stream_name":"stdout","time":29.076281194,"data":"[IC APPLIED] Segment seg2:\n"}
+,{"stream_name":"stdout","time":29.076283679,"data":"ρ_total = 20.0 veh/km → 0.020000 veh/m\n"}
+,{"stream_name":"stdout","time":29.076286599,"data":"v = 50.0 km/h → 13.889 m/s\n"}
+,{"stream_name":"stdout","time":29.076289183,"data":"α = 0.600 → ρ_m=0.012000, ρ_c=0.008000\n"}
+,{"stream_name":"stdout","time":29.076291689,"data":"U[0] (ρ_m): min=0.012000, max=0.012000, mean=0.012000\n"}
+,{"stream_name":"stdout","time":29.076294234,"data":"U[1] (w_m): min=13.924169, max=13.924169, mean=13.924169\n"}
+,{"stream_name":"stdout","time":29.076296673,"data":"U[2] (ρ_c): min=0.008000, max=0.008000, mean=0.008000\n"}
+,{"stream_name":"stdout","time":29.076304532,"data":"U[3] (w_c): min=13.988889, max=13.988889, mean=13.988889\n"}
+,{"stream_name":"stdout","time":29.076306981,"data":"[DEBUG] Final U array for seg2:\n"}
+,{"stream_name":"stdout","time":29.07630952,"data":"U shape: (4, 106)\n"}
+,{"stream_name":"stdout","time":29.076311867,"data":"U[0] (ρ_m): min=0.012000, max=0.012000\n"}
+,{"stream_name":"stdout","time":29.076314323,"data":"U[1] (w_m): min=13.924169, max=13.924169\n"}
+,{"stream_name":"stdout","time":29.076316733,"data":"U[2] (ρ_c): min=0.008000, max=0.008000\n"}
+,{"stream_name":"stdout","time":29.076319183,"data":"U[3] (w_c): min=13.988889, max=13.988889\n"}
+,{"stream_name":"stdout","time":29.076321662,"data":"Finalizing network structure and validating topology...\n"}
+,{"stream_name":"stdout","time":29.076324116,"data":"Found isolated nodes with no connections: ['node1']\n"}
+,{"stream_name":"stdout","time":29.076326546,"data":"✅ Network topology is valid.\n"}
+,{"stream_name":"stdout","time":29.076328961,"data":"✅ NetworkGrid built successfully.\n"}
+,{"stream_name":"stdout","time":29.076331427,"data":"- Segments: ['seg1', 'seg2']\n"}
+,{"stream_name":"stdout","time":29.076333887,"data":"- Nodes: ['node1']\n"}
+,{"stream_name":"stdout","time":29.076336246,"data":"\n"}
+,{"stream_name":"stdout","time":29.076338571,"data":"[PHASE 3] Initializing simulation runner...\n"}
+,{"stream_name":"stdout","time":29.283156889,"data":"- Mode: Network Simulation\n"}
+,{"stream_name":"stdout","time":29.283251371,"data":"- Device: GPU (Compute Capability: (6, 0))\n"}
+,{"stream_name":"stdout","time":29.283684164,"data":"- Segments: 2\n"}
+,{"stream_name":"stdout","time":29.283699269,"data":"- Nodes: 1\n"}
+,{"stream_name":"stdout","time":29.283704143,"data":"Initializing GPU Network Simulator...\n"}
+,{"stream_name":"stdout","time":29.283708567,"data":"[DEBUG] GPU debug logging ENABLED\n"}
+,{"stream_name":"stdout","time":29.283713035,"data":"- Initializing GPU Memory Pool for network...\n"}
+,{"stream_name":"stdout","time":29.290531788,"data":"✅ GPUMemoryPool initialized:\n"}
+,{"stream_name":"stdout","time":29.290634357,"data":"- Segments: 2\n"}
+,{"stream_name":"stdout","time":29.290715625,"data":"- Total cells: 200\n"}
+,{"stream_name":"stdout","time":29.290824802,"data":"- Ghost cells: 3\n"}
+,{"stream_name":"stdout","time":29.290875928,"data":"- Compute Capability: (6, 0)\n"}
+,{"stream_name":"stdout","time":29.290972485,"data":"- CUDA streams: Enabled\n"}
+,{"stream_name":"stdout","time":29.291055401,"data":"- GPU memory allocated: 0.00 MB\n"}
+,{"stream_name":"stdout","time":29.292733893,"data":"- GPU Memory Pool created. Allocated: 0.00 MB\n"}
+,{"stream_name":"stdout","time":29.292843475,"data":"- Initializing GPU-native network coupling...\n"}
+,{"stream_name":"stdout","time":29.292919891,"data":"- Preparing GPU topology for network coupling...\n"}
+,{"stream_name":"stdout","time":29.295859294,"data":"- GPU topology prepared and transferred.\n"}
+,{"stream_name":"stdout","time":29.295937246,"data":"- GPU Coupling Manager created.\n"}
+,{"stream_name":"stdout","time":29.296012529,"data":"[DEBUG] Initial state (t=0)\n"}
+,{"stream_name":"stdout","time":29.296279098,"data":"Segment seg1: density[min=11.361611, max=11.361611, mean=11.361611] speed[min=11.705175, max=11.705175, mean=11.705175]\n"}
+,{"stream_name":"stdout","time":29.296590625,"data":"Segment seg2: density[min=13.936169, max=13.936169, mean=13.936169] speed[min=13.976850, max=13.976850, mean=13.976850]\n"}
+,{"stream_name":"stdout","time":29.296653876,"data":"✅ GPU Network Simulator initialized.\n"}
+,{"stream_name":"stdout","time":29.296736789,"data":"✅ Simulation runner initialized.\n"}
+,{"stream_name":"stdout","time":29.296804608,"data":"\n"}
+,{"stream_name":"stdout","time":29.296856009,"data":"[PHASE 4] Running simulation for 260 seconds...\n"}
+,{"stream_name":"stdout","time":29.296926529,"data":"Starting GPU network simulation from t=0 to t=1800.0s...\n"}
+,{"stream_name":"stdout","time":29.300272335,"data":"\n"}
+,{"stream_name":"stdout","time":29.301011385,"data":"Simulating on GPU:   0%|          | 0/1800.0 [00:00\u003c?, ?it/s]/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":29.301104974,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":30.258556822,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":30.258596277,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":30.522212428,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":30.522340908,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":30.663377578,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":30.66349012,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":30.946098007,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":30.946268887,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":31.007302246,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":31.007360848,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":31.428397148,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":31.428517535,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":31.500608556,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":31.500648849,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":31.568030345,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":31.568110807,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":31.643103095,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":31.643196194,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":31.720847444,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stdout","time":31.720979019,"data":"warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":31.743422369,"data":"❌ Error during simulation: Signature mismatch: 14 argument types given, but function takes 13 arguments\n"}
+,{"stream_name":"stdout","time":31.745167186,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":31.745756382,"data":"File \"/kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py\", line 147, in main\n"}
+,{"stream_name":"stdout","time":31.745849242,"data":"results = runner.run(timeout=260)\n"}
+,{"stream_name":"stdout","time":31.745862122,"data":"^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.745938717,"data":"File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 749, in run\n"}
+,{"stream_name":"stdout","time":31.746011458,"data":"return self.network_simulator.run(t_final=sim_t_final, timeout=timeout)\n"}
+,{"stream_name":"stdout","time":31.746064632,"data":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.746290858,"data":"File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/execution/network_simulator.py\", line 202, in run\n"}
+,{"stream_name":"stdout","time":31.746300536,"data":"self.network_coupling.apply_coupling(self.config.physics)\n"}
+,{"stream_name":"stdout","time":31.746322415,"data":"File \"/kaggle/working/Code-traffic-flow/arz_model/numerics/gpu/network_coupling_gpu.py\", line 151, in apply_coupling\n"}
+,{"stream_name":"stdout","time":31.746397741,"data":"_apply_coupling_kernel[blocks_per_grid, threads_per_block](*kernel_args)\n"}
+,{"stream_name":"stdout","time":31.746499734,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py\", line 582, in __call__\n"}
+,{"stream_name":"stdout","time":31.746521521,"data":"return self.dispatcher.call(args, self.griddim, self.blockdim,\n"}
+,{"stream_name":"stdout","time":31.746628622,"data":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.746657604,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py\", line 724, in call\n"}
+,{"stream_name":"stdout","time":31.746748092,"data":"kernel = _dispatcher.Dispatcher._cuda_call(self, *args)\n"}
+,{"stream_name":"stdout","time":31.746801134000002,"data":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.746906695,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py\", line 732, in _compile_for_args\n"}
+,{"stream_name":"stdout","time":31.746914142,"data":"return self.compile(tuple(argtypes))\n"}
+,{"stream_name":"stdout","time":31.74696436,"data":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.747070382,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py\", line 977, in compile\n"}
+,{"stream_name":"stdout","time":31.747134242,"data":"kernel = _Kernel(self.py_func, argtypes, **self.targetoptions)\n"}
+,{"stream_name":"stdout","time":31.747160704,"data":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.747228738,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler_lock.py\", line 35, in _acquire_compile_lock\n"}
+,{"stream_name":"stdout","time":31.747273058,"data":"return func(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":31.747352845,"data":"^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.747380651,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py\", line 102, in __init__\n"}
+,{"stream_name":"stdout","time":31.747480314,"data":"cres = compile_cuda(self.py_func, types.void, self.argtypes,\n"}
+,{"stream_name":"stdout","time":31.747487846,"data":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.747556385,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler_lock.py\", line 35, in _acquire_compile_lock\n"}
+,{"stream_name":"stdout","time":31.747624558,"data":"return func(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":31.747710307,"data":"^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.747835373,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/compiler.py\", line 226, in compile_cuda\n"}
+,{"stream_name":"stdout","time":31.747852551,"data":"cres = compiler.compile_extra(typingctx=typingctx,\n"}
+,{"stream_name":"stdout","time":31.747940966,"data":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.747978526,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler.py\", line 744, in compile_extra\n"}
+,{"stream_name":"stdout","time":31.748066119,"data":"return pipeline.compile_extra(func)\n"}
+,{"stream_name":"stdout","time":31.748123502,"data":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.748150064,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler.py\", line 438, in compile_extra\n"}
+,{"stream_name":"stdout","time":31.748370953,"data":"return self._compile_bytecode()\n"}
+,{"stream_name":"stdout","time":31.74838068,"data":"^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.748384702,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler.py\", line 506, in _compile_bytecode\n"}
+,{"stream_name":"stdout","time":31.748397547,"data":"return self._compile_core()\n"}
+,{"stream_name":"stdout","time":31.748493651,"data":"^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.748507785,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler.py\", line 481, in _compile_core\n"}
+,{"stream_name":"stdout","time":31.748637805,"data":"raise e\n"}
+,{"stream_name":"stdout","time":31.7486479,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler.py\", line 472, in _compile_core\n"}
+,{"stream_name":"stdout","time":31.748726367,"data":"pm.run(self.state)\n"}
+,{"stream_name":"stdout","time":31.748746302,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py\", line 364, in run\n"}
+,{"stream_name":"stdout","time":31.748832917,"data":"raise e\n"}
+,{"stream_name":"stdout","time":31.748858695,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py\", line 356, in run\n"}
+,{"stream_name":"stdout","time":31.748966172,"data":"self._runPass(idx, pass_inst, state)\n"}
+,{"stream_name":"stdout","time":31.74897186,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler_lock.py\", line 35, in _acquire_compile_lock\n"}
+,{"stream_name":"stdout","time":31.749048293,"data":"return func(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":31.749089801,"data":"^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.749147403,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py\", line 311, in _runPass\n"}
+,{"stream_name":"stdout","time":31.749193154,"data":"mutated |= check(pss.run_pass, internal_state)\n"}
+,{"stream_name":"stdout","time":31.749242797,"data":"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.749284213,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py\", line 273, in check\n"}
+,{"stream_name":"stdout","time":31.749359991,"data":"mangled = func(compiler_state)\n"}
+,{"stream_name":"stdout","time":31.749418035,"data":"^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":31.749468484,"data":"File \"/usr/local/lib/python3.11/dist-packages/numba/core/untyped_passes.py\", line 125, in run_pass\n"}
+,{"stream_name":"stdout","time":31.749514748,"data":"raise TypeError(\"Signature mismatch: %d argument types given, \"\n"}
+,{"stream_name":"stdout","time":31.749591514,"data":"TypeError: Signature mismatch: 14 argument types given, but function takes 13 arguments\n"}
+,{"stream_name":"stdout","time":31.749652104,"data":"\n"}
+,{"stream_name":"stdout","time":31.74972436,"data":"Simulating on GPU:   0%|          | 0/1800.0 [00:02\u003c?, ?it/s]\n"}
+,{"stream_name":"stdout","time":31.749792337,"data":"\n"}
+,{"stream_name":"stdout","time":31.749842549,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":31.749910214,"data":"=== SCRIPT MAIN COMPLETED ===\n"}
+,{"stream_name":"stdout","time":31.749951093,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":32.357370506,"data":"[SUCCESS] Target executed successfully\n"}
+,{"stream_name":"stdout","time":32.357483048,"data":"\n"}
+,{"stream_name":"stdout","time":32.357489355,"data":"[STEP 4/4] Persisting results and cleaning up...\n"}
+,{"stream_name":"stdout","time":32.357682755,"data":"[WARN] No 'results' directory found or it is empty.\n"}
+,{"stream_name":"stdout","time":32.35773932,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
+,{"stream_name":"stdout","time":32.35782182,"data":"[OK] Repository cleanup skipped for debugging.\n"}
+,{"stream_name":"stdout","time":32.357858496,"data":"\n"}
+,{"stream_name":"stdout","time":32.357865096,"data":"[FINAL] Test workflow completed\n"}
+,{"stream_name":"stdout","time":32.358153803,"data":"Created placeholder in output directory for Kaggle.\n"}
+,{"stream_name":"stderr","time":36.296469629,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":36.296524007,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":36.336944477,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":37.514700069,"data":"[NbConvertApp] Writing 304281 bytes to __results__.html\n"}
+]
