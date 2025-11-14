@@ -576,3 +576,17 @@
 2025-11-14 16:49:22,026 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-14 16:49:22,026 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-14 16:49:28,384 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-14 16:52:06,934 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-14 16:52:07,213 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-14 16:52:07,364 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-14 16:52:07,364 - kernel_manager - INFO -   M  rz_model/main_network_simulation.py (Modified (staged))
+2025-11-14 16:52:07,364 - kernel_manager - INFO -    M arz_model/results/animation_road_seg_0.mp4 (Modified (unstaged))
+2025-11-14 16:52:07,368 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-14 16:52:07,368 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/generic-test-runner-kernel.log (Modified (unstaged))
+2025-11-14 16:52:07,368 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/test_log.txt (Modified (unstaged))
+2025-11-14 16:52:07,368 - kernel_manager - INFO -   ?? arz_model/results/animation_spacetime_seg_0.mp4 (Untracked)
+2025-11-14 16:52:07,368 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-14 16:52:07,557 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-14 16:52:09,191 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-14 16:52:09,191 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-14 16:52:20,530 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub

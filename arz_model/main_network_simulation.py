@@ -29,7 +29,8 @@ from arz_model.config import (
     BoundaryConditionsConfig,
     InflowBC,
     OutflowBC,
-    UniformIC
+    UniformIC,
+    ICConfig  # Add ICConfig import
 )
 from arz_model.network.network_grid import NetworkGrid
 from arz_model.simulation.runner import SimulationRunner
