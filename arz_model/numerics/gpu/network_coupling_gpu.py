@@ -152,7 +152,7 @@ class NetworkCouplingGPU:
             params.v_max_c_ms,
             params.v_creeping_ms,
             self.d_fluxes,  # Output array for fluxes
-            *self.gpu_pool.get_all_segment_states_tuple()
+            self.gpu_pool.get_all_segment_states_tuple() # Pass as a single tuple
         )
         
         _apply_coupling_kernel[blocks_per_grid, threads_per_block](*kernel_args)
@@ -180,7 +180,7 @@ def _apply_coupling_kernel(
     alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c,
     v_max_m, v_max_c, v_creeping,
     d_fluxes_out,
-    *d_U_segments
+    d_U_segments_tuple
 ):
     """
     CUDA kernel to apply network coupling for all nodes.
@@ -212,7 +212,7 @@ def _apply_coupling_kernel(
 
         for i in range(num_incoming):
             gid = node_incoming_gids[inc_start + i]
-            d_U = d_U_segments[gid]
+            d_U = d_U_segments_tuple[gid]
             n_phys = segment_n_phys[gid]
             n_ghost = segment_n_ghost[gid]
             last_idx = n_ghost + n_phys - 1
@@ -232,7 +232,7 @@ def _apply_coupling_kernel(
         # --- 4. Apply the resulting state to the ghost cells of outgoing segments ---
         for i in range(num_outgoing):
             gid = node_outgoing_gids[out_start + i]
-            d_U = d_U_segments[gid]
+            d_U = d_U_segments_tuple[gid]
             n_ghost = segment_n_ghost[gid]
             
             for j in range(n_ghost):
