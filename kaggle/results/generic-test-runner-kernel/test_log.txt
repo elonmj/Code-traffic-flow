@@ -1,200 +1,173 @@
-2025-11-14 19:10:47,463 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
-2025-11-14 19:10:47,463 - INFO - Branch: main
-2025-11-14 19:10:47,463 - INFO - Target: arz_model/main_network_simulation.py
-2025-11-14 19:10:52,678 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
-2025-11-14 19:10:52,679 - INFO - PyTorch: 2.6.0+cu124
-2025-11-14 19:10:52,730 - INFO - CUDA available: True
-2025-11-14 19:10:52,751 - INFO - CUDA device: Tesla P100-PCIE-16GB
-2025-11-14 19:10:52,752 - INFO - 
+2025-11-14 19:18:49,737 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-11-14 19:18:49,738 - INFO - Branch: main
+2025-11-14 19:18:49,738 - INFO - Target: arz_model/main_network_simulation.py
+2025-11-14 19:18:56,141 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-11-14 19:18:56,141 - INFO - PyTorch: 2.6.0+cu124
+2025-11-14 19:18:56,190 - INFO - CUDA available: True
+2025-11-14 19:18:56,212 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-11-14 19:18:56,212 - INFO - 
 [STEP 1/4] Cloning repository from GitHub...
-2025-11-14 19:10:52,752 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
-2025-11-14 19:10:54,741 - INFO - [OK] Repository cloned successfully
-2025-11-14 19:10:54,741 - INFO - 
+2025-11-14 19:18:56,212 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-11-14 19:18:57,751 - INFO - [OK] Repository cloned successfully
+2025-11-14 19:18:57,751 - INFO - 
 [STEP 2/4] Installing dependencies...
-2025-11-14 19:10:54,741 - INFO - Installing pytest...
-2025-11-14 19:10:58,639 - INFO - Installing pydantic...
-2025-11-14 19:11:01,675 - INFO - Installing tqdm...
-2025-11-14 19:11:04,605 - INFO - Installing numba...
-2025-11-14 19:11:07,551 - INFO - [OK] Dependencies installed
-2025-11-14 19:11:07,552 - INFO - 
+2025-11-14 19:18:57,751 - INFO - Installing pytest...
+2025-11-14 19:19:02,184 - INFO - Installing pydantic...
+2025-11-14 19:19:05,197 - INFO - Installing tqdm...
+2025-11-14 19:19:08,181 - INFO - Installing numba...
+2025-11-14 19:19:11,203 - INFO - [OK] Dependencies installed
+2025-11-14 19:19:11,203 - INFO - 
 [STEP 3/4] Running Target...
-2025-11-14 19:11:07,552 - INFO - Target is a file. Executing script...
-2025-11-14 19:11:07,552 - INFO - Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py
-2025-11-14 19:11:12,344 - INFO - 
-2025-11-14 19:11:12,345 - INFO - ======================================================================
-2025-11-14 19:11:12,345 - INFO - === SCRIPT MAIN STARTING ===
-2025-11-14 19:11:12,345 - INFO - ======================================================================
-2025-11-14 19:11:12,345 - INFO - 
-2025-11-14 19:11:12,345 - INFO - ======================================================================
-2025-11-14 19:11:12,345 - INFO - === DÉBUT DU SCRIPT main_network_simulation.py ===
-2025-11-14 19:11:12,345 - INFO - ======================================================================
-2025-11-14 19:11:12,345 - INFO - ======================================================
-2025-11-14 19:11:12,345 - INFO - = Full Network Simulation Execution (GPU-Only/Pydantic) =
-2025-11-14 19:11:12,345 - INFO - ======================================================
-2025-11-14 19:11:12,345 - INFO - 
-2025-11-14 19:11:12,345 - INFO - [PHASE 1] Defining simulation configuration...
-2025-11-14 19:11:12,345 - INFO - - Creating Pydantic config for a two-segment corridor...
-2025-11-14 19:11:12,346 - INFO - - Pydantic config created.
-2025-11-14 19:11:12,346 - INFO - ✅ Network configuration defined successfully.
-2025-11-14 19:11:12,346 - INFO - 
-2025-11-14 19:11:12,346 - INFO - [PHASE 2] Building NetworkGrid from Pydantic config...
-2025-11-14 19:11:12,346 - INFO - [DEBUG] add_segment_from_config called for segment: seg1
-2025-11-14 19:11:12,346 - INFO - [DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=50.0, velocity=40.0)
-2025-11-14 19:11:12,346 - INFO - [DEBUG] seg_config.initial_conditions type = <class 'arz_model.config.ic_config.ICConfig'>
-2025-11-14 19:11:12,346 - INFO - [DEBUG] IC is NOT None, proceeding with application...
-2025-11-14 19:11:12,346 - INFO - [DEBUG] ic_config = config=UniformIC(type='uniform', density=50.0, velocity=40.0)
-2025-11-14 19:11:12,346 - INFO - [DEBUG] ic extracted = type='uniform' density=50.0 velocity=40.0
-2025-11-14 19:11:12,347 - INFO - [DEBUG] ic type = <class 'arz_model.config.ic_config.UniformIC'>
-2025-11-14 19:11:12,347 - INFO - [DEBUG] IC has density and velocity attributes
-2025-11-14 19:11:12,347 - INFO - [DEBUG] density=50.0, velocity=40.0
-2025-11-14 19:11:16,556 - INFO - [IC APPLIED] Segment seg1:
-2025-11-14 19:11:16,556 - INFO - ρ_total = 50.0 veh/km → 0.050000 veh/m
-2025-11-14 19:11:16,556 - INFO - v = 40.0 km/h → 11.111 m/s
-2025-11-14 19:11:16,556 - INFO - α = 0.600 → ρ_m=0.030000, ρ_c=0.020000
-2025-11-14 19:11:16,556 - INFO - U[0] (ρ_m): min=0.030000, max=0.030000, mean=0.030000
-2025-11-14 19:11:16,556 - INFO - U[1] (w_m): min=11.331611, max=11.331611, mean=11.331611
-2025-11-14 19:11:16,556 - INFO - U[2] (ρ_c): min=0.020000, max=0.020000, mean=0.020000
-2025-11-14 19:11:16,556 - INFO - U[3] (w_c): min=11.736111, max=11.736111, mean=11.736111
-2025-11-14 19:11:16,556 - INFO - [DEBUG] Final U array for seg1:
-2025-11-14 19:11:16,556 - INFO - U shape: (4, 106)
-2025-11-14 19:11:16,557 - INFO - U[0] (ρ_m): min=0.030000, max=0.030000
-2025-11-14 19:11:16,557 - INFO - U[1] (w_m): min=11.331611, max=11.331611
-2025-11-14 19:11:16,557 - INFO - U[2] (ρ_c): min=0.020000, max=0.020000
-2025-11-14 19:11:16,557 - INFO - U[3] (w_c): min=11.736111, max=11.736111
-2025-11-14 19:11:16,557 - INFO - [DEBUG] add_segment_from_config called for segment: seg2
-2025-11-14 19:11:16,557 - INFO - [DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=20.0, velocity=50.0)
-2025-11-14 19:11:16,557 - INFO - [DEBUG] seg_config.initial_conditions type = <class 'arz_model.config.ic_config.ICConfig'>
-2025-11-14 19:11:16,557 - INFO - [DEBUG] IC is NOT None, proceeding with application...
-2025-11-14 19:11:16,557 - INFO - [DEBUG] ic_config = config=UniformIC(type='uniform', density=20.0, velocity=50.0)
-2025-11-14 19:11:16,557 - INFO - [DEBUG] ic extracted = type='uniform' density=20.0 velocity=50.0
-2025-11-14 19:11:16,557 - INFO - [DEBUG] ic type = <class 'arz_model.config.ic_config.UniformIC'>
-2025-11-14 19:11:16,557 - INFO - [DEBUG] IC has density and velocity attributes
-2025-11-14 19:11:16,557 - INFO - [DEBUG] density=20.0, velocity=50.0
-2025-11-14 19:11:16,557 - INFO - [IC APPLIED] Segment seg2:
-2025-11-14 19:11:16,557 - INFO - ρ_total = 20.0 veh/km → 0.020000 veh/m
-2025-11-14 19:11:16,557 - INFO - v = 50.0 km/h → 13.889 m/s
-2025-11-14 19:11:16,558 - INFO - α = 0.600 → ρ_m=0.012000, ρ_c=0.008000
-2025-11-14 19:11:16,558 - INFO - U[0] (ρ_m): min=0.012000, max=0.012000, mean=0.012000
-2025-11-14 19:11:16,558 - INFO - U[1] (w_m): min=13.924169, max=13.924169, mean=13.924169
-2025-11-14 19:11:16,558 - INFO - U[2] (ρ_c): min=0.008000, max=0.008000, mean=0.008000
-2025-11-14 19:11:16,558 - INFO - U[3] (w_c): min=13.988889, max=13.988889, mean=13.988889
-2025-11-14 19:11:16,558 - INFO - [DEBUG] Final U array for seg2:
-2025-11-14 19:11:16,558 - INFO - U shape: (4, 106)
-2025-11-14 19:11:16,558 - INFO - U[0] (ρ_m): min=0.012000, max=0.012000
-2025-11-14 19:11:16,558 - INFO - U[1] (w_m): min=13.924169, max=13.924169
-2025-11-14 19:11:16,558 - INFO - U[2] (ρ_c): min=0.008000, max=0.008000
-2025-11-14 19:11:16,558 - INFO - U[3] (w_c): min=13.988889, max=13.988889
-2025-11-14 19:11:16,558 - INFO - Finalizing network structure and validating topology...
-2025-11-14 19:11:16,558 - INFO - Found isolated nodes with no connections: ['node1']
-2025-11-14 19:11:16,558 - INFO - ✅ Network topology is valid.
-2025-11-14 19:11:16,558 - INFO - ✅ NetworkGrid built successfully.
-2025-11-14 19:11:16,558 - INFO - - Segments: ['seg1', 'seg2']
-2025-11-14 19:11:16,558 - INFO - - Nodes: ['node1']
-2025-11-14 19:11:16,559 - INFO - 
-2025-11-14 19:11:16,559 - INFO - [PHASE 3] Initializing simulation runner...
-2025-11-14 19:11:16,775 - INFO - - Mode: Network Simulation
-2025-11-14 19:11:16,775 - INFO - - Device: GPU (Compute Capability: (6, 0))
-2025-11-14 19:11:16,775 - INFO - - Segments: 2
-2025-11-14 19:11:16,775 - INFO - - Nodes: 1
-2025-11-14 19:11:16,775 - INFO - Initializing GPU Network Simulator...
-2025-11-14 19:11:16,775 - INFO - [DEBUG] GPU debug logging ENABLED
-2025-11-14 19:11:16,775 - INFO - - Initializing GPU Memory Pool for network...
-2025-11-14 19:11:16,779 - INFO - ✅ GPUMemoryPool initialized:
-2025-11-14 19:11:16,779 - INFO - - Segments: 2
-2025-11-14 19:11:16,779 - INFO - - Total cells: 200
-2025-11-14 19:11:16,780 - INFO - - Ghost cells: 3
-2025-11-14 19:11:16,780 - INFO - - Compute Capability: (6, 0)
-2025-11-14 19:11:16,780 - INFO - - CUDA streams: Enabled
-2025-11-14 19:11:16,780 - INFO - - GPU memory allocated: 0.00 MB
-2025-11-14 19:11:16,782 - INFO - - GPU Memory Pool created. Allocated: 0.00 MB
-2025-11-14 19:11:16,782 - INFO - - Initializing GPU-native network coupling...
-2025-11-14 19:11:16,782 - INFO - - Preparing GPU topology for network coupling...
-2025-11-14 19:11:16,784 - INFO - - GPU topology prepared and transferred.
-2025-11-14 19:11:16,784 - INFO - - GPU Coupling Manager created.
-2025-11-14 19:11:16,784 - INFO - [DEBUG] Initial state (t=0)
-2025-11-14 19:11:16,785 - INFO - Segment seg1: density[min=11.361611, max=11.361611, mean=11.361611] speed[min=11.705175, max=11.705175, mean=11.705175]
-2025-11-14 19:11:16,785 - INFO - Segment seg2: density[min=13.936169, max=13.936169, mean=13.936169] speed[min=13.976850, max=13.976850, mean=13.976850]
-2025-11-14 19:11:16,785 - INFO - ✅ GPU Network Simulator initialized.
-2025-11-14 19:11:16,785 - INFO - ✅ Simulation runner initialized.
-2025-11-14 19:11:16,785 - INFO - 
-2025-11-14 19:11:16,785 - INFO - [PHASE 4] Running simulation for 260 seconds...
-2025-11-14 19:11:16,785 - INFO - Starting GPU network simulation from t=0 to t=1800.0s...
-2025-11-14 19:11:16,789 - INFO - 
-2025-11-14 19:11:16,789 - INFO - Simulating on GPU:   0%|          | 0/1800.0 [00:00<?, ?it/s]/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:16,789 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:17,731 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:17,731 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:17,981 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:17,981 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:18,116 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:18,116 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:18,374 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:18,374 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:18,435 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:18,435 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:18,853 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:18,854 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:18,922 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:18,923 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:18,987 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:18,987 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:19,061 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:19,061 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:19,132 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:19,132 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:19,174 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
-2025-11-14 19:11:19,175 - INFO - warn(NumbaPerformanceWarning(msg))
-2025-11-14 19:11:19,179 - INFO - [DEBUG] State log at step 0 (t=0.65s)
-2025-11-14 19:11:19,179 - INFO - Segment seg1: density[min=16.829561, max=16.829561, mean=16.829561] speed[min=17.057686, max=17.057686, mean=17.057686]
-2025-11-14 19:11:19,180 - INFO - Segment seg2: density[min=20.045189, max=20.045189, mean=20.045189] speed[min=20.185123, max=20.185123, mean=20.185123]
-2025-11-14 19:11:19,180 - INFO - 
-2025-11-14 19:11:19,180 - INFO - Simulating on GPU:   0%|          | 0.648/1800.0 [00:02<1:50:39,  3.69s/it]
-2025-11-14 19:11:19,205 - INFO - Simulating on GPU:   0%|          | 0.648/1800.0 [00:02<1:50:39,  3.69s/it, Time=0.65s, dt=0.6480s, step=1][DEBUG] Early debug snapshot step 1
-2025-11-14 19:11:19,205 - INFO - Segment seg1: density[min=18.659515, max=18.659515, mean=18.659515] speed[min=19.415330, max=19.415330, mean=19.415330]
-2025-11-14 19:11:19,205 - INFO - Segment seg2: density[min=22.089689, max=22.089689, mean=22.089689] speed[min=22.920560, max=22.920560, mean=22.920560]
-2025-11-14 19:11:19,205 - INFO - 
-2025-11-14 19:11:19,229 - INFO - Simulating on GPU:   0%|          | 1.0958233793437762/1800.0 [00:02<1:50:37,  3.69s/it, Time=1.10s, dt=0.4478s, step=2][DEBUG] Early debug snapshot step 2
-2025-11-14 19:11:19,229 - INFO - Segment seg1: density[min=19.571909, max=24.995449, mean=19.806751] speed[min=20.873264, max=27.002919, mean=21.114846]
-2025-11-14 19:11:19,229 - INFO - Segment seg2: density[min=23.189944, max=23.189944, mean=23.189944] speed[min=24.679839, max=24.679839, mean=24.679839]
-2025-11-14 19:11:19,230 - INFO - 
-2025-11-14 19:11:19,252 - INFO - Simulating on GPU:   0%|          | 1.4899894771543396/1800.0 [00:02<1:50:36,  3.69s/it, Time=1.49s, dt=0.3942s, step=3][DEBUG] Early debug snapshot step 3
-2025-11-14 19:11:19,253 - INFO - Segment seg1: density[min=19.628975, max=24.245912, mean=20.343699] speed[min=21.479992, max=27.363387, mean=22.119525]
-2025-11-14 19:11:19,253 - INFO - Segment seg2: density[min=23.823357, max=23.823357, mean=23.823357] speed[min=25.859722, max=25.859722, mean=25.859722]
-2025-11-14 19:11:19,253 - INFO - 
-2025-11-14 19:11:19,276 - INFO - Simulating on GPU:   0%|          | 1.8374830241330335/1800.0 [00:02<1:50:35,  3.69s/it, Time=1.84s, dt=0.3475s, step=4][DEBUG] Early debug snapshot step 4
-2025-11-14 19:11:19,276 - INFO - Segment seg1: density[min=18.604205, max=24.775062, mean=20.724226] speed[min=21.144038, max=28.871724, mean=22.919389]
-2025-11-14 19:11:19,277 - INFO - Segment seg2: density[min=24.250950, max=24.250950, mean=24.250950] speed[min=26.771384, max=26.771384, mean=26.771384]
-2025-11-14 19:11:19,277 - INFO - 
-2025-11-14 19:11:19,300 - INFO - Simulating on GPU:   0%|          | 2.180687749861252/1800.0 [00:02<1:50:33,  3.69s/it, Time=2.18s, dt=0.3432s, step=5]
-2025-11-14 19:11:19,300 - INFO - Simulating on GPU:   0%|          | 2.5072763121266677/1800.0 [00:02<23:13,  1.29it/s, Time=2.18s, dt=0.3432s, step=5]
-2025-11-14 19:11:19,323 - INFO - Simulating on GPU:   0%|          | 2.5072763121266677/1800.0 [00:02<23:13,  1.29it/s, Time=2.51s, dt=0.3266s, step=6]
-2025-11-14 19:11:19,346 - INFO - Simulating on GPU:   0%|          | 2.8082150455695785/1800.0 [00:02<23:13,  1.29it/s, Time=2.81s, dt=0.3009s, step=7]
-2025-11-14 19:11:19,369 - INFO - Simulating on GPU:   0%|          | 3.1115651403128513/1800.0 [00:02<23:13,  1.29it/s, Time=3.11s, dt=0.3034s, step=8]
-2025-11-14 19:11:19,392 - INFO - Simulating on GPU:   0%|          | 3.1475874575419542/1800.0 [00:02<23:13,  1.29it/s, Time=3.15s, dt=0.0360s, step=9]
-2025-11-14 19:11:19,414 - INFO - Simulating on GPU:   0%|          | 3.1597457673515876/1800.0 [00:02<23:13,  1.29it/s, Time=3.16s, dt=0.0122s, step=10]
-2025-11-14 19:11:19,437 - INFO - Simulating on GPU:   0%|          | 3.1649407543709946/1800.0 [00:02<23:13,  1.29it/s, Time=3.16s, dt=0.0052s, step=11]!!! DEBUG: dt collapsed to 0.003491 at t=3.1649s. Dumping state.
-2025-11-14 19:11:19,437 - INFO - [DEBUG] State at dt collapse
-2025-11-14 19:11:19,437 - INFO - Segment seg1: density[min=4.151716, max=47.057822, mean=21.237803] speed[min=17.040869, max=36.982232, mean=24.823663]
-2025-11-14 19:11:19,437 - INFO - Segment seg2: density[min=23.059050, max=27.256840, mean=24.888580] speed[min=26.929290, max=32.103129, mean=28.468020]
-2025-11-14 19:11:19,437 - INFO - 
-2025-11-14 19:11:19,437 - INFO - Simulating on GPU:   0%|          | 3.1649407543709946/1800.0 [00:02<25:03,  1.19it/s, Time=3.16s, dt=0.0052s, step=11]
-2025-11-14 19:11:19,438 - INFO - GPU network simulation finished.
-2025-11-14 19:11:19,438 - INFO - ✅ Simulation finished.
-2025-11-14 19:11:19,438 - INFO - 
-2025-11-14 19:11:19,438 - INFO - [PHASE 5] Saving results...
-2025-11-14 19:11:19,438 - INFO - ✅ Results saved to /kaggle/working/Code-traffic-flow/results/network_simulation_results.pkl
-2025-11-14 19:11:19,438 - INFO - 
-2025-11-14 19:11:19,438 - INFO - Run complete.
-2025-11-14 19:11:19,440 - INFO - 
-2025-11-14 19:11:19,440 - INFO - ======================================================================
-2025-11-14 19:11:19,440 - INFO - === SCRIPT MAIN COMPLETED ===
-2025-11-14 19:11:19,441 - INFO - ======================================================================
-2025-11-14 19:11:19,937 - INFO - [SUCCESS] Target executed successfully
-2025-11-14 19:11:19,937 - INFO - 
+2025-11-14 19:19:11,204 - INFO - Target is a file. Executing script...
+2025-11-14 19:19:11,204 - INFO - Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py
+2025-11-14 19:19:16,721 - INFO - 
+2025-11-14 19:19:16,721 - INFO - ======================================================================
+2025-11-14 19:19:16,721 - INFO - === SCRIPT MAIN STARTING ===
+2025-11-14 19:19:16,721 - INFO - ======================================================================
+2025-11-14 19:19:16,722 - INFO - 
+2025-11-14 19:19:16,722 - INFO - ======================================================================
+2025-11-14 19:19:16,722 - INFO - === DÉBUT DU SCRIPT main_network_simulation.py ===
+2025-11-14 19:19:16,722 - INFO - ======================================================================
+2025-11-14 19:19:16,722 - INFO - ======================================================
+2025-11-14 19:19:16,722 - INFO - = Full Network Simulation Execution (GPU-Only/Pydantic) =
+2025-11-14 19:19:16,722 - INFO - ======================================================
+2025-11-14 19:19:16,722 - INFO - 
+2025-11-14 19:19:16,722 - INFO - [PHASE 1] Defining simulation configuration...
+2025-11-14 19:19:16,722 - INFO - - Creating Pydantic config for a two-segment corridor...
+2025-11-14 19:19:16,723 - INFO - - Pydantic config created.
+2025-11-14 19:19:16,723 - INFO - ✅ Network configuration defined successfully.
+2025-11-14 19:19:16,723 - INFO - 
+2025-11-14 19:19:16,723 - INFO - [PHASE 2] Building NetworkGrid from Pydantic config...
+2025-11-14 19:19:16,723 - INFO - [DEBUG] add_segment_from_config called for segment: seg1
+2025-11-14 19:19:16,723 - INFO - [DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=50.0, velocity=40.0)
+2025-11-14 19:19:16,723 - INFO - [DEBUG] seg_config.initial_conditions type = <class 'arz_model.config.ic_config.ICConfig'>
+2025-11-14 19:19:16,723 - INFO - [DEBUG] IC is NOT None, proceeding with application...
+2025-11-14 19:19:16,723 - INFO - [DEBUG] ic_config = config=UniformIC(type='uniform', density=50.0, velocity=40.0)
+2025-11-14 19:19:16,723 - INFO - [DEBUG] ic extracted = type='uniform' density=50.0 velocity=40.0
+2025-11-14 19:19:16,723 - INFO - [DEBUG] ic type = <class 'arz_model.config.ic_config.UniformIC'>
+2025-11-14 19:19:16,723 - INFO - [DEBUG] IC has density and velocity attributes
+2025-11-14 19:19:16,723 - INFO - [DEBUG] density=50.0, velocity=40.0
+2025-11-14 19:19:21,118 - INFO - [IC APPLIED] Segment seg1:
+2025-11-14 19:19:21,118 - INFO - ρ_total = 50.0 veh/km → 0.050000 veh/m
+2025-11-14 19:19:21,118 - INFO - v = 40.0 km/h → 11.111 m/s
+2025-11-14 19:19:21,118 - INFO - α = 0.600 → ρ_m=0.030000, ρ_c=0.020000
+2025-11-14 19:19:21,119 - INFO - U[0] (ρ_m): min=0.030000, max=0.030000, mean=0.030000
+2025-11-14 19:19:21,119 - INFO - U[1] (w_m): min=11.331611, max=11.331611, mean=11.331611
+2025-11-14 19:19:21,119 - INFO - U[2] (ρ_c): min=0.020000, max=0.020000, mean=0.020000
+2025-11-14 19:19:21,119 - INFO - U[3] (w_c): min=11.736111, max=11.736111, mean=11.736111
+2025-11-14 19:19:21,119 - INFO - [DEBUG] Final U array for seg1:
+2025-11-14 19:19:21,119 - INFO - U shape: (4, 106)
+2025-11-14 19:19:21,119 - INFO - U[0] (ρ_m): min=0.030000, max=0.030000
+2025-11-14 19:19:21,119 - INFO - U[1] (w_m): min=11.331611, max=11.331611
+2025-11-14 19:19:21,119 - INFO - U[2] (ρ_c): min=0.020000, max=0.020000
+2025-11-14 19:19:21,119 - INFO - U[3] (w_c): min=11.736111, max=11.736111
+2025-11-14 19:19:21,119 - INFO - [DEBUG] add_segment_from_config called for segment: seg2
+2025-11-14 19:19:21,119 - INFO - [DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=20.0, velocity=50.0)
+2025-11-14 19:19:21,119 - INFO - [DEBUG] seg_config.initial_conditions type = <class 'arz_model.config.ic_config.ICConfig'>
+2025-11-14 19:19:21,120 - INFO - [DEBUG] IC is NOT None, proceeding with application...
+2025-11-14 19:19:21,120 - INFO - [DEBUG] ic_config = config=UniformIC(type='uniform', density=20.0, velocity=50.0)
+2025-11-14 19:19:21,120 - INFO - [DEBUG] ic extracted = type='uniform' density=20.0 velocity=50.0
+2025-11-14 19:19:21,120 - INFO - [DEBUG] ic type = <class 'arz_model.config.ic_config.UniformIC'>
+2025-11-14 19:19:21,120 - INFO - [DEBUG] IC has density and velocity attributes
+2025-11-14 19:19:21,120 - INFO - [DEBUG] density=20.0, velocity=50.0
+2025-11-14 19:19:21,120 - INFO - [IC APPLIED] Segment seg2:
+2025-11-14 19:19:21,120 - INFO - ρ_total = 20.0 veh/km → 0.020000 veh/m
+2025-11-14 19:19:21,120 - INFO - v = 50.0 km/h → 13.889 m/s
+2025-11-14 19:19:21,120 - INFO - α = 0.600 → ρ_m=0.012000, ρ_c=0.008000
+2025-11-14 19:19:21,120 - INFO - U[0] (ρ_m): min=0.012000, max=0.012000, mean=0.012000
+2025-11-14 19:19:21,120 - INFO - U[1] (w_m): min=13.924169, max=13.924169, mean=13.924169
+2025-11-14 19:19:21,120 - INFO - U[2] (ρ_c): min=0.008000, max=0.008000, mean=0.008000
+2025-11-14 19:19:21,120 - INFO - U[3] (w_c): min=13.988889, max=13.988889, mean=13.988889
+2025-11-14 19:19:21,120 - INFO - [DEBUG] Final U array for seg2:
+2025-11-14 19:19:21,121 - INFO - U shape: (4, 106)
+2025-11-14 19:19:21,121 - INFO - U[0] (ρ_m): min=0.012000, max=0.012000
+2025-11-14 19:19:21,121 - INFO - U[1] (w_m): min=13.924169, max=13.924169
+2025-11-14 19:19:21,121 - INFO - U[2] (ρ_c): min=0.008000, max=0.008000
+2025-11-14 19:19:21,121 - INFO - U[3] (w_c): min=13.988889, max=13.988889
+2025-11-14 19:19:21,121 - INFO - Finalizing network structure and validating topology...
+2025-11-14 19:19:21,121 - INFO - Found isolated nodes with no connections: ['node1']
+2025-11-14 19:19:21,121 - INFO - ✅ Network topology is valid.
+2025-11-14 19:19:21,121 - INFO - ✅ NetworkGrid built successfully.
+2025-11-14 19:19:21,121 - INFO - - Segments: ['seg1', 'seg2']
+2025-11-14 19:19:21,121 - INFO - - Nodes: ['node1']
+2025-11-14 19:19:21,121 - INFO - 
+2025-11-14 19:19:21,121 - INFO - [PHASE 3] Initializing simulation runner...
+2025-11-14 19:19:21,376 - INFO - - Mode: Network Simulation
+2025-11-14 19:19:21,376 - INFO - - Device: GPU (Compute Capability: (6, 0))
+2025-11-14 19:19:21,376 - INFO - - Segments: 2
+2025-11-14 19:19:21,376 - INFO - - Nodes: 1
+2025-11-14 19:19:21,376 - INFO - Initializing GPU Network Simulator...
+2025-11-14 19:19:21,376 - INFO - [DEBUG] GPU debug logging ENABLED
+2025-11-14 19:19:21,376 - INFO - - Initializing GPU Memory Pool for network...
+2025-11-14 19:19:21,381 - INFO - ✅ GPUMemoryPool initialized:
+2025-11-14 19:19:21,381 - INFO - - Segments: 2
+2025-11-14 19:19:21,381 - INFO - - Total cells: 200
+2025-11-14 19:19:21,381 - INFO - - Ghost cells: 3
+2025-11-14 19:19:21,381 - INFO - - Compute Capability: (6, 0)
+2025-11-14 19:19:21,381 - INFO - - CUDA streams: Enabled
+2025-11-14 19:19:21,381 - INFO - - GPU memory allocated: 0.00 MB
+2025-11-14 19:19:21,383 - INFO - - GPU Memory Pool created. Allocated: 0.00 MB
+2025-11-14 19:19:21,384 - INFO - - Initializing GPU-native network coupling...
+2025-11-14 19:19:21,384 - INFO - - Preparing GPU topology for network coupling...
+2025-11-14 19:19:21,387 - INFO - - GPU topology prepared and transferred.
+2025-11-14 19:19:21,387 - INFO - - GPU Coupling Manager created.
+2025-11-14 19:19:21,387 - INFO - [DEBUG] Initial state (t=0)
+2025-11-14 19:19:21,387 - INFO - Segment seg1: density[min=11.361611, max=11.361611, mean=11.361611] speed[min=11.705175, max=11.705175, mean=11.705175]
+2025-11-14 19:19:21,387 - INFO - Segment seg2: density[min=13.936169, max=13.936169, mean=13.936169] speed[min=13.976850, max=13.976850, mean=13.976850]
+2025-11-14 19:19:21,388 - INFO - ✅ GPU Network Simulator initialized.
+2025-11-14 19:19:21,388 - INFO - ✅ Simulation runner initialized.
+2025-11-14 19:19:21,388 - INFO - 
+2025-11-14 19:19:21,388 - INFO - [PHASE 4] Running simulation for 260 seconds...
+2025-11-14 19:19:21,388 - INFO - Starting GPU network simulation from t=0 to t=1800.0s...
+2025-11-14 19:19:21,391 - INFO - 
+2025-11-14 19:19:21,392 - INFO - Simulating on GPU:   0%|          | 0/1800.0 [00:00<?, ?it/s]/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:21,392 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:22,367 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:22,367 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:22,620 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:22,620 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:22,754 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:22,754 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:23,009 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:23,009 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:23,071 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:23,071 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:23,493 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:23,493 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:23,566 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:23,566 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:23,631 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:23,631 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:23,703 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 7 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:23,704 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:23,778 - INFO - /usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 19:19:23,778 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 19:19:23,788 - INFO - ❌ Error during simulation: 'GPUMemoryPool' object has no attribute 'd_U_flat'
+2025-11-14 19:19:23,789 - INFO - Traceback (most recent call last):
+2025-11-14 19:19:23,789 - INFO - File "/kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py", line 147, in main
+2025-11-14 19:19:23,789 - INFO - results = runner.run(timeout=260)
+2025-11-14 19:19:23,789 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 19:19:23,789 - INFO - File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 749, in run
+2025-11-14 19:19:23,789 - INFO - return self.network_simulator.run(t_final=sim_t_final, timeout=timeout)
+2025-11-14 19:19:23,790 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 19:19:23,790 - INFO - File "/kaggle/working/Code-traffic-flow/arz_model/simulation/execution/network_simulator.py", line 202, in run
+2025-11-14 19:19:23,790 - INFO - self.network_coupling.apply_coupling(self.config.physics)
+2025-11-14 19:19:23,790 - INFO - File "/kaggle/working/Code-traffic-flow/arz_model/numerics/gpu/network_coupling_gpu.py", line 140, in apply_coupling
+2025-11-14 19:19:23,790 - INFO - self.gpu_pool.d_U_flat,
+2025-11-14 19:19:23,790 - INFO - ^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 19:19:23,790 - INFO - AttributeError: 'GPUMemoryPool' object has no attribute 'd_U_flat'
+2025-11-14 19:19:23,790 - INFO - 
+2025-11-14 19:19:23,790 - INFO - Simulating on GPU:   0%|          | 0/1800.0 [00:02<?, ?it/s]
+2025-11-14 19:19:23,791 - INFO - 
+2025-11-14 19:19:23,791 - INFO - ======================================================================
+2025-11-14 19:19:23,791 - INFO - === SCRIPT MAIN COMPLETED ===
+2025-11-14 19:19:23,791 - INFO - ======================================================================
+2025-11-14 19:19:24,340 - INFO - [SUCCESS] Target executed successfully
+2025-11-14 19:19:24,340 - INFO - 
 [STEP 4/4] Persisting results and cleaning up...
-2025-11-14 19:11:19,938 - INFO - [OK] Results from '/kaggle/working/Code-traffic-flow/results' persisted to '/kaggle/working/simulation_results'
-2025-11-14 19:11:19,938 - INFO -   - Found persisted: /kaggle/working/simulation_results/network_simulation_results.pkl
-2025-11-14 19:11:19,938 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
-2025-11-14 19:11:19,938 - INFO - [OK] Repository cleanup skipped for debugging.
-2025-11-14 19:11:19,938 - INFO - 
+2025-11-14 19:19:24,340 - WARNING - [WARN] No 'results' directory found or it is empty.
+2025-11-14 19:19:24,340 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
+2025-11-14 19:19:24,340 - INFO - [OK] Repository cleanup skipped for debugging.
+2025-11-14 19:19:24,340 - INFO - 
 [FINAL] Test workflow completed
+2025-11-14 19:19:24,340 - INFO - Created placeholder in output directory for Kaggle.

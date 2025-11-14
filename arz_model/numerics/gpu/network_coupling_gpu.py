@@ -131,22 +131,24 @@ class NetworkCouplingGPU:
         blocks_per_grid = (self.num_nodes + (threads_per_block - 1)) // threads_per_block
 
         # Launch the kernel
-        _apply_coupling_kernel[blocks_per_grid, threads_per_block](
+        # Unpack the tuple of segment state arrays as individual arguments
+        kernel_args = (
             self.d_node_types,
             self.d_node_incoming_gids,
             self.d_node_incoming_offsets,
             self.d_node_outgoing_gids,
             self.d_node_outgoing_offsets,
-            self.gpu_pool.d_U_flat,
-            self.gpu_pool.d_segment_offsets,
             self.d_segment_n_phys,
             self.d_segment_n_ghost,
             params.p_m,
             params.p_c,
             params.v_m,
             params.v_c,
-            self.d_fluxes  # Output array for fluxes
+            self.d_fluxes,  # Output array for fluxes
+            *self.gpu_pool.get_all_segment_states_tuple()
         )
+        
+        _apply_coupling_kernel[blocks_per_grid, threads_per_block](*kernel_args)
         
         # The kernel now handles everything, so the sequential loop is removed.
         # The second part of the logic (applying fluxes) is also in the kernel.
@@ -179,12 +181,11 @@ def _apply_coupling_kernel(
     node_incoming_offsets,
     node_outgoing_gids,
     node_outgoing_offsets,
-    d_U_flat,
-    segment_offsets,
     segment_n_phys,
     segment_n_ghost,
     p_m, p_c, v_m, v_c,
-    d_fluxes_out
+    d_fluxes_out,
+    *d_U_segments
 ):
     """
     CUDA kernel to apply network coupling for all nodes.
@@ -216,15 +217,15 @@ def _apply_coupling_kernel(
 
         for i in range(num_incoming):
             gid = node_incoming_gids[inc_start + i]
-            seg_offset = segment_offsets[gid]
+            d_U = d_U_segments[gid]
             n_phys = segment_n_phys[gid]
             n_ghost = segment_n_ghost[gid]
-            last_idx = seg_offset + n_ghost + n_phys - 1
+            last_idx = n_ghost + n_phys - 1
             
-            U_L_m[i, 0] = d_U_flat[0, last_idx]
-            U_L_m[i, 1] = d_U_flat[1, last_idx]
-            U_L_c[i, 0] = d_U_flat[2, last_idx]
-            U_L_c[i, 1] = d_U_flat[3, last_idx]
+            U_L_m[i, 0] = d_U[0, last_idx]
+            U_L_m[i, 1] = d_U[1, last_idx]
+            U_L_c[i, 0] = d_U[2, last_idx]
+            U_L_c[i, 1] = d_U[3, last_idx]
 
         # --- 3. Solve for the intermediate state (fluxes) ---
         flux_m, flux_c = solve_node_fluxes_gpu(U_L_m, U_L_c, num_incoming, p_m, p_c, v_m, v_c)
@@ -232,15 +233,15 @@ def _apply_coupling_kernel(
         # --- 4. Apply the resulting state to the ghost cells of outgoing segments ---
         for i in range(num_outgoing):
             gid = node_outgoing_gids[out_start + i]
-            seg_offset = segment_offsets[gid]
+            d_U = d_U_segments[gid]
             n_ghost = segment_n_ghost[gid]
             
             for j in range(n_ghost):
                 # The state is (rho_m, w_m, rho_c, w_c)
-                d_U_flat[0, seg_offset + j] = flux_m[0]
-                d_U_flat[1, seg_offset + j] = flux_m[1]
-                d_U_flat[2, seg_offset + j] = flux_c[0]
-                d_U_flat[3, seg_offset + j] = flux_c[1]
+                d_U[0, j] = flux_m[0]
+                d_U[1, j] = flux_m[1]
+                d_U[2, j] = flux_c[0]
+                d_U[3, j] = flux_c[1]
 
     # Note: Boundary condition nodes (inflow/outflow) are handled by the main boundary condition kernel
     # and do not require special handling here, as their "coupling" is with a fixed external state.
