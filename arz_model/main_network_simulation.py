@@ -91,8 +91,15 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
 
 def main():
     """Main execution function."""
-    print("======================================================")
-    print("= Full Network Simulation Execution (GPU-Only/Pydantic) =")
+    import sys
+    print("=" * 70, flush=True)
+    print("=== DÉBUT DU SCRIPT main_network_simulation.py ===", flush=True)
+    print("=" * 70, flush=True)
+    sys.stdout.flush()
+    
+    try:
+        print("======================================================", flush=True)
+        print("= Full Network Simulation Execution (GPU-Only/Pydantic) =", flush=True))
     print("======================================================")
 
     # --- 1. Create the Simulation Configuration ---
@@ -132,18 +139,46 @@ def main():
         results = runner.run()
         print("✅ Simulation finished.")
     except Exception as e:
-        print(f"❌ Error during simulation: {e}")
+        print(f"❌ Error during simulation: {e}", flush=True)
+        import traceback
+        traceback.print_exc()
+        sys.stdout.flush()
         return
 
     # --- 5. Save Results ---
-    print("\n[PHASE 5] Saving results...")
+    print("\n[PHASE 5] Saving results...", flush=True)
     output_path = os.path.join(project_root, 'results', 'network_simulation_results.pkl')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     try:
         with open(output_path, 'wb') as f:
             # The results object is a dictionary, not a legacy history object
             pickle.dump(results, f)
-        print(f"✅ Results saved to {output_path}")
-        print("\nRun complete.")
+        print(f"✅ Results saved to {output_path}", flush=True)
+        print("\nRun complete.", flush=True)
     except Exception as e:
-        print(f"❌ Error saving results: {e}")
+        print(f"❌ Error saving results: {e}", flush=True)
+        import traceback
+        traceback.print_exc()
+        sys.stdout.flush()
+
+if __name__ == "__main__":
+    import sys
+    try:
+        print("\n" + "=" * 70, flush=True)
+        print("=== SCRIPT MAIN STARTING ===", flush=True)
+        print("=" * 70 + "\n", flush=True)
+        sys.stdout.flush()
+        main()
+        print("\n" + "=" * 70, flush=True)
+        print("=== SCRIPT MAIN COMPLETED ===", flush=True)
+        print("=" * 70, flush=True)
+        sys.stdout.flush()
+    except Exception as e:
+        print(f"\n{'=' * 70}", flush=True)
+        print(f"=== FATAL ERROR IN MAIN ===", flush=True)
+        print(f"{'=' * 70}", flush=True)
+        print(f"Error: {e}", flush=True)
+        import traceback
+        traceback.print_exc()
+        sys.stdout.flush()
+        sys.exit(1)

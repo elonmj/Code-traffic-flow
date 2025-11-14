@@ -510,3 +510,19 @@
 2025-11-14 16:32:41,811 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-14 16:32:41,811 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-14 16:32:48,022 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-14 16:39:01,480 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-14 16:39:01,770 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-14 16:39:01,862 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-14 16:39:01,862 - kernel_manager - INFO -   M  rz_model/network/network_grid.py (Modified (staged))
+2025-11-14 16:39:01,864 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-14 16:39:01,864 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/generic-test-runner-kernel.log (Modified (unstaged))
+2025-11-14 16:39:01,864 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/test_log.txt (Modified (unstaged))
+2025-11-14 16:39:01,864 - kernel_manager - INFO -   ?? arz_model/results/output_network_test_seg_0.npz (Untracked)
+2025-11-14 16:39:01,866 - kernel_manager - INFO -   ?? arz_model/results/output_network_test_seg_1.npz (Untracked)
+2025-11-14 16:39:01,866 - kernel_manager - INFO -   ?? debug_output.txt (Untracked)
+2025-11-14 16:39:01,866 - kernel_manager - INFO -   ?? verify_npz_data.py (Untracked)
+2025-11-14 16:39:01,867 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-14 16:39:02,103 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-14 16:39:03,953 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-14 16:39:03,953 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-14 16:39:10,036 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
