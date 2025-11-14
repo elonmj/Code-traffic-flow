@@ -17,6 +17,55 @@ VEH_KM_TO_VEH_M = 1.0 / KM_TO_M # veh/km to veh/m
 VEH_M_TO_VEH_KM = KM_TO_M       # veh/m to veh/km
 # ----------------------------------------
 
+@njit
+def calculate_pressure(rho_m: np.ndarray, rho_c: np.ndarray,
+                       alpha: float, rho_jam: float, epsilon: float,
+                       K_m: float, gamma_m: float,
+                       K_c: float, gamma_c: float) -> tuple:
+    """
+    Calculates the pressure terms for motorcycles (m) and cars (c).
+    (Numba-optimized CPU version for initial condition setup)
+
+    Args:
+        rho_m: Density of motorcycles (veh/m).
+        rho_c: Density of cars (veh/m).
+        alpha: Interaction parameter.
+        rho_jam: Jam density (veh/m).
+        epsilon: Small number for numerical stability.
+        K_m: Pressure coefficient for motorcycles (m/s).
+        gamma_m: Pressure exponent for motorcycles.
+        K_c: Pressure coefficient for cars (m/s).
+        gamma_c: Pressure exponent for cars.
+
+    Returns:
+        A tuple (p_m, p_c) containing pressure terms (m/s).
+    """
+    # Ensure densities are non-negative
+    rho_m = np.maximum(rho_m, 0.0)
+    rho_c = np.maximum(rho_c, 0.0)
+
+    rho_eff_m = rho_m + alpha * rho_c
+    rho_total = rho_m + rho_c
+
+    # Calculate normalized densities
+    norm_rho_eff_m = rho_eff_m / rho_jam
+    norm_rho_total = rho_total / rho_jam
+
+    # Ensure base of power is non-negative
+    norm_rho_eff_m = np.maximum(norm_rho_eff_m, 0.0)
+    norm_rho_total = np.maximum(norm_rho_total, 0.0)
+
+    p_m = K_m * (norm_rho_eff_m ** gamma_m)
+    p_c = K_c * (norm_rho_total ** gamma_c)
+
+    # Ensure pressure is zero if respective density is zero
+    p_m = np.where(rho_m <= epsilon, 0.0, p_m)
+    p_c = np.where(rho_c <= epsilon, 0.0, p_c)
+    # Also ensure p_m is zero if rho_eff_m is zero
+    p_m = np.where(rho_eff_m <= epsilon, 0.0, p_m)
+
+    return p_m, p_c
+
 # --- CUDA Kernel for Pressure Calculation ---
 # This kernel calculates pressure for a single element (thread)
 @cuda.jit(device=True) # Use device=True for functions called from other kernels
