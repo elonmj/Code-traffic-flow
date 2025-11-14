@@ -97,20 +97,30 @@ class NetworkGrid:
         Adds a segment to the network from a SegmentConfig object.
         Applies initial conditions if specified in the segment configuration.
         """
+        print(f"[DEBUG] add_segment_from_config called for segment: {seg_config.id}")
+        print(f"[DEBUG] seg_config.initial_conditions = {seg_config.initial_conditions}")
+        print(f"[DEBUG] seg_config.initial_conditions type = {type(seg_config.initial_conditions)}")
+        
         # Create state array initialized to zeros
         U = np.zeros((4, grid.N_total))
         
         # Apply initial conditions if present
         if seg_config.initial_conditions is not None:
+            print(f"[DEBUG] IC is NOT None, proceeding with application...")
             from ..core.physics import calculate_pressure
             
             ic_config = seg_config.initial_conditions
+            print(f"[DEBUG] ic_config = {ic_config}")
             ic = ic_config.config if hasattr(ic_config, 'config') else ic_config
+            print(f"[DEBUG] ic extracted = {ic}")
+            print(f"[DEBUG] ic type = {type(ic)}")
             
             # Handle UniformIC type (density and velocity)
             if hasattr(ic, 'density') and hasattr(ic, 'velocity'):
+                print(f"[DEBUG] IC has density and velocity attributes")
                 density = ic.density  # Total density in veh/km
                 velocity = ic.velocity  # Velocity in km/h
+                print(f"[DEBUG] density={density}, velocity={velocity}")
                 
                 # Convert to model units (veh/m, m/s)
                 density_m = density / 1000.0  # veh/km -> veh/m
@@ -141,7 +151,27 @@ class NetworkGrid:
                 U[1, :] = velocity_ms + p_m  # Motorcycle momentum
                 U[3, :] = velocity_ms + p_c  # Car momentum
                 
-                print(f"[NetworkGrid] Applied IC to {seg_config.id}: ρ={density:.1f} veh/km, v={velocity:.1f} km/h")
+                print(f"[IC APPLIED] Segment {seg_config.id}:")
+                print(f"   ρ_total = {density:.1f} veh/km → {density_m:.6f} veh/m")
+                print(f"   v = {velocity:.1f} km/h → {velocity_ms:.3f} m/s")
+                print(f"   α = {alpha:.3f} → ρ_m={rho_m:.6f}, ρ_c={rho_c:.6f}")
+                print(f"   U[0] (ρ_m): min={U[0].min():.6f}, max={U[0].max():.6f}, mean={U[0].mean():.6f}")
+                print(f"   U[1] (w_m): min={U[1].min():.6f}, max={U[1].max():.6f}, mean={U[1].mean():.6f}")
+                print(f"   U[2] (ρ_c): min={U[2].min():.6f}, max={U[2].max():.6f}, mean={U[2].mean():.6f}")
+                print(f"   U[3] (w_c): min={U[3].min():.6f}, max={U[3].max():.6f}, mean={U[3].mean():.6f}")
+            else:
+                print(f"[DEBUG] IC does NOT have density/velocity attributes!")
+                print(f"[DEBUG] IC attributes: {dir(ic)}")
+        else:
+            print(f"[DEBUG] seg_config.initial_conditions is None!")
+        
+        # Final check before storing
+        print(f"[DEBUG] Final U array for {seg_config.id}:")
+        print(f"   U shape: {U.shape}")
+        print(f"   U[0] (ρ_m): min={U[0].min():.6f}, max={U[0].max():.6f}")
+        print(f"   U[1] (w_m): min={U[1].min():.6f}, max={U[1].max():.6f}")
+        print(f"   U[2] (ρ_c): min={U[2].min():.6f}, max={U[2].max():.6f}")
+        print(f"   U[3] (w_c): min={U[3].min():.6f}, max={U[3].max():.6f}")
         
         self.segments[seg_config.id] = {
             "grid": grid,

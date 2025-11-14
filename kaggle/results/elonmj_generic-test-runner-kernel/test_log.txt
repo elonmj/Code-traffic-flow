@@ -1,26 +1,26 @@
-2025-11-14 15:27:03,317 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
-2025-11-14 15:27:03,317 - INFO - Branch: main
-2025-11-14 15:27:03,317 - INFO - Target: arz_model/main_network_simulation.py
-2025-11-14 15:27:08,068 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
-2025-11-14 15:27:08,068 - INFO - PyTorch: 2.6.0+cu124
-2025-11-14 15:27:08,118 - INFO - CUDA available: True
-2025-11-14 15:27:08,140 - INFO - CUDA device: Tesla P100-PCIE-16GB
-2025-11-14 15:27:08,140 - INFO - 
+2025-11-14 15:32:54,399 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-11-14 15:32:54,399 - INFO - Branch: main
+2025-11-14 15:32:54,399 - INFO - Target: arz_model/main_network_simulation.py
+2025-11-14 15:33:00,451 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-11-14 15:33:00,451 - INFO - PyTorch: 2.6.0+cu124
+2025-11-14 15:33:00,499 - INFO - CUDA available: True
+2025-11-14 15:33:00,521 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-11-14 15:33:00,521 - INFO - 
 [STEP 1/4] Cloning repository from GitHub...
-2025-11-14 15:27:08,140 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
-2025-11-14 15:27:09,126 - INFO - [OK] Repository cloned successfully
-2025-11-14 15:27:09,126 - INFO - 
+2025-11-14 15:33:00,521 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-11-14 15:33:01,792 - INFO - [OK] Repository cloned successfully
+2025-11-14 15:33:01,792 - INFO - 
 [STEP 2/4] Installing dependencies...
-2025-11-14 15:27:09,126 - INFO - Installing pytest...
-2025-11-14 15:27:12,852 - INFO - [OK] Dependencies installed
-2025-11-14 15:27:12,852 - INFO - 
+2025-11-14 15:33:01,792 - INFO - Installing pytest...
+2025-11-14 15:33:06,203 - INFO - [OK] Dependencies installed
+2025-11-14 15:33:06,203 - INFO - 
 [STEP 3/4] Running Target...
-2025-11-14 15:27:12,852 - INFO - Target is a file. Executing script...
-2025-11-14 15:27:12,852 - INFO - Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py
-2025-11-14 15:27:17,678 - INFO - [SUCCESS] Target executed successfully
-2025-11-14 15:27:17,679 - INFO - 
+2025-11-14 15:33:06,203 - INFO - Target is a file. Executing script...
+2025-11-14 15:33:06,203 - INFO - Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py
+2025-11-14 15:33:11,926 - INFO - [SUCCESS] Target executed successfully
+2025-11-14 15:33:11,926 - INFO - 
 [STEP 4/4] Persisting results and cleaning up...
-2025-11-14 15:27:17,679 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
-2025-11-14 15:27:17,691 - INFO - [OK] Repository cleaned up.
-2025-11-14 15:27:17,691 - INFO - 
+2025-11-14 15:33:11,927 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
+2025-11-14 15:33:11,939 - INFO - [OK] Repository cleaned up.
+2025-11-14 15:33:11,939 - INFO - 
 [FINAL] Test workflow completed
