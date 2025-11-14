@@ -95,10 +95,57 @@ class NetworkGrid:
     def add_segment_from_config(self, seg_config: 'SegmentConfig', grid: Grid1D):
         """
         Adds a segment to the network from a SegmentConfig object.
+        Applies initial conditions if specified in the segment configuration.
         """
+        # Create state array initialized to zeros
+        U = np.zeros((4, grid.N_total))
+        
+        # Apply initial conditions if present
+        if seg_config.initial_conditions is not None:
+            from ..core.physics import calculate_pressure
+            
+            ic_config = seg_config.initial_conditions
+            ic = ic_config.config if hasattr(ic_config, 'config') else ic_config
+            
+            # Handle UniformIC type (density and velocity)
+            if hasattr(ic, 'density') and hasattr(ic, 'velocity'):
+                density = ic.density  # Total density in veh/km
+                velocity = ic.velocity  # Velocity in km/h
+                
+                # Convert to model units (veh/m, m/s)
+                density_m = density / 1000.0  # veh/km -> veh/m
+                velocity_ms = velocity / 3.6  # km/h -> m/s
+                
+                # Split between motorcycles and cars (using alpha ratio)
+                alpha = self.simulation_config.physics.alpha
+                rho_m = alpha * density_m
+                rho_c = (1.0 - alpha) * density_m
+                
+                # Set densities
+                U[0, :] = rho_m  # Motorcycle density
+                U[2, :] = rho_c  # Car density
+                
+                # Calculate pressure
+                p_m, p_c = calculate_pressure(
+                    U[0, :], U[2, :],
+                    self.simulation_config.physics.alpha,
+                    self.simulation_config.physics.rho_jam,
+                    self.simulation_config.physics.epsilon,
+                    self.simulation_config.physics.K_m,
+                    self.simulation_config.physics.gamma_m,
+                    self.simulation_config.physics.K_c,
+                    self.simulation_config.physics.gamma_c
+                )
+                
+                # Set Lagrangian momentum w = v + p
+                U[1, :] = velocity_ms + p_m  # Motorcycle momentum
+                U[3, :] = velocity_ms + p_c  # Car momentum
+                
+                print(f"[NetworkGrid] Applied IC to {seg_config.id}: ρ={density:.1f} veh/km, v={velocity:.1f} km/h")
+        
         self.segments[seg_config.id] = {
             "grid": grid,
-            "U": np.zeros((4, grid.N_total)),
+            "U": U,
             "start_node": seg_config.start_node,
             "end_node": seg_config.end_node,
             "parameters": seg_config.parameters
