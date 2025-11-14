@@ -56,8 +56,8 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
         grid=grid_config,
         initial_conditions=UniformIC(density=50.0, velocity=40.0),  # 50 veh/km, 40 km/h
         boundary_conditions=BoundaryConditionsConfig(
-            left=InflowBC(state=[0.05, 15.0, 0.08, 12.0]), # Inflow from outside
-            right=OutflowBC() # This will be overridden by the node
+            left=InflowBC(density=50.0, velocity=40.0),  # Inflow from outside: 50 veh/km, 40 km/h
+            right=OutflowBC(density=20.0, velocity=50.0) # This will be overridden by the node
         )
     )
     
@@ -66,8 +66,8 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
         grid=grid_config,
         initial_conditions=UniformIC(density=20.0, velocity=50.0),  # 20 veh/km, 50 km/h
         boundary_conditions=BoundaryConditionsConfig(
-            left=OutflowBC(), # This will be overridden by the node
-            right=OutflowBC() # Outflow at the end of the corridor
+            left=OutflowBC(density=20.0, velocity=50.0), # This will be overridden by the node
+            right=OutflowBC(density=20.0, velocity=50.0) # Outflow at the end of the corridor
         )
     )
 
