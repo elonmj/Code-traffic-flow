@@ -78,7 +78,7 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
     # Define Node connecting the segments
     node1_config = NodeConfig(
         id="node1",
-        node_type="simple_merge", # or other types
+        type="boundary",  # Use "type" not "node_type", value should be "boundary", "signalized", etc.
         incoming_segments=["seg1"],
         outgoing_segments=["seg2"]
     )
