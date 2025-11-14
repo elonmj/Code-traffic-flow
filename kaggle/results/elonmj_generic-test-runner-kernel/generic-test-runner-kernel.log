@@ -1,43 +1,67 @@
-[{"stream_name":"stdout","time":0.438366156,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.438411817,"data":"GENERIC_TEST_MAIN_NETWORK_SIMULATION_PY\n"}
-,{"stream_name":"stdout","time":0.438417685,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.438433523,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
-,{"stream_name":"stdout","time":0.438653372,"data":"Branch: main\n"}
-,{"stream_name":"stdout","time":0.438678785,"data":"Target: arz_model/main_network_simulation.py\n"}
-,{"stream_name":"stdout","time":4.927076556,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
-,{"stream_name":"stdout","time":4.927202279,"data":"PyTorch: 2.6.0+cu124\n"}
-,{"stream_name":"stdout","time":4.97345033,"data":"CUDA available: True\n"}
-,{"stream_name":"stdout","time":4.995625485,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
-,{"stream_name":"stdout","time":4.995696004,"data":"\n"}
-,{"stream_name":"stdout","time":4.995703099,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
-,{"stream_name":"stdout","time":4.995893345,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
-,{"stream_name":"stdout","time":5.944369185,"data":"[OK] Repository cloned successfully\n"}
-,{"stream_name":"stdout","time":5.944398939,"data":"\n"}
-,{"stream_name":"stdout","time":5.944404013,"data":"[STEP 2/4] Installing dependencies...\n"}
-,{"stream_name":"stdout","time":5.944414595,"data":"Installing pytest...\n"}
-,{"stream_name":"stdout","time":9.671804556,"data":"[OK] Dependencies installed\n"}
-,{"stream_name":"stdout","time":9.671837417999999,"data":"\n"}
-,{"stream_name":"stdout","time":9.671842534,"data":"[STEP 3/4] Running Target...\n"}
-,{"stream_name":"stdout","time":9.671846576,"data":"Target is a file. Executing script...\n"}
-,{"stream_name":"stdout","time":9.671913716,"data":"Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py\n"}
-,{"stream_name":"stderr","time":9.728458216,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py\", line 102\n"}
-,{"stream_name":"stderr","time":9.7284898,"data":"    print(\"= Full Network Simulation Execution (GPU-Only/Pydantic) =\", flush=True))\n"}
-,{"stream_name":"stderr","time":9.728496102,"data":"                                                                                  ^\n"}
-,{"stream_name":"stderr","time":9.728501873999999,"data":"SyntaxError: unmatched ')'\n"}
-,{"stream_name":"stdout","time":9.737990399,"data":"[WARNING] Target execution returned code: 1\n"}
-,{"stream_name":"stdout","time":9.738085481,"data":"\n"}
-,{"stream_name":"stdout","time":9.738098876,"data":"[STEP 4/4] Persisting results and cleaning up...\n"}
-,{"stream_name":"stdout","time":9.738211088,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
-,{"stream_name":"stdout","time":9.748847916999999,"data":"[OK] Repository cleaned up.\n"}
-,{"stream_name":"stdout","time":9.748916227,"data":"\n"}
-,{"stream_name":"stdout","time":9.74892391,"data":"[FINAL] Test workflow completed\n"}
-,{"stream_name":"stdout","time":9.749029415,"data":"\n"}
-,{"stream_name":"stdout","time":9.749041362,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":9.749045775999999,"data":"EXECUTION COMPLETED\n"}
-,{"stream_name":"stdout","time":9.749049527,"data":"Check /kaggle/working/test_log.txt for details.\n"}
-,{"stream_name":"stdout","time":9.749073075,"data":"================================================================================\n"}
-,{"stream_name":"stderr","time":13.696492731,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
-,{"stream_name":"stderr","time":13.69652901,"data":"  warn(\n"}
-,{"stream_name":"stderr","time":13.736449542999999,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
-,{"stream_name":"stderr","time":14.858215644,"data":"[NbConvertApp] Writing 301979 bytes to __results__.html\n"}
+[{"stream_name":"stdout","time":0.467021588,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.46708893,"data":"GENERIC_TEST_MAIN_NETWORK_SIMULATION_PY\n"}
+,{"stream_name":"stdout","time":0.467095277,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.467102521,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.467291402,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":0.467314722,"data":"Target: arz_model/main_network_simulation.py\n"}
+,{"stream_name":"stdout","time":5.266898979,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.267016378,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.311614544,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.332438757,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.332502719,"data":"\n"}
+,{"stream_name":"stdout","time":5.332530826,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.332649956,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":6.969824096,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":6.9698939410000005,"data":"\n"}
+,{"stream_name":"stdout","time":6.969902074,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":6.9699598940000005,"data":"Installing pytest...\n"}
+,{"stream_name":"stdout","time":10.858625874,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":10.858658632000001,"data":"\n"}
+,{"stream_name":"stdout","time":10.858662066,"data":"[STEP 3/4] Running Target...\n"}
+,{"stream_name":"stdout","time":10.858664729000001,"data":"Target is a file. Executing script...\n"}
+,{"stream_name":"stdout","time":10.858667193,"data":"Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py\n"}
+,{"stream_name":"stdout","time":15.726749221,"data":"\n"}
+,{"stream_name":"stdout","time":15.726777350999999,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":15.7267823,"data":"=== SCRIPT MAIN STARTING ===\n"}
+,{"stream_name":"stdout","time":15.726786039,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":15.726790291,"data":"\n"}
+,{"stream_name":"stdout","time":15.726794642,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":15.726798994,"data":"=== DÉBUT DU SCRIPT main_network_simulation.py ===\n"}
+,{"stream_name":"stdout","time":15.7268044,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":15.726808275,"data":"======================================================\n"}
+,{"stream_name":"stdout","time":15.72681296,"data":"= Full Network Simulation Execution (GPU-Only/Pydantic) =\n"}
+,{"stream_name":"stdout","time":15.726817462,"data":"======================================================\n"}
+,{"stream_name":"stdout","time":15.726822277,"data":"\n"}
+,{"stream_name":"stdout","time":15.72682652,"data":"[PHASE 1] Defining simulation configuration...\n"}
+,{"stream_name":"stdout","time":15.726830103,"data":"   - Creating Pydantic config for a two-segment corridor...\n"}
+,{"stream_name":"stdout","time":15.726876913,"data":"❌ Error creating configuration: 3 validation errors for PhysicsConfig\n"}
+,{"stream_name":"stdout","time":15.7269074,"data":"default_road_quality\n"}
+,{"stream_name":"stdout","time":15.726911241,"data":"  Input should be less than or equal to 1 [type=less_than_equal, input_value=8, input_type=int]\n"}
+,{"stream_name":"stdout","time":15.726913849,"data":"    For further information visit https://errors.pydantic.dev/2.12/v/less_than_equal\n"}
+,{"stream_name":"stdout","time":15.726916357,"data":"V_max_m\n"}
+,{"stream_name":"stdout","time":15.726918787,"data":"  Extra inputs are not permitted [type=extra_forbidden, input_value=80.0, input_type=float]\n"}
+,{"stream_name":"stdout","time":15.726921214,"data":"    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\n"}
+,{"stream_name":"stdout","time":15.72692363,"data":"V_max_c\n"}
+,{"stream_name":"stdout","time":15.726926045999999,"data":"  Extra inputs are not permitted [type=extra_forbidden, input_value=60.0, input_type=float]\n"}
+,{"stream_name":"stdout","time":15.72692856,"data":"    For further information visit https://errors.pydantic.dev/2.12/v/extra_forbidden\n"}
+,{"stream_name":"stdout","time":15.72693099,"data":"\n"}
+,{"stream_name":"stdout","time":15.726933257,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":15.726936898,"data":"=== SCRIPT MAIN COMPLETED ===\n"}
+,{"stream_name":"stdout","time":15.726940558999999,"data":"======================================================================\n"}
+,{"stream_name":"stdout","time":15.943227353,"data":"[SUCCESS] Target executed successfully\n"}
+,{"stream_name":"stdout","time":15.943335189999999,"data":"\n"}
+,{"stream_name":"stdout","time":15.943348298,"data":"[STEP 4/4] Persisting results and cleaning up...\n"}
+,{"stream_name":"stdout","time":15.943462357,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
+,{"stream_name":"stdout","time":15.955698731,"data":"[OK] Repository cleaned up.\n"}
+,{"stream_name":"stdout","time":15.955739686,"data":"\n"}
+,{"stream_name":"stdout","time":15.955751393,"data":"[FINAL] Test workflow completed\n"}
+,{"stream_name":"stdout","time":15.955855142,"data":"\n"}
+,{"stream_name":"stdout","time":15.955861117,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":15.955865163,"data":"EXECUTION COMPLETED\n"}
+,{"stream_name":"stdout","time":15.955868755000001,"data":"Check /kaggle/working/test_log.txt for details.\n"}
+,{"stream_name":"stdout","time":15.955872487,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":19.745290516,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":19.745339801,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":19.784230039,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":20.858568461,"data":"[NbConvertApp] Writing 301979 bytes to __results__.html\n"}
 ]

@@ -44,8 +44,9 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
     # Define shared configurations
     time_config = TimeConfig(t_final=1800.0, output_dt=10.0)
     physics_config = PhysicsConfig(
-        V_max_m=80.0, V_max_c=60.0,
-        default_road_quality=8
+        v_max_m_kmh=100.0,  # Max speed motorcycles: 100 km/h
+        v_max_c_kmh=120.0,  # Max speed cars: 120 km/h
+        default_road_quality=1.0  # Perfect road quality (0-1 scale)
     )
     grid_config = GridConfig(N=100, xmin=0.0, xmax=1000.0) # 1km road
 
