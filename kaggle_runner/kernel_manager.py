@@ -351,13 +351,15 @@ try:
     # ========== STEP 1: CLONE REPOSITORY ==========
     log_and_print("info", "\\n[STEP 1/4] Cloning repository from GitHub...")
     
+    # Force clean clone to prevent caching issues
     if os.path.exists(REPO_DIR):
-        shutil.rmtree(REPO_DIR)
-    
+        log_and_print("info", f"Directory {{REPO_DIR}} exists. Forcing clean slate.")
+        # Using system calls for robustness
+        subprocess.run(["rm", "-rf", REPO_DIR], check=True)
+
     clone_cmd = [
         "git", "clone",
         "--single-branch", "--branch", BRANCH,
-        "--depth", "1",
         REPO_URL, REPO_DIR
     ]
     
@@ -366,6 +368,15 @@ try:
     
     if result.returncode == 0:
         log_and_print("info", "[OK] Repository cloned successfully")
+        # Verification step
+        os.chdir(REPO_DIR)
+        log_and_print("info", "Verifying latest commit...")
+        log_result = subprocess.run(["git", "log", "-n", "1", "--oneline"], capture_output=True, text=True)
+        if log_result.returncode == 0:
+            log_and_print("info", f"Latest commit: {{log_result.stdout.strip()}}")
+        else:
+            log_and_print("warning", "Could not verify latest commit hash.")
+        os.chdir("/kaggle/working") # Go back to original dir
     else:
         log_and_print("error", f"[ERROR] Git clone failed: {{result.stderr}}")
         sys.exit(1)
