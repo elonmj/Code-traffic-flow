@@ -639,3 +639,15 @@
 2025-11-14 17:05:18,504 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-14 17:05:18,504 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-14 17:05:25,830 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-14 17:08:00,668 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-14 17:08:00,837 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-14 17:08:00,923 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-14 17:08:00,923 - kernel_manager - INFO -   M  rz_model/main_network_simulation.py (Modified (staged))
+2025-11-14 17:08:00,923 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-14 17:08:00,923 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/generic-test-runner-kernel.log (Modified (unstaged))
+2025-11-14 17:08:00,923 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/test_log.txt (Modified (unstaged))
+2025-11-14 17:08:00,928 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-14 17:08:01,031 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-14 17:08:02,108 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-14 17:08:02,109 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-14 17:08:08,291 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub

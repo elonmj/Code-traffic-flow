@@ -93,8 +93,8 @@ def validate_topology(segments: Dict, nodes: Dict) -> None:
     # Check 1: Verify that every segment's start_node has it in its outgoing list
     for seg_id, segment in segments.items():
         start_node_id = segment.get('start_node')
-        if not start_node_id:
-            errors.append(f"Segment '{seg_id}' is missing a start_node.")
+        if start_node_id is None:
+            # Segment has no upstream node (boundary inflow) - this is valid
             continue
         
         start_node = nodes.get(start_node_id)
@@ -112,8 +112,8 @@ def validate_topology(segments: Dict, nodes: Dict) -> None:
     # Check 2: Verify that every segment's end_node has it in its incoming list
     for seg_id, segment in segments.items():
         end_node_id = segment.get('end_node')
-        if not end_node_id:
-            errors.append(f"Segment '{seg_id}' is missing an end_node.")
+        if end_node_id is None:
+            # Segment has no downstream node (boundary outflow) - this is valid
             continue
 
         end_node = nodes.get(end_node_id)
