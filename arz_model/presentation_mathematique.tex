@@ -414,15 +414,23 @@
 \begin{frame}
     \frametitle{Résultats : Segment 1 (0-200m)}
 
-    \textbf{Densité des Motos ($\rho_m$) et Vitesse des Voitures ($v_c$)}
-    
+    \begin{columns}[T]
+        \begin{column}{.5\textwidth}
+            \textbf{Densité des Motos ($\rho_m$)}
+            \includegraphics[width=\textwidth]{results/plot_seg_0_density_moto.png}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \textbf{Vitesse des Voitures ($v_c$)}
+            \includegraphics[width=\textwidth]{results/plot_seg_0_velocity_car.png}
+        \end{column}
+    \end{columns}
+
     \vspace{0.5cm}
     \textbf{Analyse :}
     \begin{itemize}
         \item Une \textbf{onde de choc} (embouteillage) se forme à 200m et se propage vers l'arrière (vers x=0).
-        \item Pour la densité des motos : La densité augmente fortement (zone de haute densité en jaune/vert dans le graphique).
-        \item Pour la vitesse des voitures : La vitesse chute drastiquement dans la zone de forte densité (couleur violet foncé), passant de 50 km/h à presque 0 km/h.
-        \item On observe clairement la relation inverse entre densité et vitesse : plus il y a de véhicules, plus la vitesse diminue.
+        \item \textit{À gauche :} La densité augmente (couleurs vertes/jaunes).
+        \item \textit{À droite :} La vitesse des voitures chute drastiquement (couleur violet foncé).
     \end{itemize}
 
 \end{frame}
@@ -430,15 +438,23 @@
 \begin{frame}
     \frametitle{Résultats : Segment 2 (200-400m)}
 
-    \textbf{Densité des Motos ($\rho_m$) et Vitesse des Voitures ($v_c$)}
-    
+    \begin{columns}[T]
+        \begin{column}{.5\textwidth}
+            \textbf{Densité des Motos ($\rho_m$)}
+            \includegraphics[width=\textwidth]{results/plot_seg_1_density_moto.png}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \textbf{Vitesse des Voitures ($v_c$)}
+            \includegraphics[width=\textwidth]{results/plot_seg_1_velocity_car.png}
+        \end{column}
+    \end{columns}
+
     \vspace{0.5cm}
     \textbf{Analyse :}
     \begin{itemize}
         \item Le segment en aval de l'embouteillage reste fluide.
-        \item Pour la densité des motos : La densité reste très faible (violet sur le graphique), car les véhicules sont bloqués sur le segment précédent et n'arrivent qu'au compte-gouttes.
-        \item Pour la vitesse des voitures : La vitesse est élevée (vert/jaune sur le graphique), atteignant jusqu'à 50 km/h, ce qui est cohérent avec un trafic parfaitement fluide.
-        \item Cette différence entre les deux segments illustre parfaitement la propagation des ondes de congestion et la transmission des conditions de trafic d'un segment à l'autre.
+        \item \textit{À gauche :} La densité reste très faible (violet), car les véhicules sont bloqués sur le segment précédent.
+        \item \textit{À droite :} La vitesse des voitures est élevée (vert/jaune), ce qui est cohérent avec un trafic fluide.
     \end{itemize}
 
 \end{frame}

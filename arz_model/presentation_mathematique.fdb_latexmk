@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1763061691.35754 "d:/Projets/Alibi/Code project/arz_model/presentation_mathematique.tex" "presentation_mathematique.pdf" "presentation_mathematique" 1763061704.64936 0
+["pdflatex"] 1763064885.206 "d:/Projets/Alibi/Code project/arz_model/presentation_mathematique.tex" "presentation_mathematique.pdf" "presentation_mathematique" 1763064891.61285 0
   "C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc" 1256929440 2375 baa924870cfb487815765f9094cf3728 ""
   "C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathex.enc" 1256929440 3486 c7eadf5dcc57b3b2d11736679f6636ba ""
   "C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc" 1256929440 2405 5dcf2c1b967ee25cc46c58cd52244aed ""
@@ -208,14 +208,18 @@
   "C:/Users/JOSAPHAT/AppData/Roaming/MiKTeX/tex/latex/translator/translator-numbers-dictionary-English.dict" 1622471508 1638 2bf1a1dea98f8a4d28033fce76e9cc67 ""
   "C:/Users/JOSAPHAT/AppData/Roaming/MiKTeX/tex/latex/translator/translator-theorem-dictionary-English.dict" 1622471508 3523 1f9d9b91f7d78b73e74c7e97bca30fb0 ""
   "C:/Users/JOSAPHAT/AppData/Roaming/MiKTeX/tex/latex/translator/translator.sty" 1622471510 8765 56d370785f0143111ff9898b5adfe08e ""
-  "d:/Projets/Alibi/Code project/arz_model/presentation_mathematique.tex" 1763061689 19461 65faa33bd9ea4d00aeb520df0cb71c77 ""
+  "d:/Projets/Alibi/Code project/arz_model/presentation_mathematique.tex" 1763064883 19617 97b0a40e3d3c83760dde9bc729671061 ""
   "fluid_flow.jpg" 1763051350 553346 ad7de10b7476519d717b869b0a6a1df6 ""
   "grid.png" 1763051351 84936 18ef636b180e392b3a24fe0c19442d28 ""
-  "presentation_mathematique.aux" 1763061703 5158 d974e17dd93c104545b941ec3645b05c "pdflatex"
-  "presentation_mathematique.nav" 1763061703 3355 ec9056cd2e6d225eb1e6e2687d3dfd13 "pdflatex"
-  "presentation_mathematique.out" 1763061703 965 1a8435ce0154f85540bccfa84183b587 "pdflatex"
-  "presentation_mathematique.tex" 1763061689 19461 65faa33bd9ea4d00aeb520df0cb71c77 ""
+  "presentation_mathematique.aux" 1763064890 5158 d974e17dd93c104545b941ec3645b05c "pdflatex"
+  "presentation_mathematique.nav" 1763064891 3355 ec9056cd2e6d225eb1e6e2687d3dfd13 "pdflatex"
+  "presentation_mathematique.out" 1763064891 965 1a8435ce0154f85540bccfa84183b587 "pdflatex"
+  "presentation_mathematique.tex" 1763064883 19617 97b0a40e3d3c83760dde9bc729671061 ""
   "reconstruction.png" 1763051353 415214 4eda2eed7112dd2a73c80afd69ed2ba3 ""
+  "results/plot_seg_0_density_moto.png" 1763035893 35339 4d8c97918bbf7b7c2f4224125113fbe0 ""
+  "results/plot_seg_0_velocity_car.png" 1763035893 29072 25a34bf7234c31afb92995c9b8a2e440 ""
+  "results/plot_seg_1_density_moto.png" 1763035893 29662 1a6f97321104f99626a57c6cffee5509 ""
+  "results/plot_seg_1_velocity_car.png" 1763035893 27166 af7866955569a89b3e83d442f9d16cc2 ""
   "riemann.png" 1763051354 246355 a95bfa277263a9c19f63f61921a7aeef ""
   "traffic_jam.jpg" 1763051349 309951 0eb1f0a2d2cb83dccb0033d28703d7ef ""
   (generated)

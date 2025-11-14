@@ -5,6 +5,8 @@ Script de simulation GPU avec sauvegarde NPZ pour visualisation
 Lance une simulation complète et sauvegarde les résultats en fichiers NPZ.
 """
 
+import argparse
+import os
 import numpy as np
 from pathlib import Path
 
@@ -135,9 +137,19 @@ def save_results_to_npz(results, output_dir: Path):
 
 def main():
     """Lance la simulation et sauvegarde les résultats."""
+    parser = argparse.ArgumentParser(description="Simulation ARZ sur GPU avec export NPZ")
+    parser.add_argument("--debug", action="store_true", help="Active les logs détaillés (statistiques GPU)")
+    args = parser.parse_args()
+
+    env_debug = os.environ.get("SIM_DEBUG", "").lower() in {"1", "true", "yes", "on"}
+    file_debug = Path(".sim_debug").exists()
+    debug_mode = args.debug or env_debug or file_debug
+
     print("="*60)
     print("🚗 SIMULATION RÉSEAU GPU - SAUVEGARDE NPZ")
     print("="*60)
+    if debug_mode:
+        print("[DEBUG] Mode debug activé - statistiques GPU à chaque étape clé")
     
     # Créer la configuration
     print("\n[1/4] Création de la configuration...")
@@ -155,7 +167,8 @@ def main():
     runner = SimulationRunner(
         network_grid=network_grid,
         simulation_config=config,
-        quiet=False
+        quiet=False,
+        debug=debug_mode
     )
     
     # Lancer la simulation

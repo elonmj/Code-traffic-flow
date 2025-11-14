@@ -401,16 +401,12 @@ class TrafficSimulationVisualizer:
         # Texte pour le temps
         time_text = fig.text(0.5, 0.96, '', ha='center', fontsize=14, fontweight='bold')
         
-        def init():
-            for line_d, line_s in zip(lines_density, lines_speed):
-                line_d.set_data([], [])
-                line_s.set_data([], [])
-            time_text.set_text('')
-            return lines_density + lines_speed + [time_text]
-        
         def animate(frame):
-            time_text.set_text(f'🕐 Temps: {self.times[frame]:.1f}s / {self.times[-1]:.1f}s')
+            # Sous-échantillonnage de l'index de frame
+            time_idx = frame_indices[frame]
+            time_text.set_text(f'🕐 Temps: {self.times[time_idx]:.1f}s / {self.times[-1]:.1f}s')
             
+            new_fills = []
             for idx, (seg_id, seg_data) in enumerate(self.segments_data.items()):
                 density_matrix = np.array(seg_data['density'])
                 speed_matrix = np.array(seg_data['speed'])
@@ -419,25 +415,30 @@ class TrafficSimulationVisualizer:
                 x = np.linspace(0, self.network_config[seg_id]['length'], n_cells)
                 
                 # Mettre à jour densité
-                density_data = density_matrix[frame, :] * 1000
+                density_data = density_matrix[time_idx, :] * 1000
                 lines_density[idx].set_data(x, density_data)
                 
-                # Mettre à jour le fill
-                axes_density[idx].collections.clear()
-                axes_density[idx].fill_between(x, 0, density_data, alpha=0.3, color='blue')
+                # Mettre à jour le fill: supprimer l'ancien, créer le nouveau
+                if fills_density[idx]:
+                    fills_density[idx].remove()
+                
+                new_fill = axes_density[idx].fill_between(x, 0, density_data, alpha=0.3, color='blue')
+                new_fills.append(new_fill)
                 
                 # Mettre à jour vitesse
-                lines_speed[idx].set_data(x, speed_matrix[frame, :] * 3.6)
+                lines_speed[idx].set_data(x, speed_matrix[time_idx, :] * 3.6)
             
-            return lines_density + lines_speed + [time_text]
-        
+            # Remplacer les anciens fills par les nouveaux
+            for i in range(len(new_fills)):
+                fills_density[i] = new_fills[i]
+
         # Créer l'animation (sous-échantillonner pour réduire la taille)
         n_frames = min(len(self.times), 120)  # Maximum 120 frames
         frame_indices = np.linspace(0, len(self.times)-1, n_frames, dtype=int)
         
-        anim = animation.FuncAnimation(fig, animate, init_func=init,
-                                      frames=frame_indices,
-                                      interval=100, blit=True)
+        anim = animation.FuncAnimation(fig, animate,
+                                      frames=n_frames,
+                                      interval=100, blit=False)
         
         # Sauvegarder en GIF
         output_file = output_dir / "05_animation.gif"

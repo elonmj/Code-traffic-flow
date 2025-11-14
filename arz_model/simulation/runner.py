@@ -45,7 +45,8 @@ class SimulationRunner:
                  simulation_config: Optional[Union[SimulationConfig, NetworkSimulationConfig]] = None,
                  quiet: bool = False,
                  network_grid: Optional['NetworkGrid'] = None,
-                 device: str = 'gpu'):
+                 device: str = 'gpu',
+                 debug: bool = False):
         """
         Initializes the simulation runner.
 
@@ -66,6 +67,8 @@ class SimulationRunner:
         # ====================================================================
         
         # Case 1: Network Simulation Mode
+        self.debug = debug
+
         if network_grid is not None:
             if not isinstance(simulation_config, NetworkSimulationConfig):
                 raise TypeError("Network mode requires a `NetworkSimulationConfig` object.")
@@ -124,7 +127,8 @@ class SimulationRunner:
             network=self.network_grid,
             config=self.config,
             quiet=self.quiet,
-            device=self.device # Pass device down
+            device=self.device, # Pass device down
+            debug=self.debug
         )
     
     @staticmethod

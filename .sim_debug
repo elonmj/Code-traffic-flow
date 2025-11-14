@@ -1,0 +1,2 @@
+# Debug flag file
+# Presence of this file enables SimulationRunner debug logging via run_simulation_save_npz.py

@@ -429,6 +429,34 @@ INPUT .\riemann.png
 INPUT .\riemann.png
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmss10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmssbx10.tfm
+INPUT .\results\plot_seg_0_density_moto.png
+INPUT .\results\plot_seg_0_density_moto.png
+INPUT .\results\plot_seg_0_density_moto.png
+INPUT .\results\plot_seg_0_density_moto.png
+INPUT .\results\plot_seg_0_density_moto.png
+INPUT .\results\plot_seg_0_density_moto.png
+INPUT .\results\plot_seg_0_density_moto.png
+INPUT .\results\plot_seg_0_velocity_car.png
+INPUT .\results\plot_seg_0_velocity_car.png
+INPUT .\results\plot_seg_0_velocity_car.png
+INPUT .\results\plot_seg_0_velocity_car.png
+INPUT .\results\plot_seg_0_velocity_car.png
+INPUT .\results\plot_seg_0_velocity_car.png
+INPUT .\results\plot_seg_0_velocity_car.png
+INPUT .\results\plot_seg_1_density_moto.png
+INPUT .\results\plot_seg_1_density_moto.png
+INPUT .\results\plot_seg_1_density_moto.png
+INPUT .\results\plot_seg_1_density_moto.png
+INPUT .\results\plot_seg_1_density_moto.png
+INPUT .\results\plot_seg_1_density_moto.png
+INPUT .\results\plot_seg_1_density_moto.png
+INPUT .\results\plot_seg_1_velocity_car.png
+INPUT .\results\plot_seg_1_velocity_car.png
+INPUT .\results\plot_seg_1_velocity_car.png
+INPUT .\results\plot_seg_1_velocity_car.png
+INPUT .\results\plot_seg_1_velocity_car.png
+INPUT .\results\plot_seg_1_velocity_car.png
+INPUT .\results\plot_seg_1_velocity_car.png
 OUTPUT presentation_mathematique.nav
 OUTPUT presentation_mathematique.toc
 OUTPUT presentation_mathematique.snm

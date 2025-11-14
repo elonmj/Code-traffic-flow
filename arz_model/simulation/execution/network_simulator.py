@@ -24,7 +24,7 @@ class NetworkSimulator:
     Orchestrates the execution of a multi-segment network simulation on the GPU.
     """
 
-    def __init__(self, network: NetworkGrid, config: NetworkSimulationConfig, quiet: bool = False, device: str = 'gpu'):
+    def __init__(self, network: NetworkGrid, config: NetworkSimulationConfig, quiet: bool = False, device: str = 'gpu', debug: bool = False):
         """
         Initializes the GPU-based network simulator.
 
@@ -38,19 +38,25 @@ class NetworkSimulator:
         self.config = config
         self.quiet = quiet
         self.device = device
-        self.t = 0.0
-        self.time_step = 0
+    self.t = 0.0
+    self.time_step = 0
+    self.debug = debug
         
         self.params = config.physics
         
         if not self.quiet:
             print("Initializing GPU Network Simulator...")
+            if self.debug:
+                print("[DEBUG] GPU debug logging ENABLED")
 
         # 1. Initialize GPU Memory Pool
         self.gpu_pool = self._initialize_gpu_pool()
         
         # 2. Initialize GPU-native Network Coupling
         self.network_coupling = self._initialize_gpu_coupling()
+
+        if self.debug and self.device == 'gpu':
+            self._debug_dump_state("Initial state (t=0)")
 
         # 3. Data logging setup
         self.history = {
@@ -187,6 +193,11 @@ class NetworkSimulator:
             # 4. Log data (requires transferring data from GPU to CPU)
             if self.time_step % max(1, int(self.config.time.output_dt / stable_dt)) == 0:
                 self._log_state()
+                if self.debug:
+                    self._debug_dump_state(f"State log at step {self.time_step} (t={self.t + stable_dt:.2f}s)")
+            elif self.debug and self.time_step < 5:
+                # Still capture early-step behavior even if not aligned with output_dt
+                self._debug_dump_state(f"Early debug snapshot step {self.time_step}")
 
             # 5. Update time and progress
             self.t += stable_dt
@@ -210,6 +221,42 @@ class NetworkSimulator:
             'final_states': final_states,
             'history': self.history  # Keep history for backward compatibility
         }
+
+    def _debug_dump_state(self, label: str):
+        """Prints min/max/mean stats for each segment's density and speed."""
+        if not self.debug or self.device != 'gpu':
+            return
+
+        print(f"[DEBUG] {label}")
+        for seg_id in self.network.segments.keys():
+            U_cpu = self.gpu_pool.checkpoint_to_cpu(seg_id)
+            grid = self.network.segments[seg_id]['grid']
+
+            rho_c = U_cpu[0, grid.physical_cell_indices]
+            rho_m = U_cpu[1, grid.physical_cell_indices]
+            v_c = U_cpu[2, grid.physical_cell_indices]
+            v_m = U_cpu[3, grid.physical_cell_indices]
+
+            total_density = rho_c + rho_m
+            avg_speed = np.divide(
+                rho_c * v_c + rho_m * v_m,
+                total_density,
+                out=np.zeros_like(total_density),
+                where=total_density != 0
+            )
+
+            density_min = np.min(total_density)
+            density_max = np.max(total_density)
+            density_mean = np.mean(total_density)
+
+            speed_min = np.min(avg_speed)
+            speed_max = np.max(avg_speed)
+            speed_mean = np.mean(avg_speed)
+
+            print(
+                f"   Segment {seg_id}: density[min={density_min:.6f}, max={density_max:.6f}, mean={density_mean:.6f}] "
+                f"speed[min={speed_min:.6f}, max={speed_max:.6f}, mean={speed_mean:.6f}]"
+            )
 
     def _log_state(self):
         """
