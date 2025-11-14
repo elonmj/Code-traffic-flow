@@ -707,3 +707,27 @@
 2025-11-14 19:29:58,630 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-14 19:29:58,630 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-14 19:30:07,812 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-14 19:40:46,118 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-14 19:40:46,119 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-14 19:40:46,222 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-14 19:40:46,280 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-14 19:40:46,280 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-14 19:40:46,280 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/generic-test-runner-kernel.log (Modified (unstaged))
+2025-11-14 19:40:46,280 - kernel_manager - INFO -    M kaggle/results/elonmj_generic-test-runner-kernel/test_log.txt (Modified (unstaged))
+2025-11-14 19:40:46,280 - kernel_manager - INFO -    M kaggle_runner/kernel_manager.py (Modified (unstaged))
+2025-11-14 19:40:46,280 - kernel_manager - INFO -   ?? verify_pkl_results.py (Untracked)
+2025-11-14 19:40:46,282 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-14 19:40:46,366 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-14 19:40:47,161 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-14 19:40:47,161 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-14 19:40:51,917 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-14 19:40:51,918 - kernel_manager - INFO - Building kernel script...
+2025-11-14 19:40:51,924 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpbxmtecq_
+2025-11-14 19:40:51,925 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-14 19:40:51,929 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-14 19:40:51,930 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-14 19:40:53,842 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-14 19:40:53,849 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-14 19:40:53,850 - kernel_manager - ERROR - Error checking kernel status: 'KaggleApi' object has no attribute 'kernel_status'
+2025-11-14 19:41:23,852 - kernel_manager - ERROR - Error checking kernel status: 'KaggleApi' object has no attribute 'kernel_status'
+2025-11-14 19:41:53,853 - kernel_manager - ERROR - Error checking kernel status: 'KaggleApi' object has no attribute 'kernel_status'

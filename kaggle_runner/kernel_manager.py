@@ -569,8 +569,8 @@ except Exception as e:
                 return False
 
             try:
-                status_response = self.api.kernel_status(self.username, kernel_slug)
-                status = status_response.get('status')
+                status_response = self.api.kernels_status(f"{self.username}/{kernel_slug}")
+                status = status_response.status
                 self.logger.info(f"Current status: {status} (Elapsed: {int(elapsed_time)}s)")
 
                 if status == 'complete':
