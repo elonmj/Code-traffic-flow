@@ -697,3 +697,13 @@
 2025-11-14 18:57:17,961 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-14 18:57:17,961 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-14 18:57:25,263 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-14 19:29:57,486 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-14 19:29:57,585 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-14 19:29:57,641 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-14 19:29:57,641 - kernel_manager - INFO -   M  rz_model/numerics/cfl.py (Modified (staged))
+2025-11-14 19:29:57,641 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-14 19:29:57,641 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-14 19:29:57,714 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-14 19:29:58,630 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-14 19:29:58,630 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-14 19:30:07,812 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
