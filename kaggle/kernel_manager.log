@@ -755,3 +755,27 @@
 2025-11-14 19:46:10,148 - kernel_manager - INFO - Current status: KernelWorkerStatus.COMPLETE (Elapsed: 91s)
 2025-11-14 19:46:40,688 - kernel_manager - INFO - Current status: KernelWorkerStatus.COMPLETE (Elapsed: 122s)
 2025-11-14 19:47:11,234 - kernel_manager - INFO - Current status: KernelWorkerStatus.COMPLETE (Elapsed: 152s)
+2025-11-14 19:48:10,761 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-14 19:48:10,761 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-14 19:48:10,863 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-14 19:48:10,914 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-14 19:48:10,914 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-14 19:48:10,914 - kernel_manager - INFO -    M kaggle_runner/kernel_manager.py (Modified (unstaged))
+2025-11-14 19:48:10,914 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-14 19:48:10,994 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-14 19:48:11,627 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-14 19:48:11,627 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-14 19:48:15,646 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-14 19:48:15,646 - kernel_manager - INFO - Building kernel script...
+2025-11-14 19:48:15,646 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpgxzvup56
+2025-11-14 19:48:15,646 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-14 19:48:15,646 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-14 19:48:15,646 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-14 19:48:17,482 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-14 19:48:17,482 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-14 19:48:18,016 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-14 19:48:48,562 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-14 19:49:19,392 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 61s)
+2025-11-14 19:49:19,393 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-14 19:49:19,394 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-14 19:49:19,394 - kernel_manager - ERROR - ❌ Failed to download artifacts: 'KaggleApi' object has no attribute 'kernel_output'

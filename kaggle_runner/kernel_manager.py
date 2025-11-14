@@ -602,7 +602,7 @@ except Exception as e:
                 shutil.rmtree(output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
 
-            self.api.kernel_output(self.username, kernel_slug, path=str(output_dir))
+            self.api.kernels_output(f"{self.username}/{kernel_slug}", path=str(output_dir))
             
             self.logger.info(f"✅ Artifacts downloaded to: {output_dir}")
             
