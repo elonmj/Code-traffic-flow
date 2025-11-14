@@ -1,0 +1,1775 @@
+
+📦 ARZ_MODEL ARCHITECTURE ANALYSIS
+================================================================================
+Total: 72 modules, 333 functions, 55 classes
+
+================================================================================
+📂 DIRECTORY STRUCTURE WITH FUNCTIONS & CLASSES
+================================================================================
+
+🎯 arz_model/core/ (7 modules)
+--------------------------------------------------------------------------------
+
+  📄 __init__.py
+
+  📄 intersection.py
+     Classes (2):
+       • Intersection
+       • NetworkNode
+     Functions (14):
+       • __init__
+       • update_queues
+       • get_creeping_speed
+       • get_outgoing_capacity
+       • apply_creeping
+       • get_queue_info
+       • reset_stats
+       • update_stats
+       • get_config
+       • __init__
+       • add_segment
+       • remove_segment
+       • get_connected_segments
+       • create_intersection_from_config
+
+  📄 node_solver.py
+     Functions (8):
+       • solve_node_fluxes
+       • _calculate_outgoing_flux
+       • _get_coupling_parameter
+       • _apply_behavioral_coupling
+       • _get_default_flux
+       • solve_intersection_riemann
+       • apply_priority_rules
+       • update_node_queues
+
+  📄 parameter_manager.py
+     Classes (1):
+       • ParameterManager
+     Functions (11):
+       • __init__
+       • set_local
+       • set_local_dict
+       • get
+       • get_all
+       • has_local
+       • list_segments_with_overrides
+       • get_overrides
+       • clear_local
+       • summary
+       • __repr__
+
+  📄 parameters.py
+     Classes (1):
+       • ModelParameters
+     Functions (7):
+       • _deep_merge_dicts
+       • __init__
+       • _initialize_defaults
+       • load_from_pydantic
+       • load_from_yaml
+       • _validate_parameters
+       • __str__
+
+  📄 physics.py
+     Functions (14):
+       • calculate_pressure
+       • _calculate_pressure_cuda
+       • calculate_equilibrium_speed
+       • calculate_equilibrium_speed_gpu
+       • calculate_relaxation_time_gpu
+       • calculate_relaxation_time
+       • calculate_physical_velocity
+       • _calculate_physical_velocity_cuda
+       • _calculate_pressure_derivative
+       • calculate_eigenvalues
+       • _calculate_pressure_derivative_cuda
+       • _calculate_eigenvalues_cuda
+       • calculate_source_term
+       • calculate_source_term_gpu
+
+  📄 traffic_lights.py
+     Classes (3):
+       • Phase
+       • TrafficLightController
+       • CoordinatedTrafficLightController
+     Functions (25):
+       • __init__
+       • is_green
+       • is_yellow
+       • __init__
+       • _create_default_phases
+       • get_current_phase
+       • get_current_green_segments
+       • get_current_yellow_segments
+       • get_time_to_next_phase
+       • get_phase_progress
+       • set_offset
+       • add_phase
+       • remove_phase
+       • _update_cycle_time
+       • get_cycle_info
+       • reset_stats
+       • update_stats
+       • get_config
+       • __init__
+       • get_slave_offset
+       • set_slave_offset
+       • get_coordination_info
+       • create_traffic_light_from_config
+       • calculate_optimal_cycle_time
+       • adapt_traffic_lights
+
+🎯 arz_model/grid/ (2 modules)
+--------------------------------------------------------------------------------
+
+  📄 __init__.py
+
+  📄 grid1d.py
+     Classes (1):
+       • Grid1D
+     Functions (6):
+       • __init__
+       • load_road_quality
+       • get_road_quality_for_cell
+       • cell_centers
+       • cell_interfaces
+       • __str__
+
+🎯 arz_model/numerics/ (15 modules)
+--------------------------------------------------------------------------------
+
+  📄 __init__.py
+
+  📄 boundary_conditions.py
+     Functions (2):
+       • _apply_boundary_conditions_kernel
+       • apply_boundary_conditions
+
+  📄 cfl.py
+     Functions (3):
+       • _calculate_max_wavespeed_kernel
+       • calculate_cfl_dt
+       • cfl_condition
+
+  📄 checkpoint_manager.py
+     Classes (1):
+       • CheckpointManager
+     Functions (8):
+       • __init__
+       • should_checkpoint
+       • save_checkpoint
+       • detect_instability
+       • rollback
+       • reset_consecutive_rollbacks
+       • get_statistics
+       • print_statistics
+
+  📄 __init__.py
+
+  📄 ssp_rk3_cuda.py
+     Classes (1):
+       • SSP_RK3_GPU
+     Functions (8):
+       • ssp_rk3_stage1_kernel
+       • ssp_rk3_stage2_kernel
+       • ssp_rk3_stage3_kernel
+       • compute_flux_divergence_kernel
+       • __init__
+       • integrate_step
+       • cleanup
+       • integrate_ssp_rk3_gpu
+
+  📄 utils.py
+     Classes (1):
+       • GPUMemoryManager
+     Functions (10):
+       • check_cuda_availability
+       • get_optimal_block_size
+       • profile_gpu_kernel
+       • validate_gpu_vs_cpu
+       • __init__
+       • allocate_device_array
+       • get_current_memory_usage
+       • get_memory_stats
+       • cleanup
+       • benchmark_weno_implementations
+
+  📄 weno_cuda.py
+     Functions (5):
+       • weno5_reconstruction_naive_kernel
+       • apply_boundary_conditions_kernel
+       • reconstruct_weno5_gpu_naive
+       • weno5_reconstruction_optimized_kernel
+       • reconstruct_weno5_gpu_optimized
+
+  📄 logging_utils.py
+     Functions (3):
+       • should_log
+       • set_log_interval
+       • reset_log_timer
+
+  📄 network_coupling_corrected.py
+     Classes (1):
+       • NetworkCouplingCorrected
+     Functions (10):
+       • __init__
+       • _build_segment_mapping
+       • apply_network_coupling
+       • _collect_real_boundary_states
+       • _solve_node_conservation
+       • _enforce_mass_conservation
+       • _apply_physical_boundary_conditions
+       • _update_node_state
+       • apply_network_coupling_cpu_corrected
+       • apply_network_coupling_gpu_corrected
+
+  📄 converter.py
+     Functions (4):
+       • conserved_to_primitives_arr
+       • primitives_to_conserved_arr
+       • conserved_to_primitives_arr_gpu
+       • primitives_to_conserved_arr_gpu
+
+  📄 weno.py
+     Functions (1):
+       • reconstruct_weno5
+
+  📄 weno_gpu.py
+     Functions (11):
+       • weno5_reconstruction_kernel
+       • apply_weno_boundary_conditions_kernel
+       • compute_flux_divergence_weno_kernel
+       • calculate_spatial_discretization_weno_gpu
+       • _create_weno_flux_kernel
+       • compute_weno_fluxes_kernel
+       • _primitives_to_conserved_gpu_device
+       • _central_upwind_flux_gpu_device
+       • calculate_spatial_discretization_weno_gpu_native
+       • _compute_weno_fluxes_kernel
+       • _compute_flux_divergence_weno_kernel
+
+  📄 riemann_solvers.py
+     Functions (6):
+       • set_current_time
+       • central_upwind_flux
+       • godunov_flux_upwind
+       • _central_upwind_flux_cuda
+       • central_upwind_flux_cuda_kernel
+       • central_upwind_flux_gpu
+
+  📄 time_integration.py
+     Functions (35):
+       • _apply_bounds_kernel
+       • apply_physical_state_bounds_gpu
+       • apply_physical_state_bounds
+       • check_cfl_condition
+       • calculate_spatial_discretization_weno
+       • calculate_spatial_discretization_godunov
+       • primitives_to_conserved_single
+       • _ode_rhs
+       • _ode_rhs_corrected
+       • solve_ode_step_cpu
+       • _ode_step_kernel
+       • solve_ode_step_gpu
+       • compute_boundary_correction
+       • compute_boundary_weight
+       • apply_inflow_bc_manually
+       • strang_splitting_step
+       • strang_splitting_step_gpu
+       • solve_hyperbolic_step_ssprk3
+       • apply_temporal_update_ssprk3
+       • compute_flux_divergence_first_order
+       • solve_hyperbolic_step_gpu
+       • solve_hyperbolic_step_weno_gpu
+       • solve_hyperbolic_step_ssprk3_gpu
+       • compute_spatial_discretization_gpu_callback
+       • calculate_spatial_discretization_weno_gpu
+       • _apply_euler_update_kernel
+       • _transpose_physical_cells_kernel
+       • _extract_physical_cells_kernel
+       • _extract_physical_cells_to_format_kernel
+       • _insert_physical_cells_from_format_kernel
+       • _compute_flux_divergence_kernel
+       • _apply_density_floor_kernel
+       • strang_splitting_step_with_network
+       • solve_hyperbolic_step_standard
+       • solve_hyperbolic_step_standard_gpu
+
+📁 arz_model/config/ (14 modules)
+--------------------------------------------------------------------------------
+
+  📄 __init__.py
+
+  📄 bc_config.py
+     Classes (8):
+       • BCType
+       • BCState
+       • BCScheduleItem
+       • InflowBC
+       • OutflowBC
+       • PeriodicBC
+       • ReflectiveBC
+       • BoundaryConditionsConfig
+     Functions (1):
+       • to_array
+
+  📄 builders.py
+     Classes (2):
+       • ConfigBuilder
+       • RLNetworkConfigBuilder
+     Functions (5):
+       • section_7_6
+       • simple_test
+       • simple_corridor
+       • medium_network
+       • lagos_network
+
+  📄 config_base.yml
+
+  📄 debug_config.py
+
+  📄 grid_config.py
+     Classes (1):
+       • GridConfig
+
+  📄 ic_config.py
+     Classes (6):
+       • UniformIC
+       • UniformEquilibriumIC
+       • RiemannIC
+       • GaussianPulseIC
+       • FileBasedIC
+       • ICConfig
+
+  📄 network_config.py
+     Classes (2):
+       • NetworkConfigError
+       • NetworkConfig
+     Functions (9):
+       • __init__
+       • load_from_files
+       • _validate_network_schema
+       • _validate_segment
+       • _validate_node
+       • _validate_link
+       • _validate_traffic_control_schema
+       • _validate_traffic_light
+       • load_network_config
+
+  📄 network_simulation_config.py
+     Classes (4):
+       • SegmentConfig
+       • NodeConfig
+       • LinkConfig
+       • NetworkSimulationConfig
+     Functions (8):
+       • validate_x_max
+       • validate_N
+       • validate_type
+       • validate_position
+       • validate_traffic_light_config
+       • validate_boundary_condition
+       • validate_coupling_type
+       • validate_links
+
+  📄 physics_config.py
+     Classes (1):
+       • PhysicsConfig
+     Functions (1):
+       • __repr__
+
+  📄 scenario_convergence_test.yml
+
+  📄 scenario_junction_test.yml
+
+  📄 simulation_config.py
+     Classes (1):
+       • SimulationConfig
+     Functions (1):
+       • __repr__
+
+  📄 time_config.py
+     Classes (1):
+       • TimeConfig
+     Functions (1):
+       • output_dt_must_be_less_than_t_final
+
+📁 arz_model/data/ (1 modules)
+--------------------------------------------------------------------------------
+
+  📄 fichier_de_travail_corridor_utf8.csv
+
+📁 arz_model/io/ (2 modules)
+--------------------------------------------------------------------------------
+
+  📄 __init__.py
+
+  📄 data_manager.py
+     Functions (5):
+       • save_simulation_data
+       • load_simulation_data
+       • load_yaml_config
+       • load_road_quality_file
+       • save_mass_data
+
+📁 arz_model/network/ (7 modules)
+--------------------------------------------------------------------------------
+
+  📄 __init__.py
+
+  📄 junction_info.py
+     Classes (1):
+       • JunctionInfo
+     Functions (3):
+       • __post_init__
+       • __str__
+       • __repr__
+
+  📄 link.py
+     Classes (1):
+       • Link
+     Functions (4):
+       • __init__
+       • apply_coupling
+       • get_coupling_strength
+       • __repr__
+
+  📄 network_grid.py
+     Classes (1):
+       • NetworkGrid
+     Functions (8):
+       • __init__
+       • initialize
+       • add_segment
+       • add_node
+       • add_link
+       • _prepare_junction_info
+       • _apply_network_boundary_conditions
+       • step
+
+  📄 network_simulator.py
+     Classes (2):
+       • SimulationState
+       • NetworkGridSimulator
+     Functions (10):
+       • __init__
+       • reset
+       • set_signal
+       • step
+       • get_metrics
+       • health
+       • compute_adaptive_dt
+       • _build_network_from_config_simple
+       • _apply_initial_conditions
+       • _build_state
+
+  📄 node.py
+     Classes (1):
+       • Node
+     Functions (7):
+       • __init__
+       • get_incoming_states
+       • get_outgoing_capacities
+       • is_signalized
+       • get_traffic_light_state
+       • update_traffic_lights
+       • __repr__
+
+  📄 topology.py
+     Functions (6):
+       • build_graph
+       • validate_topology
+       • find_upstream_segments
+       • find_downstream_segments
+       • compute_shortest_path
+       • get_network_diameter
+
+📁 arz_model/road_network/ (4 modules)
+--------------------------------------------------------------------------------
+
+  📄 __init__.py
+
+  📄 builder.py
+     Functions (1):
+       • build_simulation_network
+
+  📄 models.py
+     Classes (4):
+       • Node
+       • Link
+       • RoadNetwork
+       • Config
+
+  📄 parser.py
+     Functions (1):
+       • parse_csv_to_road_network
+
+📁 arz_model/root/ (5 modules)
+--------------------------------------------------------------------------------
+
+  📄 README.md
+
+  📄 __init__.py
+
+  📄 main_network_builder.py
+     Functions (1):
+       • main
+
+  📄 main_network_simulation.py
+     Functions (1):
+       • main
+
+  📄 main_simulation.py
+     Functions (1):
+       • main
+
+📁 arz_model/simulation/ (11 modules)
+--------------------------------------------------------------------------------
+
+  📄 __init__.py
+
+  📄 __init__.py
+
+  📄 bc_controller.py
+     Classes (1):
+       • BCController
+     Functions (7):
+       • __init__
+       • _convert_bc_config_to_dict
+       • _convert_schedule
+       • _initialize_schedules
+       • _update_bc_from_schedule
+       • apply
+       • create_from_legacy_dict
+
+  📄 __init__.py
+
+  📄 network_simulator.py
+     Classes (1):
+       • NetworkSimulator
+     Functions (3):
+       • __init__
+       • run
+       • _log_state
+
+  📄 initial_conditions.py
+     Functions (5):
+       • uniform_state
+       • uniform_state_from_equilibrium
+       • riemann_problem
+       • density_hump
+       • sine_wave_perturbation
+
+  📄 __init__.py
+
+  📄 ic_builder.py
+     Classes (1):
+       • ICBuilder
+     Functions (2):
+       • build
+       • build_from_legacy_dict
+
+  📄 runner.py
+     Classes (1):
+       • SimulationRunner
+     Functions (24):
+       • __init__
+       • _init_from_network_grid
+       • _init_from_pydantic
+       • _resolve_device
+       • _init_from_network_config
+       • _init_from_network_config
+       • _init_from_yaml
+       • _create_legacy_params_from_config
+       • _convert_ic_to_legacy
+       • _convert_bc_to_legacy
+       • _common_initialization
+       • _initialize_network
+       • _load_road_quality
+       • _load_network_v0_overrides
+       • _create_initial_state
+       • _initialize_boundary_conditions
+       • _update_bc_from_schedule
+       • run
+       • step
+       • get_results
+       • save_results
+       • plot_results
+       • animate_results
+       • __repr__
+
+  📄 __init__.py
+
+  📄 state_manager.py
+     Classes (1):
+       • StateManager
+     Functions (10):
+       • __init__
+       • get_current_state
+       • update_state
+       • advance_time
+       • store_output
+       • _update_mass_tracking
+       • sync_from_gpu
+       • sync_to_gpu
+       • get_results
+       • print_mass_conservation_summary
+
+📁 arz_model/visualization/ (4 modules)
+--------------------------------------------------------------------------------
+
+  📄 __init__.py
+
+  📄 network_visualizer.py
+     Classes (1):
+       • NetworkVisualizer
+     Functions (9):
+       • __init__
+       • _create_graph_from_network
+       • _draw_base_network
+       • _update_plot_from_state
+       • create_animation
+       • animate
+       • update_plot
+       • add_colorbar
+       • close
+
+  📄 plotting.py
+     Functions (3):
+       • plot_profiles
+       • plot_spacetime
+       • plot_convergence_loglog
+
+  📄 uxsim_adapter.py
+     Classes (1):
+       • ARZtoUXsimVisualizer
+     Functions (5):
+       • __init__
+       • create_uxsim_network
+       • visualize_snapshot
+       • create_animation
+       • update_frame
+
+================================================================================
+📋 EXISTING GPU CODE:
+================================================================================
+
+  📄 arz_model/numerics/gpu/ssp_rk3_cuda.py
+     • 1 classes
+     • 8 functions
+     Functions:
+       - ssp_rk3_stage1_kernel
+       - ssp_rk3_stage2_kernel
+       - ssp_rk3_stage3_kernel
+       - compute_flux_divergence_kernel
+       - __init__
+       - integrate_step
+       - cleanup
+       - integrate_ssp_rk3_gpu
+
+  📄 arz_model/numerics/gpu/utils.py
+     • 1 classes
+     • 10 functions
+     Functions:
+       - check_cuda_availability
+       - get_optimal_block_size
+       - profile_gpu_kernel
+       - validate_gpu_vs_cpu
+       - __init__
+       - allocate_device_array
+       - get_current_memory_usage
+       - get_memory_stats
+       - cleanup
+       - benchmark_weno_implementations
+
+  📄 arz_model/numerics/gpu/weno_cuda.py
+     • 0 classes
+     • 5 functions
+     Functions:
+       - weno5_reconstruction_naive_kernel
+       - apply_boundary_conditions_kernel
+       - reconstruct_weno5_gpu_naive
+       - weno5_reconstruction_optimized_kernel
+       - reconstruct_weno5_gpu_optimized
+
+  📄 arz_model/numerics/gpu/__init__.py
+     • 0 classes
+     • 0 functions
+
+================================================================================
+
+================================================================================
+🔗 FUNCTION CALL GRAPH ANALYSIS
+================================================================================
+
+Total dependencies in arz_model: 246
+🔬 DEBUG: After building call graph, calls_to has 173 entries
+🔬 DEBUG: called_by has 138 entries
+
+⚠️  DEAD CODE DETECTED:
+   Functions never called: 167
+
+   Dead functions (candidates for removal):
+
+   📄 arz_model/config/builders.py
+      ⚠️  lagos_network
+      ⚠️  medium_network
+      ⚠️  simple_corridor
+      ⚠️  simple_test
+
+   📄 arz_model/config/network_config.py
+      ⚠️  _validate_link
+      ⚠️  _validate_network_schema
+      ⚠️  _validate_node
+      ⚠️  _validate_segment
+      ⚠️  _validate_traffic_control_schema
+      ⚠️  _validate_traffic_light
+      ⚠️  load_network_config
+
+   📄 arz_model/config/network_simulation_config.py
+      ⚠️  validate_coupling_type
+      ⚠️  validate_links
+      ⚠️  validate_type
+      ⚠️  validate_x_max
+
+   📄 arz_model/config/time_config.py
+      ⚠️  output_dt_must_be_less_than_t_final
+
+   📄 arz_model/core/intersection.py
+      ⚠️  apply_creeping
+      ⚠️  get_creeping_speed
+      ⚠️  get_outgoing_capacity
+      ⚠️  get_queue_info
+      ⚠️  update_queues
+
+   📄 arz_model/core/node_solver.py
+      ⚠️  _apply_behavioral_coupling
+      ⚠️  _calculate_outgoing_flux
+      ⚠️  _get_default_flux
+      ⚠️  apply_priority_rules
+      ⚠️  update_node_queues
+
+   📄 arz_model/core/parameter_manager.py
+      ⚠️  get_all
+      ⚠️  has_local
+      ⚠️  list_segments_with_overrides
+      ⚠️  set_local
+      ⚠️  set_local_dict
+      ⚠️  summary
+
+   📄 arz_model/core/parameters.py
+      ⚠️  _validate_parameters
+
+   📄 arz_model/core/physics.py
+      ⚠️  _calculate_physical_velocity_cuda
+      ⚠️  _calculate_pressure_cuda
+      ⚠️  calculate_eigenvalues
+      ⚠️  calculate_equilibrium_speed
+      ⚠️  calculate_equilibrium_speed_gpu
+      ⚠️  calculate_physical_velocity
+      ⚠️  calculate_relaxation_time_gpu
+      ⚠️  calculate_source_term
+      ⚠️  calculate_source_term_gpu
+
+   📄 arz_model/core/traffic_lights.py
+      ⚠️  adapt_traffic_lights
+      ⚠️  get_phase_progress
+      ⚠️  set_offset
+
+   📄 arz_model/grid/grid1d.py
+      ⚠️  load_road_quality
+
+   📄 arz_model/io/data_manager.py
+      ⚠️  load_yaml_config
+      ⚠️  save_mass_data
+      ⚠️  save_simulation_data
+
+   📄 arz_model/main_simulation.py
+      ⚠️  main
+
+   📄 arz_model/network/link.py
+      ⚠️  apply_coupling
+      ⚠️  get_coupling_strength
+
+   📄 arz_model/network/network_grid.py
+      ⚠️  _prepare_junction_info
+      ⚠️  add_link
+      ⚠️  initialize
+
+   📄 arz_model/network/network_simulator.py
+      ⚠️  _apply_initial_conditions
+      ⚠️  _build_network_from_config_simple
+      ⚠️  _build_state
+      ⚠️  get_metrics
+      ⚠️  set_signal
+
+   📄 arz_model/network/node.py
+      ⚠️  get_incoming_states
+      ⚠️  get_outgoing_capacities
+      ⚠️  is_signalized
+
+   📄 arz_model/network/topology.py
+      ⚠️  compute_shortest_path
+      ⚠️  find_downstream_segments
+      ⚠️  find_upstream_segments
+      ⚠️  get_network_diameter
+
+   📄 arz_model/numerics/boundary_conditions.py
+      ⚠️  _apply_boundary_conditions_kernel
+
+   📄 arz_model/numerics/cfl.py
+      ⚠️  _calculate_max_wavespeed_kernel
+      ⚠️  calculate_cfl_dt
+
+   📄 arz_model/numerics/checkpoint_manager.py
+      ⚠️  detect_instability
+      ⚠️  print_statistics
+      ⚠️  reset_consecutive_rollbacks
+      ⚠️  should_checkpoint
+
+   📄 arz_model/numerics/gpu/ssp_rk3_cuda.py
+      ⚠️  compute_flux_divergence_kernel
+      ⚠️  integrate_step
+      ⚠️  ssp_rk3_stage1_kernel
+      ⚠️  ssp_rk3_stage2_kernel
+      ⚠️  ssp_rk3_stage3_kernel
+
+   📄 arz_model/numerics/gpu/utils.py
+      ⚠️  check_cuda_availability
+      ⚠️  get_optimal_block_size
+      ⚠️  profile_gpu_kernel
+      ⚠️  validate_gpu_vs_cpu
+
+   📄 arz_model/numerics/gpu/weno_cuda.py
+      ⚠️  apply_boundary_conditions_kernel
+      ⚠️  reconstruct_weno5_gpu_naive
+      ⚠️  reconstruct_weno5_gpu_optimized
+      ⚠️  weno5_reconstruction_naive_kernel
+      ⚠️  weno5_reconstruction_optimized_kernel
+
+   📄 arz_model/numerics/logging_utils.py
+      ⚠️  should_log
+
+   📄 arz_model/numerics/network_coupling_corrected.py
+      ⚠️  _apply_physical_boundary_conditions
+      ⚠️  _collect_real_boundary_states
+      ⚠️  _solve_node_conservation
+      ⚠️  _update_node_state
+      ⚠️  apply_network_coupling_cpu_corrected
+
+   📄 arz_model/numerics/reconstruction/converter.py
+      ⚠️  conserved_to_primitives_arr
+      ⚠️  conserved_to_primitives_arr_gpu
+      ⚠️  primitives_to_conserved_arr
+      ⚠️  primitives_to_conserved_arr_gpu
+
+   📄 arz_model/numerics/reconstruction/weno.py
+      ⚠️  reconstruct_weno5
+
+   📄 arz_model/numerics/reconstruction/weno_gpu.py
+      ⚠️  _central_upwind_flux_gpu_device
+      ⚠️  _compute_flux_divergence_weno_kernel
+      ⚠️  _compute_weno_fluxes_kernel
+      ⚠️  _create_weno_flux_kernel
+      ⚠️  _primitives_to_conserved_gpu_device
+      ⚠️  apply_weno_boundary_conditions_kernel
+      ⚠️  weno5_reconstruction_kernel
+
+   📄 arz_model/numerics/riemann_solvers.py
+      ⚠️  _central_upwind_flux_cuda
+      ⚠️  central_upwind_flux_cuda_kernel
+      ⚠️  central_upwind_flux_gpu
+      ⚠️  godunov_flux_upwind
+      ⚠️  set_current_time
+
+   📄 arz_model/numerics/time_integration.py
+      ⚠️  _apply_bounds_kernel
+      ⚠️  _apply_density_floor_kernel
+      ⚠️  _apply_euler_update_kernel
+      ⚠️  _ode_rhs
+      ⚠️  _ode_rhs_corrected
+      ⚠️  _ode_step_kernel
+      ⚠️  _transpose_physical_cells_kernel
+      ⚠️  apply_inflow_bc_manually
+      ⚠️  apply_physical_state_bounds
+      ⚠️  apply_physical_state_bounds_gpu
+      ⚠️  apply_temporal_update_ssprk3
+      ⚠️  calculate_spatial_discretization_godunov
+      ⚠️  calculate_spatial_discretization_weno
+      ⚠️  check_cfl_condition
+      ⚠️  compute_boundary_correction
+      ⚠️  compute_boundary_weight
+      ⚠️  compute_flux_divergence_first_order
+      ⚠️  compute_spatial_discretization_gpu_callback
+      ⚠️  primitives_to_conserved_single
+      ⚠️  solve_hyperbolic_step_gpu
+      ⚠️  solve_hyperbolic_step_standard
+      ⚠️  solve_ode_step_cpu
+      ⚠️  solve_ode_step_gpu
+      ⚠️  strang_splitting_step
+      ⚠️  strang_splitting_step_gpu
+
+   📄 arz_model/road_network/builder.py
+      ⚠️  build_simulation_network
+
+   📄 arz_model/road_network/parser.py
+      ⚠️  parse_csv_to_road_network
+
+   📄 arz_model/simulation/boundaries/bc_controller.py
+      ⚠️  apply
+      ⚠️  create_from_legacy_dict
+
+   📄 arz_model/simulation/execution/network_simulator.py
+      ⚠️  _log_state
+
+   📄 arz_model/simulation/initial_conditions.py
+      ⚠️  density_hump
+      ⚠️  riemann_problem
+      ⚠️  sine_wave_perturbation
+      ⚠️  uniform_state_from_equilibrium
+
+   📄 arz_model/simulation/initialization/ic_builder.py
+      ⚠️  build
+      ⚠️  build_from_legacy_dict
+
+   📄 arz_model/simulation/runner.py
+      ⚠️  _convert_bc_to_legacy
+      ⚠️  _convert_ic_to_legacy
+      ⚠️  _create_initial_state
+      ⚠️  _init_from_network_grid
+      ⚠️  _init_from_pydantic
+      ⚠️  _initialize_boundary_conditions
+      ⚠️  _initialize_network
+      ⚠️  animate_results
+      ⚠️  save_results
+      ⚠️  step
+
+   📄 arz_model/simulation/state/state_manager.py
+      ⚠️  _update_mass_tracking
+      ⚠️  get_current_state
+      ⚠️  print_mass_conservation_summary
+
+   📄 arz_model/visualization/network_visualizer.py
+      ⚠️  _draw_base_network
+      ⚠️  update_plot
+
+   📄 arz_model/visualization/plotting.py
+      ⚠️  plot_convergence_loglog
+      ⚠️  plot_profiles
+      ⚠️  plot_spacetime
+
+   📄 arz_model/visualization/uxsim_adapter.py
+      ⚠️  update_frame
+      ⚠️  visualize_snapshot
+
+
+🚀 ENTRY POINTS (main/run functions):
+   Found 0 entry points
+
+
+📊 WORKFLOW CALL CHAIN ANALYSIS
+================================================================================
+Analyzing function call chains by category (GPU, time integration, WENO, etc.)
+Focus: Identify redundancy, unification opportunities, refactoring targets
+================================================================================
+
+🔍 Function Classification:
+  - GPU functions: 64
+  - Time integration functions: 11
+  - WENO reconstruction functions: 21
+  - Riemann/Flux functions: 21
+  - Physics functions: 16
+  - Boundary condition functions: 22
+
+🔬 DEBUG: calls_to dictionary has 173 entries
+🔬 DEBUG: Sample calls_to keys: ['fn:arz_model/config/network_config.py#__init__@50', 'fn:arz_model/config/network_config.py#load_network_config@331', 'fn:arz_model/config/network_simulation_config.py#validate_x_max@59', 'fn:arz_model/config/network_simulation_config.py#validate_type@129', 'fn:arz_model/config/network_simulation_config.py#validate_position@138']
+🔬 DEBUG: Sample GPU function IDs: ['fn:arz_model/numerics/time_integration.py#_extract_physical_cells_kernel@1823', 'fn:arz_model/numerics/gpu/ssp_rk3_cuda.py#__init__@103', 'fn:arz_model/numerics/time_integration.py#solve_hyperbolic_step_gpu@1573']
+
+================================================================================
+🚀 GPU WORKFLOWS
+================================================================================
+
+Found 23 functions with dependencies
+Analyzing top 5 most connected functions:
+
+
+📍 cleanup (ssp_rk3_cuda)
+   Calls 2 other functions directly
+   Complete call tree: 4 functions
+
+   ▶ cleanup (ssp_rk3_cuda)
+     └─ cleanup (utils)
+       └─ benchmark_weno_implementations (utils)
+     └─ integrate_ssp_rk3_gpu (ssp_rk3_cuda)
+
+#### cleanup - Mermaid Diagram
+```mermaid
+graph TD
+    N0["cleanup<br/>(ssp_rk3_cuda)"]
+    N1["cleanup<br/>(utils)"]
+    N2["benchmark_weno_implementations<br/>(utils)"]
+    N3["integrate_ssp_rk3_gpu<br/>(ssp_rk3_cuda)"]
+    N0 --> N1
+    N0 --> N3
+    N1 --> N0
+    N1 --> N2
+```
+
+📍 sync_from_gpu (state_manager)
+   Calls 2 other functions directly
+   Complete call tree: 4 functions
+
+   ▶ sync_from_gpu (state_manager)
+     └─ sync_to_gpu (state_manager)
+       └─ get_results (runner)
+         └─ get_results (state_manager)
+
+#### sync_from_gpu - Mermaid Diagram
+```mermaid
+graph TD
+    N0["sync_from_gpu<br/>(state_manager)"]
+    N1["sync_to_gpu<br/>(state_manager)"]
+    N2["get_results<br/>(runner)"]
+    N3["get_results<br/>(state_manager)"]
+    N0 --> N1
+    N0 --> N2
+    N1 --> N2
+    N1 --> N0
+    N2 --> N3
+    N3 --> N2
+    N3 --> N0
+```
+
+📍 solve_hyperbolic_step_standard_gpu (time_integration)
+   Calls 2 other functions directly
+   Complete call tree: 4 functions
+
+   ▶ solve_hyperbolic_step_standard_gpu (time_integration)
+     └─ solve_hyperbolic_step_ssprk3_gpu (time_integration)
+       └─ solve_hyperbolic_step_ssprk3 (time_integration)
+     └─ solve_hyperbolic_step_weno_gpu (time_integration)
+
+#### solve_hyperbolic_step_standard_gpu - Mermaid Diagram
+```mermaid
+graph TD
+    N0["solve_hyperbolic_step_standard_gpu<br/>(time_integration)"]
+    N1["solve_hyperbolic_step_ssprk3_gpu<br/>(time_integration)"]
+    N2["solve_hyperbolic_step_ssprk3<br/>(time_integration)"]
+    N3["solve_hyperbolic_step_weno_gpu<br/>(time_integration)"]
+    N0 --> N1
+    N0 --> N3
+    N1 --> N2
+    N3 --> N1
+```
+
+📍 sync_to_gpu (state_manager)
+   Calls 2 other functions directly
+   Complete call tree: 4 functions
+
+   ▶ sync_to_gpu (state_manager)
+     └─ get_results (runner)
+       └─ get_results (state_manager)
+         └─ sync_from_gpu (state_manager)
+
+#### sync_to_gpu - Mermaid Diagram
+```mermaid
+graph TD
+    N0["sync_to_gpu<br/>(state_manager)"]
+    N1["get_results<br/>(runner)"]
+    N2["get_results<br/>(state_manager)"]
+    N3["sync_from_gpu<br/>(state_manager)"]
+    N0 --> N1
+    N0 --> N3
+    N1 --> N2
+    N2 --> N1
+    N2 --> N3
+    N3 --> N0
+    N3 --> N1
+```
+
+📍 _extract_physical_cells_kernel (time_integration)
+   Calls 1 other functions directly
+   Complete call tree: 4 functions
+
+   ▶ _extract_physical_cells_kernel (time_integration)
+     └─ _extract_physical_cells_to_format_kernel (time_integration)
+       └─ _insert_physical_cells_from_format_kernel (time_integration)
+         └─ _compute_flux_divergence_kernel (time_integration)
+
+#### _extract_physical_cells_kernel - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_extract_physical_cells_kernel<br/>(time_integration)"]
+    N1["_extract_physical_cells_to_forma...<br/>(time_integration)"]
+    N2["_insert_physical_cells_from_form...<br/>(time_integration)"]
+    N3["_compute_flux_divergence_kernel<br/>(time_integration)"]
+    N0 --> N1
+    N1 --> N2
+    N2 --> N3
+```
+
+================================================================================
+⏱️  TIME INTEGRATION WORKFLOWS
+================================================================================
+
+Found 3 functions with dependencies
+Analyzing top 3 most connected functions:
+
+
+📍 cleanup (ssp_rk3_cuda)
+   Calls 2 other functions directly
+   Complete call tree: 4 functions
+
+   ▶ cleanup (ssp_rk3_cuda)
+     └─ cleanup (utils)
+       └─ benchmark_weno_implementations (utils)
+     └─ integrate_ssp_rk3_gpu (ssp_rk3_cuda)
+
+#### cleanup - Mermaid Diagram
+```mermaid
+graph TD
+    N0["cleanup<br/>(ssp_rk3_cuda)"]
+    N1["cleanup<br/>(utils)"]
+    N2["benchmark_weno_implementations<br/>(utils)"]
+    N3["integrate_ssp_rk3_gpu<br/>(ssp_rk3_cuda)"]
+    N0 --> N1
+    N0 --> N3
+    N1 --> N0
+    N1 --> N2
+```
+
+📍 __init__ (ssp_rk3_cuda)
+   Calls 1 other functions directly
+   Complete call tree: 4 functions
+
+   ▶ __init__ (ssp_rk3_cuda)
+     └─ __init__ (network_config)
+       └─ __init__ (intersection)
+       └─ load_from_files (network_config)
+
+#### __init__ - Mermaid Diagram
+```mermaid
+graph TD
+    N0["__init__<br/>(ssp_rk3_cuda)"]
+    N1["__init__<br/>(network_config)"]
+    N2["__init__<br/>(intersection)"]
+    N3["load_from_files<br/>(network_config)"]
+    N0 --> N1
+    N1 --> N2
+    N1 --> N3
+    N2 --> N1
+```
+
+📍 solve_hyperbolic_step_ssprk3_gpu (time_integration)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ solve_hyperbolic_step_ssprk3_gpu (time_integration)
+     └─ solve_hyperbolic_step_ssprk3 (time_integration)
+
+#### solve_hyperbolic_step_ssprk3_gpu - Mermaid Diagram
+```mermaid
+graph TD
+    N0["solve_hyperbolic_step_ssprk3_gpu<br/>(time_integration)"]
+    N1["solve_hyperbolic_step_ssprk3<br/>(time_integration)"]
+    N0 --> N1
+```
+
+================================================================================
+📐 WENO RECONSTRUCTION WORKFLOWS
+================================================================================
+
+Found 6 functions with dependencies
+Analyzing top 5 most connected functions:
+
+
+📍 solve_hyperbolic_step_weno_gpu (time_integration)
+   Calls 1 other functions directly
+   Complete call tree: 3 functions
+
+   ▶ solve_hyperbolic_step_weno_gpu (time_integration)
+     └─ solve_hyperbolic_step_ssprk3_gpu (time_integration)
+       └─ solve_hyperbolic_step_ssprk3 (time_integration)
+
+#### solve_hyperbolic_step_weno_gpu - Mermaid Diagram
+```mermaid
+graph TD
+    N0["solve_hyperbolic_step_weno_gpu<br/>(time_integration)"]
+    N1["solve_hyperbolic_step_ssprk3_gpu<br/>(time_integration)"]
+    N2["solve_hyperbolic_step_ssprk3<br/>(time_integration)"]
+    N0 --> N1
+    N1 --> N2
+```
+
+📍 calculate_spatial_discretization_weno_gpu (time_integration)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ calculate_spatial_discretization_weno_gpu (time_integration)
+     └─ calculate_spatial_discretization_weno_gpu (weno_gpu)
+
+#### calculate_spatial_discretization_weno_gpu - Mermaid Diagram
+```mermaid
+graph TD
+    N0["calculate_spatial_discretization...<br/>(time_integration)"]
+    N1["calculate_spatial_discretization...<br/>(weno_gpu)"]
+    N0 --> N1
+    N1 --> N0
+```
+
+📍 calculate_spatial_discretization_weno_gpu (weno_gpu)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ calculate_spatial_discretization_weno_gpu (weno_gpu)
+     └─ calculate_spatial_discretization_weno_gpu (time_integration)
+
+#### calculate_spatial_discretization_weno_gpu - Mermaid Diagram
+```mermaid
+graph TD
+    N0["calculate_spatial_discretization...<br/>(weno_gpu)"]
+    N1["calculate_spatial_discretization...<br/>(time_integration)"]
+    N0 --> N1
+    N1 --> N0
+```
+
+📍 _create_weno_flux_kernel (weno_gpu)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ _create_weno_flux_kernel (weno_gpu)
+     └─ compute_weno_fluxes_kernel (weno_gpu)
+
+#### _create_weno_flux_kernel - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_create_weno_flux_kernel<br/>(weno_gpu)"]
+    N1["compute_weno_fluxes_kernel<br/>(weno_gpu)"]
+    N0 --> N1
+```
+
+📍 apply_weno_boundary_conditions_kernel (weno_gpu)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ apply_weno_boundary_conditions_kernel (weno_gpu)
+     └─ compute_flux_divergence_weno_kernel (weno_gpu)
+
+#### apply_weno_boundary_conditions_kernel - Mermaid Diagram
+```mermaid
+graph TD
+    N0["apply_weno_boundary_conditions_k...<br/>(weno_gpu)"]
+    N1["compute_flux_divergence_weno_ker...<br/>(weno_gpu)"]
+    N0 --> N1
+```
+
+================================================================================
+🌊 RIEMANN SOLVER / FLUX WORKFLOWS
+================================================================================
+
+Found 5 functions with dependencies
+Analyzing top 5 most connected functions:
+
+
+📍 compute_flux_divergence_first_order (time_integration)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ compute_flux_divergence_first_order (time_integration)
+     └─ apply_boundary_conditions (boundary_conditions)
+
+#### compute_flux_divergence_first_order - Mermaid Diagram
+```mermaid
+graph TD
+    N0["compute_flux_divergence_first_or...<br/>(time_integration)"]
+    N1["apply_boundary_conditions<br/>(boundary_conditions)"]
+    N0 --> N1
+```
+
+📍 _create_weno_flux_kernel (weno_gpu)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ _create_weno_flux_kernel (weno_gpu)
+     └─ compute_weno_fluxes_kernel (weno_gpu)
+
+#### _create_weno_flux_kernel - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_create_weno_flux_kernel<br/>(weno_gpu)"]
+    N1["compute_weno_fluxes_kernel<br/>(weno_gpu)"]
+    N0 --> N1
+```
+
+📍 set_current_time (riemann_solvers)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ set_current_time (riemann_solvers)
+     └─ central_upwind_flux (riemann_solvers)
+
+#### set_current_time - Mermaid Diagram
+```mermaid
+graph TD
+    N0["set_current_time<br/>(riemann_solvers)"]
+    N1["central_upwind_flux<br/>(riemann_solvers)"]
+    N0 --> N1
+```
+
+📍 _central_upwind_flux_gpu_device (weno_gpu)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ _central_upwind_flux_gpu_device (weno_gpu)
+     └─ calculate_spatial_discretization_weno_gpu_native (weno_gpu)
+
+#### _central_upwind_flux_gpu_device - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_central_upwind_flux_gpu_device<br/>(weno_gpu)"]
+    N1["calculate_spatial_discretization...<br/>(weno_gpu)"]
+    N0 --> N1
+```
+
+📍 _get_default_flux (node_solver)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ _get_default_flux (node_solver)
+     └─ solve_intersection_riemann (node_solver)
+
+#### _get_default_flux - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_get_default_flux<br/>(node_solver)"]
+    N1["solve_intersection_riemann<br/>(node_solver)"]
+    N0 --> N1
+```
+
+================================================================================
+⚛️  PHYSICS WORKFLOWS
+================================================================================
+
+Found 5 functions with dependencies
+Analyzing top 5 most connected functions:
+
+
+📍 _calculate_physical_velocity_cuda (physics)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ _calculate_physical_velocity_cuda (physics)
+     └─ _calculate_pressure_derivative (physics)
+
+#### _calculate_physical_velocity_cuda - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_calculate_physical_velocity_cuda<br/>(physics)"]
+    N1["_calculate_pressure_derivative<br/>(physics)"]
+    N0 --> N1
+```
+
+📍 _calculate_pressure_derivative_cuda (physics)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ _calculate_pressure_derivative_cuda (physics)
+     └─ _calculate_eigenvalues_cuda (physics)
+
+#### _calculate_pressure_derivative_cuda - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_calculate_pressure_derivative_c...<br/>(physics)"]
+    N1["_calculate_eigenvalues_cuda<br/>(physics)"]
+    N0 --> N1
+    N1 --> N0
+```
+
+📍 calculate_relaxation_time_gpu (physics)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ calculate_relaxation_time_gpu (physics)
+     └─ calculate_relaxation_time (physics)
+
+#### calculate_relaxation_time_gpu - Mermaid Diagram
+```mermaid
+graph TD
+    N0["calculate_relaxation_time_gpu<br/>(physics)"]
+    N1["calculate_relaxation_time<br/>(physics)"]
+    N0 --> N1
+```
+
+📍 __repr__ (physics_config)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ __repr__ (physics_config)
+     └─ __repr__ (simulation_config)
+
+#### __repr__ - Mermaid Diagram
+```mermaid
+graph TD
+    N0["__repr__<br/>(physics_config)"]
+    N1["__repr__<br/>(simulation_config)"]
+    N0 --> N1
+    N1 --> N0
+```
+
+📍 _calculate_eigenvalues_cuda (physics)
+   Calls 1 other functions directly
+   Complete call tree: 2 functions
+
+   ▶ _calculate_eigenvalues_cuda (physics)
+     └─ _calculate_pressure_derivative_cuda (physics)
+
+#### _calculate_eigenvalues_cuda - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_calculate_eigenvalues_cuda<br/>(physics)"]
+    N1["_calculate_pressure_derivative_c...<br/>(physics)"]
+    N0 --> N1
+    N1 --> N0
+```
+
+================================================================================
+🚧 BOUNDARY CONDITION WORKFLOWS
+================================================================================
+
+Found 12 functions with dependencies
+Analyzing top 5 most connected functions:
+
+
+📍 __init__ (bc_controller)
+   Calls 2 other functions directly
+   Complete call tree: 10 functions
+
+   ▶ __init__ (bc_controller)
+     └─ __init__ (network_config)
+       └─ __init__ (intersection)
+       └─ load_from_files (network_config)
+     └─ _convert_bc_config_to_dict (bc_controller)
+       └─ _initialize_schedules (bc_controller)
+         └─ get (parameter_manager)
+         └─ _update_bc_from_schedule (bc_controller)
+           └─ _update_bc_from_schedule (runner)
+       └─ _convert_schedule (bc_controller)
+
+#### __init__ - Mermaid Diagram
+```mermaid
+graph TD
+    N0["__init__<br/>(bc_controller)"]
+    N1["__init__<br/>(network_config)"]
+    N2["__init__<br/>(intersection)"]
+    N3["load_from_files<br/>(network_config)"]
+    N4["_convert_bc_config_to_dict<br/>(bc_controller)"]
+    N5["_initialize_schedules<br/>(bc_controller)"]
+    N6["get<br/>(parameter_manager)"]
+    N7["_update_bc_from_schedule<br/>(bc_controller)"]
+    N8["_update_bc_from_schedule<br/>(runner)"]
+    N9["_convert_schedule<br/>(bc_controller)"]
+    N0 --> N1
+    N0 --> N4
+    N1 --> N2
+    N1 --> N3
+    N2 --> N1
+    N4 --> N5
+    N4 --> N9
+    N5 --> N6
+    N5 --> N7
+    N7 --> N8
+    N8 --> N7
+    N9 --> N5
+```
+
+📍 _initialize_schedules (bc_controller)
+   Calls 2 other functions directly
+   Complete call tree: 4 functions
+
+   ▶ _initialize_schedules (bc_controller)
+     └─ get (parameter_manager)
+     └─ _update_bc_from_schedule (bc_controller)
+       └─ _update_bc_from_schedule (runner)
+
+#### _initialize_schedules - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_initialize_schedules<br/>(bc_controller)"]
+    N1["get<br/>(parameter_manager)"]
+    N2["_update_bc_from_schedule<br/>(bc_controller)"]
+    N3["_update_bc_from_schedule<br/>(runner)"]
+    N0 --> N1
+    N0 --> N2
+    N2 --> N3
+    N3 --> N2
+```
+
+📍 apply (bc_controller)
+   Calls 2 other functions directly
+   Complete call tree: 4 functions
+
+   ▶ apply (bc_controller)
+     └─ _update_bc_from_schedule (bc_controller)
+       └─ _update_bc_from_schedule (runner)
+     └─ apply_boundary_conditions (boundary_conditions)
+
+#### apply - Mermaid Diagram
+```mermaid
+graph TD
+    N0["apply<br/>(bc_controller)"]
+    N1["_update_bc_from_schedule<br/>(bc_controller)"]
+    N2["_update_bc_from_schedule<br/>(runner)"]
+    N3["apply_boundary_conditions<br/>(boundary_conditions)"]
+    N0 --> N1
+    N0 --> N3
+    N1 --> N2
+    N2 --> N1
+```
+
+📍 _convert_bc_config_to_dict (bc_controller)
+   Calls 2 other functions directly
+   Complete call tree: 6 functions
+
+   ▶ _convert_bc_config_to_dict (bc_controller)
+     └─ _initialize_schedules (bc_controller)
+       └─ get (parameter_manager)
+       └─ _update_bc_from_schedule (bc_controller)
+         └─ _update_bc_from_schedule (runner)
+     └─ _convert_schedule (bc_controller)
+
+#### _convert_bc_config_to_dict - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_convert_bc_config_to_dict<br/>(bc_controller)"]
+    N1["_initialize_schedules<br/>(bc_controller)"]
+    N2["get<br/>(parameter_manager)"]
+    N3["_update_bc_from_schedule<br/>(bc_controller)"]
+    N4["_update_bc_from_schedule<br/>(runner)"]
+    N5["_convert_schedule<br/>(bc_controller)"]
+    N0 --> N1
+    N0 --> N5
+    N1 --> N2
+    N1 --> N3
+    N3 --> N4
+    N4 --> N3
+    N5 --> N1
+```
+
+📍 _convert_schedule (bc_controller)
+   Calls 1 other functions directly
+   Complete call tree: 5 functions
+
+   ▶ _convert_schedule (bc_controller)
+     └─ _initialize_schedules (bc_controller)
+       └─ get (parameter_manager)
+       └─ _update_bc_from_schedule (bc_controller)
+         └─ _update_bc_from_schedule (runner)
+
+#### _convert_schedule - Mermaid Diagram
+```mermaid
+graph TD
+    N0["_convert_schedule<br/>(bc_controller)"]
+    N1["_initialize_schedules<br/>(bc_controller)"]
+    N2["get<br/>(parameter_manager)"]
+    N3["_update_bc_from_schedule<br/>(bc_controller)"]
+    N4["_update_bc_from_schedule<br/>(runner)"]
+    N0 --> N1
+    N1 --> N2
+    N1 --> N3
+    N3 --> N4
+    N4 --> N3
+```
+
+================================================================================
+🔧 REFACTORING INSIGHTS
+================================================================================
+
+1. POTENTIAL REDUNDANCIES (functions with similar call patterns):
+--------------------------------------------------------------------------------
+
+Group 1: 11 functions with identical call pattern:
+  - __init__ (ssp_rk3_cuda)
+  - __init__ (network_simulator)
+  - __init__ (node)
+  - __init__ (intersection)
+  - __init__ (network_simulator)
+  - __init__ (parameter_manager)
+  - __init__ (network_grid)
+  - __init__ (link)
+  - is_yellow (traffic_lights)
+  - __init__ (state_manager)
+  - __init__ (grid1d)
+  Common callees (1 functions):
+    → __init__ (network_config)
+
+Group 2: 11 functions with identical call pattern:
+  - _create_initial_state (runner)
+  - _apply_initial_conditions (network_simulator)
+  - create_traffic_light_from_config (traffic_lights)
+  - _apply_network_boundary_conditions (network_grid)
+  - update_node_queues (node_solver)
+  - validate_topology (topology)
+  - build_from_legacy_dict (ic_builder)
+  - _update_plot_from_state (network_visualizer)
+  - update_queues (intersection)
+  - _initialize_boundary_conditions (runner)
+  - clear_local (parameter_manager)
+  Common callees (1 functions):
+    → get (parameter_manager)
+
+Group 3: 5 functions with identical call pattern:
+  - __repr__ (simulation_config)
+  - __repr__ (link)
+  - __repr__ (runner)
+  - __repr__ (parameter_manager)
+  - __repr__ (junction_info)
+  Common callees (1 functions):
+    → __repr__ (physics_config)
+
+Group 4: 3 functions with identical call pattern:
+  - __str__ (grid1d)
+  - __post_init__ (junction_info)
+  - cell_interfaces (grid1d)
+  Common callees (1 functions):
+    → __str__ (parameters)
+
+Group 5: 3 functions with identical call pattern:
+  - primitives_to_conserved_arr (converter)
+  - primitives_to_conserved_single (time_integration)
+  - conserved_to_primitives_arr (converter)
+  Common callees (1 functions):
+    → calculate_pressure (physics)
+
+Group 6: 2 functions with identical call pattern:
+  - get_results (state_manager)
+  - sync_to_gpu (state_manager)
+  Common callees (2 functions):
+    → sync_from_gpu (state_manager)
+    → get_results (runner)
+
+Group 7: 2 functions with identical call pattern:
+  - main (main_network_simulation)
+  - main (main_simulation)
+  Common callees (1 functions):
+    → main (main_network_builder)
+
+Group 8: 2 functions with identical call pattern:
+  - _convert_schedule (bc_controller)
+  - create_from_legacy_dict (bc_controller)
+  Common callees (1 functions):
+    → _initialize_schedules (bc_controller)
+
+Group 9: 2 functions with identical call pattern:
+  - get_cycle_info (traffic_lights)
+  - get_queue_info (intersection)
+  Common callees (1 functions):
+    → reset_stats (intersection)
+
+Group 10: 2 functions with identical call pattern:
+  - update_traffic_lights (node)
+  - __repr__ (node)
+  Common callees (2 functions):
+    → update_stats (intersection)
+    → __repr__ (physics_config)
+
+
+2. HUB FUNCTIONS (called by many others - candidates for unification):
+--------------------------------------------------------------------------------
+  __init__                                                     (network_config                ) - called by 25 functions
+  get                                                          (parameter_manager             ) - called by 16 functions
+  __repr__                                                     (physics_config                ) - called by 9 functions
+  get_results                                                  (runner                        ) - called by 6 functions
+  update_stats                                                 (intersection                  ) - called by 5 functions
+  reset_stats                                                  (intersection                  ) - called by 4 functions
+  get_config                                                   (intersection                  ) - called by 4 functions
+  add_segment                                                  (intersection                  ) - called by 4 functions
+  create_intersection_from_config                              (intersection                  ) - called by 4 functions
+  __str__                                                      (parameters                    ) - called by 4 functions
+  get_connected_segments                                       (intersection                  ) - called by 3 functions
+  get_current_phase                                            (traffic_lights                ) - called by 3 functions
+  _update_cycle_time                                           (traffic_lights                ) - called by 3 functions
+  calculate_pressure                                           (physics                       ) - called by 3 functions
+  _initialize_schedules                                        (bc_controller                 ) - called by 3 functions
+  _update_bc_from_schedule                                     (bc_controller                 ) - called by 3 functions
+  _update_plot_from_state                                      (network_visualizer            ) - called by 3 functions
+  close                                                        (network_visualizer            ) - called by 3 functions
+  load_from_files                                              (network_config                ) - called by 2 functions
+  get_current_green_segments                                   (traffic_lights                ) - called by 2 functions
+  remove_segment                                               (intersection                  ) - called by 2 functions
+  load_from_yaml                                               (parameters                    ) - called by 2 functions
+  remove_phase                                                 (traffic_lights                ) - called by 2 functions
+  get_cycle_info                                               (traffic_lights                ) - called by 2 functions
+  get_coordination_info                                        (traffic_lights                ) - called by 2 functions
+  create_traffic_light_from_config                             (traffic_lights                ) - called by 2 functions
+  main                                                         (main_network_builder          ) - called by 2 functions
+  step                                                         (network_grid                  ) - called by 2 functions
+  update_traffic_lights                                        (node                          ) - called by 2 functions
+  build_graph                                                  (topology                      ) - called by 2 functions
+
+
+3. LEAF FUNCTIONS (call nothing - pure computation, easy GPU kernel candidates):
+--------------------------------------------------------------------------------
+Found 52 leaf functions that are actually used:
+  _enforce_mass_conservation                                   (network_coupling_corrected    ) - used by 1 functions
+  validate_boundary_condition                                  (network_simulation_config     ) - used by 1 functions
+  create_intersection_from_config                              (intersection                  ) - used by 4 functions
+  cfl_condition                                                (cfl                           ) - used by 1 functions
+  _load_network_v0_overrides                                   (runner                        ) - used by 1 functions
+  _load_road_quality                                           (runner                        ) - used by 1 functions
+  strang_splitting_step_with_network                           (time_integration              ) - used by 1 functions
+  _common_initialization                                       (runner                        ) - used by 1 functions
+  store_output                                                 (state_manager                 ) - used by 1 functions
+  section_7_6                                                  (builders                      ) - used by 1 functions
+  benchmark_weno_implementations                               (utils                         ) - used by 1 functions
+  _create_legacy_params_from_config                            (runner                        ) - used by 1 functions
+  reset                                                        (network_simulator             ) - used by 1 functions
+  load_road_quality_file                                       (data_manager                  ) - used by 1 functions
+  _calculate_pressure_derivative                               (physics                       ) - used by 1 functions
+  validate_N                                                   (network_simulation_config     ) - used by 1 functions
+  _compute_flux_divergence_kernel                              (time_integration              ) - used by 1 functions
+  integrate_ssp_rk3_gpu                                        (ssp_rk3_cuda                  ) - used by 1 functions
+  load_from_files                                              (network_config                ) - used by 2 functions
+  load_from_pydantic                                           (parameters                    ) - used by 1 functions
+  solve_intersection_riemann                                   (node_solver                   ) - used by 1 functions
+  solve_node_fluxes                                            (node_solver                   ) - used by 1 functions
+  calculate_optimal_cycle_time                                 (traffic_lights                ) - used by 1 functions
+  apply_network_coupling                                       (network_coupling_corrected    ) - used by 2 functions
+  central_upwind_flux                                          (riemann_solvers               ) - used by 1 functions
+  close                                                        (network_visualizer            ) - used by 3 functions
+  rollback                                                     (checkpoint_manager            ) - used by 1 functions
+  build_graph                                                  (topology                      ) - used by 2 functions
+  save_checkpoint                                              (checkpoint_manager            ) - used by 1 functions
+  _build_segment_mapping                                       (network_coupling_corrected    ) - used by 1 functions
+  calculate_relaxation_time                                    (physics                       ) - used by 1 functions
+  get_time_to_next_phase                                       (traffic_lights                ) - used by 1 functions
+  compute_weno_fluxes_kernel                                   (weno_gpu                      ) - used by 1 functions
+  compute_adaptive_dt                                          (network_simulator             ) - used by 1 functions
+  add_node                                                     (network_grid                  ) - used by 1 functions
+  _deep_merge_dicts                                            (parameters                    ) - used by 1 functions
+  get_statistics                                               (checkpoint_manager            ) - used by 2 functions
+  to_array                                                     (bc_config                     ) - used by 1 functions
+  apply_boundary_conditions                                    (boundary_conditions           ) - used by 2 functions
+  compute_flux_divergence_weno_kernel                          (weno_gpu                      ) - used by 1 functions
+
+
+4. GPU/CPU DUPLICATES (redundant implementations to unify):
+--------------------------------------------------------------------------------
+Found 13 GPU/CPU function pairs (candidates for unification):
+  GPU: _calculate_pressure_derivative_cuda                <-> CPU: _calculate_pressure_derivative
+  GPU: calculate_spatial_discretization_weno_gpu          <-> CPU: calculate_spatial_discretization_weno
+  GPU: calculate_relaxation_time_gpu                      <-> CPU: calculate_relaxation_time
+  GPU: primitives_to_conserved_arr_gpu                    <-> CPU: primitives_to_conserved_arr
+  GPU: calculate_spatial_discretization_weno_gpu          <-> CPU: calculate_spatial_discretization_weno
+  GPU: calculate_source_term_gpu                          <-> CPU: calculate_source_term
+  GPU: solve_hyperbolic_step_standard_gpu                 <-> CPU: solve_hyperbolic_step_standard
+  GPU: calculate_equilibrium_speed_gpu                    <-> CPU: calculate_equilibrium_speed
+  GPU: apply_physical_state_bounds_gpu                    <-> CPU: apply_physical_state_bounds
+  GPU: strang_splitting_step_gpu                          <-> CPU: strang_splitting_step
+  GPU: central_upwind_flux_gpu                            <-> CPU: central_upwind_flux
+  GPU: solve_hyperbolic_step_ssprk3_gpu                   <-> CPU: solve_hyperbolic_step_ssprk3
+  GPU: conserved_to_primitives_arr_gpu                    <-> CPU: conserved_to_primitives_arr
+
+================================================================================
+✅ Analysis complete! Results saved to: arz_model/architecture_analysis.txt
+================================================================================

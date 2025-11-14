@@ -49,16 +49,19 @@ class NetworkSimulator:
             if self.debug:
                 print("[DEBUG] GPU debug logging ENABLED")
 
-        # 1. Initialize GPU Memory Pool
+        # 1. Apply initial conditions to the CPU-side state arrays
+        self._apply_initial_conditions()
+
+        # 2. Initialize GPU Memory Pool
         self.gpu_pool = self._initialize_gpu_pool()
         
-        # 2. Initialize GPU-native Network Coupling
+        # 3. Initialize GPU-native Network Coupling
         self.network_coupling = self._initialize_gpu_coupling()
 
         if self.debug and self.device == 'gpu':
             self._debug_dump_state("Initial state (t=0)")
 
-        # 3. Data logging setup
+        # 4. Data logging setup
         self.history = {
             'time': [],
             'segments': {seg_id: {'density': [], 'speed': []} for seg_id in self.network.segments.keys()}
@@ -66,6 +69,76 @@ class NetworkSimulator:
         
         if not self.quiet:
             print("✅ GPU Network Simulator initialized.")
+
+    def _apply_initial_conditions(self):
+        """Applies initial conditions to the state arrays on the CPU before GPU transfer."""
+        if not self.quiet:
+            print("  - Applying initial conditions...")
+
+        from ...core.physics import calculate_pressure
+        
+        # Iterate through segments and apply their ICs from the config
+        for seg_config in self.config.segments:
+            seg_id = seg_config.id
+            
+            if seg_id not in self.network.segments:
+                if not self.quiet:
+                    print(f"    WARNING: Segment {seg_id} from config not found in network")
+                continue
+            
+            segment_data = self.network.segments[seg_id]
+            U = segment_data['U']  # This is the state array
+            
+            # Get IC configuration from the segment's config
+            ic_config = seg_config.initial_conditions
+            if ic_config is None:
+                if not self.quiet:
+                    print(f"    - Segment {seg_id} has no initial conditions defined. Skipping.")
+                continue
+            
+            # The actual IC data is nested inside the 'config' attribute
+            ic = ic_config.config
+            
+            # Apply based on IC type (currently handles UniformIC)
+            if hasattr(ic, 'density') and hasattr(ic, 'velocity'):
+                # UniformIC case
+                density = ic.density  # Total density in veh/km
+                velocity = ic.velocity  # Velocity in km/h
+                
+                # Convert to model units (veh/m, m/s)
+                density_m = density / 1000.0  # veh/km -> veh/m
+                velocity_ms = velocity / 3.6  # km/h -> m/s
+                
+                # Split between motorcycles and cars (using alpha ratio)
+                alpha = self.config.physics.alpha
+                rho_m = alpha * density_m
+                rho_c = (1.0 - alpha) * density_m
+                
+                # Set densities
+                U[0, :] = rho_m  # Motorcycle density
+                U[2, :] = rho_c  # Car density
+                
+                # Calculate pressure using the correct parameter names from the Pydantic model
+                p_m, p_c = calculate_pressure(
+                    U[0, :], U[2, :],
+                    self.config.physics.alpha,
+                    self.config.physics.rho_jam,  # Corrected from rho_max
+                    self.config.physics.epsilon,
+                    self.config.physics.K_m,      # Corrected from k_m
+                    self.config.physics.gamma_m,
+                    self.config.physics.K_c,      # Corrected from k_c
+                    self.config.physics.gamma_c
+                )
+                
+                # Set Lagrangian momentum w = v + p
+                U[1, :] = velocity_ms + p_m  # Motorcycle momentum
+                U[3, :] = velocity_ms + p_c  # Car momentum
+                
+                if not self.quiet:
+                    print(f"    ✓ Applied IC to {seg_id}: ρ={density:.1f} veh/km, v={velocity:.1f} km/h")
+            else:
+                if not self.quiet:
+                    print(f"    - Skipping IC for {seg_id}: unsupported IC type or missing attributes.")
 
     def _initialize_gpu_pool(self) -> Optional[GPUMemoryPool]:
         """Creates and initializes the GPUMemoryPool for the network."""

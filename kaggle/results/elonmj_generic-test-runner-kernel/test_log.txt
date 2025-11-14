@@ -1,26 +1,28 @@
-2025-11-14 12:53:45,471 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
-2025-11-14 12:53:45,471 - INFO - Branch: main
-2025-11-14 12:53:45,471 - INFO - Target: run_simulation_save_npz.py
-2025-11-14 12:53:50,330 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
-2025-11-14 12:53:50,331 - INFO - PyTorch: 2.6.0+cu124
-2025-11-14 12:53:50,380 - INFO - CUDA available: True
-2025-11-14 12:53:50,402 - INFO - CUDA device: Tesla P100-PCIE-16GB
-2025-11-14 12:53:50,402 - INFO - 
+2025-11-14 12:55:38,816 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-11-14 12:55:38,816 - INFO - Branch: main
+2025-11-14 12:55:38,816 - INFO - Target: run_simulation_save_npz.py
+2025-11-14 12:55:43,992 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-11-14 12:55:43,992 - INFO - PyTorch: 2.6.0+cu124
+2025-11-14 12:55:44,046 - INFO - CUDA available: True
+2025-11-14 12:55:44,069 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-11-14 12:55:44,069 - INFO - 
 [STEP 1/4] Cloning repository from GitHub...
-2025-11-14 12:53:50,402 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
-2025-11-14 12:53:52,086 - INFO - [OK] Repository cloned successfully
-2025-11-14 12:53:52,087 - INFO - 
+2025-11-14 12:55:44,069 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-11-14 12:55:45,083 - INFO - [OK] Repository cloned successfully
+2025-11-14 12:55:45,083 - INFO - 
 [STEP 2/4] Installing dependencies...
-2025-11-14 12:53:52,087 - INFO - Installing pytest...
-2025-11-14 12:53:55,954 - INFO - [OK] Dependencies installed
-2025-11-14 12:53:55,954 - INFO - 
+2025-11-14 12:55:45,083 - INFO - Installing pytest...
+2025-11-14 12:55:49,285 - INFO - [OK] Dependencies installed
+2025-11-14 12:55:49,285 - INFO - 
 [STEP 3/4] Running Target...
-2025-11-14 12:53:55,954 - INFO - Target is a file. Executing script...
-2025-11-14 12:53:55,955 - INFO - Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/run_simulation_save_npz.py
-2025-11-14 12:54:01,177 - WARNING - [WARNING] Target execution returned code: 1
-2025-11-14 12:54:01,177 - INFO - 
+2025-11-14 12:55:49,285 - INFO - Target is a file. Executing script...
+2025-11-14 12:55:49,285 - INFO - Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/run_simulation_save_npz.py
+2025-11-14 12:55:59,279 - INFO - [SUCCESS] Target executed successfully
+2025-11-14 12:55:59,280 - INFO - 
 [STEP 4/4] Persisting results and cleaning up...
-2025-11-14 12:54:01,177 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
-2025-11-14 12:54:01,187 - INFO - [OK] Repository cleaned up.
-2025-11-14 12:54:01,187 - INFO - 
+2025-11-14 12:55:59,280 - INFO - Found results directory at /kaggle/working/Code-traffic-flow/simulation_results.
+2025-11-14 12:55:59,280 - INFO - [OK] Moved results to /kaggle/working/simulation_results for persistence.
+2025-11-14 12:55:59,280 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
+2025-11-14 12:55:59,289 - INFO - [OK] Repository cleaned up.
+2025-11-14 12:55:59,290 - INFO - 
 [FINAL] Test workflow completed

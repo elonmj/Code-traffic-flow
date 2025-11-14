@@ -1,49 +1,310 @@
-[{"stream_name":"stdout","time":0.465113582,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.465188525,"data":"GENERIC_TEST_RUN_SIMULATION_SAVE_NPZ_PY\n"}
-,{"stream_name":"stdout","time":0.465195399,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":0.465199884,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
-,{"stream_name":"stdout","time":0.465204144,"data":"Branch: main\n"}
-,{"stream_name":"stdout","time":0.465210047,"data":"Target: run_simulation_save_npz.py\n"}
-,{"stream_name":"stdout","time":5.324955751,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
-,{"stream_name":"stdout","time":5.325083673,"data":"PyTorch: 2.6.0+cu124\n"}
-,{"stream_name":"stdout","time":5.37419743,"data":"CUDA available: True\n"}
-,{"stream_name":"stdout","time":5.396267846,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
-,{"stream_name":"stdout","time":5.396315292,"data":"\n"}
-,{"stream_name":"stdout","time":5.396323579,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
-,{"stream_name":"stdout","time":5.396528372,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
-,{"stream_name":"stdout","time":7.081085227,"data":"[OK] Repository cloned successfully\n"}
-,{"stream_name":"stdout","time":7.081131118,"data":"\n"}
-,{"stream_name":"stdout","time":7.081136305,"data":"[STEP 2/4] Installing dependencies...\n"}
-,{"stream_name":"stdout","time":7.081191061,"data":"Installing pytest...\n"}
-,{"stream_name":"stdout","time":10.949084427,"data":"[OK] Dependencies installed\n"}
-,{"stream_name":"stdout","time":10.949121422,"data":"\n"}
-,{"stream_name":"stdout","time":10.949126193,"data":"[STEP 3/4] Running Target...\n"}
-,{"stream_name":"stdout","time":10.949129957,"data":"Target is a file. Executing script...\n"}
-,{"stream_name":"stdout","time":10.949133645,"data":"Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/run_simulation_save_npz.py\n"}
-,{"stream_name":"stderr","time":15.884317493,"data":"Traceback (most recent call last):\n"}
-,{"stream_name":"stderr","time":15.884383689,"data":"  File \"/kaggle/working/Code-traffic-flow/run_simulation_save_npz.py\", line 19, in \u003cmodule\u003e\n"}
-,{"stream_name":"stderr","time":15.884392324,"data":"    from arz_model.simulation.runner import SimulationRunner\n"}
-,{"stream_name":"stderr","time":15.884396451,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/__init__.py\", line 4, in \u003cmodule\u003e\n"}
-,{"stream_name":"stderr","time":15.884400908,"data":"    from . import runner\n"}
-,{"stream_name":"stderr","time":15.884404488,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py\", line 29, in \u003cmodule\u003e\n"}
-,{"stream_name":"stderr","time":15.884408528,"data":"    from .execution.network_simulator import NetworkSimulator\n"}
-,{"stream_name":"stderr","time":15.884411985,"data":"  File \"/kaggle/working/Code-traffic-flow/arz_model/simulation/execution/network_simulator.py\", line 45\n"}
-,{"stream_name":"stderr","time":15.884415882999999,"data":"    self.params = config.physics\n"}
-,{"stream_name":"stderr","time":15.88441954,"data":"IndentationError: unexpected indent\n"}
-,{"stream_name":"stdout","time":16.171716149,"data":"[WARNING] Target execution returned code: 1\n"}
-,{"stream_name":"stdout","time":16.171744274,"data":"\n"}
-,{"stream_name":"stdout","time":16.171749062,"data":"[STEP 4/4] Persisting results and cleaning up...\n"}
-,{"stream_name":"stdout","time":16.171776894,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
-,{"stream_name":"stdout","time":16.18112111,"data":"[OK] Repository cleaned up.\n"}
-,{"stream_name":"stdout","time":16.181149589,"data":"\n"}
-,{"stream_name":"stdout","time":16.181154427,"data":"[FINAL] Test workflow completed\n"}
-,{"stream_name":"stdout","time":16.181277966,"data":"\n"}
-,{"stream_name":"stdout","time":16.181284387,"data":"================================================================================\n"}
-,{"stream_name":"stdout","time":16.181288051,"data":"EXECUTION COMPLETED\n"}
-,{"stream_name":"stdout","time":16.181291614,"data":"Check /kaggle/working/test_log.txt for details.\n"}
-,{"stream_name":"stdout","time":16.181294977,"data":"================================================================================\n"}
-,{"stream_name":"stderr","time":20.148177576,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
-,{"stream_name":"stderr","time":20.148210147,"data":"  warn(\n"}
-,{"stream_name":"stderr","time":20.186762994,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
-,{"stream_name":"stderr","time":21.241856684,"data":"[NbConvertApp] Writing 301969 bytes to __results__.html\n"}
+[{"stream_name":"stdout","time":0.521151151,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.521223918,"data":"GENERIC_TEST_RUN_SIMULATION_SAVE_NPZ_PY\n"}
+,{"stream_name":"stdout","time":0.521229735,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":0.521235136,"data":"Repository: https://github.com/elonmj/Code-traffic-flow.git\n"}
+,{"stream_name":"stdout","time":0.521373659,"data":"Branch: main\n"}
+,{"stream_name":"stdout","time":0.521419996,"data":"Target: run_simulation_save_npz.py\n"}
+,{"stream_name":"stdout","time":5.697661942,"data":"Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]\n"}
+,{"stream_name":"stdout","time":5.69779843,"data":"PyTorch: 2.6.0+cu124\n"}
+,{"stream_name":"stdout","time":5.751435896,"data":"CUDA available: True\n"}
+,{"stream_name":"stdout","time":5.774444666,"data":"CUDA device: Tesla P100-PCIE-16GB\n"}
+,{"stream_name":"stdout","time":5.774566712,"data":"\n"}
+,{"stream_name":"stdout","time":5.77457593,"data":"[STEP 1/4] Cloning repository from GitHub...\n"}
+,{"stream_name":"stdout","time":5.774725369,"data":"Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow\n"}
+,{"stream_name":"stdout","time":6.788201213,"data":"[OK] Repository cloned successfully\n"}
+,{"stream_name":"stdout","time":6.788241813,"data":"\n"}
+,{"stream_name":"stdout","time":6.788253715,"data":"[STEP 2/4] Installing dependencies...\n"}
+,{"stream_name":"stdout","time":6.788314858,"data":"Installing pytest...\n"}
+,{"stream_name":"stdout","time":10.990093683,"data":"[OK] Dependencies installed\n"}
+,{"stream_name":"stdout","time":10.990227231,"data":"\n"}
+,{"stream_name":"stdout","time":10.990235369,"data":"[STEP 3/4] Running Target...\n"}
+,{"stream_name":"stdout","time":10.990587326,"data":"Target is a file. Executing script...\n"}
+,{"stream_name":"stdout","time":10.990649742,"data":"Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/run_simulation_save_npz.py\n"}
+,{"stream_name":"stdout","time":15.786320627,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":15.786349659999999,"data":"🚗 SIMULATION RÉSEAU GPU - SAUVEGARDE NPZ\n"}
+,{"stream_name":"stdout","time":15.786354409,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":15.786357154,"data":"[DEBUG] Mode debug activé - statistiques GPU à chaque étape clé\n"}
+,{"stream_name":"stdout","time":15.786359809,"data":"\n"}
+,{"stream_name":"stdout","time":15.786362172,"data":"[1/4] Création de la configuration...\n"}
+,{"stream_name":"stdout","time":15.787463629,"data":"   - Temps final: 60.0s\n"}
+,{"stream_name":"stdout","time":15.787480408,"data":"   - Segments: 2\n"}
+,{"stream_name":"stdout","time":15.787486722,"data":"   - Noeuds: 3\n"}
+,{"stream_name":"stdout","time":15.787489532,"data":"\n"}
+,{"stream_name":"stdout","time":15.787492031,"data":"[2/4] Initialisation de la grille réseau...\n"}
+,{"stream_name":"stdout","time":15.787710418,"data":"Finalizing network structure and validating topology...\n"}
+,{"stream_name":"stdout","time":15.788289195,"data":"✅ Network topology is valid.\n"}
+,{"stream_name":"stdout","time":15.788297487,"data":"\n"}
+,{"stream_name":"stdout","time":15.788301308,"data":"[3/4] Lancement de la simulation GPU...\n"}
+,{"stream_name":"stdout","time":15.990769282,"data":"   - Mode: Network Simulation\n"}
+,{"stream_name":"stdout","time":15.990810993,"data":"   - Device: GPU (Compute Capability: (6, 0))\n"}
+,{"stream_name":"stdout","time":15.990814768,"data":"   - Segments: 2\n"}
+,{"stream_name":"stdout","time":15.990817269,"data":"   - Nodes: 3\n"}
+,{"stream_name":"stdout","time":15.990819637,"data":"Initializing GPU Network Simulator...\n"}
+,{"stream_name":"stdout","time":15.990822102,"data":"[DEBUG] GPU debug logging ENABLED\n"}
+,{"stream_name":"stdout","time":15.990825399,"data":"  - Initializing GPU Memory Pool for network...\n"}
+,{"stream_name":"stdout","time":15.994719214,"data":"✅ GPUMemoryPool initialized:\n"}
+,{"stream_name":"stdout","time":15.994740983,"data":"   - Segments: 2\n"}
+,{"stream_name":"stdout","time":15.994744435,"data":"   - Total cells: 350\n"}
+,{"stream_name":"stdout","time":15.994746818,"data":"   - Ghost cells: 3\n"}
+,{"stream_name":"stdout","time":15.994749209,"data":"   - Compute Capability: (6, 0)\n"}
+,{"stream_name":"stdout","time":15.994751591,"data":"   - CUDA streams: Enabled\n"}
+,{"stream_name":"stdout","time":15.994754031,"data":"   - GPU memory allocated: 0.00 MB\n"}
+,{"stream_name":"stdout","time":15.997113696,"data":"    - GPU Memory Pool created. Allocated: 0.00 MB\n"}
+,{"stream_name":"stdout","time":15.997133022,"data":"  - Initializing GPU-native network coupling...\n"}
+,{"stream_name":"stdout","time":15.997138707,"data":"  - Preparing GPU topology for network coupling...\n"}
+,{"stream_name":"stdout","time":15.999975813,"data":"    - GPU topology prepared and transferred.\n"}
+,{"stream_name":"stdout","time":15.999991866,"data":"    - GPU Coupling Manager created.\n"}
+,{"stream_name":"stdout","time":15.999996609,"data":"[DEBUG] Initial state (t=0)\n"}
+,{"stream_name":"stdout","time":16.000319312,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":16.000619679,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":16.000627251,"data":"✅ GPU Network Simulator initialized.\n"}
+,{"stream_name":"stdout","time":16.000631328,"data":"Starting GPU network simulation from t=0 to t=60.0s...\n"}
+,{"stream_name":"stderr","time":16.004528645,"data":"\rSimulating on GPU:   0%|          | 0/60.0 [00:00\u003c?, ?it/s]/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":16.004557787,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":17.363274352,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":17.363308016,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":17.631623421,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":17.631653563,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":17.773930556,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":17.773960502,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":18.043578055,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":18.043632975,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":18.109571476,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":18.109615259,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":18.644563847,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":18.644593024,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":18.724586348,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 13 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":18.724625134,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":18.79318639,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 13 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":18.793217848,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":18.870016545,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 13 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":18.870047472,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":18.944633747,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":18.944663388,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":18.949445001,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 10 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":18.949468894,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stderr","time":18.990289106,"data":"/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: \u001b[1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.\u001b[0m\n"}
+,{"stream_name":"stderr","time":18.990315012,"data":"  warn(NumbaPerformanceWarning(msg))\n"}
+,{"stream_name":"stdout","time":18.995011859,"data":"[DEBUG] State log at step 0 (t=1.00s)\n"}
+,{"stream_name":"stdout","time":18.995223269,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":18.995500081,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.02081996,"data":"[DEBUG] State log at step 1 (t=2.00s)\n"}
+,{"stream_name":"stdout","time":19.02100197,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.02125698,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.046084964,"data":"[DEBUG] State log at step 2 (t=3.00s)\n"}
+,{"stream_name":"stdout","time":19.046299242,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.046559943,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.072196357,"data":"[DEBUG] State log at step 3 (t=4.00s)\n"}
+,{"stream_name":"stdout","time":19.072381313,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.072646399,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.09773652,"data":"[DEBUG] State log at step 4 (t=5.00s)\n"}
+,{"stream_name":"stdout","time":19.098000782,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.098202775,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.124293331,"data":"[DEBUG] State log at step 5 (t=6.00s)\n"}
+,{"stream_name":"stdout","time":19.124482954,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.124748578,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.149538092,"data":"[DEBUG] State log at step 6 (t=7.00s)\n"}
+,{"stream_name":"stdout","time":19.149751723,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.150159701,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.175444455,"data":"[DEBUG] State log at step 7 (t=8.00s)\n"}
+,{"stream_name":"stdout","time":19.175683706,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.175969459,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.202047373,"data":"[DEBUG] State log at step 8 (t=9.00s)\n"}
+,{"stream_name":"stdout","time":19.202286955,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.202559118,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.230046186,"data":"[DEBUG] State log at step 9 (t=10.00s)\n"}
+,{"stream_name":"stdout","time":19.230297556,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.23057989,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.256411437,"data":"[DEBUG] State log at step 10 (t=11.00s)\n"}
+,{"stream_name":"stdout","time":19.256621937,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.256903618,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.282066507,"data":"[DEBUG] State log at step 11 (t=12.00s)\n"}
+,{"stream_name":"stdout","time":19.282254491,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.28251184,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.30835997,"data":"[DEBUG] State log at step 12 (t=13.00s)\n"}
+,{"stream_name":"stdout","time":19.308557702,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.308851492,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.332608312,"data":"[DEBUG] State log at step 13 (t=14.00s)\n"}
+,{"stream_name":"stdout","time":19.332829607,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.333072066,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.3578032,"data":"[DEBUG] State log at step 14 (t=15.00s)\n"}
+,{"stream_name":"stdout","time":19.358049591,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.358344205,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.382863017,"data":"[DEBUG] State log at step 15 (t=16.00s)\n"}
+,{"stream_name":"stdout","time":19.383047385,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.383336103,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.407747152,"data":"[DEBUG] State log at step 16 (t=17.00s)\n"}
+,{"stream_name":"stdout","time":19.408036448,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.408284049,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.433179155,"data":"[DEBUG] State log at step 17 (t=18.00s)\n"}
+,{"stream_name":"stdout","time":19.433372268,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.433663964,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.458720255,"data":"[DEBUG] State log at step 18 (t=19.00s)\n"}
+,{"stream_name":"stdout","time":19.459004251,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.459253816,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.483407029,"data":"[DEBUG] State log at step 19 (t=20.00s)\n"}
+,{"stream_name":"stdout","time":19.483599675,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.483897355,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.509326842,"data":"[DEBUG] State log at step 20 (t=21.00s)\n"}
+,{"stream_name":"stdout","time":19.50952986,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.50982216,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.533990967,"data":"[DEBUG] State log at step 21 (t=22.00s)\n"}
+,{"stream_name":"stdout","time":19.534166287,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.534427393,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.558230744,"data":"[DEBUG] State log at step 22 (t=23.00s)\n"}
+,{"stream_name":"stdout","time":19.558507708,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.558779929,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.583745143,"data":"[DEBUG] State log at step 23 (t=24.00s)\n"}
+,{"stream_name":"stdout","time":19.583976341,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.584212311,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.608633774,"data":"[DEBUG] State log at step 24 (t=25.00s)\n"}
+,{"stream_name":"stdout","time":19.608872466,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.609110119,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.63476002,"data":"[DEBUG] State log at step 25 (t=26.00s)\n"}
+,{"stream_name":"stdout","time":19.634991365,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.63526462,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.659876606,"data":"[DEBUG] State log at step 26 (t=27.00s)\n"}
+,{"stream_name":"stdout","time":19.660095592,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.660438077,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.684539366,"data":"[DEBUG] State log at step 27 (t=28.00s)\n"}
+,{"stream_name":"stdout","time":19.684744016,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.685008580999998,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.709136536,"data":"[DEBUG] State log at step 28 (t=29.00s)\n"}
+,{"stream_name":"stdout","time":19.709316362,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.709577685,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.73381495,"data":"[DEBUG] State log at step 29 (t=30.00s)\n"}
+,{"stream_name":"stdout","time":19.734016393,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.734233026,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.758985569,"data":"[DEBUG] State log at step 30 (t=31.00s)\n"}
+,{"stream_name":"stdout","time":19.759173239,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.75943438,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.784353941,"data":"[DEBUG] State log at step 31 (t=32.00s)\n"}
+,{"stream_name":"stdout","time":19.784521423,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.784758943,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.809055805,"data":"[DEBUG] State log at step 32 (t=33.00s)\n"}
+,{"stream_name":"stdout","time":19.809115896,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.809365448,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.834732177,"data":"[DEBUG] State log at step 33 (t=34.00s)\n"}
+,{"stream_name":"stdout","time":19.834963124,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.83520819,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.859075417,"data":"[DEBUG] State log at step 34 (t=35.00s)\n"}
+,{"stream_name":"stdout","time":19.859296032,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.85954011,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.883792279,"data":"[DEBUG] State log at step 35 (t=36.00s)\n"}
+,{"stream_name":"stdout","time":19.884025974,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.88428738,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.908632825,"data":"[DEBUG] State log at step 36 (t=37.00s)\n"}
+,{"stream_name":"stdout","time":19.908894236,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.909165986,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.932633502,"data":"[DEBUG] State log at step 37 (t=38.00s)\n"}
+,{"stream_name":"stdout","time":19.932908074,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.933166823,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.957470036,"data":"[DEBUG] State log at step 38 (t=39.00s)\n"}
+,{"stream_name":"stdout","time":19.957720613,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.958000623,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.983395038,"data":"[DEBUG] State log at step 39 (t=40.00s)\n"}
+,{"stream_name":"stdout","time":19.983586932,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":19.983873801,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.007734278,"data":"[DEBUG] State log at step 40 (t=41.00s)\n"}
+,{"stream_name":"stdout","time":20.008004813,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.00831306,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.032596558,"data":"[DEBUG] State log at step 41 (t=42.00s)\n"}
+,{"stream_name":"stdout","time":20.032733238,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.032979321,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.057135804,"data":"[DEBUG] State log at step 42 (t=43.00s)\n"}
+,{"stream_name":"stdout","time":20.057213196,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.057506381,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.081547965,"data":"[DEBUG] State log at step 43 (t=44.00s)\n"}
+,{"stream_name":"stdout","time":20.081566983,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.081868103,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.106897749,"data":"[DEBUG] State log at step 44 (t=45.00s)\n"}
+,{"stream_name":"stdout","time":20.107242014,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.107455343,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.132096127,"data":"[DEBUG] State log at step 45 (t=46.00s)\n"}
+,{"stream_name":"stdout","time":20.132274362,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.132578045,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.156221103,"data":"[DEBUG] State log at step 46 (t=47.00s)\n"}
+,{"stream_name":"stdout","time":20.156420575,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.156758739,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.182356216,"data":"[DEBUG] State log at step 47 (t=48.00s)\n"}
+,{"stream_name":"stdout","time":20.182572771,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.182876747,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.208305681,"data":"[DEBUG] State log at step 48 (t=49.00s)\n"}
+,{"stream_name":"stdout","time":20.208562141,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.208870575,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.232930623,"data":"[DEBUG] State log at step 49 (t=50.00s)\n"}
+,{"stream_name":"stdout","time":20.233111053000002,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.233428856,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.258422578,"data":"[DEBUG] State log at step 50 (t=51.00s)\n"}
+,{"stream_name":"stdout","time":20.258656805,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.258965567,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.284576132,"data":"[DEBUG] State log at step 51 (t=52.00s)\n"}
+,{"stream_name":"stdout","time":20.28477604,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.285044092,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.309581212,"data":"[DEBUG] State log at step 52 (t=53.00s)\n"}
+,{"stream_name":"stdout","time":20.309843082,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.310128477,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.334073384,"data":"[DEBUG] State log at step 53 (t=54.00s)\n"}
+,{"stream_name":"stdout","time":20.33429298,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.334579844,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.358449193,"data":"[DEBUG] State log at step 54 (t=55.00s)\n"}
+,{"stream_name":"stdout","time":20.358760083,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.359041383,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.383467811,"data":"[DEBUG] State log at step 55 (t=56.00s)\n"}
+,{"stream_name":"stdout","time":20.383671588,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.3839864,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.4082673,"data":"[DEBUG] State log at step 56 (t=57.00s)\n"}
+,{"stream_name":"stdout","time":20.408501961,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.408815748,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.432208511,"data":"[DEBUG] State log at step 57 (t=58.00s)\n"}
+,{"stream_name":"stdout","time":20.432420742,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.43263512,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.456294998,"data":"[DEBUG] State log at step 58 (t=59.00s)\n"}
+,{"stream_name":"stdout","time":20.456446123,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.456734789,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.481956127,"data":"[DEBUG] State log at step 59 (t=60.00s)\n"}
+,{"stream_name":"stdout","time":20.482209298,"data":"   Segment seg-1: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.482433781,"data":"   Segment seg-2: density[min=0.000000, max=0.000000, mean=0.000000] speed[min=0.000000, max=0.000000, mean=0.000000]\n"}
+,{"stream_name":"stdout","time":20.482791323,"data":"GPU network simulation finished.\n"}
+,{"stream_name":"stderr","time":20.482771411,"data":"\rSimulating on GPU:   2%|▏         | 1.0/60.0 [00:02\u003c02:56,  2.99s/it]\rSimulating on GPU:   2%|▏         | 1.0/60.0 [00:02\u003c02:56,  2.99s/it, Time=1.00s, dt=1.0000s]\rSimulating on GPU:   3%|▎         | 2.0/60.0 [00:03\u003c02:53,  2.99s/it, Time=2.00s, dt=1.0000s]\rSimulating on GPU:   5%|▌         | 3.0/60.0 [00:03\u003c02:50,  2.99s/it, Time=3.00s, dt=1.0000s]\rSimulating on GPU:   7%|▋         | 4.0/60.0 [00:03\u003c02:47,  2.99s/it, Time=4.00s, dt=1.0000s]\rSimulating on GPU:   8%|▊         | 5.0/60.0 [00:03\u003c00:25,  2.14it/s, Time=4.00s, dt=1.0000s]\rSimulating on GPU:   8%|▊         | 5.0/60.0 [00:03\u003c00:25,  2.14it/s, Time=5.00s, dt=1.0000s]\rSimulating on GPU:  10%|█         | 6.0/60.0 [00:03\u003c00:25,  2.14it/s, Time=6.00s, dt=1.0000s]\rSimulating on GPU:  12%|█▏        | 7.0/60.0 [00:03\u003c00:24,  2.14it/s, Time=7.00s, dt=1.0000s]\rSimulating on GPU:  13%|█▎        | 8.0/60.0 [00:03\u003c00:24,  2.14it/s, Time=8.00s, dt=1.0000s]\rSimulating on GPU:  15%|█▌        | 9.0/60.0 [00:03\u003c00:11,  4.44it/s, Time=8.00s, dt=1.0000s]\rSimulating on GPU:  15%|█▌        | 9.0/60.0 [00:03\u003c00:11,  4.44it/s, Time=9.00s, dt=1.0000s]\rSimulating on GPU:  17%|█▋        | 10.0/60.0 [00:03\u003c00:11,  4.44it/s, Time=10.00s, dt=1.0000s]\rSimulating on GPU:  18%|█▊        | 11.0/60.0 [00:03\u003c00:11,  4.44it/s, Time=11.00s, dt=1.0000s]\rSimulating on GPU:  20%|██        | 12.0/60.0 [00:03\u003c00:10,  4.44it/s, Time=12.00s, dt=1.0000s]\rSimulating on GPU:  22%|██▏       | 13.0/60.0 [00:03\u003c00:06,  7.25it/s, Time=12.00s, dt=1.0000s]\rSimulating on GPU:  22%|██▏       | 13.0/60.0 [00:03\u003c00:06,  7.25it/s, Time=13.00s, dt=1.0000s]\rSimulating on GPU:  23%|██▎       | 14.0/60.0 [00:03\u003c00:06,  7.25it/s, Time=14.00s, dt=1.0000s]\rSimulating on GPU:  25%|██▌       | 15.0/60.0 [00:03\u003c00:06,  7.25it/s, Time=15.00s, dt=1.0000s]\rSimulating on GPU:  27%|██▋       | 16.0/60.0 [00:03\u003c00:06,  7.25it/s, Time=16.00s, dt=1.0000s]\rSimulating on GPU:  28%|██▊       | 17.0/60.0 [00:03\u003c00:05,  7.25it/s, Time=17.00s, dt=1.0000s]\rSimulating on GPU:  30%|███       | 18.0/60.0 [00:03\u003c00:03, 11.33it/s, Time=17.00s, dt=1.0000s]\rSimulating on GPU:  30%|███       | 18.0/60.0 [00:03\u003c00:03, 11.33it/s, Time=18.00s, dt=1.0000s]\rSimulating on GPU:  32%|███▏      | 19.0/60.0 [00:03\u003c00:03, 11.33it/s, Time=19.00s, dt=1.0000s]\rSimulating on GPU:  33%|███▎      | 20.0/60.0 [00:03\u003c00:03, 11.33it/s, Time=20.00s, dt=1.0000s]\rSimulating on GPU:  35%|███▌      | 21.0/60.0 [00:03\u003c00:03, 11.33it/s, Time=21.00s, dt=1.0000s]\rSimulating on GPU:  37%|███▋      | 22.0/60.0 [00:03\u003c00:02, 14.89it/s, Time=21.00s, dt=1.0000s]\rSimulating on GPU:  37%|███▋      | 22.0/60.0 [00:03\u003c00:02, 14.89it/s, Time=22.00s, dt=1.0000s]\rSimulating on GPU:  38%|███▊      | 23.0/60.0 [00:03\u003c00:02, 14.89it/s, Time=23.00s, dt=1.0000s]\rSimulating on GPU:  40%|████      | 24.0/60.0 [00:03\u003c00:02, 14.89it/s, Time=24.00s, dt=1.0000s]\rSimulating on GPU:  42%|████▏     | 25.0/60.0 [00:03\u003c00:02, 14.89it/s, Time=25.00s, dt=1.0000s]\rSimulating on GPU:  43%|████▎     | 26.0/60.0 [00:03\u003c00:01, 18.65it/s, Time=25.00s, dt=1.0000s]\rSimulating on GPU:  43%|████▎     | 26.0/60.0 [00:03\u003c00:01, 18.65it/s, Time=26.00s, dt=1.0000s]\rSimulating on GPU:  45%|████▌     | 27.0/60.0 [00:03\u003c00:01, 18.65it/s, Time=27.00s, dt=1.0000s]\rSimulating on GPU:  47%|████▋     | 28.0/60.0 [00:03\u003c00:01, 18.65it/s, Time=28.00s, dt=1.0000s]\rSimulating on GPU:  48%|████▊     | 29.0/60.0 [00:03\u003c00:01, 18.65it/s, Time=29.00s, dt=1.0000s]\rSimulating on GPU:  50%|█████     | 30.0/60.0 [00:03\u003c00:01, 18.65it/s, Time=30.00s, dt=1.0000s]\rSimulating on GPU:  52%|█████▏    | 31.0/60.0 [00:03\u003c00:01, 23.21it/s, Time=30.00s, dt=1.0000s]\rSimulating on GPU:  52%|█████▏    | 31.0/60.0 [00:03\u003c00:01, 23.21it/s, Time=31.00s, dt=1.0000s]\rSimulating on GPU:  53%|█████▎    | 32.0/60.0 [00:03\u003c00:01, 23.21it/s, Time=32.00s, dt=1.0000s]\rSimulating on GPU:  55%|█████▌    | 33.0/60.0 [00:03\u003c00:01, 23.21it/s, Time=33.00s, dt=1.0000s]\rSimulating on GPU:  57%|█████▋    | 34.0/60.0 [00:03\u003c00:01, 23.21it/s, Time=34.00s, dt=1.0000s]\rSimulating on GPU:  58%|█████▊    | 35.0/60.0 [00:03\u003c00:00, 26.49it/s, Time=34.00s, dt=1.0000s]\rSimulating on GPU:  58%|█████▊    | 35.0/60.0 [00:03\u003c00:00, 26.49it/s, Time=35.00s, dt=1.0000s]\rSimulating on GPU:  60%|██████    | 36.0/60.0 [00:03\u003c00:00, 26.49it/s, Time=36.00s, dt=1.0000s]\rSimulating on GPU:  62%|██████▏   | 37.0/60.0 [00:03\u003c00:00, 26.49it/s, Time=37.00s, dt=1.0000s]\rSimulating on GPU:  63%|██████▎   | 38.0/60.0 [00:03\u003c00:00, 26.49it/s, Time=38.00s, dt=1.0000s]\rSimulating on GPU:  65%|██████▌   | 39.0/60.0 [00:03\u003c00:00, 26.49it/s, Time=39.00s, dt=1.0000s]\rSimulating on GPU:  67%|██████▋   | 40.0/60.0 [00:03\u003c00:00, 30.02it/s, Time=39.00s, dt=1.0000s]\rSimulating on GPU:  67%|██████▋   | 40.0/60.0 [00:03\u003c00:00, 30.02it/s, Time=40.00s, dt=1.0000s]\rSimulating on GPU:  68%|██████▊   | 41.0/60.0 [00:04\u003c00:00, 30.02it/s, Time=41.00s, dt=1.0000s]\rSimulating on GPU:  70%|███████   | 42.0/60.0 [00:04\u003c00:00, 30.02it/s, Time=42.00s, dt=1.0000s]\rSimulating on GPU:  72%|███████▏  | 43.0/60.0 [00:04\u003c00:00, 30.02it/s, Time=43.00s, dt=1.0000s]\rSimulating on GPU:  73%|███████▎  | 44.0/60.0 [00:04\u003c00:00, 30.02it/s, Time=44.00s, dt=1.0000s]\rSimulating on GPU:  75%|███████▌  | 45.0/60.0 [00:04\u003c00:00, 32.82it/s, Time=44.00s, dt=1.0000s]\rSimulating on GPU:  75%|███████▌  | 45.0/60.0 [00:04\u003c00:00, 32.82it/s, Time=45.00s, dt=1.0000s]\rSimulating on GPU:  77%|███████▋  | 46.0/60.0 [00:04\u003c00:00, 32.82it/s, Time=46.00s, dt=1.0000s]\rSimulating on GPU:  78%|███████▊  | 47.0/60.0 [00:04\u003c00:00, 32.82it/s, Time=47.00s, dt=1.0000s]\rSimulating on GPU:  80%|████████  | 48.0/60.0 [00:04\u003c00:00, 32.82it/s, Time=48.00s, dt=1.0000s]\rSimulating on GPU:  82%|████████▏ | 49.0/60.0 [00:04\u003c00:00, 34.40it/s, Time=48.00s, dt=1.0000s]\rSimulating on GPU:  82%|████████▏ | 49.0/60.0 [00:04\u003c00:00, 34.40it/s, Time=49.00s, dt=1.0000s]\rSimulating on GPU:  83%|████████▎ | 50.0/60.0 [00:04\u003c00:00, 34.40it/s, Time=50.00s, dt=1.0000s]\rSimulating on GPU:  85%|████████▌ | 51.0/60.0 [00:04\u003c00:00, 34.40it/s, Time=51.00s, dt=1.0000s]\rSimulating on GPU:  87%|████████▋ | 52.0/60.0 [00:04\u003c00:00, 34.40it/s, Time=52.00s, dt=1.0000s]\rSimulating on GPU:  88%|████████▊ | 53.0/60.0 [00:04\u003c00:00, 35.70it/s, Time=52.00s, dt=1.0000s]\rSimulating on GPU:  88%|████████▊ | 53.0/60.0 [00:04\u003c00:00, 35.70it/s, Time=53.00s, dt=1.0000s]\rSimulating on GPU:  90%|█████████ | 54.0/60.0 [00:04\u003c00:00, 35.70it/s, Time=54.00s, dt=1.0000s]\rSimulating on GPU:  92%|█████████▏| 55.0/60.0 [00:04\u003c00:00, 35.70it/s, Time=55.00s, dt=1.0000s]\rSimulating on GPU:  93%|█████████▎| 56.0/60.0 [00:04\u003c00:00, 35.70it/s, Time=56.00s, dt=1.0000s]\rSimulating on GPU:  95%|█████████▌| 57.0/60.0 [00:04\u003c00:00, 35.70it/s, Time=57.00s, dt=1.0000s]\rSimulating on GPU:  97%|█████████▋| 58.0/60.0 [00:04\u003c00:00, 37.26it/s, Time=57.00s, dt=1.0000s]\rSimulating on GPU:  97%|█████████▋| 58.0/60.0 [00:04\u003c00:00, 37.26it/s, Time=58.00s, dt=1.0000s]\rSimulating on GPU:  98%|█████████▊| 59.0/60.0 [00:04\u003c00:00, 37.26it/s, Time=59.00s, dt=1.0000s]\rSimulating on GPU: 100%|██████████| 60.0/60.0 [00:04\u003c00:00, 37.26it/s, Time=60.00s, dt=1.0000s]\rSimulating on GPU: 100%|██████████| 60.0/60.0 [00:04\u003c00:00, 13.40it/s, Time=60.00s, dt=1.0000s]\n"}
+,{"stream_name":"stdout","time":20.483116897,"data":"\n"}
+,{"stream_name":"stdout","time":20.483123637,"data":"[4/4] Sauvegarde des résultats...\n"}
+,{"stream_name":"stdout","time":20.483949248,"data":"✅ Sauvegardé: simulation_results/final_state_seg-1.npz\n"}
+,{"stream_name":"stdout","time":20.484401938,"data":"✅ Sauvegardé: simulation_results/final_state_seg-2.npz\n"}
+,{"stream_name":"stdout","time":20.484798307,"data":"✅ Sauvegardé: simulation_results/simulation_times.npz\n"}
+,{"stream_name":"stdout","time":20.486580447,"data":"✅ Sauvegardé: simulation_results/history_seg-1.npz\n"}
+,{"stream_name":"stdout","time":20.488228371,"data":"✅ Sauvegardé: simulation_results/history_seg-2.npz\n"}
+,{"stream_name":"stdout","time":20.48867895,"data":"✅ Sauvegardé: simulation_results/simulation_metadata.npz\n"}
+,{"stream_name":"stdout","time":20.488703231,"data":"\n"}
+,{"stream_name":"stdout","time":20.488715831,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":20.48872345,"data":"✅ SIMULATION TERMINÉE\n"}
+,{"stream_name":"stdout","time":20.488726393,"data":"============================================================\n"}
+,{"stream_name":"stdout","time":20.488729319,"data":"\n"}
+,{"stream_name":"stdout","time":20.48873219,"data":"📊 Résultats:\n"}
+,{"stream_name":"stdout","time":20.488736094,"data":"   - Temps final: 60.00s\n"}
+,{"stream_name":"stdout","time":20.488741761,"data":"   - Nombre de pas: 60\n"}
+,{"stream_name":"stdout","time":20.488835374,"data":"   - Fichiers sauvegardés dans: /kaggle/working/Code-traffic-flow/simulation_results\n"}
+,{"stream_name":"stdout","time":20.48884712,"data":"\n"}
+,{"stream_name":"stdout","time":20.488858247,"data":"💡 Pour visualiser:\n"}
+,{"stream_name":"stdout","time":20.4888758,"data":"   1. Télécharge le dossier 'simulation_results/'\n"}
+,{"stream_name":"stdout","time":20.488880379,"data":"   2. Utilise un script de visualisation Python avec matplotlib\n"}
+,{"stream_name":"stdout","time":20.488884503,"data":"   3. Charge les fichiers NPZ avec np.load()\n"}
+,{"stream_name":"stdout","time":20.985273422,"data":"[SUCCESS] Target executed successfully\n"}
+,{"stream_name":"stdout","time":20.985305708,"data":"\n"}
+,{"stream_name":"stdout","time":20.985310056,"data":"[STEP 4/4] Persisting results and cleaning up...\n"}
+,{"stream_name":"stdout","time":20.985313917,"data":"Found results directory at /kaggle/working/Code-traffic-flow/simulation_results.\n"}
+,{"stream_name":"stdout","time":20.985317791,"data":"[OK] Moved results to /kaggle/working/simulation_results for persistence.\n"}
+,{"stream_name":"stdout","time":20.985321791,"data":"Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...\n"}
+,{"stream_name":"stdout","time":20.994842107,"data":"[OK] Repository cleaned up.\n"}
+,{"stream_name":"stdout","time":20.994914983,"data":"\n"}
+,{"stream_name":"stdout","time":20.994923879,"data":"[FINAL] Test workflow completed\n"}
+,{"stream_name":"stdout","time":20.995007055,"data":"\n"}
+,{"stream_name":"stdout","time":20.995018797,"data":"================================================================================\n"}
+,{"stream_name":"stdout","time":20.995022764,"data":"EXECUTION COMPLETED\n"}
+,{"stream_name":"stdout","time":20.99502633,"data":"Check /kaggle/working/test_log.txt for details.\n"}
+,{"stream_name":"stdout","time":20.995031748,"data":"================================================================================\n"}
+,{"stream_name":"stderr","time":24.973185407,"data":"/usr/local/lib/python3.11/dist-packages/traitlets/traitlets.py:2915: FutureWarning: --Exporter.preprocessors=[\"nbconvert.preprocessors.ExtractOutputPreprocessor\"] for containers is deprecated in traitlets 5.0. You can pass `--Exporter.preprocessors item` ... multiple times to add items to a list.\n"}
+,{"stream_name":"stderr","time":24.973247609,"data":"  warn(\n"}
+,{"stream_name":"stderr","time":25.015708321,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":26.197452149,"data":"[NbConvertApp] Writing 301969 bytes to __results__.html\n"}
 ]
