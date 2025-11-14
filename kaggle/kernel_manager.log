@@ -665,3 +665,13 @@
 2025-11-14 17:17:10,970 - kernel_manager - INFO - ✅ Changes committed successfully
 2025-11-14 17:17:10,970 - kernel_manager - INFO - 📤 Pushing to remote branch: main
 2025-11-14 17:17:18,727 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-14 18:18:10,827 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-14 18:18:11,001 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-14 18:18:11,102 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-14 18:18:11,102 - kernel_manager - INFO -   M  rz_model/simulation/execution/network_simulator.py (Modified (staged))
+2025-11-14 18:18:11,102 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-14 18:18:11,102 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-14 18:18:11,226 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-14 18:18:12,444 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-14 18:18:12,444 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-14 18:18:18,835 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub

@@ -322,12 +322,15 @@ class NetworkGridSimulator:
 
         # Si aucune vitesse d'onde n'est détectée (réseau vide ou statique), retourner un dt par défaut.
         if global_max_lambda < self.params.epsilon:
+            print(f"[DEBUG DT] global_max_lambda ({global_max_lambda}) is near zero. Using fallback dt.", flush=True)
             # Utilise dt_sim comme fallback ou une valeur par défaut si non défini
             return getattr(self.params, 'dt_sim', 0.1)
 
         # Calculer le dt stable en utilisant la condition CFL avec le dx minimum
         # (le dx minimum impose la contrainte la plus stricte)
         stable_dt = self.params.cfl_number * global_dx_min / global_max_lambda
+        
+        print(f"[DEBUG DT] cfl={self.params.cfl_number}, dx_min={global_dx_min}, max_lambda={global_max_lambda} -> stable_dt={stable_dt}", flush=True)
 
         return stable_dt
 
