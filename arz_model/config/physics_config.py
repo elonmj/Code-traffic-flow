@@ -23,6 +23,12 @@ class PhysicsConfig(BaseModel):
     gamma_c: float = Field(2.0, ge=1, description="Car-specific model parameter gamma_c")
     gamma_m: float = Field(2.0, ge=1, description="Motorcycle-specific model parameter gamma_m")
     
+    # Derived parameters for convenience in kernels
+    p_m: float = Field(0.0, description="Derived parameter p_m for motorcycles")
+    p_c: float = Field(0.0, description="Derived parameter p_c for cars")
+    v_m: float = Field(0.0, description="Derived parameter v_m for motorcycles")
+    v_c: float = Field(0.0, description="Derived parameter v_c for cars")
+
     rho_max: float = Field(200.0 / 1000.0, ge=0, description="Max density (veh/m)")
     v_creeping_kmh: float = Field(5.0, ge=0, description="Creeping speed in traffic jams (km/h)")
     default_road_quality: float = Field(1.0, ge=0, le=1, description="Default road quality index (0 to 1)")
@@ -36,6 +42,17 @@ class PhysicsConfig(BaseModel):
     max_queue_length_m: float = Field(100.0, ge=0, description="Max queue length before spillback (m)")
 
     model_config = {"extra": "forbid"}
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self._calculate_derived_params()
+
+    def _calculate_derived_params(self):
+        """Calculate derived physics parameters used in the Riemann solver."""
+        self.p_m = self.k_m * (self.rho_max ** self.gamma_m)
+        self.p_c = self.k_c * (self.rho_max ** self.gamma_c)
+        self.v_m = self.v_max_m_kmh / 3.6
+        self.v_c = self.v_max_c_kmh / 3.6
     
     def __repr__(self):
         return (f"PhysicsConfig(alpha={self.alpha}, v_max_c={self.v_max_c_kmh} km/h, "
