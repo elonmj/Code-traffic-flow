@@ -1,0 +1,233 @@
+2025-11-14 18:49:51,820 - INFO - Repository: https://github.com/elonmj/Code-traffic-flow.git
+2025-11-14 18:49:51,821 - INFO - Branch: main
+2025-11-14 18:49:51,821 - INFO - Target: arz_model/main_network_simulation.py
+2025-11-14 18:49:58,143 - INFO - Python: 3.11.13 (main, Jun  4 2025, 08:57:29) [GCC 11.4.0]
+2025-11-14 18:49:58,143 - INFO - PyTorch: 2.6.0+cu124
+2025-11-14 18:49:58,192 - INFO - CUDA available: True
+2025-11-14 18:49:58,213 - INFO - CUDA device: Tesla P100-PCIE-16GB
+2025-11-14 18:49:58,213 - INFO - 
+[STEP 1/4] Cloning repository from GitHub...
+2025-11-14 18:49:58,213 - INFO - Command: git clone --single-branch --branch main --depth 1 https://github.com/elonmj/Code-traffic-flow.git /kaggle/working/Code-traffic-flow
+2025-11-14 18:49:59,534 - INFO - [OK] Repository cloned successfully
+2025-11-14 18:49:59,534 - INFO - 
+[STEP 2/4] Installing dependencies...
+2025-11-14 18:49:59,534 - INFO - Installing pytest...
+2025-11-14 18:50:03,986 - INFO - Installing pydantic...
+2025-11-14 18:50:06,893 - INFO - Installing tqdm...
+2025-11-14 18:50:09,801 - INFO - Installing numba...
+2025-11-14 18:50:12,764 - INFO - [OK] Dependencies installed
+2025-11-14 18:50:12,765 - INFO - 
+[STEP 3/4] Running Target...
+2025-11-14 18:50:12,765 - INFO - Target is a file. Executing script...
+2025-11-14 18:50:12,765 - INFO - Command: /usr/bin/python3 -u /kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py
+2025-11-14 18:50:18,062 - INFO - 
+2025-11-14 18:50:18,062 - INFO - ======================================================================
+2025-11-14 18:50:18,062 - INFO - === SCRIPT MAIN STARTING ===
+2025-11-14 18:50:18,063 - INFO - ======================================================================
+2025-11-14 18:50:18,063 - INFO - 
+2025-11-14 18:50:18,063 - INFO - ======================================================================
+2025-11-14 18:50:18,063 - INFO - === DÉBUT DU SCRIPT main_network_simulation.py ===
+2025-11-14 18:50:18,063 - INFO - ======================================================================
+2025-11-14 18:50:18,063 - INFO - ======================================================
+2025-11-14 18:50:18,063 - INFO - = Full Network Simulation Execution (GPU-Only/Pydantic) =
+2025-11-14 18:50:18,063 - INFO - ======================================================
+2025-11-14 18:50:18,063 - INFO - 
+2025-11-14 18:50:18,063 - INFO - [PHASE 1] Defining simulation configuration...
+2025-11-14 18:50:18,063 - INFO - - Creating Pydantic config for a two-segment corridor...
+2025-11-14 18:50:18,064 - INFO - - Pydantic config created.
+2025-11-14 18:50:18,064 - INFO - ✅ Network configuration defined successfully.
+2025-11-14 18:50:18,064 - INFO - 
+2025-11-14 18:50:18,064 - INFO - [PHASE 2] Building NetworkGrid from Pydantic config...
+2025-11-14 18:50:18,064 - INFO - [DEBUG] add_segment_from_config called for segment: seg1
+2025-11-14 18:50:18,064 - INFO - [DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=50.0, velocity=40.0)
+2025-11-14 18:50:18,064 - INFO - [DEBUG] seg_config.initial_conditions type = <class 'arz_model.config.ic_config.ICConfig'>
+2025-11-14 18:50:18,064 - INFO - [DEBUG] IC is NOT None, proceeding with application...
+2025-11-14 18:50:18,064 - INFO - [DEBUG] ic_config = config=UniformIC(type='uniform', density=50.0, velocity=40.0)
+2025-11-14 18:50:18,064 - INFO - [DEBUG] ic extracted = type='uniform' density=50.0 velocity=40.0
+2025-11-14 18:50:18,064 - INFO - [DEBUG] ic type = <class 'arz_model.config.ic_config.UniformIC'>
+2025-11-14 18:50:18,065 - INFO - [DEBUG] IC has density and velocity attributes
+2025-11-14 18:50:18,065 - INFO - [DEBUG] density=50.0, velocity=40.0
+2025-11-14 18:50:22,305 - INFO - [IC APPLIED] Segment seg1:
+2025-11-14 18:50:22,305 - INFO - ρ_total = 50.0 veh/km → 0.050000 veh/m
+2025-11-14 18:50:22,305 - INFO - v = 40.0 km/h → 11.111 m/s
+2025-11-14 18:50:22,305 - INFO - α = 0.600 → ρ_m=0.030000, ρ_c=0.020000
+2025-11-14 18:50:22,306 - INFO - U[0] (ρ_m): min=0.030000, max=0.030000, mean=0.030000
+2025-11-14 18:50:22,306 - INFO - U[1] (w_m): min=11.331611, max=11.331611, mean=11.331611
+2025-11-14 18:50:22,306 - INFO - U[2] (ρ_c): min=0.020000, max=0.020000, mean=0.020000
+2025-11-14 18:50:22,306 - INFO - U[3] (w_c): min=11.736111, max=11.736111, mean=11.736111
+2025-11-14 18:50:22,306 - INFO - [DEBUG] Final U array for seg1:
+2025-11-14 18:50:22,306 - INFO - U shape: (4, 106)
+2025-11-14 18:50:22,306 - INFO - U[0] (ρ_m): min=0.030000, max=0.030000
+2025-11-14 18:50:22,306 - INFO - U[1] (w_m): min=11.331611, max=11.331611
+2025-11-14 18:50:22,306 - INFO - U[2] (ρ_c): min=0.020000, max=0.020000
+2025-11-14 18:50:22,306 - INFO - U[3] (w_c): min=11.736111, max=11.736111
+2025-11-14 18:50:22,306 - INFO - [DEBUG] add_segment_from_config called for segment: seg2
+2025-11-14 18:50:22,306 - INFO - [DEBUG] seg_config.initial_conditions = config=UniformIC(type='uniform', density=20.0, velocity=50.0)
+2025-11-14 18:50:22,306 - INFO - [DEBUG] seg_config.initial_conditions type = <class 'arz_model.config.ic_config.ICConfig'>
+2025-11-14 18:50:22,306 - INFO - [DEBUG] IC is NOT None, proceeding with application...
+2025-11-14 18:50:22,307 - INFO - [DEBUG] ic_config = config=UniformIC(type='uniform', density=20.0, velocity=50.0)
+2025-11-14 18:50:22,307 - INFO - [DEBUG] ic extracted = type='uniform' density=20.0 velocity=50.0
+2025-11-14 18:50:22,307 - INFO - [DEBUG] ic type = <class 'arz_model.config.ic_config.UniformIC'>
+2025-11-14 18:50:22,307 - INFO - [DEBUG] IC has density and velocity attributes
+2025-11-14 18:50:22,307 - INFO - [DEBUG] density=20.0, velocity=50.0
+2025-11-14 18:50:22,307 - INFO - [IC APPLIED] Segment seg2:
+2025-11-14 18:50:22,307 - INFO - ρ_total = 20.0 veh/km → 0.020000 veh/m
+2025-11-14 18:50:22,307 - INFO - v = 50.0 km/h → 13.889 m/s
+2025-11-14 18:50:22,307 - INFO - α = 0.600 → ρ_m=0.012000, ρ_c=0.008000
+2025-11-14 18:50:22,307 - INFO - U[0] (ρ_m): min=0.012000, max=0.012000, mean=0.012000
+2025-11-14 18:50:22,307 - INFO - U[1] (w_m): min=13.924169, max=13.924169, mean=13.924169
+2025-11-14 18:50:22,307 - INFO - U[2] (ρ_c): min=0.008000, max=0.008000, mean=0.008000
+2025-11-14 18:50:22,307 - INFO - U[3] (w_c): min=13.988889, max=13.988889, mean=13.988889
+2025-11-14 18:50:22,307 - INFO - [DEBUG] Final U array for seg2:
+2025-11-14 18:50:22,307 - INFO - U shape: (4, 106)
+2025-11-14 18:50:22,307 - INFO - U[0] (ρ_m): min=0.012000, max=0.012000
+2025-11-14 18:50:22,307 - INFO - U[1] (w_m): min=13.924169, max=13.924169
+2025-11-14 18:50:22,308 - INFO - U[2] (ρ_c): min=0.008000, max=0.008000
+2025-11-14 18:50:22,308 - INFO - U[3] (w_c): min=13.988889, max=13.988889
+2025-11-14 18:50:22,308 - INFO - Finalizing network structure and validating topology...
+2025-11-14 18:50:22,308 - INFO - Found isolated nodes with no connections: ['node1']
+2025-11-14 18:50:22,308 - INFO - ✅ Network topology is valid.
+2025-11-14 18:50:22,308 - INFO - ✅ NetworkGrid built successfully.
+2025-11-14 18:50:22,308 - INFO - - Segments: ['seg1', 'seg2']
+2025-11-14 18:50:22,308 - INFO - - Nodes: ['node1']
+2025-11-14 18:50:22,308 - INFO - 
+2025-11-14 18:50:22,308 - INFO - [PHASE 3] Initializing simulation runner...
+2025-11-14 18:50:22,572 - INFO - - Mode: Network Simulation
+2025-11-14 18:50:22,572 - INFO - - Device: GPU (Compute Capability: (6, 0))
+2025-11-14 18:50:22,572 - INFO - - Segments: 2
+2025-11-14 18:50:22,572 - INFO - - Nodes: 1
+2025-11-14 18:50:22,572 - INFO - Initializing GPU Network Simulator...
+2025-11-14 18:50:22,572 - INFO - - Initializing GPU Memory Pool for network...
+2025-11-14 18:50:22,578 - INFO - ✅ GPUMemoryPool initialized:
+2025-11-14 18:50:22,578 - INFO - - Segments: 2
+2025-11-14 18:50:22,578 - INFO - - Total cells: 200
+2025-11-14 18:50:22,578 - INFO - - Ghost cells: 3
+2025-11-14 18:50:22,578 - INFO - - Compute Capability: (6, 0)
+2025-11-14 18:50:22,578 - INFO - - CUDA streams: Enabled
+2025-11-14 18:50:22,578 - INFO - - GPU memory allocated: 0.00 MB
+2025-11-14 18:50:22,580 - INFO - - GPU Memory Pool created. Allocated: 0.00 MB
+2025-11-14 18:50:22,580 - INFO - - Initializing GPU-native network coupling...
+2025-11-14 18:50:22,580 - INFO - - Preparing GPU topology for network coupling...
+2025-11-14 18:50:22,583 - INFO - - GPU topology prepared and transferred.
+2025-11-14 18:50:22,583 - INFO - - GPU Coupling Manager created.
+2025-11-14 18:50:22,583 - INFO - ✅ GPU Network Simulator initialized.
+2025-11-14 18:50:22,583 - INFO - ✅ Simulation runner initialized.
+2025-11-14 18:50:22,583 - INFO - 
+2025-11-14 18:50:22,583 - INFO - [PHASE 4] Running simulation for 260 seconds...
+2025-11-14 18:50:22,583 - INFO - Starting GPU network simulation from t=0 to t=1800.0s...
+2025-11-14 18:50:22,587 - INFO - 
+2025-11-14 18:50:22,588 - INFO - Simulating on GPU:   0%|          | 0/1800.0 [00:00<?, ?it/s]/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py:579: NumbaPerformanceWarning: [1mGrid size 1 will likely result in GPU under-utilization due to low occupancy.[0m
+2025-11-14 18:50:22,588 - INFO - warn(NumbaPerformanceWarning(msg))
+2025-11-14 18:50:22,880 - INFO - ❌ Error during simulation: module 'numba.cuda' has no attribute 'printf'
+2025-11-14 18:50:22,882 - INFO - Traceback (most recent call last):
+2025-11-14 18:50:22,883 - INFO - File "/kaggle/working/Code-traffic-flow/arz_model/main_network_simulation.py", line 147, in main
+2025-11-14 18:50:22,883 - INFO - results = runner.run(timeout=260)
+2025-11-14 18:50:22,883 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,883 - INFO - File "/kaggle/working/Code-traffic-flow/arz_model/simulation/runner.py", line 749, in run
+2025-11-14 18:50:22,883 - INFO - return self.network_simulator.run(t_final=sim_t_final, timeout=timeout)
+2025-11-14 18:50:22,883 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,883 - INFO - File "/kaggle/working/Code-traffic-flow/arz_model/simulation/execution/network_simulator.py", line 165, in run
+2025-11-14 18:50:22,883 - INFO - stable_dt = cfl_condition_gpu_native(
+2025-11-14 18:50:22,883 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,883 - INFO - File "/kaggle/working/Code-traffic-flow/arz_model/numerics/cfl.py", line 231, in cfl_condition_gpu_native
+2025-11-14 18:50:22,883 - INFO - _calculate_max_wavespeed_kernel[blockspergrid, threadsperblock](
+2025-11-14 18:50:22,883 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py", line 582, in __call__
+2025-11-14 18:50:22,883 - INFO - return self.dispatcher.call(args, self.griddim, self.blockdim,
+2025-11-14 18:50:22,884 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,884 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py", line 724, in call
+2025-11-14 18:50:22,884 - INFO - kernel = _dispatcher.Dispatcher._cuda_call(self, *args)
+2025-11-14 18:50:22,884 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,884 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py", line 732, in _compile_for_args
+2025-11-14 18:50:22,884 - INFO - return self.compile(tuple(argtypes))
+2025-11-14 18:50:22,884 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,884 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py", line 977, in compile
+2025-11-14 18:50:22,884 - INFO - kernel = _Kernel(self.py_func, argtypes, **self.targetoptions)
+2025-11-14 18:50:22,884 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,884 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler_lock.py", line 35, in _acquire_compile_lock
+2025-11-14 18:50:22,884 - INFO - return func(*args, **kwargs)
+2025-11-14 18:50:22,884 - INFO - ^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,884 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/dispatcher.py", line 102, in __init__
+2025-11-14 18:50:22,884 - INFO - cres = compile_cuda(self.py_func, types.void, self.argtypes,
+2025-11-14 18:50:22,884 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,884 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler_lock.py", line 35, in _acquire_compile_lock
+2025-11-14 18:50:22,885 - INFO - return func(*args, **kwargs)
+2025-11-14 18:50:22,885 - INFO - ^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,885 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba_cuda/numba/cuda/compiler.py", line 226, in compile_cuda
+2025-11-14 18:50:22,885 - INFO - cres = compiler.compile_extra(typingctx=typingctx,
+2025-11-14 18:50:22,885 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,885 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler.py", line 744, in compile_extra
+2025-11-14 18:50:22,885 - INFO - return pipeline.compile_extra(func)
+2025-11-14 18:50:22,885 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,885 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler.py", line 438, in compile_extra
+2025-11-14 18:50:22,885 - INFO - return self._compile_bytecode()
+2025-11-14 18:50:22,885 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,885 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler.py", line 506, in _compile_bytecode
+2025-11-14 18:50:22,885 - INFO - return self._compile_core()
+2025-11-14 18:50:22,885 - INFO - ^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,885 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler.py", line 481, in _compile_core
+2025-11-14 18:50:22,885 - INFO - raise e
+2025-11-14 18:50:22,885 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler.py", line 472, in _compile_core
+2025-11-14 18:50:22,885 - INFO - pm.run(self.state)
+2025-11-14 18:50:22,886 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py", line 364, in run
+2025-11-14 18:50:22,886 - INFO - raise e
+2025-11-14 18:50:22,886 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py", line 356, in run
+2025-11-14 18:50:22,886 - INFO - self._runPass(idx, pass_inst, state)
+2025-11-14 18:50:22,886 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler_lock.py", line 35, in _acquire_compile_lock
+2025-11-14 18:50:22,886 - INFO - return func(*args, **kwargs)
+2025-11-14 18:50:22,886 - INFO - ^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,886 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py", line 311, in _runPass
+2025-11-14 18:50:22,886 - INFO - mutated |= check(pss.run_pass, internal_state)
+2025-11-14 18:50:22,886 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,886 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/compiler_machinery.py", line 273, in check
+2025-11-14 18:50:22,886 - INFO - mangled = func(compiler_state)
+2025-11-14 18:50:22,886 - INFO - ^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,886 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typed_passes.py", line 112, in run_pass
+2025-11-14 18:50:22,886 - INFO - typemap, return_type, calltypes, errs = type_inference_stage(
+2025-11-14 18:50:22,886 - INFO - ^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,886 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typed_passes.py", line 93, in type_inference_stage
+2025-11-14 18:50:22,886 - INFO - errs = infer.propagate(raise_errors=raise_errors)
+2025-11-14 18:50:22,886 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,886 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typeinfer.py", line 1083, in propagate
+2025-11-14 18:50:22,886 - INFO - errors = self.constraints.propagate(self)
+2025-11-14 18:50:22,886 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,887 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typeinfer.py", line 182, in propagate
+2025-11-14 18:50:22,887 - INFO - raise e
+2025-11-14 18:50:22,887 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typeinfer.py", line 160, in propagate
+2025-11-14 18:50:22,887 - INFO - constraint(typeinfer)
+2025-11-14 18:50:22,887 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typeinfer.py", line 725, in __call__
+2025-11-14 18:50:22,887 - INFO - attrty = typeinfer.context.resolve_getattr(ty, self.attr)
+2025-11-14 18:50:22,887 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,887 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typing/context.py", line 273, in resolve_getattr
+2025-11-14 18:50:22,887 - INFO - out = core(typ)
+2025-11-14 18:50:22,887 - INFO - ^^^^^^^^^
+2025-11-14 18:50:22,887 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typing/context.py", line 269, in core
+2025-11-14 18:50:22,887 - INFO - out = self.find_matching_getattr_template(typ, attr)
+2025-11-14 18:50:22,887 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,887 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typing/context.py", line 297, in find_matching_getattr_template
+2025-11-14 18:50:22,887 - INFO - return_type = template.resolve(typ, attr)
+2025-11-14 18:50:22,887 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,887 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typing/templates.py", line 1021, in resolve
+2025-11-14 18:50:22,887 - INFO - return self._resolve(value, attr)
+2025-11-14 18:50:22,887 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,887 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typing/templates.py", line 1029, in _resolve
+2025-11-14 18:50:22,887 - INFO - return self.context.resolve_module_constants(value, attr)
+2025-11-14 18:50:22,888 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,888 - INFO - File "/usr/local/lib/python3.11/dist-packages/numba/core/typing/context.py", line 348, in resolve_module_constants
+2025-11-14 18:50:22,888 - INFO - attrval = getattr(typ.pymod, attr)
+2025-11-14 18:50:22,888 - INFO - ^^^^^^^^^^^^^^^^^^^^^^^^
+2025-11-14 18:50:22,888 - INFO - AttributeError: module 'numba.cuda' has no attribute 'printf'
+2025-11-14 18:50:22,888 - INFO - 
+2025-11-14 18:50:22,888 - INFO - Simulating on GPU:   0%|          | 0/1800.0 [00:00<?, ?it/s]
+2025-11-14 18:50:22,888 - INFO - 
+2025-11-14 18:50:22,888 - INFO - ======================================================================
+2025-11-14 18:50:22,888 - INFO - === SCRIPT MAIN COMPLETED ===
+2025-11-14 18:50:22,888 - INFO - ======================================================================
+2025-11-14 18:50:23,326 - INFO - [SUCCESS] Target executed successfully
+2025-11-14 18:50:23,326 - INFO - 
+[STEP 4/4] Persisting results and cleaning up...
+2025-11-14 18:50:23,326 - WARNING - [WARN] No 'results' directory found or it is empty.
+2025-11-14 18:50:23,326 - INFO - Cleaning up cloned repository at /kaggle/working/Code-traffic-flow...
+2025-11-14 18:50:23,326 - INFO - [OK] Repository cleanup skipped for debugging.
+2025-11-14 18:50:23,327 - INFO - 
+[FINAL] Test workflow completed
+2025-11-14 18:50:23,327 - INFO - Created placeholder in output directory for Kaggle.

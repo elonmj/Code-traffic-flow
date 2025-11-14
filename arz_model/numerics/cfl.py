@@ -65,14 +65,6 @@ def _calculate_max_wavespeed_kernel(d_U, n_ghost, n_phys,
         # 4. Find max absolute eigenvalue for this cell
         max_lambda_cell = max(abs(lambda1), abs(lambda2), abs(lambda3), abs(lambda4))
 
-        # DEBUG: Print if max_lambda_cell is abnormally large
-        if max_lambda_cell > 1000.0 and cuda.threadIdx.x == 0 and cuda.blockIdx.x == 0:
-            cuda.printf("!!! HIGH LAMBDA DETECTED !!!\\n")
-            cuda.printf("  phys_idx=%d, dx=%.4f\\n", phys_idx, dx)
-            cuda.printf("  rho_m=%.4f, w_m=%.4f, rho_c=%.4f, w_c=%.4f\\n", rho_m, w_m, rho_c, w_c)
-            cuda.printf("  p_m=%.4f, p_c=%.4f, v_m=%.4f, v_c=%.4f\\n", p_m, p_c, v_m, v_c)
-            cuda.printf("  lambdas: %.4f, %.4f, %.4f, %.4f\\n", lambda1, lambda2, lambda3, lambda4)
-        
         # 5. Calculate ratio for this cell
         ratio_cell = max_lambda_cell / dx if dx > 0 else 0.0
 
