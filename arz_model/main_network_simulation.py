@@ -141,10 +141,10 @@ def main():
         return
 
     # --- 4. Run the Simulation ---
-    print("\n[PHASE 4] Running simulation...", flush=True)
+    print("\n[PHASE 4] Running simulation for 260 seconds...", flush=True)
     try:
         # The `run` method is now delegated to the NetworkSimulator
-        results = runner.run()
+        results = runner.run(timeout=260)
         print("✅ Simulation finished.", flush=True)
     except Exception as e:
         print(f"❌ Error during simulation: {e}", flush=True)

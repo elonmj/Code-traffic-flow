@@ -131,7 +131,7 @@ class NetworkSimulator:
             
         return coupling_manager
 
-    def run(self, t_final: Optional[float] = None):
+    def run(self, t_final: Optional[float] = None, timeout: Optional[float] = None):
         """
         Runs the full GPU-based simulation from t=0 to t=t_final.
 
@@ -144,8 +144,15 @@ class NetworkSimulator:
             print(f"Starting GPU network simulation from t=0 to t={sim_t_final}s...")
 
         pbar = tqdm(total=sim_t_final, desc="Simulating on GPU", disable=self.quiet)
+        
+        start_time = time.time()
 
         while self.t < sim_t_final:
+            # Check for timeout
+            if timeout is not None and (time.time() - start_time) > timeout:
+                print(f"\n[TIMEOUT] Simulation stopped after {timeout} seconds.", flush=True)
+                break
+                
             if self.device == 'cpu':
                 raise NotImplementedError("CPU mode for NetworkSimulator.run() is not yet implemented.")
 

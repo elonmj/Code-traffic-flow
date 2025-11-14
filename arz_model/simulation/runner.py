@@ -732,7 +732,7 @@ class SimulationRunner:
                     print(pbar_message)
 
 
-    def run(self, t_final: Optional[float] = None):
+    def run(self, t_final: Optional[float] = None, timeout: Optional[float] = None):
         """
         Runs the simulation loop until t_final.
 
@@ -746,7 +746,7 @@ class SimulationRunner:
         if self.is_network_simulation:
             # Use the t_final from the runner's config if not overridden
             sim_t_final = t_final if t_final is not None else self.simulation_config.time.t_final
-            return self.network_simulator.run(t_final=sim_t_final)
+            return self.network_simulator.run(t_final=sim_t_final, timeout=timeout)
 
         # --- LEGACY/SINGLE-SEGMENT SIMULATION ---
         # This part remains for backward compatibility with single-segment models
