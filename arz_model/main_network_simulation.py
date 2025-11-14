@@ -48,13 +48,14 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
         v_max_c_kmh=120.0,  # Max speed cars: 120 km/h
         default_road_quality=1.0  # Perfect road quality (0-1 scale)
     )
-    grid_config = GridConfig(N=100, xmin=0.0, xmax=1000.0) # 1km road
 
-    # Define Segments
+    # Define Segments with x_min, x_max, N directly (no GridConfig wrapper)
     segment1_config = SegmentConfig(
         id="seg1",
-        grid=grid_config,
-        initial_conditions=UniformIC(density=50.0, velocity=40.0),  # 50 veh/km, 40 km/h
+        x_min=0.0,
+        x_max=1000.0,
+        N=100,
+        initial_conditions=ICConfig(config=UniformIC(density=50.0, velocity=40.0)),  # 50 veh/km, 40 km/h
         boundary_conditions=BoundaryConditionsConfig(
             left=InflowBC(density=50.0, velocity=40.0),  # Inflow from outside: 50 veh/km, 40 km/h
             right=OutflowBC(density=20.0, velocity=50.0) # This will be overridden by the node
@@ -63,8 +64,10 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
     
     segment2_config = SegmentConfig(
         id="seg2",
-        grid=grid_config,
-        initial_conditions=UniformIC(density=20.0, velocity=50.0),  # 20 veh/km, 50 km/h
+        x_min=0.0,
+        x_max=1000.0,
+        N=100,
+        initial_conditions=ICConfig(config=UniformIC(density=20.0, velocity=50.0)),  # 20 veh/km, 50 km/h
         boundary_conditions=BoundaryConditionsConfig(
             left=OutflowBC(density=20.0, velocity=50.0), # This will be overridden by the node
             right=OutflowBC(density=20.0, velocity=50.0) # Outflow at the end of the corridor
