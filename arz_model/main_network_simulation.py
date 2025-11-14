@@ -39,7 +39,7 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
     Creates a Pydantic configuration for a simple two-segment corridor
     with a single node connecting them.
     """
-    print("   - Creating Pydantic config for a two-segment corridor...")
+    print("   - Creating Pydantic config for a two-segment corridor...", flush=True)
     
     # Define shared configurations
     time_config = TimeConfig(t_final=1800.0, output_dt=10.0)
@@ -86,7 +86,7 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
         nodes=[node1_config]
     )
     
-    print("   - Pydantic config created.")
+    print("   - Pydantic config created.", flush=True)
     return network_config
 
 def main():
@@ -97,47 +97,46 @@ def main():
     print("=" * 70, flush=True)
     sys.stdout.flush()
     
-    try:
-        print("======================================================", flush=True)
-        print("= Full Network Simulation Execution (GPU-Only/Pydantic) =", flush=True))
-    print("======================================================")
+    print("======================================================", flush=True)
+    print("= Full Network Simulation Execution (GPU-Only/Pydantic) =", flush=True)
+    print("======================================================", flush=True)
 
     # --- 1. Create the Simulation Configuration ---
-    print("\n[PHASE 1] Defining simulation configuration...")
+    print("\n[PHASE 1] Defining simulation configuration...", flush=True)
     try:
         config = create_two_segment_corridor_config()
-        print("✅ Network configuration defined successfully.")
+        print("✅ Network configuration defined successfully.", flush=True)
     except Exception as e:
-        print(f"❌ Error creating configuration: {e}")
+        print(f"❌ Error creating configuration: {e}", flush=True)
         return
 
     # --- 2. Build the NetworkGrid from Configuration ---
-    print("\n[PHASE 2] Building NetworkGrid from Pydantic config...")
+    print("\n[PHASE 2] Building NetworkGrid from Pydantic config...", flush=True)
     try:
         network_grid = NetworkGrid.from_config(config)
-        print("✅ NetworkGrid built successfully.")
-        print(f"   - Segments: {list(network_grid.segments.keys())}")
-        print(f"   - Nodes: {list(network_grid.nodes.keys())}")
+        print("✅ NetworkGrid built successfully.", flush=True)
+        print(f"   - Segments: {list(network_grid.segments.keys())}", flush=True)
+        print(f"   - Nodes: {list(network_grid.nodes.keys())}", flush=True)
     except Exception as e:
-        print(f"❌ Error building NetworkGrid: {e}")
+        print(f"❌ Error building NetworkGrid: {e}", flush=True)
         return
 
     # --- 3. Initialize the Simulation Runner ---
-    print("\n[PHASE 3] Initializing simulation runner...")
+    print("\n[PHASE 3] Initializing simulation runner...", flush=True)
     try:
         # The runner now requires both the grid and the config
         runner = SimulationRunner(network_grid=network_grid, simulation_config=config)
-        print("✅ Simulation runner initialized.")
+        print("✅ Simulation runner initialized.", flush=True)
     except Exception as e:
-        print(f"❌ Error initializing runner: {e}")
+        print(f"❌ Error initializing runner: {e}", flush=True)
         return
 
     # --- 4. Run the Simulation ---
-    print("\n[PHASE 4] Running simulation...")
+    print("\n[PHASE 4] Running simulation...", flush=True)
     try:
         # The `run` method is now delegated to the NetworkSimulator
         results = runner.run()
-        print("✅ Simulation finished.")
+        print("✅ Simulation finished.", flush=True)
     except Exception as e:
         print(f"❌ Error during simulation: {e}", flush=True)
         import traceback
