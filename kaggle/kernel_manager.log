@@ -6268,3 +6268,21 @@
 2025-11-15 02:30:51,939 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
 2025-11-15 02:30:51,939 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
 2025-11-15 02:30:52,439 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-15 02:31:25,867 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-15 02:31:25,867 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-15 02:31:25,993 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-15 02:31:26,145 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-15 02:31:26,146 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-15 02:31:26,146 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-15 02:31:26,241 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-15 02:31:27,044 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-15 02:31:27,044 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-15 02:31:31,574 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-15 02:31:31,575 - kernel_manager - INFO - Building kernel script...
+2025-11-15 02:31:31,577 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpgqjuy2sr
+2025-11-15 02:31:31,579 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-15 02:31:31,579 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-15 02:31:31,579 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-15 02:31:33,341 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-15 02:31:33,341 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-15 02:31:33,858 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
