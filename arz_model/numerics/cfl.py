@@ -259,8 +259,11 @@ def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', 
                 'dt_seg': cfl_max / seg_max_ratio if seg_max_ratio > 1e-9 else 1.0
             }
             
-            # Also update global max
-            cuda.atomic.max(d_global_max_ratio, 0, seg_max_ratio)
+            # Update global max using host-side comparison
+            # (cuda.atomic.max can only be called from within a kernel)
+            current_global = d_global_max_ratio.copy_to_host()[0]
+            if seg_max_ratio > current_global:
+                d_global_max_ratio[:] = cuda.to_device(np.array([seg_max_ratio], dtype=np.float64))
         else:
             # Normal operation without diagnostics
             _calculate_max_wavespeed_kernel[blockspergrid, threadsperblock](
