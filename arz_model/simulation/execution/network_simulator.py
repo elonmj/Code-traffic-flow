@@ -41,6 +41,9 @@ class NetworkSimulator:
         self.t = 0.0
         self.time_step = 0
         self.debug = debug
+        self.last_log_time = -np.inf # Initialize for time-based logging
+        self.last_diagnostic_time = -np.inf
+        self.dt_history = []
         
         self.params = config.physics
         
@@ -306,4 +309,21 @@ class NetworkSimulator:
             
             self.history['segments'][seg_id]['density'].append(total_density)
             self.history['segments'][seg_id]['speed'].append(avg_speed)
+
+    def _log_diagnostics(self):
+        """Logs diagnostic information about the simulation run."""
+        if not self.dt_history or self.quiet:
+            return
+        
+        dt_array = np.array(self.dt_history)
+        mean_dt = np.mean(dt_array)
+        min_dt = np.min(dt_array)
+        max_dt = np.max(dt_array)
+        
+        print(f"\n--- Simulation Diagnostics (at t={self.t:.2f}s) ---", flush=True)
+        print(f"  - Timestep (dt) Stats: Min={min_dt:.6f}s, Max={max_dt:.6f}s, Mean={mean_dt:.6f}s", flush=True)
+        print(f"  - Total Steps: {self.time_step}", flush=True)
+        
+        # Clear history for next diagnostic interval
+        self.dt_history.clear()
 

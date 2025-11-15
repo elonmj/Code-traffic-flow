@@ -43,7 +43,11 @@ def create_two_segment_corridor_config() -> NetworkSimulationConfig:
     print("   - Creating Pydantic config for a two-segment corridor...", flush=True)
     
     # Define shared configurations
-    time_config = TimeConfig(t_final=1800.0, output_dt=10.0)
+    time_config = TimeConfig(
+        t_final=1800.0, 
+        output_dt=10.0,
+        cfl_factor=0.4  # Use a more conservative CFL factor for stability
+    )
     physics_config = PhysicsConfig(
         v_max_m_kmh=100.0,  # Max speed motorcycles: 100 km/h
         v_max_c_kmh=120.0,  # Max speed cars: 120 km/h
@@ -134,17 +138,18 @@ def main():
     print("\n[PHASE 3] Initializing simulation runner...", flush=True)
     try:
         # The runner now requires both the grid and the config
-        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, debug=True)
+        runner = SimulationRunner(network_grid=network_grid, simulation_config=config, debug=False)
         print("✅ Simulation runner initialized.", flush=True)
     except Exception as e:
         print(f"❌ Error initializing runner: {e}", flush=True)
         return
 
     # --- 4. Run the Simulation ---
-    print("\n[PHASE 4] Running simulation for 260 seconds...", flush=True)
+    print("\n[PHASE 4] Running simulation for 1800 seconds (with a 10-minute timeout)...", flush=True)
     try:
         # The `run` method is now delegated to the NetworkSimulator
-        results = runner.run(timeout=260)
+        # Set a wall-clock timeout of 600 seconds (10 minutes) to prevent hangs
+        results = runner.run(timeout=600)
         print("✅ Simulation finished.", flush=True)
     except Exception as e:
         print(f"❌ Error during simulation: {e}", flush=True)
