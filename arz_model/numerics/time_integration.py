@@ -352,4 +352,151 @@ def calculate_spatial_discretization_weno_gpu_native(
     return d_L_U
 
 
+# --- New CUDA Kernel for ODE Step ---
+@cuda.jit
+def _ode_step_kernel(U_in, U_out, dt_ode, R_local_arr, N_physical, num_ghost_cells,
+                     # Pass necessary parameters explicitly
+                     alpha, rho_jam, K_m, gamma_m, K_c, gamma_c, # Pressure
+                     rho_jam_eq, V_creeping, # Equilibrium Speed base params
+                     v_max_m_cat1, v_max_m_cat2, v_max_m_cat3, # Motorcycle Vmax per category
+                     v_max_c_cat1, v_max_c_cat2, v_max_c_cat3, # Car Vmax per category
+                     tau_relax_m, tau_relax_c, # Relaxation times
+                     epsilon):
+    """
+    CUDA kernel for explicit Euler step for the ODE source term.
+    Updates U_out based on U_in and the source term S(U_in).
+    Operates only on physical cells.
+    """
+    idx = cuda.grid(1) # Global thread index
+
+    # Check if index is within the range of physical cells
+    if idx < N_physical:
+        j_phys = idx
+        j_total = j_phys + num_ghost_cells # Index in the full U array (including ghosts)
+
+        # --- 1. Get local state and road quality ---
+        # Read state variables directly into scalars (potential register allocation)
+        y0 = U_in[0, j_total]
+        y1 = U_in[1, j_total]
+        y2 = U_in[2, j_total]
+        y3 = U_in[3, j_total]
+        # Note: Access U_in[i, j_total] is likely non-coalesced. Consider transposing U_in/U_out later.
+
+        # Road quality for this physical cell
+        # Assumes R_local_arr is the array of road qualities for physical cells
+        R_local = R_local_arr[j_phys]
+
+        # --- 2. Calculate intermediate values (Equilibrium speeds, Relaxation times) ---
+        # These calculations need to be done per-cell within the kernel
+        rho_m_calc = max(y0, 0.0)
+        rho_c_calc = max(y2, 0.0)
+
+        # Assume physics functions have @cuda.jit(device=True) versions
+        Ve_m, Ve_c = physics.calculate_equilibrium_speed_gpu(
+            rho_m_calc, rho_c_calc, R_local,
+            rho_jam_eq, V_creeping, # Pass base params for eq speed
+            v_max_m_cat1, v_max_m_cat2, v_max_m_cat3, # Pass category-specific Vmax
+            v_max_c_cat1, v_max_c_cat2, v_max_c_cat3
+        )
+        tau_m, tau_c = physics.calculate_relaxation_time_gpu(
+            rho_m_calc, rho_c_calc, # Pass densities (might be used in future)
+            tau_relax_m, tau_relax_c # Pass base relaxation times
+        )
+
+        # --- 3. Calculate source term S(U) ---
+        # Assume physics.calculate_source_term_gpu has a @cuda.jit(device=True) version
+        # Create a tuple or temporary array if the device function expects an array-like input
+        # If it accepts scalars, pass them directly. Assuming it needs array-like:
+        y_temp = (y0, y1, y2, y3) # Pass as a tuple
+        source = physics.calculate_source_term_gpu(
+            y_temp, alpha, rho_jam, K_m, gamma_m, K_c, gamma_c,
+            Ve_m, Ve_c, tau_m, tau_c, epsilon
+        )
+
+        # --- 4. Apply Explicit Euler step ---
+        # Update the output array directly at the correct total index
+        # Note: Access U_out[i, j_total] is likely non-coalesced.
+        U_out[0, j_total] = y0 + dt_ode * source[0]
+        U_out[1, j_total] = y1 + dt_ode * source[1]
+        U_out[2, j_total] = y2 + dt_ode * source[2]
+        U_out[3, j_total] = y3 + dt_ode * source[3]
+
+# --- New GPU Wrapper Function for ODE Step ---
+def solve_ode_step_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_ode: float, grid: Grid1D, params: 'PhysicsConfig', d_R: cuda.devicearray.DeviceNDArray) -> cuda.devicearray.DeviceNDArray:
+    """
+    Solves the ODE system dU/dt = S(U) using an explicit Euler step on the GPU.
+    Operates entirely on GPU arrays.
+
+    Args:
+        d_U_in (cuda.devicearray.DeviceNDArray): Input state device array (including ghost cells). Shape (4, N_total).
+        dt_ode (float): Time step for the ODE integration.
+        grid (Grid1D): Grid object (used for N_physical, num_ghost_cells).
+        params (ModelParameters): Model parameters.
+        d_R (cuda.devicearray.DeviceNDArray): Road quality device array (physical cells only). Shape (N_physical,).
+
+    Returns:
+        cuda.devicearray.DeviceNDArray: Output state device array after the ODE step. Shape (4, N_total).
+    """
+    # Road quality check is implicitly handled by requiring d_R
+    if d_R is None or not cuda.is_cuda_array(d_R):
+         raise ValueError("Valid GPU road quality array d_R must be provided for GPU ODE step.")
+    if not hasattr(physics, 'calculate_source_term_gpu') or \
+       not hasattr(physics, 'calculate_equilibrium_speed_gpu') or \
+       not hasattr(physics, 'calculate_relaxation_time_gpu'):
+        raise NotImplementedError("GPU versions (_gpu suffix) of required physics functions are not available in the physics module.")
+
+    # --- Extract max speed values ---
+    # PhysicsConfig has single values for each vehicle type (no categories)
+    # Convert from km/h to m/s (divide by 3.6)
+    v_max_m_cat1 = params.v_max_m_kmh / 3.6
+    v_max_m_cat2 = params.v_max_m_kmh / 3.6
+    v_max_m_cat3 = params.v_max_m_kmh / 3.6
+    
+    v_max_c_cat1 = params.v_max_c_kmh / 3.6
+    v_max_c_cat2 = params.v_max_c_kmh / 3.6
+    v_max_c_cat3 = params.v_max_c_kmh / 3.6
+
+
+    # --- 1. Allocate output array on GPU ---
+    # Note: We don't need to initialize with d_U_in because the kernel only updates
+    # physical cells. Ghost cells will be updated by the boundary condition kernel later.
+    # However, allocating like d_U_in ensures the same shape and dtype.
+    d_U_out = cuda.device_array_like(d_U_in)
+    # Explicitly copy ghost cells from input to output *before* kernel launch
+    # This ensures they are preserved if the kernel doesn't touch them (which it shouldn't)
+    # and are correct if the subsequent hyperbolic step needs them.
+    n_ghost = grid.num_ghost_cells
+    n_phys = grid.N_physical
+    d_U_out[:, :n_ghost] = d_U_in[:, :n_ghost]
+    d_U_out[:, n_ghost+n_phys:] = d_U_in[:, n_ghost+n_phys:]
+
+
+    # --- 2. Configure and launch kernel ---
+    threadsperblock = 256 # Typical value, can be tuned
+    blockspergrid = math.ceil(grid.N_physical / threadsperblock)
+
+    _ode_step_kernel[blockspergrid, threadsperblock](
+        d_U_in, d_U_out, dt_ode, d_R, grid.N_physical, grid.num_ghost_cells,
+        # Pass all necessary parameters explicitly from the params object
+        # Pressure params (params is already PhysicsConfig, no .physics accessor needed)
+        params.alpha, params.rho_max, params.k_m, params.gamma_m, params.k_c, params.gamma_c,
+        # Equilibrium speed params (base + extracted category Vmax)
+        params.rho_max, params.v_creeping_kmh / 3.6, # Convert creeping speed from km/h to m/s
+        v_max_m_cat1, v_max_m_cat2, v_max_m_cat3,
+        v_max_c_cat1, v_max_c_cat2, v_max_c_cat3,
+        # Relaxation times
+        params.tau_m, params.tau_c,
+        # Epsilon
+        params.epsilon
+    )
+    # cuda.synchronize() # No sync needed here, let subsequent steps handle it
+
+    # --- 3. Return GPU array ---
+    # No copy back to host
+    return d_U_out
+
+
+# --- End of Physical State Bounds Enforcement ---
+
+
 
