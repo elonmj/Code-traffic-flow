@@ -188,7 +188,7 @@ def cfl_condition(network: 'NetworkGrid') -> (float, str):
     return min_dt, limiting_segment
 
 
-def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', params: 'ModelParameters', cfl_max: float) -> float:
+def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', params: 'ModelParameters', cfl_max: float, return_diagnostics: bool = False):
     """
     Calculates the maximum stable time step (dt) across all segments on the GPU.
 
@@ -202,15 +202,19 @@ def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', 
         network: The NetworkGrid object to get grid information (dx).
         params: The model parameters.
         cfl_max: The maximum CFL number.
+        return_diagnostics: If True, returns (dt, diagnostics_dict) instead of just dt.
 
     Returns:
-        The calculated stable time step.
+        The calculated stable time step, or (dt, diagnostics) if return_diagnostics=True.
     """
     # Create a single-element device array to store the global maximum of (lambda / dx)
     d_global_max_ratio = cuda.to_device(np.array([0.0], dtype=np.float64))
     
     # params is already the PhysicsConfig object, no need for .physics accessor
     phys_params = params
+    
+    # For diagnostics: track per-segment ratios
+    segment_diagnostics = {}
 
     for seg_id in gpu_pool.segment_ids:
         d_U = gpu_pool.get_segment_state(seg_id)
@@ -219,23 +223,70 @@ def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', 
         threadsperblock = TPB_REDUCE
         blockspergrid = (grid.N_physical + (threadsperblock - 1)) // threadsperblock
 
-        # Launch kernel for each segment
-        _calculate_max_wavespeed_kernel[blockspergrid, threadsperblock](
-            d_U, grid.num_ghost_cells, grid.N_physical,
-            phys_params.alpha, phys_params.rho_max, phys_params.epsilon,
-            phys_params.k_m, phys_params.gamma_m, phys_params.k_c, phys_params.gamma_c,
-            grid.dx,
-            d_global_max_ratio
-        )
+        # If diagnostics requested, compute per-segment max_ratio
+        if return_diagnostics:
+            d_seg_max_ratio = cuda.to_device(np.array([0.0], dtype=np.float64))
+            
+            _calculate_max_wavespeed_kernel[blockspergrid, threadsperblock](
+                d_U, grid.num_ghost_cells, grid.N_physical,
+                phys_params.alpha, phys_params.rho_max, phys_params.epsilon,
+                phys_params.k_m, phys_params.gamma_m, phys_params.k_c, phys_params.gamma_c,
+                grid.dx,
+                d_seg_max_ratio
+            )
+            
+            seg_max_ratio = d_seg_max_ratio.copy_to_host()[0]
+            
+            # Also get state statistics for this segment
+            U_cpu = gpu_pool.checkpoint_to_cpu(seg_id)
+            phys_indices = grid.physical_cell_indices
+            
+            rho_m = U_cpu[0, phys_indices]
+            w_m = U_cpu[1, phys_indices]
+            rho_c = U_cpu[2, phys_indices]
+            w_c = U_cpu[3, phys_indices]
+            
+            # Calculate velocities (simplified, just for diagnostics)
+            # v ≈ w for now (ignoring pressure correction for speed)
+            
+            segment_diagnostics[seg_id] = {
+                'max_ratio': seg_max_ratio,
+                'dx': grid.dx,
+                'rho_m': {'min': np.min(rho_m), 'max': np.max(rho_m), 'mean': np.mean(rho_m)},
+                'rho_c': {'min': np.min(rho_c), 'max': np.max(rho_c), 'mean': np.mean(rho_c)},
+                'w_m': {'min': np.min(w_m), 'max': np.max(w_m), 'mean': np.mean(w_m)},
+                'w_c': {'min': np.min(w_c), 'max': np.max(w_c), 'mean': np.mean(w_c)},
+                'dt_seg': cfl_max / seg_max_ratio if seg_max_ratio > 1e-9 else 1.0
+            }
+            
+            # Also update global max
+            cuda.atomic.max(d_global_max_ratio, 0, seg_max_ratio)
+        else:
+            # Normal operation without diagnostics
+            _calculate_max_wavespeed_kernel[blockspergrid, threadsperblock](
+                d_U, grid.num_ghost_cells, grid.N_physical,
+                phys_params.alpha, phys_params.rho_max, phys_params.epsilon,
+                phys_params.k_m, phys_params.gamma_m, phys_params.k_c, phys_params.gamma_c,
+                grid.dx,
+                d_global_max_ratio
+            )
 
     # Copy the final result back to the host
     global_max_ratio = d_global_max_ratio.copy_to_host()[0]
 
     if global_max_ratio < 1e-9:
         # If max speed is near zero, can use a large dt, but not infinite
-        return 1.0
+        stable_dt = 1.0
+    else:
+        # dt = CFL / max(lambda/dx)
+        stable_dt = cfl_max / global_max_ratio
     
-    # dt = CFL / max(lambda/dx)
-    stable_dt = cfl_max / global_max_ratio
-    
-    return stable_dt
+    if return_diagnostics:
+        diagnostics = {
+            'global_max_ratio': global_max_ratio,
+            'stable_dt': stable_dt,
+            'segments': segment_diagnostics
+        }
+        return stable_dt, diagnostics
+    else:
+        return stable_dt

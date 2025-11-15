@@ -163,14 +163,36 @@ class NetworkSimulator:
             if self.config.time.dt:
                 # Use a fixed time step if provided
                 stable_dt = self.config.time.dt
+                diagnostics = None
             else:
                 # Otherwise, calculate dt based on CFL condition
-                stable_dt = cfl_condition_gpu_native(
-                    gpu_pool=self.gpu_pool,
-                    network=self.network,
-                    params=self.config.physics,
-                    cfl_max=self.config.time.cfl_factor
-                )
+                # Enable diagnostics if dt was small in previous step or if debug mode
+                enable_diag = (self.time_step > 0 and hasattr(self, '_last_dt') and self._last_dt < 0.05) or self.debug
+                
+                if enable_diag:
+                    stable_dt, diagnostics = cfl_condition_gpu_native(
+                        gpu_pool=self.gpu_pool,
+                        network=self.network,
+                        params=self.config.physics,
+                        cfl_max=self.config.time.cfl_factor,
+                        return_diagnostics=True
+                    )
+                else:
+                    stable_dt = cfl_condition_gpu_native(
+                        gpu_pool=self.gpu_pool,
+                        network=self.network,
+                        params=self.config.physics,
+                        cfl_max=self.config.time.cfl_factor,
+                        return_diagnostics=False
+                    )
+                    diagnostics = None
+            
+            # Store for next iteration
+            self._last_dt = stable_dt
+            
+            # Log CFL diagnostics if dt is collapsing
+            if diagnostics is not None and stable_dt < 0.05:
+                self._log_cfl_diagnostics(diagnostics, stable_dt)
             
             # Adjust last step to hit t_final exactly
             if self.t + stable_dt > sim_t_final:
@@ -279,6 +301,44 @@ class NetworkSimulator:
                 f"   Segment {seg_id}: density[min={density_min:.6f}, max={density_max:.6f}, mean={density_mean:.6f}] "
                 f"speed[min={speed_min:.6f}, max={speed_max:.6f}, mean={speed_mean:.6f}]"
             )
+
+    def _log_cfl_diagnostics(self, diagnostics, stable_dt):
+        """
+        Logs detailed CFL diagnostics when dt becomes small.
+        
+        Args:
+            diagnostics: Dictionary containing CFL diagnostic information
+            stable_dt: The calculated stable time step
+        """
+        print(f"\n{'='*70}", flush=True)
+        print(f"⚠️  CFL DIAGNOSTIC: dt collapsed to {stable_dt:.6e} at t={self.t:.4f}s (step {self.time_step})", flush=True)
+        print(f"{'='*70}", flush=True)
+        print(f"Global max_ratio (λ/dx): {diagnostics['global_max_ratio']:.6e}", flush=True)
+        print(f"CFL factor: {self.config.time.cfl_factor}", flush=True)
+        
+        # Find the limiting segment
+        limiting_seg = None
+        max_ratio_overall = 0.0
+        for seg_id, seg_diag in diagnostics['segments'].items():
+            if seg_diag['max_ratio'] > max_ratio_overall:
+                max_ratio_overall = seg_diag['max_ratio']
+                limiting_seg = seg_id
+        
+        print(f"\n🔴 LIMITING SEGMENT: {limiting_seg}", flush=True)
+        print(f"-" * 70, flush=True)
+        
+        for seg_id, seg_diag in diagnostics['segments'].items():
+            marker = "🔴" if seg_id == limiting_seg else "  "
+            print(f"\n{marker} Segment {seg_id}:", flush=True)
+            print(f"   max_ratio (λ/dx): {seg_diag['max_ratio']:.6e}", flush=True)
+            print(f"   dx: {seg_diag['dx']:.6f} m", flush=True)
+            print(f"   dt_seg: {seg_diag['dt_seg']:.6e} s", flush=True)
+            print(f"   ρ_m: min={seg_diag['rho_m']['min']:.6e}, max={seg_diag['rho_m']['max']:.6e}, mean={seg_diag['rho_m']['mean']:.6e}", flush=True)
+            print(f"   ρ_c: min={seg_diag['rho_c']['min']:.6e}, max={seg_diag['rho_c']['max']:.6e}, mean={seg_diag['rho_c']['mean']:.6e}", flush=True)
+            print(f"   w_m: min={seg_diag['w_m']['min']:.6e}, max={seg_diag['w_m']['max']:.6e}, mean={seg_diag['w_m']['mean']:.6e}", flush=True)
+            print(f"   w_c: min={seg_diag['w_c']['min']:.6e}, max={seg_diag['w_c']['max']:.6e}, mean={seg_diag['w_c']['mean']:.6e}", flush=True)
+        
+        print(f"{'='*70}\n", flush=True)
 
     def _log_state(self):
         """
