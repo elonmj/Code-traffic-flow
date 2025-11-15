@@ -17,7 +17,8 @@ TPB_REDUCE = 256 # Threads per block for reduction kernel
 @cuda.jit
 def _calculate_max_wavespeed_kernel(d_U, n_ghost, n_phys,
                                     # Physics parameters needed for eigenvalues
-                                    alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c,
+                                    alpha, rho_max, epsilon, v_max, 
+                                    K_m, gamma_m, K_c, gamma_c,
                                     dx,
                                     # Output array (size 1) for the global max
                                     d_max_ratio_out):
@@ -46,15 +47,25 @@ def _calculate_max_wavespeed_kernel(d_U, n_ghost, n_phys,
         # 1. Get state for the current physical cell
         rho_m, w_m, rho_c, w_c = d_U[0, j_total], d_U[1, j_total], d_U[2, j_total], d_U[3, j_total]
 
-        # Ensure densities are non-negative
-        rho_m_calc = max(rho_m, 0.0)
-        rho_c_calc = max(rho_c, 0.0)
+        # Robustly clamp densities to physical bounds [epsilon, rho_max]
+        rho_m_calc = min(max(rho_m, epsilon), rho_max)
+        rho_c_calc = min(max(rho_c, epsilon), rho_max)
+
+        # Handle potential NaN/inf values from previous steps
+        if not math.isfinite(rho_m_calc):
+            rho_m_calc = 0.0  # Fallback to vacuum state
+        if not math.isfinite(rho_c_calc):
+            rho_c_calc = 0.0
 
         # 2. Calculate intermediate values using device functions
         p_m, p_c = _calculate_pressure_cuda(rho_m_calc, rho_c_calc,
                                             alpha, rho_max, epsilon,
                                             K_m, gamma_m, K_c, gamma_c)
         v_m, v_c = _calculate_physical_velocity_cuda(w_m, w_c, p_m, p_c)
+
+        # Clamp physical velocities
+        v_m = min(max(v_m, -v_max), v_max)
+        v_c = min(max(v_c, -v_max), v_max)
 
         # 3. Calculate eigenvalues using device function
         lambda1, lambda2, lambda3, lambda4 = _calculate_eigenvalues_cuda(

@@ -190,18 +190,60 @@ def calculate_spatial_discretization_weno_gpu(d_U_in, grid, params, current_bc_p
     return d_L_U
 
 
+@cuda.jit(device=True)
+def _apply_positivity_limiter_gpu_device(P, rho_max, v_max, epsilon):
+    """
+    Applies a positivity-preserving limiter to a primitive state vector.
+    If density is clamped, momentum is adjusted to maintain consistent velocity.
+    Modifies P in-place.
+
+    Args:
+        P (local array): Primitive state vector [rho_m, v_m, rho_c, v_c].
+        rho_max (float): Maximum physical density.
+        v_max (float): Maximum physical velocity.
+        epsilon (float): Minimum physical density.
+    """
+    # Unpack primitives
+    rho_m, v_m, rho_c, v_c = P[0], P[1], P[2], P[3]
+
+    # --- Motorcycle Limiter ---
+    # Enforce density bounds [epsilon, rho_max]
+    rho_m_limited = min(max(rho_m, epsilon), rho_max)
+    
+    # If density was pushed up from a non-physical value, adjust velocity
+    if rho_m < epsilon:
+        # To prevent velocity explosion (v = w/rho), cap velocity at v_max
+        # This implies w should be capped. Since we have primitive v here,
+        # we just cap v directly.
+        v_m = min(max(v_m, -v_max), v_max)
+
+    # --- Car Limiter ---
+    rho_c_limited = min(max(rho_c, epsilon), rho_max)
+    if rho_c < epsilon:
+        v_c = min(max(v_c, -v_max), v_max)
+
+    # Write back the limited values
+    P[0] = rho_m_limited
+    P[1] = v_m
+    P[2] = rho_c_limited
+    P[3] = v_c
+
+
 def _create_weno_flux_kernel(params):
     """
     Crée un kernel CUDA dynamique pour le calcul des flux avec reconstruction WENO.
     """
+    # Extract physics parameters for device functions
+    v_max_physical = max(params.v_max_m_kmh, params.v_max_c_kmh) / 3.6
+
     @cuda.jit
     def compute_weno_fluxes_kernel(d_P_left, d_P_right, d_fluxes, N_total, num_ghost_cells, N_physical,
-                                   alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c):
+                                   alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c):
         """
         Kernel pour calculer les flux Central-Upwind aux interfaces avec reconstruction WENO.
         """
         j = cuda.grid(1)  # Index d'interface
-        
+
         # Calculer les flux F_{j+1/2} pour j=g-1..g+N-1
         if j >= num_ghost_cells - 1 and j < num_ghost_cells + N_physical:
             if j + 1 < N_total:
@@ -213,16 +255,20 @@ def _create_weno_flux_kernel(params):
                 for var in range(4):
                     P_L[var] = d_P_left[var, j + 1]
                     P_R[var] = d_P_right[var, j]
+
+                # --- Apply Positivity-Preserving Limiter ---
+                _apply_positivity_limiter_gpu_device(P_L, rho_max, v_max_physical, epsilon)
+                _apply_positivity_limiter_gpu_device(P_R, rho_max, v_max_physical, epsilon)
                 
                 # Conversion vers variables conservées pour le flux
                 U_L = cuda.local.array(4, dtype=float64)
                 U_R = cuda.local.array(4, dtype=float64)
-                _primitives_to_conserved_gpu_device(P_L, U_L, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
-                _primitives_to_conserved_gpu_device(P_R, U_R, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
+                _primitives_to_conserved_gpu_device(P_L, U_L, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
+                _primitives_to_conserved_gpu_device(P_R, U_R, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
                 
                 # Calcul du flux Central-Upwind (version device)
                 flux = cuda.local.array(4, dtype=float64)
-                _central_upwind_flux_gpu_device(U_L, U_R, flux, alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c)
+                _central_upwind_flux_gpu_device(U_L, U_R, flux, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
                 
                 # Stockage du flux
                 for var in range(4):
