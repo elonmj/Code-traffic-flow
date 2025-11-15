@@ -223,6 +223,7 @@ def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', 
     
     # params is already the PhysicsConfig object, no need for .physics accessor
     phys_params = params
+    v_max_physical = max(phys_params.v_max_m_kmh, phys_params.v_max_c_kmh) / 3.6
     
     # For diagnostics: track per-segment ratios
     segment_diagnostics = {}
@@ -240,7 +241,7 @@ def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', 
             
             _calculate_max_wavespeed_kernel[blockspergrid, threadsperblock](
                 d_U, grid.num_ghost_cells, grid.N_physical,
-                phys_params.alpha, phys_params.rho_max, phys_params.epsilon,
+                phys_params.alpha, phys_params.rho_max, phys_params.epsilon, v_max_physical,
                 phys_params.k_m, phys_params.gamma_m, phys_params.k_c, phys_params.gamma_c,
                 grid.dx,
                 d_seg_max_ratio
@@ -279,7 +280,7 @@ def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', 
             # Normal operation without diagnostics
             _calculate_max_wavespeed_kernel[blockspergrid, threadsperblock](
                 d_U, grid.num_ghost_cells, grid.N_physical,
-                phys_params.alpha, phys_params.rho_max, phys_params.epsilon,
+                phys_params.alpha, phys_params.rho_max, phys_params.epsilon, v_max_physical,
                 phys_params.k_m, phys_params.gamma_m, phys_params.k_c, phys_params.gamma_c,
                 grid.dx,
                 d_global_max_ratio
