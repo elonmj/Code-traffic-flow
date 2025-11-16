@@ -13,7 +13,7 @@ import tempfile
 import os
 
 # Import the REAL workflow components
-from arz_model.config.config_factory import ConfigFactory
+from arz_model.config.config_factory import create_victoria_island_config
 from arz_model.network.network_grid import NetworkGrid
 from arz_model.simulation.runner import SimulationRunner
 
@@ -40,7 +40,7 @@ seg_test,0.5,0.0,2,80,80"""
     
     try:
         # Create config using REAL factory with pathological parameters
-        config = ConfigFactory.create_network_config_from_csv(
+        config = create_victoria_island_config(
             csv_path=csv_path,
             default_density=150.0,  # Very high density → near jam
             default_velocity=10.0,  # Low velocity
@@ -105,7 +105,7 @@ seg_stable,2.0,0.0,3,100,100"""
     
     try:
         # Create config using REAL factory with stable parameters
-        config = ConfigFactory.create_network_config_from_csv(
+        config = create_victoria_island_config(
             csv_path=csv_path,
             default_density=20.0,   # Low density
             default_velocity=60.0,  # Moderate velocity
