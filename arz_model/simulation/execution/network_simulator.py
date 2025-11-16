@@ -17,6 +17,7 @@ from ...numerics.cfl import cfl_condition_gpu_native
 from ...numerics.time_integration import strang_splitting_step_gpu_native
 from ...numerics.gpu.memory_pool import GPUMemoryPool
 from ...numerics.gpu.network_coupling_gpu import NetworkCouplingGPU
+from ..logging import SimulationLogger, LogLevel, create_logger_from_flags
 
 
 class NetworkSimulator:
@@ -33,6 +34,7 @@ class NetworkSimulator:
             config: The simulation configuration object.
             quiet: Suppress progress bar and verbose output.
             device: The device to run the simulation on ('gpu' or 'cpu').
+            debug: Enable detailed diagnostic logging.
         """
         self.network = network
         self.config = config
@@ -45,16 +47,20 @@ class NetworkSimulator:
         self.last_diagnostic_time = -np.inf
         self.dt_history = []
         
-        # Initialize time-based checkpoint tracking
+        # Initialize time-based checkpoint tracking (Phase 1)
         self.last_checkpoint_time = -self.config.time.output_dt  # Force checkpoint at t=0
-        self.cfl_warning_count = 0  # For throttled CFL diagnostics (Phase 3)
+        
+        # Initialize CFL diagnostic throttling (Phase 3)
+        self.cfl_warning_count = 0  # Counter for throttled warnings
+        
+        # Initialize structured logger (Phase 2)
+        self.logger = create_logger_from_flags(quiet=quiet, debug=debug)
         
         self.params = config.physics
         
-        if not self.quiet:
-            print("Initializing GPU Network Simulator...")
-            if self.debug:
-                print("[DEBUG] GPU debug logging ENABLED")
+        self.logger.info("Initializing GPU Network Simulator...")
+        if self.debug:
+            self.logger.debug("GPU debug logging ENABLED")
 
         # 1. Initialize GPU Memory Pool
         self.gpu_pool = self._initialize_gpu_pool()
@@ -71,8 +77,7 @@ class NetworkSimulator:
             'segments': {seg_id: {'density': [], 'speed': []} for seg_id in self.network.segments.keys()}
         }
         
-        if not self.quiet:
-            print("✅ GPU Network Simulator initialized.")
+        self.logger.info("✅ GPU Network Simulator initialized.")
 
     # Note: Initial conditions are now applied during NetworkGrid construction
     # in NetworkGrid.add_segment_from_config(), not here. This ensures the
@@ -81,12 +86,10 @@ class NetworkSimulator:
     def _initialize_gpu_pool(self) -> Optional[GPUMemoryPool]:
         """Creates and initializes the GPUMemoryPool for the network."""
         if self.device == 'cpu':
-            if not self.quiet:
-                print("  - Running in CPU mode, skipping GPU Memory Pool initialization.")
+            self.logger.debug("Running in CPU mode, skipping GPU Memory Pool initialization.")
             return None
 
-        if not self.quiet:
-            print("  - Initializing GPU Memory Pool for network...")
+        self.logger.info("  - Initializing GPU Memory Pool for network...")
             
         segment_ids = list(self.network.segments.keys())
         N_per_segment = {seg_id: segment['grid'].N_physical for seg_id, segment in self.network.segments.items()}
@@ -112,27 +115,24 @@ class NetworkSimulator:
             R_cpu = np.ascontiguousarray(road_quality)
             pool.initialize_segment_state(seg_id, U_cpu, R_cpu)
         
-        if not self.quiet:
-            stats = pool.get_memory_stats()
-            print(f"✅ GPUMemoryPool initialized:")
-            print(f"  - Segments: {len(segment_ids)}")
-            print(f"  - Total cells: {sum(N_per_segment.values())}")
-            print(f"  - Ghost cells: {self.config.grid.num_ghost_cells}")
-            print(f"  - Compute Capability: {pool.compute_capability}")
-            print(f"  - CUDA streams: {'Enabled' if pool.enable_streams else 'Disabled'}")
-            print(f"  - GPU memory allocated: {stats['allocated_mb']:.2f} MB")
+        stats = pool.get_memory_stats()
+        self.logger.info(f"✅ GPUMemoryPool initialized:")
+        self.logger.info(f"  - Segments: {len(segment_ids)}")
+        self.logger.info(f"  - Total cells: {sum(N_per_segment.values())}")
+        self.logger.debug(f"  - Ghost cells: {self.config.grid.num_ghost_cells}")
+        self.logger.debug(f"  - Compute Capability: {pool.compute_capability}")
+        self.logger.debug(f"  - CUDA streams: {'Enabled' if pool.enable_streams else 'Disabled'}")
+        self.logger.debug(f"  - GPU memory allocated: {stats['allocated_mb']:.2f} MB")
             
         return pool
 
     def _initialize_gpu_coupling(self) -> Optional[NetworkCouplingGPU]:
         """Initializes the GPU-native network coupling manager."""
         if self.device == 'cpu':
-            if not self.quiet:
-                print("  - Running in CPU mode, skipping GPU-native network coupling initialization.")
+            self.logger.debug("Running in CPU mode, skipping GPU-native network coupling initialization.")
             return None
 
-        if not self.quiet:
-            print("  - Initializing GPU-native network coupling...")
+        self.logger.info("  - Initializing GPU-native network coupling...")
             
         # The topology information needs to be passed to the coupling manager
         # This might involve creating a GPU-compatible representation of the network graph
@@ -147,8 +147,7 @@ class NetworkSimulator:
             network_topology=topology_info
         )
         
-        if not self.quiet:
-            print("    - GPU Coupling Manager created.")
+        self.logger.debug("GPU Coupling Manager created.")
             
         return coupling_manager
 
@@ -158,11 +157,11 @@ class NetworkSimulator:
 
         Args:
             t_final (float, optional): Overrides the simulation's final time.
+            timeout (float, optional): Maximum wall-clock time in seconds before stopping.
         """
         sim_t_final = t_final if t_final is not None else self.config.t_final
 
-        if not self.quiet:
-            print(f"Starting GPU network simulation from t=0 to t={sim_t_final}s...")
+        self.logger.info(f"Starting GPU network simulation from t=0 to t={sim_t_final}s...")
 
         pbar = tqdm(total=sim_t_final, desc="Simulating on GPU", disable=self.quiet)
         
@@ -171,7 +170,7 @@ class NetworkSimulator:
         while self.t < sim_t_final:
             # Check for timeout
             if timeout is not None and (time.time() - start_time) > timeout:
-                print(f"\n[TIMEOUT] Simulation stopped after {timeout} seconds.", flush=True)
+                self.logger.warning(f"Simulation stopped after {timeout} seconds (timeout).")
                 break
                 
             if self.device == 'cpu':
@@ -208,9 +207,9 @@ class NetworkSimulator:
             # Store for next iteration
             self._last_dt = stable_dt
             
-            # Log CFL diagnostics if dt is collapsing
+            # Log CFL diagnostics if dt is collapsing (Phase 3: throttled)
             if diagnostics is not None and stable_dt < 0.05:
-                self._log_cfl_diagnostics(diagnostics, stable_dt)
+                self._log_cfl_diagnostics_throttled(diagnostics, stable_dt)
             
             # Adjust last step to hit t_final exactly
             if self.t + stable_dt > sim_t_final:
@@ -218,8 +217,7 @@ class NetworkSimulator:
 
             # If dt is somehow zero or negative, stop the simulation
             if stable_dt <= 0:
-                if not self.quiet:
-                    print(f"Stopping simulation: stable_dt is {stable_dt}.")
+                self.logger.warning(f"Stopping simulation: stable_dt is {stable_dt}.")
                 break
 
             # 2. Evolve each segment on the GPU using Strang splitting
@@ -246,13 +244,13 @@ class NetworkSimulator:
 
             # DEBUGGING BLOCK: Stop and dump state if dt collapses
             if self.debug and stable_dt < 0.01 and self.time_step > 10:
-                print(f"!!! DEBUG: dt collapsed to {stable_dt:.6f} at t={self.t:.4f}s. Dumping state.", flush=True)
+                self.logger.debug(f"dt collapsed to {stable_dt:.6f} at t={self.t:.4f}s. Dumping state.")
                 self._debug_dump_state("State at dt collapse")
                 # You might want to save the full state to a file here for later analysis
                 # For now, we just stop the simulation to inspect the log.
                 break
 
-            # 4. Log data at regular time intervals (requires transferring data from GPU to CPU)
+            # 4. Log data at regular time intervals (Phase 1: time-based checkpointing)
             if self.t - self.last_checkpoint_time >= self.config.time.output_dt:
                 self._log_state()
                 self.last_checkpoint_time = self.t
@@ -269,10 +267,9 @@ class NetworkSimulator:
             pbar.set_postfix({"Time": f"{self.t:.2f}s", "dt": f"{stable_dt:.4f}s", "step": self.time_step})
 
         pbar.close()
-        if not self.quiet:
-            print("GPU network simulation finished.")
+        self.logger.info("GPU network simulation finished.")
         
-        # Save final state if not just checkpointed
+        # Save final state if not just checkpointed (Phase 1: final checkpoint)
         if self.t > self.last_checkpoint_time + 1e-9:  # Small epsilon to avoid floating point issues
             self._log_state()
         
@@ -290,11 +287,11 @@ class NetworkSimulator:
         }
 
     def _debug_dump_state(self, label: str):
-        """Prints min/max/mean stats for each segment's density and speed."""
+        """Prints min/max/mean stats for each segment's density and speed (DEBUG mode only)."""
         if not self.debug or self.device != 'gpu':
             return
 
-        print(f"[DEBUG] {label}")
+        self.logger.debug(f"{label}")
         for seg_id in self.network.segments.keys():
             U_cpu = self.gpu_pool.checkpoint_to_cpu(seg_id)
             grid = self.network.segments[seg_id]['grid']
@@ -320,48 +317,70 @@ class NetworkSimulator:
             speed_max = np.max(avg_speed)
             speed_mean = np.mean(avg_speed)
 
-            print(
+            self.logger.debug(
                 f"   Segment {seg_id}: density[min={density_min:.6f}, max={density_max:.6f}, mean={density_mean:.6f}] "
                 f"speed[min={speed_min:.6f}, max={speed_max:.6f}, mean={speed_mean:.6f}]"
             )
 
-    def _log_cfl_diagnostics(self, diagnostics, stable_dt):
+    def _log_cfl_diagnostics_throttled(self, diagnostics, stable_dt):
         """
-        Logs detailed CFL diagnostics when dt becomes small.
+        Logs THROTTLED CFL diagnostics when dt becomes small (Phase 3 optimization).
+        
+        Instead of printing ALL 70 segments, this:
+        - Shows the first CFL warning
+        - Shows every 10th warning after that
+        - Only displays the TOP 5 worst segments instead of all segments
         
         Args:
             diagnostics: Dictionary containing CFL diagnostic information
             stable_dt: The calculated stable time step
         """
-        print(f"\n{'='*70}", flush=True)
-        print(f"⚠️  CFL DIAGNOSTIC: dt collapsed to {stable_dt:.6e} at t={self.t:.4f}s (step {self.time_step})", flush=True)
-        print(f"{'='*70}", flush=True)
-        print(f"Global max_ratio (λ/dx): {diagnostics['global_max_ratio']:.6e}", flush=True)
-        print(f"CFL factor: {self.config.time.cfl_factor}", flush=True)
+        self.cfl_warning_count += 1
         
-        # Find the limiting segment
-        limiting_seg = None
-        max_ratio_overall = 0.0
-        for seg_id, seg_diag in diagnostics['segments'].items():
-            if seg_diag['max_ratio'] > max_ratio_overall:
-                max_ratio_overall = seg_diag['max_ratio']
-                limiting_seg = seg_id
+        # Throttle: only log first warning, then every 10th
+        if self.cfl_warning_count > 1 and self.cfl_warning_count % 10 != 0:
+            return  # Skip this warning
         
-        print(f"\n🔴 LIMITING SEGMENT: {limiting_seg}", flush=True)
-        print(f"-" * 70, flush=True)
+        # Header
+        self.logger.section(
+            f"CFL DIAGNOSTIC #{self.cfl_warning_count}: dt={stable_dt:.6e} at t={self.t:.4f}s (step {self.time_step})",
+            char="=",
+            width=70
+        )
         
-        for seg_id, seg_diag in diagnostics['segments'].items():
-            marker = "🔴" if seg_id == limiting_seg else "  "
-            print(f"\n{marker} Segment {seg_id}:", flush=True)
-            print(f"   max_ratio (λ/dx): {seg_diag['max_ratio']:.6e}", flush=True)
-            print(f"   dx: {seg_diag['dx']:.6f} m", flush=True)
-            print(f"   dt_seg: {seg_diag['dt_seg']:.6e} s", flush=True)
-            print(f"   ρ_m: min={seg_diag['rho_m']['min']:.6e}, max={seg_diag['rho_m']['max']:.6e}, mean={seg_diag['rho_m']['mean']:.6e}", flush=True)
-            print(f"   ρ_c: min={seg_diag['rho_c']['min']:.6e}, max={seg_diag['rho_c']['max']:.6e}, mean={seg_diag['rho_c']['mean']:.6e}", flush=True)
-            print(f"   w_m: min={seg_diag['w_m']['min']:.6e}, max={seg_diag['w_m']['max']:.6e}, mean={seg_diag['w_m']['mean']:.6e}", flush=True)
-            print(f"   w_c: min={seg_diag['w_c']['min']:.6e}, max={seg_diag['w_c']['max']:.6e}, mean={seg_diag['w_c']['mean']:.6e}", flush=True)
+        self.logger.warning(f"Global max_ratio (λ/dx): {diagnostics['global_max_ratio']:.6e}")
+        self.logger.info(f"CFL factor: {self.config.time.cfl_factor}")
         
-        print(f"{'='*70}\n", flush=True)
+        # Sort segments by max_ratio to find the worst offenders
+        sorted_segments = sorted(
+            diagnostics['segments'].items(),
+            key=lambda item: item[1]['max_ratio'],
+            reverse=True
+        )
+        
+        # Show only TOP 5 worst segments (not all 70!)
+        top_n = 5
+        self.logger.subsection(f"🔴 TOP {top_n} LIMITING SEGMENTS (out of {len(sorted_segments)})", char="-")
+        
+        for rank, (seg_id, seg_diag) in enumerate(sorted_segments[:top_n], start=1):
+            self.logger.warning(f"#{rank} Segment {seg_id}:")
+            self.logger.info(f"   max_ratio (λ/dx): {seg_diag['max_ratio']:.6e}")
+            self.logger.debug(f"   dx: {seg_diag['dx']:.6f} m")
+            self.logger.debug(f"   dt_seg: {seg_diag['dt_seg']:.6e} s")
+            
+            # Only show full density/velocity details in DEBUG mode
+            if self.logger.level <= LogLevel.DEBUG:
+                self.logger.debug(f"   ρ_m: min={seg_diag['rho_m']['min']:.6e}, max={seg_diag['rho_m']['max']:.6e}, mean={seg_diag['rho_m']['mean']:.6e}")
+                self.logger.debug(f"   ρ_c: min={seg_diag['rho_c']['min']:.6e}, max={seg_diag['rho_c']['max']:.6e}, mean={seg_diag['rho_c']['mean']:.6e}")
+                self.logger.debug(f"   w_m: min={seg_diag['w_m']['min']:.6e}, max={seg_diag['w_m']['max']:.6e}, mean={seg_diag['w_m']['mean']:.6e}")
+                self.logger.debug(f"   w_c: min={seg_diag['w_c']['min']:.6e}, max={seg_diag['w_c']['max']:.6e}, mean={seg_diag['w_c']['mean']:.6e}")
+        
+        # Summary of remaining segments
+        if len(sorted_segments) > top_n:
+            remaining_count = len(sorted_segments) - top_n
+            self.logger.info(f"   ... and {remaining_count} other segments with lower max_ratio")
+        
+        self.logger.info(f"{'='*70}\n")
 
     def _log_state(self):
         """
@@ -395,7 +414,7 @@ class NetworkSimulator:
 
     def _log_diagnostics(self):
         """Logs diagnostic information about the simulation run."""
-        if not self.dt_history or self.quiet:
+        if not self.dt_history:
             return
         
         dt_array = np.array(self.dt_history)
@@ -403,9 +422,9 @@ class NetworkSimulator:
         min_dt = np.min(dt_array)
         max_dt = np.max(dt_array)
         
-        print(f"\n--- Simulation Diagnostics (at t={self.t:.2f}s) ---", flush=True)
-        print(f"  - Timestep (dt) Stats: Min={min_dt:.6f}s, Max={max_dt:.6f}s, Mean={mean_dt:.6f}s", flush=True)
-        print(f"  - Total Steps: {self.time_step}", flush=True)
+        self.logger.subsection(f"Simulation Diagnostics (at t={self.t:.2f}s)", char="-")
+        self.logger.info(f"  - Timestep (dt) Stats: Min={min_dt:.6f}s, Max={max_dt:.6f}s, Mean={mean_dt:.6f}s")
+        self.logger.info(f"  - Total Steps: {self.time_step}")
         
         # Clear history for next diagnostic interval
         self.dt_history.clear()
