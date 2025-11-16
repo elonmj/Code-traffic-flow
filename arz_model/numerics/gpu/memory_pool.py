@@ -46,7 +46,7 @@ class GPUMemoryPool:
         d_R_pool (Dict[str, DeviceNDArray]): GPU road quality arrays
         d_BC_pool (Dict[str, DeviceNDArray]): GPU boundary condition buffers
         d_flux_pool (Dict[str, DeviceNDArray]): GPU node flux buffers
-        streams (Dict[str, cuda.Stream]): CUDA streams per segment
+        streams (Dict[str, cuda.stream]): CUDA streams per segment
         host_pinned_buffers (Dict[str, np.ndarray]): Pinned host buffers
         
     Example:
@@ -112,7 +112,7 @@ class GPUMemoryPool:
         self.d_flux_pool: Dict[str, cuda.devicearray.DeviceNDArray] = {}
         
         # CUDA streams for parallel processing
-        self.streams: Dict[str, cuda.Stream] = {}
+        self.streams: Dict[str, cuda.stream] = {}
         
         # Pinned host buffers for fast transfers
         self.host_pinned_buffers: Dict[str, np.ndarray] = {}
@@ -331,7 +331,7 @@ class GPUMemoryPool:
             'light_factor': 1.0  # Default to GREEN
         }
 
-    def get_stream(self, seg_id: str) -> Optional[cuda.Stream]:
+    def get_stream(self, seg_id: str) -> Optional[cuda.stream]:
         """
         Get CUDA stream for a segment.
         
