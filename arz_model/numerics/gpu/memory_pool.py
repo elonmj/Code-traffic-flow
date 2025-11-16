@@ -314,6 +314,24 @@ class GPUMemoryPool:
         if seg_id not in self.d_R_pool:
             raise KeyError(f"Segment '{seg_id}' not found in memory pool")
         return self.d_R_pool[seg_id]
+    
+    def get_temp_array(self, shape: tuple, dtype: np.dtype) -> cuda.devicearray.DeviceNDArray:
+        """
+        Get a temporary GPU array for intermediate calculations.
+        
+        Allocates a new device array on demand. These arrays are meant to be
+        short-lived and used within a single time step.
+        
+        Args:
+            shape: Shape of the array
+            dtype: Data type of the array
+            
+        Returns:
+            GPU device array
+        """
+        temp_array = cuda.device_array(shape, dtype=dtype)
+        self._temp_pool.append(temp_array)
+        return temp_array
 
     def get_segment_info(self, seg_id: str) -> Dict:
         """
