@@ -137,7 +137,7 @@ class NetworkCouplingGPU:
             return
 
         # Get the contiguous memory pool and offsets
-        d_U_mega_pool, d_segment_offsets = self.gpu_pool.get_all_segment_states()
+        d_U_mega_pool, d_segment_offsets, seg_lengths = self.gpu_pool.get_all_segment_states()
 
         # Configure kernel launch
         threads_per_block = 32
