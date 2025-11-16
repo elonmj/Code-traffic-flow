@@ -99,11 +99,12 @@ def main():
     
     # Adjust output path for Kaggle environment
     if os.path.exists('/kaggle/working/'):
-        output_dir = '/kaggle/working/simulation_results'
+        # Save directly to the root output directory for the runner to find it
+        output_path = '/kaggle/working/network_simulation_results.pkl'
     else:
         output_dir = os.path.join(project_root, 'results')
+        output_path = os.path.join(output_dir, 'network_simulation_results.pkl')
         
-    output_path = os.path.join(output_dir, 'network_simulation_results.pkl')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     
     try:
