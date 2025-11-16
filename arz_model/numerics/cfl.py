@@ -5,6 +5,10 @@ from ..grid.grid1d import Grid1D
 from arz_model.core.physics import _calculate_pressure_cuda, _calculate_physical_velocity_cuda, _calculate_eigenvalues_cuda
 from arz_model.core.parameters import ModelParameters
 from arz_model.config.network_simulation_config import NetworkSimulationConfig
+from .reconstruction.weno import weno5_reconstruction_gpu_native
+from .gpu.godunov_flux_gpu import godunov_flux_gpu_native
+from .gpu.ssp_rk3_kernels import ssp_rk3_stage_1_kernel, ssp_rk3_stage_2_kernel, ssp_rk3_stage_3_kernel
+from .gpu.physical_bounds_gpu import _apply_physical_bounds_gpu_in_place
 
 # Global counter for CFL correction messages
 _cfl_correction_count = 0
@@ -305,3 +309,46 @@ def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', 
         return stable_dt, diagnostics
     else:
         return stable_dt
+
+def compute_adaptive_cfl_with_history(
+    dt_history: list[float], 
+    base_cfl: float = 0.8, 
+    n_window: int = 10, 
+    threshold: float = 0.05
+) -> float:
+    """
+    Compute adaptive CFL factor based on recent dt history.
+    
+    Reduces CFL from base_cfl to 0.5 if dt has been persistently small,
+    indicating numerical stress. This gives more stability margin.
+    
+    Args:
+        dt_history: List of recent dt values (most recent last)
+        base_cfl: Nominal CFL factor when system is stable (default 0.8)
+        n_window: Number of recent steps to check (default 10)
+        threshold: dt value considered 'collapsed' (default 0.05s)
+    
+    Returns:
+        Adapted CFL factor: 0.5 if unstable, else base_cfl
+        
+    Example:
+        >>> dt_hist = [0.02, 0.03, 0.01, 0.02, 0.02, 0.01, 0.03, 0.02, 0.01, 0.02]
+        >>> compute_adaptive_cfl_with_history(dt_hist, base_cfl=0.8, threshold=0.05)
+        0.5  # All values < 0.05, so reduce CFL
+        
+    References:
+        - #file:../research/20251116-numerical-stability-arz-dt-collapse-research.md
+    """
+    # Need enough history to make decision
+    if len(dt_history) < n_window:
+        return base_cfl
+    
+    # Check last n_window steps
+    recent_dts = dt_history[-n_window:]
+    collapsed_count = sum(1 for dt in recent_dts if dt < threshold)
+    
+    # If 50%+ of recent steps are collapsed, reduce CFL
+    if collapsed_count >= n_window // 2:
+        return 0.5  # Conservative CFL for stressed systems
+    
+    return base_cfl  # Normal CFL

@@ -194,12 +194,27 @@ class NetworkSimulator:
                 # Enable diagnostics if dt was small in previous step or if debug mode
                 enable_diag = (self.time_step > 0 and hasattr(self, '_last_dt') and self._last_dt < 0.05) or self.debug
                 
+                # Compute adaptive CFL factor based on recent history
+                adaptive_cfl_factor = compute_adaptive_cfl_with_history(
+                    self.dt_history, 
+                    base_cfl=self.config.time.cfl_factor,
+                    n_window=10,
+                    threshold=self.config.time.dt_collapse_threshold
+                )
+
+                # Log if CFL is being reduced
+                if adaptive_cfl_factor < self.config.time.cfl_factor:
+                    self.logger.warning(
+                        f"Adaptive CFL reduction: {self.config.time.cfl_factor:.2f} → {adaptive_cfl_factor:.2f} "
+                        f"due to persistent dt collapse"
+                    )
+
                 if enable_diag:
                     stable_dt, diagnostics = cfl_condition_gpu_native(
                         gpu_pool=self.gpu_pool,
                         network=self.network,
                         params=self.config.physics,
-                        cfl_max=self.config.time.cfl_factor,
+                        cfl_max=adaptive_cfl_factor,
                         return_diagnostics=True
                     )
                 else:
@@ -207,13 +222,44 @@ class NetworkSimulator:
                         gpu_pool=self.gpu_pool,
                         network=self.network,
                         params=self.config.physics,
-                        cfl_max=self.config.time.cfl_factor,
+                        cfl_max=adaptive_cfl_factor,
                         return_diagnostics=False
                     )
                     diagnostics = None
             
             # Store for next iteration
             self._last_dt = stable_dt
+
+            # Check for dt collapse - fail fast instead of slowing to crawl
+            if stable_dt < self.config.time.dt_min:
+                raise RuntimeError(
+                    f"NUMERICAL INSTABILITY DETECTED: CFL dt collapsed to {stable_dt:.6f}s "
+                    f"which is below dt_min={self.config.time.dt_min}s. "
+                    f"\n\nThis indicates extreme eigenvalues in the system. "
+                    f"\nLimiting segment: {diagnostics.get('limiting_segment', 'unknown') if diagnostics else 'unknown'}"
+                    f"\n\nPossible causes:"
+                    f"\n  1. Density approaching rho_max causing pressure gradient explosion"
+                    f"\n  2. Unphysical velocities at network junctions"
+                    f"\n  3. Insufficient spatial resolution (dx too large)"
+                    f"\n\nRecommended actions:"
+                    f"\n  - Review CFL diagnostic logs above for problematic segments"
+                    f"\n  - Reduce dx or increase rho_max if physically justified"
+                    f"\n  - Check initial/boundary conditions for extreme values"
+                )
+
+            # Log warning if dt is collapsing but still above minimum
+            if stable_dt < self.config.time.dt_collapse_threshold:
+                self.logger.warning(
+                    f"dt approaching collapse: {stable_dt:.6f}s < threshold={self.config.time.dt_collapse_threshold}s"
+                )
+
+            # Clamp dt to configured bounds (after checking for collapse)
+            stable_dt = max(self.config.time.dt_min, min(stable_dt, self.config.time.dt_max))
+
+            # Track dt history for adaptive CFL
+            self.dt_history.append(stable_dt)
+            if len(self.dt_history) > 20:  # Keep last 20 values only
+                self.dt_history.pop(0)
             
             # Log CFL diagnostics if dt is collapsing (Phase 3: throttled)
             if diagnostics is not None and stable_dt < 0.05:
