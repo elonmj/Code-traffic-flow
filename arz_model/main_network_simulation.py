@@ -77,7 +77,11 @@ def main():
         runner = SimulationRunner(network_grid=network_grid, simulation_config=config, debug=False)
         print("✅ Simulation runner initialized.", flush=True)
     except Exception as e:
+        import traceback
         print(f"❌ Error initializing runner: {e}", flush=True)
+        print("\n=== FULL TRACEBACK ===", flush=True)
+        traceback.print_exc()
+        print("=" * 70, flush=True)
         return
 
     # --- 4. Run the Simulation ---
