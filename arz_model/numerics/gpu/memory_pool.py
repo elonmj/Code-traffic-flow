@@ -230,13 +230,14 @@ class GPUMemoryPool:
         h_offsets = self.d_segment_offsets.copy_to_host()
         offset = h_offsets[seg_idx]
         
-        # Create a view of the mega-pool for this segment
-        segment_view = self.d_U_mega_pool[:, offset:offset + N_total]
-        
         # Use pinned buffer for transfer - ensure U_init is contiguous
         U_init_contig = np.ascontiguousarray(U_init)
         self.host_pinned_buffers[seg_id][:] = U_init_contig
-        segment_view.copy_to_device(self.host_pinned_buffers[seg_id], stream=stream)
+        
+        # Transfer to GPU: copy directly to the appropriate slice of the mega-pool
+        # We use device-to-device copy by first copying to the pinned buffer,
+        # then copying that to the specific region of the mega-pool
+        cuda.to_device(U_init_contig, to=self.d_U_mega_pool[:, offset:offset + N_total], stream=stream)
         
         # Initialize road quality if provided
         if R_init is not None:
