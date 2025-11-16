@@ -8,6 +8,7 @@ main simulation loop, calls the numerical schemes, and handles data logging.
 
 import numpy as np
 import time
+import os
 from tqdm import tqdm
 from typing import Optional
 
@@ -18,6 +19,9 @@ from ...numerics.time_integration import strang_splitting_step_gpu_native
 from ...numerics.gpu.memory_pool import GPUMemoryPool
 from ...numerics.gpu.network_coupling_gpu import NetworkCouplingGPU
 from ..logging import SimulationLogger, LogLevel, create_logger_from_flags
+
+# Detect if running on Kaggle (disable TQDM to reduce log bloat)
+IS_KAGGLE = os.path.exists('/kaggle/working') or 'KAGGLE_KERNEL_RUN_TYPE' in os.environ
 
 
 class NetworkSimulator:
@@ -163,9 +167,13 @@ class NetworkSimulator:
 
         self.logger.info(f"Starting GPU network simulation from t=0 to t={sim_t_final}s...")
 
-        pbar = tqdm(total=sim_t_final, desc="Simulating on GPU", disable=self.quiet)
+        # On Kaggle, TQDM creates excessive log output - disable it and use periodic logging instead
+        use_tqdm = not IS_KAGGLE and not self.quiet
+        pbar = tqdm(total=sim_t_final, desc="Simulating on GPU", disable=not use_tqdm)
         
         start_time = time.time()
+        last_progress_log = 0.0  # Track when we last logged progress
+        progress_log_interval = 60.0  # Log progress every 60 simulated seconds
 
         while self.t < sim_t_final:
             # Check for timeout
@@ -265,6 +273,24 @@ class NetworkSimulator:
             self.time_step += 1
             pbar.update(stable_dt)
             pbar.set_postfix({"Time": f"{self.t:.2f}s", "dt": f"{stable_dt:.4f}s", "step": self.time_step})
+            
+            # On Kaggle: periodic progress logging instead of TQDM spam
+            if IS_KAGGLE and (self.t - last_progress_log >= progress_log_interval):
+                elapsed_wall = time.time() - start_time
+                progress_pct = (self.t / sim_t_final) * 100
+                remaining_sim = sim_t_final - self.t
+                sim_rate = self.t / elapsed_wall if elapsed_wall > 0 else 0
+                eta_wall = remaining_sim / sim_rate if sim_rate > 0 else 0
+                
+                self.logger.info(
+                    f"Progress: {progress_pct:.1f}% | "
+                    f"t={self.t:.1f}/{sim_t_final:.0f}s | "
+                    f"Step={self.time_step} | "
+                    f"dt={stable_dt:.4f}s | "
+                    f"Wall: {elapsed_wall:.0f}s | "
+                    f"ETA: {eta_wall/60:.1f}min"
+                )
+                last_progress_log = self.t
 
         pbar.close()
         self.logger.info("GPU network simulation finished.")
