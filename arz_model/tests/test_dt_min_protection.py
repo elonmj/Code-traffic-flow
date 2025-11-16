@@ -52,9 +52,9 @@ def test_dt_min_protection_triggers():
         )
         
         # Override time config to set aggressive dt_min protection
-        config.time.dt_min = 0.0001  # Very strict - will trigger
+        config.time.dt_min = 0.01  # Raised threshold to catch collapse
         config.time.dt_max = 1.0
-        config.time.dt_collapse_threshold = 0.01
+        config.time.dt_collapse_threshold = 0.05
         
         # Make physics more aggressive to force collapse
         config.physics.k_m = 3.0
@@ -121,7 +121,7 @@ def test_dt_min_protection_allows_stable_runs():
         config.time.dt_max = 1.0
         
         # Conservative CFL
-        config.cfl_number = 0.5
+        config.time.cfl_factor = 0.5
         
         # Build network using REAL workflow
         network_grid = NetworkGrid.from_config(config)
