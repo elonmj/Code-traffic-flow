@@ -96,8 +96,16 @@ def main():
 
     # --- 5. Save Results ---
     print("\n[PHASE 5] Saving results...", flush=True)
-    output_path = os.path.join(project_root, 'results', 'network_simulation_results.pkl')
+    
+    # Adjust output path for Kaggle environment
+    if os.path.exists('/kaggle/working/'):
+        output_dir = '/kaggle/working/simulation_results'
+    else:
+        output_dir = os.path.join(project_root, 'results')
+        
+    output_path = os.path.join(output_dir, 'network_simulation_results.pkl')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    
     try:
         with open(output_path, 'wb') as f:
             # The results object is a dictionary, not a legacy history object
