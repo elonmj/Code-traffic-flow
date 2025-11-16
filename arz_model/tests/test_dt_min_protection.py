@@ -1,88 +1,149 @@
+"""
+Unit tests for dt_min protection mechanism.
+
+Tests that the simulation correctly halts when dt falls below dt_min threshold,
+preventing infinite loops in numerically unstable scenarios.
+
+References:
+    - #file:../.copilot-tracking/changes/20251116-numerical-stability-plan.md
+"""
 import pytest
-from arz_model.simulation.runner import run_simulation_from_config_file
-from arz_model.config.network_simulation_config import NetworkSimulationConfig
+import numpy as np
+import tempfile
 import os
 
-@pytest.fixture
-def network_config():
-    # This assumes you have a standard way of loading a default or test-specific config
-    # For simplicity, we'll create a config object directly.
-    # In a real scenario, you might load this from a YAML file.
-    config = NetworkSimulationConfig()
-    
-    # Set a short simulation time to make the test run quickly
-    config.time.t_final = 5.0
-    
-    # Set a high dt_min to make it easy to trigger the error
-    config.time.dt_min = 0.1
-    
-    # To trigger the instability, we might need to set some "bad" initial conditions.
-    # This is highly dependent on the physics of the model.
-    # For example, let's set a very high initial density on one segment.
-    # This requires knowing the structure of your config object.
-    # Let's assume a simple network with one segment for this test.
-    
-    # This part is tricky without knowing the exact config structure for segments.
-    # Let's assume a method to add/modify segments exists.
-    # If not, you would prepare a specific YAML file for this test.
-    
-    # For now, we'll rely on the default config and hope it's sufficient to
-    # demonstrate the test structure. A real implementation would need a
-    # more sophisticated setup to guarantee dt collapse.
-    
-    return config
+# Import the REAL workflow components
+from arz_model.config.config_factory import ConfigFactory
+from arz_model.network.network_grid import NetworkGrid
+from arz_model.simulation.runner import SimulationRunner
 
-def test_simulation_aborts_when_dt_collapses_below_minimum(network_config, tmp_path):
+
+def test_dt_min_protection_triggers():
     """
-    Verify that the simulation raises a RuntimeError with a clear message
-    when the CFL dt drops below the dt_min threshold.
+    Test that simulation raises RuntimeError when dt < dt_min.
     
-    This test is designed to fail gracefully.
+    Uses a pathological network configuration that forces dt collapse:
+    - Very small dx → Small stable dt
+    - Low dt_min threshold to allow initial steps
+    - Aggressive physics to force instability
+    - Short t_final to avoid long test times
+    
+    Expected: RuntimeError with message about dt_min violation
     """
+    # Create a minimal CSV for a single segment that will collapse
+    csv_content = """segment_id,long_km,x0_km,lane_count,v_max_m,v_max_c
+seg_test,0.5,0.0,2,80,80"""
     
-    # To reliably trigger this, we need to create a scenario that is known
-    # to be unstable. For example, by setting dx to be very large or
-    # initial densities to be very high.
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        f.write(csv_content)
+        csv_path = f.name
     
-    # Let's modify the config to make instability more likely
-    network_config.grid.dx = 200.0  # Large dx makes CFL condition tighter
-    network_config.time.cfl_factor = 0.9 # Push CFL to its limit
-    
-    # We expect a RuntimeError
-    with pytest.raises(RuntimeError) as exc_info:
-        # The runner function needs to be able to take a config object
-        # Let's assume it can, or we save the config to a file and pass the path
+    try:
+        # Create config using REAL factory with pathological parameters
+        config = ConfigFactory.create_network_config_from_csv(
+            csv_path=csv_path,
+            default_density=150.0,  # Very high density → near jam
+            default_velocity=10.0,  # Low velocity
+            inflow_density=160.0,   # Even higher inflow
+            inflow_velocity=5.0,    # Very slow inflow
+            t_final=5.0,           # Short test (5s as requested)
+            output_dt=1.0,
+            cells_per_100m=50,     # Very fine grid → small dx
+        )
         
-        # Create a temporary config file for the runner
-        config_path = os.path.join(tmp_path, "test_config.yml")
-        with open(config_path, 'w') as f:
-            # Pydantic v2 doesn't have a direct .yaml() method, so we'll dump to json then to yaml
-            # or just use the dict representation. For simplicity, let's assume a helper.
-            # This part is complex, so we'll mock the behavior.
-            # In a real test, you'd properly save the config.
-            pass # We'll just run with the object if the runner supports it.
+        # Override time config to set aggressive dt_min protection
+        config.time.dt_min = 0.0001  # Very strict - will trigger
+        config.time.dt_max = 1.0
+        config.time.dt_collapse_threshold = 0.01
+        
+        # Make physics more aggressive to force collapse
+        config.physics.k_m = 3.0
+        config.physics.gamma_m = 6.0
+        config.physics.k_c = 3.0
+        config.physics.gamma_c = 6.0
+        
+        # Build network using REAL workflow
+        network_grid = NetworkGrid.from_config(config)
+        
+        # Initialize runner using REAL workflow
+        runner = SimulationRunner(
+            network_grid=network_grid,
+            simulation_config=config,
+            quiet=True,
+            debug=False
+        )
+        
+        # Run simulation and expect RuntimeError about dt_min
+        with pytest.raises(RuntimeError, match="dt.*dt_min"):
+            runner.run(timeout=None)
+            
+    finally:
+        # Cleanup temp file
+        if os.path.exists(csv_path):
+            os.remove(csv_path)
 
-        # This test will likely fail if the default scenario is too stable.
-        # It's a placeholder for a more robust integration test.
-        
-        # Let's assume the runner can take a config object directly for testing
-        # This is a good practice to allow for this kind of testing.
-        
-        # We'll create a dummy runner that just raises the error for now
-        # to demonstrate the test structure.
-        
-        # In a real test, you would call your actual simulation runner here.
-        # For example:
-        # run_simulation_from_config_file(config_path, quiet=True, debug=True)
-        
-        # Mocking the behavior for demonstration:
-        raise RuntimeError("NUMERICAL INSTABILITY DETECTED: CFL dt collapsed to 0.09s which is below dt_min=0.1s.")
 
-    # Verify that the error message is informative
-    error_msg = str(exc_info.value)
-    assert "NUMERICAL INSTABILITY DETECTED" in error_msg
-    assert "dt collapsed" in error_msg
-    assert "dt_min" in error_msg
-    # These are good to have, but might not be present in a mocked test
-    # assert "Possible causes:" in error_msg
-    # assert "Recommended actions:" in error_msg
+def test_dt_min_protection_allows_stable_runs():
+    """
+    Test that simulation completes successfully when dt stays above dt_min.
+    
+    Uses a well-behaved network configuration:
+    - Larger dx → Larger stable dt
+    - Conservative CFL
+    - Low initial density → Stable flow
+    - Conservative physics parameters
+    
+    Expected: Simulation completes without error
+    """
+    # Create a minimal CSV for a stable single segment
+    csv_content = """segment_id,long_km,x0_km,lane_count,v_max_m,v_max_c
+seg_stable,2.0,0.0,3,100,100"""
+    
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        f.write(csv_content)
+        csv_path = f.name
+    
+    try:
+        # Create config using REAL factory with stable parameters
+        config = ConfigFactory.create_network_config_from_csv(
+            csv_path=csv_path,
+            default_density=20.0,   # Low density
+            default_velocity=60.0,  # Moderate velocity
+            inflow_density=25.0,    # Light inflow
+            inflow_velocity=55.0,   # Stable inflow
+            t_final=12.0,          # Short test (12s as requested)
+            output_dt=2.0,
+            cells_per_100m=4,      # Coarse grid → large dx
+        )
+        
+        # Conservative time config
+        config.time.dt_min = 0.001
+        config.time.dt_max = 1.0
+        
+        # Conservative CFL
+        config.cfl_number = 0.5
+        
+        # Build network using REAL workflow
+        network_grid = NetworkGrid.from_config(config)
+        
+        # Initialize runner using REAL workflow
+        runner = SimulationRunner(
+            network_grid=network_grid,
+            simulation_config=config,
+            quiet=True,
+            debug=False
+        )
+        
+        # Should complete without raising
+        results = runner.run(timeout=None)
+        
+        # Validate results
+        assert results is not None
+        assert "t_values" in results
+        assert len(results["t_values"]) > 0
+        assert results["t_values"][-1] >= 12.0  # Reached t_final
+        
+    finally:
+        # Cleanup temp file
+        if os.path.exists(csv_path):
+            os.remove(csv_path)
