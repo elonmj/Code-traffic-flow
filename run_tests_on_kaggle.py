@@ -15,7 +15,7 @@ def main():
     # We can therefore use relative paths to the test files.
     test_files = [
         "arz_model/tests/test_positivity_preservation.py",
-        "arz_model/tests/test_dt_min_protection.py"
+        "arz_model/tests/test_dt_min_protection_v2.py"  # Updated simplified version
     ]
 
     print("\nLooking for test files:")
