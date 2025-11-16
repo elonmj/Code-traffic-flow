@@ -430,8 +430,13 @@ class GPUMemoryPool:
         stream = self.get_stream(seg_id)
         host_buffer = self.host_pinned_buffers[seg_id]
         
+        # Create a contiguous temporary GPU array for the copy
+        # because d_segment_view is a non-contiguous slice
+        temp_contiguous = cuda.device_array(d_segment_view.shape, dtype=d_segment_view.dtype)
+        temp_contiguous[:] = d_segment_view
+        
         # Async copy from GPU to pinned host buffer
-        d_segment_view.copy_to_host(host_buffer, stream=stream)
+        temp_contiguous.copy_to_host(host_buffer, stream=stream)
         
         if not async_transfer and self.enable_streams:
             stream.synchronize()  # Wait for transfer to complete
