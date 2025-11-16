@@ -332,6 +332,21 @@ class GPUMemoryPool:
         temp_array = cuda.device_array(shape, dtype=dtype)
         self._temp_pool.append(temp_array)
         return temp_array
+    
+    def release_temp_array(self, array: cuda.devicearray.DeviceNDArray):
+        """
+        Release a temporary GPU array (marks it for deallocation).
+        
+        In Numba CUDA, arrays are automatically garbage collected when they go
+        out of scope, so this method just removes the reference from the pool.
+        
+        Args:
+            array: The temporary array to release
+        """
+        # Simply remove from the pool - Numba will handle deallocation
+        # when the reference count drops to zero
+        if array in self._temp_pool:
+            self._temp_pool.remove(array)
 
     def get_segment_info(self, seg_id: str) -> Dict:
         """
