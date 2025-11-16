@@ -96,8 +96,8 @@ class NetworkSimulator:
         
         # Transfer initial states and road quality to the GPU
         for seg_id, segment_data in self.network.segments.items():
-            U_cpu = segment_data['U']
-            R_cpu = segment_data['grid'].road_quality
+            U_cpu = np.ascontiguousarray(segment_data['U'])
+            R_cpu = np.ascontiguousarray(segment_data['grid'].road_quality)
             pool.initialize_segment_state(seg_id, U_cpu, R_cpu)
             
         if not self.quiet:
