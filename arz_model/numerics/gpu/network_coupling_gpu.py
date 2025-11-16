@@ -117,15 +117,15 @@ class NetworkCouplingGPU:
             h_segment_n_ghost[i] = n_ghost
             h_segment_lengths[i] = n_phys + 2 * n_ghost
 
-        # --- Transfer to GPU ---
-        self.d_node_types = cuda.to_device(h_node_types)
-        self.d_node_incoming_gids = cuda.to_device(h_node_incoming_gids)
-        self.d_node_incoming_offsets = cuda.to_device(h_node_incoming_offsets)
-        self.d_node_outgoing_gids = cuda.to_device(h_node_outgoing_gids)
-        self.d_node_outgoing_offsets = cuda.to_device(h_node_outgoing_offsets)
-        self.d_segment_n_phys = cuda.to_device(h_segment_n_phys)
-        self.d_segment_n_ghost = cuda.to_device(h_segment_n_ghost)
-        self.d_segment_lengths = cuda.to_device(h_segment_lengths)
+        # --- Transfer to GPU (ensure contiguous arrays) ---
+        self.d_node_types = cuda.to_device(np.ascontiguousarray(h_node_types))
+        self.d_node_incoming_gids = cuda.to_device(np.ascontiguousarray(h_node_incoming_gids))
+        self.d_node_incoming_offsets = cuda.to_device(np.ascontiguousarray(h_node_incoming_offsets))
+        self.d_node_outgoing_gids = cuda.to_device(np.ascontiguousarray(h_node_outgoing_gids))
+        self.d_node_outgoing_offsets = cuda.to_device(np.ascontiguousarray(h_node_outgoing_offsets))
+        self.d_segment_n_phys = cuda.to_device(np.ascontiguousarray(h_segment_n_phys))
+        self.d_segment_n_ghost = cuda.to_device(np.ascontiguousarray(h_segment_n_ghost))
+        self.d_segment_lengths = cuda.to_device(np.ascontiguousarray(h_segment_lengths))
         
         print("    - GPU topology prepared and transferred.")
 
