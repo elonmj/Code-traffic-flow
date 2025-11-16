@@ -83,6 +83,10 @@ class NetworkGrid:
                 N=seg_config.N,
                 ghost_cells=config.physics.weno_ghost_cells
             )
+            # Initialize road quality for this segment using the default value
+            default_quality = config.physics.default_road_quality
+            grid.load_road_quality(np.full(grid.N_physical, default_quality, dtype=np.float64))
+            
             network.add_segment_from_config(seg_config, grid)
 
         # Create nodes
