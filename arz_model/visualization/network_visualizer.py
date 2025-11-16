@@ -353,16 +353,21 @@ class NetworkTrafficVisualizer:
         This is crucial for identifying which edges in the full network graph
         correspond to the segments that were actually simulated.
         
-        Currently uses index-based mapping (seg_0, seg_1, ...) OR
-        handles 1-indexed naming (seg1, seg2, ...).
+        Supports multiple segment ID formats:
+        1. OSM-based format: 'start_node_id->end_node_id' (e.g., '31674707->31700906')
+        2. Index-based format: 'seg_0', 'seg_1', 'seg0', 'seg1', etc.
         
-        In production, this should be improved to match based on:
-        - Road names stored in simulation results
-        - Node IDs (start_node, end_node) stored with segments
+        The OSM format is the preferred format for real network simulations.
         """
         self.segment_to_edges = {}
         
-        # Map both seg_0 style AND seg1 style naming
+        # First, try to map using OSM-based format (node_id->node_id)
+        for u, v in self.graph.edges():
+            # Convert node IDs to strings for consistent comparison
+            osm_format_id = f"{u}->{v}"
+            self.segment_to_edges[osm_format_id] = (u, v)
+        
+        # Also support legacy index-based naming for backward compatibility
         for idx, (u, v) in enumerate(self.graph.edges()):
             # Support both zero-indexed and one-indexed naming
             self.segment_to_edges[f'seg_{idx}'] = (u, v)  # seg_0, seg_1, ...
@@ -373,6 +378,9 @@ class NetworkTrafficVisualizer:
         if self.active_segment_ids:
             matched = sum(1 for seg_id in self.active_segment_ids if seg_id in self.segment_to_edges)
             print(f"ℹ️  Active segments: {len(self.active_segment_ids)} specified, {matched} matched to edges")
+            if matched < len(self.active_segment_ids):
+                unmatched = [seg_id for seg_id in self.active_segment_ids if seg_id not in self.segment_to_edges]
+                print(f"⚠️  Unmatched segments (first 5): {unmatched[:5]}")
         
     def _is_edge_active(self, u: int, v: int) -> bool:
         """

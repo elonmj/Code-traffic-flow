@@ -45,6 +45,10 @@ class NetworkSimulator:
         self.last_diagnostic_time = -np.inf
         self.dt_history = []
         
+        # Initialize time-based checkpoint tracking
+        self.last_checkpoint_time = -self.config.time.output_dt  # Force checkpoint at t=0
+        self.cfl_warning_count = 0  # For throttled CFL diagnostics (Phase 3)
+        
         self.params = config.physics
         
         if not self.quiet:
@@ -248,11 +252,12 @@ class NetworkSimulator:
                 # For now, we just stop the simulation to inspect the log.
                 break
 
-            # 4. Log data (requires transferring data from GPU to CPU)
-            if self.time_step % max(1, int(self.config.time.output_dt / stable_dt)) == 0:
+            # 4. Log data at regular time intervals (requires transferring data from GPU to CPU)
+            if self.t - self.last_checkpoint_time >= self.config.time.output_dt:
                 self._log_state()
+                self.last_checkpoint_time = self.t
                 if self.debug:
-                    self._debug_dump_state(f"State log at step {self.time_step} (t={self.t + stable_dt:.2f}s)")
+                    self._debug_dump_state(f"State log at step {self.time_step} (t={self.t:.2f}s)")
             elif self.debug and self.time_step < 5:
                 # Still capture early-step behavior even if not aligned with output_dt
                 self._debug_dump_state(f"Early debug snapshot step {self.time_step}")
@@ -266,6 +271,10 @@ class NetworkSimulator:
         pbar.close()
         if not self.quiet:
             print("GPU network simulation finished.")
+        
+        # Save final state if not just checkpointed
+        if self.t > self.last_checkpoint_time + 1e-9:  # Small epsilon to avoid floating point issues
+            self._log_state()
         
         # Collect final states from GPU
         final_states = {}
