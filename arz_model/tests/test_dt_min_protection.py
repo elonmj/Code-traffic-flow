@@ -31,8 +31,8 @@ def test_dt_min_protection_triggers():
     Expected: RuntimeError with message about dt_min violation
     """
     # Create a minimal CSV for a single segment that will collapse
-    csv_content = """segment_id,long_km,x0_km,lane_count,v_max_m,v_max_c
-seg_test,0.5,0.0,2,80,80"""
+    csv_content = """u,v,segment_id,length,lane_count,v_max_m,v_max_c
+1,2,seg_test,0.5,2,80,80"""
     
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
         f.write(csv_content)
@@ -96,8 +96,8 @@ def test_dt_min_protection_allows_stable_runs():
     Expected: Simulation completes without error
     """
     # Create a minimal CSV for a stable single segment
-    csv_content = """segment_id,long_km,x0_km,lane_count,v_max_m,v_max_c
-seg_stable,2.0,0.0,3,100,100"""
+    csv_content = """u,v,segment_id,length,lane_count,v_max_m,v_max_c
+1,2,seg_stable,2.0,3,100,100"""
     
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
         f.write(csv_content)

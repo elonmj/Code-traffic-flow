@@ -7523,3 +7523,46 @@
 2025-11-16 23:31:51,530 - kernel_manager - INFO -   - generic-test-runner-kernel.log (8189 bytes)
 2025-11-16 23:31:51,530 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-16 23:31:51,530 - kernel_manager - INFO -   - test_log.txt (5251 bytes)
+2025-11-17 00:04:04,295 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-17 00:04:04,295 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-17 00:04:04,396 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-17 00:04:04,472 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-17 00:04:04,472 - kernel_manager - INFO -   D  ISUALIZATION_UNIFICATION_SUMMARY.md (Deleted (staged))
+2025-11-17 00:04:04,472 - kernel_manager - INFO -    D analyze_results.py (Deleted (unstaged))
+2025-11-17 00:04:04,473 - kernel_manager - INFO -    D arz_model/create_presentation_figures.py (Deleted (unstaged))
+2025-11-17 00:04:04,473 - kernel_manager - INFO -    D arz_model/create_traffic_animations.py (Deleted (unstaged))
+2025-11-17 00:04:04,473 - kernel_manager - INFO -    M arz_model/tests/test_dt_min_protection.py (Modified (unstaged))
+2025-11-17 00:04:04,473 - kernel_manager - INFO -    D download.txt (Deleted (unstaged))
+2025-11-17 00:04:04,474 - kernel_manager - INFO -    D final_analyzer.py (Deleted (unstaged))
+2025-11-17 00:04:04,474 - kernel_manager - INFO -    D inspect_results3.py (Deleted (unstaged))
+2025-11-17 00:04:04,474 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-17 00:04:04,475 - kernel_manager - INFO -    D kaggle_run_output.log (Deleted (unstaged))
+2025-11-17 00:04:04,475 - kernel_manager - INFO -    D results_analysis_final/spatiotemporal_density_seg1.png (Deleted (unstaged))
+2025-11-17 00:04:04,475 - kernel_manager - INFO -    D results_analysis_final/spatiotemporal_density_seg2.png (Deleted (unstaged))
+2025-11-17 00:04:04,475 - kernel_manager - INFO -    D tools/dead_code_audit.py (Deleted (unstaged))
+2025-11-17 00:04:04,476 - kernel_manager - INFO -   ?? Code_RL/ (Untracked)
+2025-11-17 00:04:04,476 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-17 00:04:04,762 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-17 00:04:07,096 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-17 00:04:07,096 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-17 00:04:28,723 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-17 00:04:28,723 - kernel_manager - INFO - Building kernel script...
+2025-11-17 00:04:28,723 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpyrd8_lbj
+2025-11-17 00:04:28,723 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-17 00:04:28,723 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-17 00:04:28,723 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-17 00:04:30,575 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-17 00:04:30,575 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-17 00:04:31,137 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-17 00:05:01,756 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-17 00:05:32,454 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 61s)
+2025-11-17 00:05:32,454 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-17 00:05:32,454 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-17 00:05:32,454 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-17 00:05:32,468 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-17 00:05:35,439 - kernel_manager - INFO - ✅ Artifacts downloaded in 3.0s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-17 00:05:35,453 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (15623 bytes)
+2025-11-17 00:05:35,455 - kernel_manager - INFO - Downloaded 3 item(s):
+2025-11-17 00:05:35,459 - kernel_manager - INFO -   - generic-test-runner-kernel.log (22325 bytes)
+2025-11-17 00:05:35,460 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-17 00:05:35,462 - kernel_manager - INFO -   - test_log.txt (15623 bytes)

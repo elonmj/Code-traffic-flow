@@ -16,7 +16,9 @@ def test_ssp_rk3_preserves_positivity_at_all_stages():
     would cause intermediate overshoots without bounds enforcement.
     """
     # Setup: Grid near rho_max with high velocity
-    grid = Grid1D(N_physical=100, dx=25.0, num_ghost_cells=3)
+    # Grid1D constructor: Grid1D(N, xmin, xmax, ghost_cells)
+    # For dx=25.0 and N=100: xmax = xmin + N*dx = 0 + 100*25 = 2500m
+    grid = Grid1D(N=100, xmin=0.0, xmax=2500.0, ghost_cells=3)
     params = PhysicsConfig(
         rho_max=0.2,  # 200 veh/km
         v_max_m_kmh=100.0,
