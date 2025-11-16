@@ -99,10 +99,16 @@ class NetworkSimulator:
             U_cpu = np.ascontiguousarray(segment_data['U'])
             R_cpu = np.ascontiguousarray(segment_data['grid'].road_quality)
             pool.initialize_segment_state(seg_id, U_cpu, R_cpu)
-            
+        
         if not self.quiet:
             stats = pool.get_memory_stats()
-            print(f"    - GPU Memory Pool created. Allocated: {stats['allocated_mb']:.2f} MB")
+            print(f"✅ GPUMemoryPool initialized:")
+            print(f"  - Segments: {len(segment_ids)}")
+            print(f"  - Total cells: {sum(N_per_segment.values())}")
+            print(f"  - Ghost cells: {self.config.grid.num_ghost_cells}")
+            print(f"  - Compute Capability: {pool.cc}")
+            print(f"  - CUDA streams: {'Enabled' if pool.use_streams else 'Disabled'}")
+            print(f"  - GPU memory allocated: {stats['allocated_mb']:.2f} MB")
             
         return pool
 
