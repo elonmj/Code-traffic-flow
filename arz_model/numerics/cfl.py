@@ -5,7 +5,7 @@ from ..grid.grid1d import Grid1D
 from arz_model.core.physics import _calculate_pressure_cuda, _calculate_physical_velocity_cuda, _calculate_eigenvalues_cuda
 from arz_model.core.parameters import ModelParameters
 from arz_model.config.network_simulation_config import NetworkSimulationConfig
-from .reconstruction.weno import weno5_reconstruction_gpu_native
+from .reconstruction.weno_gpu import weno5_reconstruction_gpu_native
 from .gpu.godunov_flux_gpu import godunov_flux_gpu_native
 from .gpu.ssp_rk3_kernels import ssp_rk3_stage_1_kernel, ssp_rk3_stage_2_kernel, ssp_rk3_stage_3_kernel
 from .gpu.physical_bounds_gpu import _apply_physical_bounds_gpu_in_place
