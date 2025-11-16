@@ -386,43 +386,43 @@ class GPUMemoryPool:
             If async_transfer=True, the returned array may not be valid
             until the stream is synchronized.
         """
-        if seg_id not in self.d_U_pool:
-            raise KeyError(f"Segment '{seg_id}' not found in memory pool")
+        d_segment_view = self.get_segment_state(seg_id)
         
         stream = self.get_stream(seg_id)
         host_buffer = self.host_pinned_buffers[seg_id]
         
         # Async copy from GPU to pinned host buffer
-        self.d_U_pool[seg_id].copy_to_host(host_buffer, stream=stream)
+        d_segment_view.copy_to_host(host_buffer, stream=stream)
         
-        if not async_transfer:
+        if not async_transfer and self.enable_streams:
             stream.synchronize()  # Wait for transfer to complete
-        
+        elif not self.enable_streams:
+            cuda.synchronize()
+
         # Return a copy to avoid issues with pinned buffer reuse
         return host_buffer.copy()
     
     def get_all_checkpoints(self) -> Dict[str, np.ndarray]:
         """
-        Asynchronously create CPU checkpoints for all segments.
+        Synchronously create CPU checkpoints for all segments.
         
         Returns:
-            Dictionary mapping segment ID to tuple (buffer, stream)
-            - buffer: CPU numpy array with segment state
-            - stream: CUDA stream used for the transfer
+            Dictionary mapping segment ID to its CPU state array.
         """
         results = {}
+        # First, issue all async transfers
         for seg_id in self.segment_ids:
-            buffer, stream = self.get_segment_checkpoint_async(seg_id)
-            results[seg_id] = (buffer, stream)
-            
-        # Now, synchronize all streams
-        for seg_id in self.segment_ids:
-            _, stream = results[seg_id]
-            if stream:
-                stream.synchronize()
+            d_segment_view = self.get_segment_state(seg_id)
+            stream = self.get_stream(seg_id)
+            host_buffer = self.host_pinned_buffers[seg_id]
+            d_segment_view.copy_to_host(host_buffer, stream=stream)
+            results[seg_id] = host_buffer
+
+        # Now, synchronize all streams to ensure transfers are complete
+        self.synchronize_all_streams()
         
-        # Return just the numpy arrays
-        return {seg_id: res[0] for seg_id, res in results.items()}
+        # Return copies of the buffers
+        return {seg_id: buf.copy() for seg_id, buf in results.items()}
 
     def get_memory_stats(self) -> Dict[str, float]:
         """
