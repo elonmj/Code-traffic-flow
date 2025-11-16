@@ -39,8 +39,7 @@ def test_checkpoint_frequency():
         t_final=30.0,
         output_dt=5.0,  # Should generate checkpoints at t=0, 5, 10, 15, 20, 25, 30
         default_density=20.0,
-        inflow_density=30.0,
-        suffix="checkpoint_test"
+        inflow_density=30.0
     )
     print(f"✓ Config created: t_final={config.time.t_final}s, output_dt={config.time.output_dt}s")
     

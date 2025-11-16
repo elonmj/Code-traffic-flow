@@ -7080,3 +7080,65 @@
 2025-11-16 06:19:44,034 - kernel_manager - INFO -   - network_simulation_results.pkl (89204 bytes)
 2025-11-16 06:19:44,034 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-16 06:19:44,034 - kernel_manager - INFO -   - test_log.txt (13716814 bytes)
+2025-11-16 13:04:03,194 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-16 13:04:03,194 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-16 13:04:03,281 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-16 13:04:03,339 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-16 13:04:03,339 - kernel_manager - INFO -   M  rz_model/simulation/execution/network_simulator.py (Modified (staged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    M arz_model/visualization/network_visualizer.py (Modified (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    D create_dashboard.py (Deleted (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    D create_network_topology_visualizations.py (Deleted (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    D create_preview_gif.py (Deleted (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    D create_simple_public_visualizations.py (Deleted (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    D inspect_results.py (Deleted (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    D inspect_results2.py (Deleted (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    M network_simulation_results.pkl (Modified (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    D visualize_results.py (Deleted (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    D visualize_simulation.py (Deleted (unstaged))
+2025-11-16 13:04:03,339 - kernel_manager - INFO -    D viz_output/00_dashboard_synthese.png (Deleted (unstaged))
+2025-11-16 13:04:03,347 - kernel_manager - INFO -    D viz_output/01_density_evolution.png (Deleted (unstaged))
+2025-11-16 13:04:03,347 - kernel_manager - INFO -    D viz_output/02_speed_evolution.png (Deleted (unstaged))
+2025-11-16 13:04:03,348 - kernel_manager - INFO -    D viz_output/03_spatiotemporal_diagrams.png (Deleted (unstaged))
+2025-11-16 13:04:03,348 - kernel_manager - INFO -    D viz_output/04_snapshot_profiles.png (Deleted (unstaged))
+2025-11-16 13:04:03,349 - kernel_manager - INFO -    D viz_output/05_traffic_animation.mp4 (Deleted (unstaged))
+2025-11-16 13:04:03,349 - kernel_manager - INFO -    D viz_output/fundamental_diagrams.png (Deleted (unstaged))
+2025-11-16 13:04:03,349 - kernel_manager - INFO -    D viz_output/n_curves_cumulative_counts.png (Deleted (unstaged))
+2025-11-16 13:04:03,349 - kernel_manager - INFO -    M viz_output/network_snapshots.png (Modified (unstaged))
+2025-11-16 13:04:03,349 - kernel_manager - INFO -    M viz_output/network_topology.png (Modified (unstaged))
+2025-11-16 13:04:03,349 - kernel_manager - INFO -    D viz_output/simple_emoji_infographic.png (Deleted (unstaged))
+2025-11-16 13:04:03,349 - kernel_manager - INFO -    D viz_output/simple_public_dashboard.png (Deleted (unstaged))
+2025-11-16 13:04:03,349 - kernel_manager - INFO -    D viz_output/simple_traffic_map.png (Deleted (unstaged))
+2025-11-16 13:04:03,349 - kernel_manager - INFO -    D viz_output/time_space_diagram_shock_waves.png (Deleted (unstaged))
+2025-11-16 13:04:03,352 - kernel_manager - INFO -    D viz_output/traffic_preview.gif (Deleted (unstaged))
+2025-11-16 13:04:03,352 - kernel_manager - INFO -   ?? VISUALIZATION_UNIFICATION_SUMMARY.md (Untracked)
+2025-11-16 13:04:03,353 - kernel_manager - INFO -   ?? arz_model/tests/test_checkpoint_frequency.py (Untracked)
+2025-11-16 13:04:03,353 - kernel_manager - INFO -   ?? generate_visuals.py (Untracked)
+2025-11-16 13:04:03,353 - kernel_manager - INFO -   ?? test_checkpoint_frequency.py (Untracked)
+2025-11-16 13:04:03,354 - kernel_manager - INFO -   ?? viz_output/README.md (Untracked)
+2025-11-16 13:04:03,354 - kernel_manager - INFO -   ?? viz_output/SYSTEM_UNIFICATION_COMPLETE.md (Untracked)
+2025-11-16 13:04:03,354 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-16 13:04:03,509 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-16 13:04:04,530 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-16 13:04:04,530 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-16 13:04:10,546 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-16 13:04:10,546 - kernel_manager - INFO - Building kernel script...
+2025-11-16 13:04:10,561 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpkectiwpa
+2025-11-16 13:04:10,561 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-16 13:04:10,565 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-16 13:04:10,565 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-16 13:04:12,470 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-16 13:04:12,470 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-16 13:04:13,001 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-16 13:04:43,580 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-16 13:05:14,145 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 61s)
+2025-11-16 13:05:14,145 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-16 13:05:14,145 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-16 13:05:14,145 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-16 13:05:14,160 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-16 13:05:16,746 - kernel_manager - INFO - ✅ Artifacts downloaded in 2.6s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-16 13:05:16,746 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (4135 bytes)
+2025-11-16 13:05:16,746 - kernel_manager - INFO - Downloaded 3 item(s):
+2025-11-16 13:05:16,746 - kernel_manager - INFO -   - generic-test-runner-kernel.log (6677 bytes)
+2025-11-16 13:05:16,746 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-16 13:05:16,762 - kernel_manager - INFO -   - test_log.txt (4135 bytes)
