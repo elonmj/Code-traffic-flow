@@ -85,11 +85,11 @@ def main():
         return
 
     # --- 4. Run the Simulation ---
-    print("\n[PHASE 4] Running simulation for 1800 seconds (with a 10-minute timeout)...", flush=True)
+    print("\n[PHASE 4] Running simulation for 1800 seconds (no timeout - full run)...", flush=True)
     try:
         # The `run` method is now delegated to the NetworkSimulator
-        # Set a wall-clock timeout of 600 seconds (10 minutes) to prevent hangs
-        results = runner.run(timeout=600)
+        # No timeout - let it run to completion (1800s simulation time)
+        results = runner.run(timeout=None)
         print("✅ Simulation finished.", flush=True)
     except Exception as e:
         print(f"❌ Error during simulation: {e}", flush=True)

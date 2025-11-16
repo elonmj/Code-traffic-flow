@@ -55,7 +55,7 @@ class VictoriaIslandConfigFactory:
         outflow_velocity: float = 60.0,  # km/h - faster at exit
         cells_per_100m: int = 10,  # Grid resolution: 10 cells per 100m
         t_final: float = 1800.0,  # 30 minutes simulation
-        output_dt: float = 10.0,  # Output every 10 seconds
+        output_dt: float = 10.0,  # Output every 30 seconds (60 frames for animation)
         cfl_factor: float = 0.4,  # Conservative CFL for stability
         v_max_m_kmh: float = 100.0,  # Max speed motorcycles
         v_max_c_kmh: float = 120.0,  # Max speed cars

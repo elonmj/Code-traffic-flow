@@ -337,8 +337,8 @@ class NetworkSimulator:
         """
         self.cfl_warning_count += 1
         
-        # Throttle: only log first warning, then every 10th
-        if self.cfl_warning_count > 1 and self.cfl_warning_count % 10 != 0:
+        # Throttle: only log first warning, then every 50th (reduced log volume for long runs)
+        if self.cfl_warning_count > 1 and self.cfl_warning_count % 50 != 0:
             return  # Skip this warning
         
         # Header
