@@ -48,6 +48,7 @@ class NetworkCouplingGPU:
         self.d_segment_gids = None
         self.d_segment_n_phys = None
         self.d_segment_n_ghost = None
+        self.d_segment_lengths = None # New array for total segment lengths
         
         # Add a device array for the resulting fluxes
         self.d_fluxes = cuda.device_array((self.num_nodes, 4), dtype=np.float64)
@@ -65,7 +66,9 @@ class NetworkCouplingGPU:
         
         # Create mappings from string IDs to integer indices
         node_id_to_idx = {node_id: i for i, node_id in enumerate(nodes.keys())}
-        seg_id_to_idx = {seg_id: i for i, seg_id in enumerate(segments.keys())}
+        
+        # Ensure seg_id_to_idx matches the order in gpu_pool.segment_ids for consistency
+        seg_id_to_idx = {seg_id: i for i, seg_id in enumerate(self.gpu_pool.segment_ids)}
         
         # --- Host-side arrays (to be pinned) ---
         h_node_types = np.empty(self.num_nodes, dtype=np.int32)
@@ -102,10 +105,17 @@ class NetworkCouplingGPU:
         h_node_outgoing_gids = np.array(outgoing_gids_list, dtype=np.int32)
 
         # Segment info arrays
-        num_segments = len(segments)
-        h_segment_gids = np.array([seg_id_to_idx[seg_id] for seg_id in segments.keys()], dtype=np.int32)
-        h_segment_n_phys = np.array([seg['grid'].N_physical for seg in segments.values()], dtype=np.int32)
-        h_segment_n_ghost = np.array([seg['grid'].num_ghost_cells for seg in segments.values()], dtype=np.int32)
+        num_segments = len(self.gpu_pool.segment_ids)
+        h_segment_n_phys = np.empty(num_segments, dtype=np.int32)
+        h_segment_n_ghost = np.empty(num_segments, dtype=np.int32)
+        h_segment_lengths = np.empty(num_segments, dtype=np.int32)
+
+        for i, seg_id in enumerate(self.gpu_pool.segment_ids):
+            n_phys = self.gpu_pool.N_per_segment[seg_id]
+            n_ghost = self.gpu_pool.ghost_cells
+            h_segment_n_phys[i] = n_phys
+            h_segment_n_ghost[i] = n_ghost
+            h_segment_lengths[i] = n_phys + 2 * n_ghost
 
         # --- Transfer to GPU ---
         self.d_node_types = cuda.to_device(h_node_types)
@@ -113,9 +123,9 @@ class NetworkCouplingGPU:
         self.d_node_incoming_offsets = cuda.to_device(h_node_incoming_offsets)
         self.d_node_outgoing_gids = cuda.to_device(h_node_outgoing_gids)
         self.d_node_outgoing_offsets = cuda.to_device(h_node_outgoing_offsets)
-        self.d_segment_gids = cuda.to_device(h_segment_gids)
         self.d_segment_n_phys = cuda.to_device(h_segment_n_phys)
         self.d_segment_n_ghost = cuda.to_device(h_segment_n_ghost)
+        self.d_segment_lengths = cuda.to_device(h_segment_lengths)
         
         print("    - GPU topology prepared and transferred.")
 
@@ -126,13 +136,15 @@ class NetworkCouplingGPU:
         if self.num_nodes == 0:
             return
 
+        # Get the contiguous memory pool and offsets
+        d_U_mega_pool, d_segment_offsets = self.gpu_pool.get_all_segment_states()
+
         # Configure kernel launch
         threads_per_block = 32
         blocks_per_grid = (self.num_nodes + (threads_per_block - 1)) // threads_per_block
 
         # Launch the kernel
-        # Unpack the tuple of segment state arrays as individual arguments
-        kernel_args = (
+        _apply_coupling_kernel[blocks_per_grid, threads_per_block](
             self.d_node_types,
             self.d_node_incoming_gids,
             self.d_node_incoming_offsets,
@@ -140,7 +152,8 @@ class NetworkCouplingGPU:
             self.d_node_outgoing_offsets,
             self.d_segment_n_phys,
             self.d_segment_n_ghost,
-            # Pass all physics params required by the node solver
+            self.d_segment_lengths,
+            # Physics parameters
             params.alpha,
             params.rho_max,
             params.epsilon,
@@ -151,21 +164,16 @@ class NetworkCouplingGPU:
             params.v_max_m_ms,
             params.v_max_c_ms,
             params.v_creeping_ms,
-            self.d_fluxes,  # Output array for fluxes
-            self.gpu_pool.get_all_segment_states_tuple() # Pass as a single tuple
+            # Data arrays
+            d_U_mega_pool,
+            d_segment_offsets,
+            self.d_fluxes  # Output array for fluxes
         )
-        
-        _apply_coupling_kernel[blocks_per_grid, threads_per_block](*kernel_args)
         
         # The kernel now handles everything, so the sequential loop is removed.
         # The second part of the logic (applying fluxes) is also in the kernel.
 
 # --- CUDA Kernel and Device Functions ---
-
-# The _get_boundary_states function is no longer needed as the logic is
-# integrated into the main kernel and uses the new data structure.
-# By removing it, we prevent potential Numba compilation errors due to
-# its obsolete signature.
 
 @cuda.jit
 def _apply_coupling_kernel(
@@ -176,11 +184,14 @@ def _apply_coupling_kernel(
     node_outgoing_offsets,
     segment_n_phys,
     segment_n_ghost,
-    # Physics parameters now passed directly
+    segment_lengths,
+    # Physics parameters
     alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c,
     v_max_m, v_max_c, v_creeping,
-    d_fluxes_out,
-    d_U_segments_tuple
+    # Data arrays
+    d_U_mega_pool,
+    d_segment_offsets,
+    d_fluxes_out
 ):
     """
     CUDA kernel to apply network coupling for all nodes.
@@ -212,7 +223,12 @@ def _apply_coupling_kernel(
 
         for i in range(num_incoming):
             gid = node_incoming_gids[inc_start + i]
-            d_U = d_U_segments_tuple[gid]
+            
+            # Get segment data view from the mega-pool
+            seg_offset = d_segment_offsets[gid]
+            seg_len = segment_lengths[gid]
+            d_U = d_U_mega_pool[:, seg_offset : seg_offset + seg_len]
+
             n_phys = segment_n_phys[gid]
             n_ghost = segment_n_ghost[gid]
             last_idx = n_ghost + n_phys - 1
@@ -232,7 +248,12 @@ def _apply_coupling_kernel(
         # --- 4. Apply the resulting state to the ghost cells of outgoing segments ---
         for i in range(num_outgoing):
             gid = node_outgoing_gids[out_start + i]
-            d_U = d_U_segments_tuple[gid]
+
+            # Get segment data view from the mega-pool
+            seg_offset = d_segment_offsets[gid]
+            seg_len = segment_lengths[gid]
+            d_U = d_U_mega_pool[:, seg_offset : seg_offset + seg_len]
+
             n_ghost = segment_n_ghost[gid]
             
             for j in range(n_ghost):

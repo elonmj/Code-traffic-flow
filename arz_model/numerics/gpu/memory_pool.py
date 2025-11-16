@@ -104,7 +104,9 @@ class GPUMemoryPool:
         self.enable_streams = self.compute_capability[0] >= 3
         
         # GPU array pools
-        self.d_U_pool: Dict[str, cuda.devicearray.DeviceNDArray] = {}
+        self.d_U_mega_pool: Optional[cuda.devicearray.DeviceNDArray] = None
+        self.d_segment_offsets: Optional[cuda.devicearray.DeviceNDArray] = None
+        
         self.d_R_pool: Dict[str, cuda.devicearray.DeviceNDArray] = {}
         self.d_BC_pool: Dict[str, Dict[str, cuda.devicearray.DeviceNDArray]] = {}
         self.d_flux_pool: Dict[str, cuda.devicearray.DeviceNDArray] = {}
@@ -124,7 +126,7 @@ class GPUMemoryPool:
         self._peak_memory = self._initial_memory
         
         # Pre-allocate all arrays
-        self._allocate_all_arrays()
+        self._allocate_contiguous_arrays()
         
         print(f"✅ GPUMemoryPool initialized:")
         print(f"   - Segments: {len(segment_ids)}")
@@ -134,49 +136,56 @@ class GPUMemoryPool:
         print(f"   - CUDA streams: {'Enabled' if self.enable_streams else 'Disabled'}")
         print(f"   - GPU memory allocated: {self._get_memory_delta():.2f} MB")
     
-    def _allocate_all_arrays(self):
+    def _allocate_contiguous_arrays(self):
         """
-        Pre-allocate all GPU arrays and CUDA streams.
-        
-        This method allocates:
-        1. State arrays (U) - shape (4, N_total) per segment
-        2. Road quality arrays (R) - shape (N_total,) per segment
-        3. Boundary condition buffers - shape (4, ghost_cells) per segment
-        4. CUDA streams - one per segment
-        5. Pinned host buffers - for fast checkpoint transfers
-        
-        Uses pinned memory staging for initial transfers to maximize bandwidth.
+        Pre-allocate all GPU arrays using a contiguous memory layout for U.
         """
+        total_cells = sum(self.N_per_segment[seg_id] + 2 * self.ghost_cells for seg_id in self.segment_ids)
+        
+        # Allocate one large contiguous array for all segment states
+        self.d_U_mega_pool = cuda.device_array((4, total_cells), dtype=np.float64)
+        
+        # Create and transfer segment offsets
+        offsets = np.zeros(len(self.segment_ids), dtype=np.int32)
+        current_offset = 0
+        seg_id_to_idx = {seg_id: i for i, seg_id in enumerate(self.segment_ids)}
+
+        # Ensure we iterate in the same order as segment_ids to match seg_id_to_idx
+        for i, seg_id in enumerate(self.segment_ids):
+            offsets[i] = current_offset
+            current_offset += self.N_per_segment[seg_id] + 2 * self.ghost_cells
+            
+        self.d_segment_offsets = cuda.to_device(offsets)
+
         for seg_id in self.segment_ids:
             N_phys = self.N_per_segment[seg_id]
             N_total = N_phys + 2 * self.ghost_cells
             
-            # Allocate state array (4 conserved variables)
-            self.d_U_pool[seg_id] = cuda.device_array((4, N_total), dtype=np.float64)
-            
-            # Allocate road quality array
+            # R, BC, and Flux pools remain as they are not passed to the problematic kernel
             self.d_R_pool[seg_id] = cuda.device_array(N_total, dtype=np.float64)
-            
-            # Allocate boundary condition buffers
             self.d_BC_pool[seg_id] = {
                 'left': cuda.device_array((4, self.ghost_cells), dtype=np.float64),
                 'right': cuda.device_array((4, self.ghost_cells), dtype=np.float64)
             }
-            
-            # Allocate flux buffer for network coupling (max 4 variables)
             self.d_flux_pool[seg_id] = cuda.device_array(4, dtype=np.float64)
             
-            # Create CUDA stream for this segment
             if self.enable_streams:
                 self.streams[seg_id] = cuda.stream()
             
-            # Create pinned host buffer for checkpoints
-            # Pinned memory provides ~2x faster host<->device transfers
             self.host_pinned_buffers[seg_id] = cuda.pinned_array((4, N_total), dtype=np.float64)
-        
-        # Update peak memory
+            
         self._peak_memory = max(self._peak_memory, self._get_gpu_memory_usage())
-    
+
+    def _allocate_all_arrays(self):
+        """
+        DEPRECATED: This method is replaced by _allocate_contiguous_arrays.
+        """
+        warnings.warn(
+            "_allocate_all_arrays is deprecated. Use _allocate_contiguous_arrays.",
+            DeprecationWarning
+        )
+        self._allocate_contiguous_arrays()
+
     def initialize_segment_state(
         self,
         seg_id: str,
@@ -197,7 +206,8 @@ class GPUMemoryPool:
             KeyError: If segment ID not found
             ValueError: If array shapes don't match
         """
-        if seg_id not in self.d_U_pool:
+        seg_idx = self.segment_ids.index(seg_id)
+        if seg_idx == -1:
             raise KeyError(f"Segment '{seg_id}' not found in memory pool")
         
         N_phys = self.N_per_segment[seg_id]
@@ -205,7 +215,6 @@ class GPUMemoryPool:
         
         # Validate and prepare U array
         if U_init.shape[1] == N_phys:
-            # Extend with ghost cells (will be filled by BCs)
             U_full = np.zeros((4, N_total), dtype=np.float64)
             U_full[:, self.ghost_cells:self.ghost_cells+N_phys] = U_init
             U_init = U_full
@@ -214,10 +223,19 @@ class GPUMemoryPool:
                 f"Invalid U_init shape {U_init.shape}, expected (4, {N_total}) or (4, {N_phys})"
             )
         
-        # Transfer U to GPU via pinned buffer (faster)
-        self.host_pinned_buffers[seg_id][:] = U_init
+        # Transfer U to the correct slice of the mega-pool
         stream = self.streams.get(seg_id, cuda.default_stream())
-        self.d_U_pool[seg_id].copy_to_device(self.host_pinned_buffers[seg_id], stream=stream)
+        
+        # Get the offset for this segment
+        h_offsets = self.d_segment_offsets.copy_to_host()
+        offset = h_offsets[seg_idx]
+        
+        # Create a view of the mega-pool for this segment
+        segment_view = self.d_U_mega_pool[:, offset:offset + N_total]
+        
+        # Use pinned buffer for transfer
+        self.host_pinned_buffers[seg_id][:] = U_init
+        segment_view.copy_to_device(self.host_pinned_buffers[seg_id], stream=stream)
         
         # Initialize road quality if provided
         if R_init is not None:
@@ -246,58 +264,39 @@ class GPUMemoryPool:
     
     def get_segment_state(self, seg_id: str) -> cuda.devicearray.DeviceNDArray:
         """
-        Get GPU state array for a segment (zero-copy access).
-        
-        Args:
-            seg_id: Segment identifier
-            
-        Returns:
-            GPU device array, shape (4, N_total)
-            
-        Raises:
-            KeyError: If segment ID not found
+        Get a view of the GPU state array for a specific segment.
         """
-        if seg_id not in self.d_U_pool:
-            raise KeyError(f"Segment '{seg_id}' not found in memory pool")
-        return self.d_U_pool[seg_id]
-    
-    def get_all_segment_states_tuple(self):
-        """
-        Get all segment state arrays as a tuple for passing to CUDA kernels.
+        seg_idx = self.segment_ids.index(seg_id)
+        N_total = self.N_per_segment[seg_id] + 2 * self.ghost_cells
         
-        CUDA kernels cannot accept Python lists, so we return a tuple which
-        can be unpacked as individual arguments.
+        h_offsets = self.d_segment_offsets.copy_to_host()
+        offset = h_offsets[seg_idx]
         
-        Returns:
-            Tuple of GPU device arrays, one per segment in order of segment_ids
-            
-        Note:
-            This works for small networks (<10 segments). For larger networks,
-            use a flattened array approach instead.
+        return self.d_U_mega_pool[:, offset:offset + N_total]
+
+    def get_all_segment_states(self) -> Tuple[cuda.devicearray.DeviceNDArray, cuda.devicearray.DeviceNDArray, Dict[str, int]]:
         """
-        return tuple(self.d_U_pool[seg_id] for seg_id in self.segment_ids)
-    
+        Returns the contiguous mega-pool array, the offsets array, and segment lengths.
+        """
+        seg_lengths = {seg_id: self.N_per_segment[seg_id] + 2 * self.ghost_cells for seg_id in self.segment_ids}
+        return self.d_U_mega_pool, self.d_segment_offsets, seg_lengths
+
     def update_segment_state(self, seg_id: str, d_U_new: cuda.devicearray.DeviceNDArray):
         """
-        Update the state array for a segment.
-        
-        This is used when a computation (like a time step) produces a new
-        array that should become the current state.
-        
-        Args:
-            seg_id: Segment identifier
-            d_U_new: The new state device array
+        Update a segment's state array from another GPU array (zero-copy).
         """
-        if seg_id not in self.d_U_pool:
-            raise KeyError(f"Segment '{seg_id}' not found in memory pool")
+        seg_idx = self.segment_ids.index(seg_id)
+        N_total = self.N_per_segment[seg_id] + 2 * self.ghost_cells
         
-        # The old array is now stale. Instead of deleting, we could potentially
-        # move it to a temporary pool if it's reusable. For now, we just
-        # update the reference. The old array will be garbage collected if not
-        # referenced elsewhere.
-        self.d_U_pool[seg_id] = d_U_new
+        h_offsets = self.d_segment_offsets.copy_to_host()
+        offset = h_offsets[seg_idx]
+        
+        target_view = self.d_U_mega_pool[:, offset:offset + N_total]
+        
+        stream = self.streams.get(seg_id, cuda.default_stream())
+        cuda.copy_array_async(d_U_new, target_view, stream=stream)
 
-    def get_road_quality_array(self, seg_id: str) -> cuda.devicearray.DeviceNDArray:
+    def get_segment_road_quality(self, seg_id: str) -> cuda.devicearray.DeviceNDArray:
         """
         Get GPU road quality array for a segment.
         
@@ -332,7 +331,7 @@ class GPUMemoryPool:
             'light_factor': 1.0  # Default to GREEN
         }
 
-    def get_stream(self, seg_id: str):
+    def get_stream(self, seg_id: str) -> Optional[cuda.Stream]:
         """
         Get CUDA stream for a segment.
         
@@ -346,12 +345,9 @@ class GPUMemoryPool:
             KeyError: If segment ID not found
         """
         if not self.enable_streams:
-            return cuda.default_stream()
-        
-        if seg_id not in self.streams:
-            raise KeyError(f"Segment '{seg_id}' not found in memory pool")
-        return self.streams[seg_id]
-    
+            return None
+        return self.streams.get(seg_id)
+
     def synchronize_all_streams(self):
         """
         Synchronize all CUDA streams.
@@ -405,6 +401,29 @@ class GPUMemoryPool:
         # Return a copy to avoid issues with pinned buffer reuse
         return host_buffer.copy()
     
+    def get_all_checkpoints(self) -> Dict[str, np.ndarray]:
+        """
+        Asynchronously create CPU checkpoints for all segments.
+        
+        Returns:
+            Dictionary mapping segment ID to tuple (buffer, stream)
+            - buffer: CPU numpy array with segment state
+            - stream: CUDA stream used for the transfer
+        """
+        results = {}
+        for seg_id in self.segment_ids:
+            buffer, stream = self.get_segment_checkpoint_async(seg_id)
+            results[seg_id] = (buffer, stream)
+            
+        # Now, synchronize all streams
+        for seg_id in self.segment_ids:
+            _, stream = results[seg_id]
+            if stream:
+                stream.synchronize()
+        
+        # Return just the numpy arrays
+        return {seg_id: res[0] for seg_id, res in results.items()}
+
     def get_memory_stats(self) -> Dict[str, float]:
         """
         Get GPU memory statistics.
@@ -425,90 +444,48 @@ class GPUMemoryPool:
         }
     
     def _get_gpu_memory_usage(self) -> float:
-        """Get current GPU memory usage in MB."""
+        """Returns current GPU memory usage in MB."""
         try:
-            device = cuda.get_current_device()
-            ctx = device.memory
-            used_mb = (ctx.total - ctx.free) / (1024 ** 2)
-            return used_mb
+            free, total = cuda.current_context().get_memory_info()
+            return (total - free) / (1024**2)
         except Exception:
-            return 0.0
-    
+            return 0.0 # Return 0 if something goes wrong
+
     def _get_memory_delta(self) -> float:
-        """Get memory allocated since initialization in MB."""
+        """Returns memory allocated by this pool in MB."""
         return self._get_gpu_memory_usage() - self._initial_memory
-    
-    def get_temp_array(self, shape: Tuple[int, ...], dtype: np.dtype) -> cuda.devicearray.DeviceNDArray:
-        """
-        Get a temporary GPU array from the pool, or allocate if none are available.
-        
-        Args:
-            shape: Desired array shape
-            dtype: Desired data type
-            
-        Returns:
-            A temporary GPU device array.
-        """
-        # Search for a compatible array in the pool
-        for i, arr in enumerate(self._temp_pool):
-            if arr.shape == shape and arr.dtype == dtype:
-                # Found a reusable array
-                temp_arr = self._temp_pool.pop(i)
-                self._active_temp_arrays[id(temp_arr)] = temp_arr
-                return temp_arr
-        
-        # No suitable array found, allocate a new one
-        new_arr = cuda.device_array(shape, dtype=dtype)
-        self._active_temp_arrays[id(new_arr)] = new_arr
-        self._peak_memory = max(self._peak_memory, self._get_gpu_memory_usage())
-        return new_arr
 
-    def release_temp_array(self, arr: cuda.devicearray.DeviceNDArray):
-        """
-        Return a temporary array to the pool for reuse.
-        
-        Args:
-            arr: The temporary array to release.
-        """
-        arr_id = id(arr)
-        if arr_id in self._active_temp_arrays:
-            del self._active_temp_arrays[arr_id]
-            self._temp_pool.append(arr)
-        else:
-            warnings.warn(f"Attempted to release an array not managed by the pool or already released.")
+    def get_peak_memory_usage(self) -> float:
+        """Returns the peak memory usage in MB since initialization."""
+        return self._peak_memory - self._initial_memory
 
-    def cleanup(self):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         """
-        Clean up GPU resources.
-        
-        Note: In the GPU-only architecture, this is typically called only
-        at program exit. During simulation, arrays persist in GPU memory.
+        Context manager exit. Ensures memory is cleared.
         """
-        # Close all streams
-        if self.enable_streams:
-            for stream in self.streams.values():
-                stream.synchronize()
-                # Streams are automatically cleaned up by CUDA
-        
-        # Clear references to allow garbage collection
-        self.d_U_pool.clear()
+        self.clear()
+
+    def clear(self):
+        """
+        Explicitly clear all GPU memory pools and streams.
+        """
+        self.d_U_mega_pool = None
+        self.d_segment_offsets = None
         self.d_R_pool.clear()
         self.d_BC_pool.clear()
         self.d_flux_pool.clear()
         self.streams.clear()
         self.host_pinned_buffers.clear()
-        
-        # Also clear temporary array pools
         self._temp_pool.clear()
         self._active_temp_arrays.clear()
         
-        print(f"✅ GPUMemoryPool cleaned up")
-        print(f"   - Peak memory usage: {self._peak_memory:.2f} MB")
-    
-    def __repr__(self) -> str:
-        """String representation."""
-        return (
-            f"GPUMemoryPool(segments={len(self.segment_ids)}, "
-            f"total_cells={sum(self.N_per_segment.values())}, "
-            f"memory={self._get_memory_delta():.2f}MB)"
-        )
+        # It's good practice to force a garbage collection on the GPU
+        # although Numba's context management should handle this.
+        try:
+            context = cuda.current_context()
+            context.reset()
+        except Exception as e:
+            print(f"Warning: Could not reset CUDA context: {e}")
