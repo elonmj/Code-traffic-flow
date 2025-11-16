@@ -139,7 +139,7 @@ def strang_splitting_step_gpu_native(
         The updated state device array for the segment.
     """
     # 1. Get cached road quality array from the memory pool
-    d_R = gpu_pool.get_road_quality_array(seg_id)
+    d_R = gpu_pool.get_segment_road_quality(seg_id)
 
     # 2. First ODE substep (dt/2)
     d_U_star = solve_ode_step_gpu(d_U_n, dt / 2.0, grid, params, d_R)
