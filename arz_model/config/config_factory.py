@@ -53,13 +53,17 @@ class VictoriaIslandConfigFactory:
         inflow_velocity: float = 40.0,  # km/h - slower at entry
         outflow_density: float = 15.0,  # veh/km - lighter at exit
         outflow_velocity: float = 60.0,  # km/h - faster at exit
-        cells_per_100m: int = 10,  # Grid resolution: 10 cells per 100m
-        t_final: float = 1800.0,  # 30 minutes simulation
-        output_dt: float = 10.0,  # Output every 30 seconds (60 frames for animation)
-        cfl_factor: float = 0.4,  # Conservative CFL for stability
-        v_max_m_kmh: float = 100.0,  # Max speed motorcycles
-        v_max_c_kmh: float = 120.0,  # Max speed cars
-        road_quality: float = 0.8  # Good road quality (0-1 scale)
+        # --- STRATEGIC PARAMETERS FOR FEASIBLE SIMULATION ---
+        # These have been adjusted from scientific-grade to practical-grade
+        # to ensure completion within Kaggle's 9-hour limit.
+        
+        cells_per_100m: int = 4,      # Grid resolution: 4 cells/100m (dx=25m). Coarser but faster.
+        t_final: float = 450.0,       # 7.5 minutes simulation. Sufficient to observe dynamics.
+        output_dt: float = 15.0,      # Output every 15s -> 30 frames for animation.
+        cfl_factor: float = 0.8,      # Aggressive but stable CFL for speed.
+        v_max_m_kmh: float = 100.0,   # Max speed motorcycles
+        v_max_c_kmh: float = 120.0,   # Max speed cars
+        road_quality: float = 0.8     # Good road quality (0-1 scale)
     ):
         """
         Initialize the configuration factory.
