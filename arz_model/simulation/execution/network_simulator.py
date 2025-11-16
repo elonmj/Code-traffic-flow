@@ -114,8 +114,8 @@ class NetworkSimulator:
             print(f"  - Segments: {len(segment_ids)}")
             print(f"  - Total cells: {sum(N_per_segment.values())}")
             print(f"  - Ghost cells: {self.config.grid.num_ghost_cells}")
-            print(f"  - Compute Capability: {pool.cc}")
-            print(f"  - CUDA streams: {'Enabled' if pool.use_streams else 'Disabled'}")
+            print(f"  - Compute Capability: {pool.compute_capability}")
+            print(f"  - CUDA streams: {'Enabled' if pool.enable_streams else 'Disabled'}")
             print(f"  - GPU memory allocated: {stats['allocated_mb']:.2f} MB")
             
         return pool
