@@ -233,8 +233,9 @@ class GPUMemoryPool:
         # Create a view of the mega-pool for this segment
         segment_view = self.d_U_mega_pool[:, offset:offset + N_total]
         
-        # Use pinned buffer for transfer
-        self.host_pinned_buffers[seg_id][:] = U_init
+        # Use pinned buffer for transfer - ensure U_init is contiguous
+        U_init_contig = np.ascontiguousarray(U_init)
+        self.host_pinned_buffers[seg_id][:] = U_init_contig
         segment_view.copy_to_device(self.host_pinned_buffers[seg_id], stream=stream)
         
         # Initialize road quality if provided
@@ -249,9 +250,11 @@ class GPUMemoryPool:
                     f"Invalid R_init shape {R_init.shape}, expected ({N_total},) or ({N_phys},)"
                 )
             
+            # Ensure R_init is contiguous before transfer
+            R_init_contig = np.ascontiguousarray(R_init)
             # Use a temporary pinned buffer for the transfer
             temp_R_pinned = cuda.pinned_array(N_total, dtype=np.float64)
-            temp_R_pinned[:] = R_init
+            temp_R_pinned[:] = R_init_contig
             self.d_R_pool[seg_id].copy_to_device(temp_R_pinned, stream=stream)
         else:
             # Default: uniform road quality = 1.0
