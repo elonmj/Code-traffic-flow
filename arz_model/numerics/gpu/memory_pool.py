@@ -298,8 +298,9 @@ class GPUMemoryPool:
         
         target_view = self.d_U_mega_pool[:, offset:offset + N_total]
         
-        stream = self.streams.get(seg_id, cuda.default_stream())
-        cuda.copy_array_async(d_U_new, target_view, stream=stream)
+        # Use direct array assignment for device-to-device copy
+        # This works efficiently in Numba CUDA
+        target_view[:] = d_U_new
 
     def get_segment_road_quality(self, seg_id: str) -> cuda.devicearray.DeviceNDArray:
         """
