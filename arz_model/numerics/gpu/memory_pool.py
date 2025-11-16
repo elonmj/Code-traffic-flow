@@ -155,7 +155,7 @@ class GPUMemoryPool:
             offsets[i] = current_offset
             current_offset += self.N_per_segment[seg_id] + 2 * self.ghost_cells
             
-        self.d_segment_offsets = cuda.to_device(offsets)
+        self.d_segment_offsets = cuda.to_device(np.ascontiguousarray(offsets))
 
         for seg_id in self.segment_ids:
             N_phys = self.N_per_segment[seg_id]
@@ -255,8 +255,9 @@ class GPUMemoryPool:
             self.d_R_pool[seg_id].copy_to_device(temp_R_pinned, stream=stream)
         else:
             # Default: uniform road quality = 1.0
-            cuda.to_device(np.ones(N_total, dtype=np.float64), 
-                          to=self.d_R_pool[seg_id], stream=stream)
+            temp_R_ones = cuda.pinned_array(N_total, dtype=np.float64)
+            temp_R_ones[:] = 1.0
+            self.d_R_pool[seg_id].copy_to_device(temp_R_ones, stream=stream)
         
         # Synchronize stream to ensure transfer is complete
         if self.enable_streams:
