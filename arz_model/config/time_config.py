@@ -62,10 +62,10 @@ class TimeConfig(BaseModel):
     )
 
     @field_validator('output_dt')
-    def output_dt_must_be_less_than_t_final(cls, v, values):
+    def output_dt_must_be_less_than_t_final(cls, v, info):
         """Validate output_dt < t_final"""
-        if 't_final' in values and v > values['t_final']:
-            raise ValueError(f'output_dt ({v}) must be < t_final ({values["t_final"]})')
+        if 't_final' in info.data and v > info.data['t_final']:
+            raise ValueError(f'output_dt ({v}) must be < t_final ({info.data["t_final"]})')
         return v
 
     model_config = {"extra": "forbid"}
