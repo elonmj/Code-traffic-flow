@@ -8140,3 +8140,26 @@
 2025-11-17 17:23:44,330 - kernel_manager - INFO -   - generic-test-runner-kernel.log (6389 bytes)
 2025-11-17 17:23:44,330 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-17 17:23:44,330 - kernel_manager - INFO -   - test_log.txt (3839 bytes)
+2025-11-17 17:24:17,126 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-17 17:24:17,126 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-17 17:24:17,226 - kernel_manager - INFO - 📍 Current branch: gpu-optimization-phase3
+2025-11-17 17:24:17,268 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-17 17:24:17,268 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-17 17:24:17,268 - kernel_manager - INFO -    M validate_ssp_rk3_fusion_kaggle.py (Modified (unstaged))
+2025-11-17 17:24:17,268 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-17 17:24:17,352 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-17 17:24:17,967 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-17 17:24:17,967 - kernel_manager - INFO - 📤 Pushing to remote branch: gpu-optimization-phase3
+2025-11-17 17:24:23,120 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-17 17:24:23,120 - kernel_manager - INFO - Building kernel script...
+2025-11-17 17:24:23,120 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpws5p8ns9
+2025-11-17 17:24:23,120 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-17 17:24:23,120 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-17 17:24:23,120 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-17 17:24:24,838 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-17 17:24:24,840 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-17 17:24:25,459 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-17 17:24:56,215 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-17 17:25:26,867 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-17 17:25:57,510 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 92s)
+2025-11-17 17:26:27,514 - kernel_manager - ERROR - ⌛️ Timeout of 120s exceeded. Aborting.
