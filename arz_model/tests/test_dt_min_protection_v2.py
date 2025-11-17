@@ -45,8 +45,8 @@ def test_stable_simulation_completes():
             default_velocity=60.0,  # Moderate velocity
             inflow_density=25.0,    # Light inflow
             inflow_velocity=55.0,   # Stable inflow
-            t_final=12.0,          # Short test (12s as requested)
-            output_dt=2.0,
+            t_final=30.0,          # Extended test (30s) for robust validation
+            output_dt=5.0,
             cells_per_100m=4,      # Coarse grid → large dx
         )
         
@@ -119,8 +119,8 @@ def test_high_density_simulation_stability():
             default_velocity=20.0,  # Slower due to congestion
             inflow_density=130.0,   # Higher inflow
             inflow_velocity=15.0,   # Slow inflow
-            t_final=15.0,          # 15s test
-            output_dt=3.0,
+            t_final=60.0,          # Extended stress test (60s / 1 minute)
+            output_dt=10.0,
             cells_per_100m=10,     # Medium grid
         )
         
