@@ -77,7 +77,14 @@ class KernelManager:
         
         # Git config
         self.repo_url = "https://github.com/elonmj/Code-traffic-flow.git"
-        self.branch = "main"  # Default branch, can be overridden by config
+        
+        # Detect current Git branch automatically
+        try:
+            result = subprocess.run(['git', 'branch', '--show-current'], 
+                                  capture_output=True, text=True, cwd=os.getcwd(), check=True)
+            self.branch = result.stdout.strip() or "main"
+        except Exception:
+            self.branch = "main"  # Fallback to main if git fails
         
         print(f"[SUCCESS] KernelManager initialized for user: {self.username}")
         print(f"[BRANCH] Using Git branch: {self.branch}")

@@ -8041,3 +8041,25 @@
 2025-11-17 16:18:05,199 - kernel_manager - INFO -   - network_simulation_results.pkl (402532 bytes)
 2025-11-17 16:18:05,199 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-17 16:18:05,199 - kernel_manager - INFO -   - test_log.txt (156807 bytes)
+2025-11-17 17:07:52,345 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-17 17:07:52,346 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-17 17:07:52,450 - kernel_manager - INFO - 📍 Current branch: gpu-optimization-phase3
+2025-11-17 17:07:52,546 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-17 17:07:52,594 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-17 17:07:52,654 - kernel_manager - INFO - ✅ No changes to commit - repository is clean
+2025-11-17 17:07:52,655 - kernel_manager - INFO - 📤 Pushing to remote branch: gpu-optimization-phase3
+2025-11-17 17:07:57,788 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-17 17:07:57,788 - kernel_manager - INFO - Building kernel script...
+2025-11-17 17:07:57,804 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpokzza8a7
+2025-11-17 17:07:57,804 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-17 17:07:57,804 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-17 17:07:57,804 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-17 17:07:59,821 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-17 17:07:59,823 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-17 17:08:00,452 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-17 17:08:31,103 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-17 17:09:01,757 - kernel_manager - INFO - Current status: kernelworkerstatus.error (Elapsed: 61s)
+2025-11-17 17:09:01,757 - kernel_manager - ERROR - ❌ Kernel execution failed with status: kernelworkerstatus.error
+2025-11-17 17:09:01,757 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-17 17:09:01,758 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-17 17:09:01,760 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
