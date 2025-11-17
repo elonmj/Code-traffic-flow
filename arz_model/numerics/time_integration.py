@@ -195,8 +195,11 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     
     # Extract physics parameters for WENO+Riemann
     dx = grid.dx
+    N = d_U_in.shape[1]  # Number of spatial cells
+    num_vars = d_U_in.shape[0]  # Number of conserved variables (4 for ARZ)
     rho_max = params.rho_max
     alpha = params.alpha
+    epsilon = params.epsilon
     k_m = params.k_m
     gamma_m = params.gamma_m
     k_c = params.k_c
@@ -205,23 +208,25 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     
     # Configure kernel launch: 1D grid over spatial cells
     # Each thread handles one spatial cell through all 3 RK stages
-    num_cells = d_U_in.shape[1]  # shape is (4, N_total)
     threadsperblock = 256
-    blockspergrid = (num_cells + threadsperblock - 1) // threadsperblock
+    blockspergrid = (N + threadsperblock - 1) // threadsperblock
     
     # Launch FUSED kernel: Does WENO5 + Riemann + 3 RK stages in one go!
     # This eliminates intermediate global memory traffic (Phase 2.3)
     # and integrates high-order physics (Phase 2.4)
     ssp_rk3_fused_kernel[blockspergrid, threadsperblock](
-        d_U_in,      # Input state
-        d_U_out,     # Output state
+        d_U_in,      # u_n: Input state
+        d_U_out,     # u_np1: Output state
         dt,          # Time step
         dx,          # Spatial resolution
-        rho_max,     # Physics: max density
+        N,           # Number of cells
+        num_vars,    # Number of variables (4)
         alpha,       # Physics: anticipation parameter
-        k_m,         # Physics: motorway capacity (lowercase!)
+        rho_max,     # Physics: jam density (rho_jam)
+        epsilon,     # Numerical stability epsilon
+        k_m,         # Physics: motorway capacity
         gamma_m,     # Physics: motorway exponent
-        k_c,         # Physics: city capacity (lowercase!)
+        k_c,         # Physics: city capacity
         gamma_c,     # Physics: city exponent
         weno_eps     # WENO: smoothness epsilon
     )
