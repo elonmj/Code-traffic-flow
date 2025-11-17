@@ -51,8 +51,8 @@ def main():
             default_velocity=50.0,  # km/h - moderate speed
             inflow_density=30.0,   # veh/km - entry traffic
             inflow_velocity=40.0,  # km/h - entry speed
-            t_final=240.0,         # 4 minutes for quick comparison
-            output_dt=10.0,        # Output every 10 seconds
+            t_final=120.0,         # 2 minutes for smooth animation
+            output_dt=2.0,         # Output every 2 seconds = 60 frames!
             cells_per_100m=10      # Grid resolution
         )
         print("✅ Network configuration generated successfully from CSV topology.", flush=True)
@@ -88,7 +88,7 @@ def main():
         return
 
     # --- 4. Run the Simulation ---
-    print("\n[PHASE 4] Running simulation for 240 seconds...", flush=True)
+    print("\n[PHASE 4] Running simulation for 120 seconds (60 frames @ 2s intervals)...", flush=True)
     print("=" * 70, flush=True)
     wall_start_sim = time.time()
     
@@ -103,10 +103,10 @@ def main():
         print("=" * 70, flush=True)
         print("✅ Simulation finished.", flush=True)
         print(f"\n⏱️  TIMING:", flush=True)
-        print(f"   Simulation time: 240.0 s", flush=True)
+        print(f"   Simulation time: 120.0 s", flush=True)
         print(f"   Wall clock time: {wall_elapsed:.1f} s", flush=True)
-        print(f"   Time per sim second: {wall_elapsed/240.0:.3f} s/s", flush=True)
-        print(f"   Speedup ratio: {240.0/wall_elapsed:.2f}x", flush=True)
+        print(f"   Time per sim second: {wall_elapsed/120.0:.3f} s/s", flush=True)
+        print(f"   Speedup ratio: {120.0/wall_elapsed:.2f}x", flush=True)
         
     except Exception as e:
         print(f"❌ Error during simulation: {e}", flush=True)
