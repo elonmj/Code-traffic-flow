@@ -8088,3 +8088,25 @@
 2025-11-17 17:13:15,473 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
 2025-11-17 17:13:15,473 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
 2025-11-17 17:13:15,488 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-17 17:19:40,503 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-17 17:19:40,504 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-17 17:19:40,648 - kernel_manager - INFO - 📍 Current branch: gpu-optimization-phase3
+2025-11-17 17:19:40,732 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-17 17:19:40,732 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-17 17:19:40,732 - kernel_manager - INFO -    M kaggle_runner/kernel_manager.py (Modified (unstaged))
+2025-11-17 17:19:40,733 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-17 17:19:40,803 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-17 17:19:41,470 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-17 17:19:41,470 - kernel_manager - INFO - 📤 Pushing to remote branch: gpu-optimization-phase3
+2025-11-17 17:19:46,168 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-17 17:19:46,168 - kernel_manager - INFO - Building kernel script...
+2025-11-17 17:19:46,168 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmppgby0nip
+2025-11-17 17:19:46,168 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-17 17:19:46,168 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-17 17:19:46,168 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-17 17:19:48,098 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-17 17:19:48,098 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-17 17:19:48,727 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-17 17:20:19,363 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-17 17:20:49,993 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-17 17:21:20,619 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 91s)
