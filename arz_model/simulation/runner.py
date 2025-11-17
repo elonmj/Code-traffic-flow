@@ -795,6 +795,45 @@ class SimulationRunner:
         3. Applies the chosen time integration scheme (e.g., SSP-RK3).
         4. Updates the current time and step count.
         """
+        # Network mode: delegate to network_simulator's time-stepping logic
+        if self.is_network_simulation:
+            # Network simulator doesn't expose a step() method but handles stepping internally
+            # We need to manually perform one time step using its components
+            from ...numerics.cfl import cfl_condition_gpu_native
+            from ...numerics.time_integration import strang_splitting_step_gpu_native
+            
+            # Access network simulator's components
+            ns = self.network_simulator
+            
+            # Check if we've reached t_final
+            if ns.t >= ns.config.time.t_final:
+                return
+            
+            # Calculate dt using CFL condition
+            dt = cfl_condition_gpu_native(
+                gpu_pool=ns.gpu_pool,
+                params=ns.params,
+                config=ns.config
+            )
+            
+            # Execute single time step
+            strang_splitting_step_gpu_native(
+                gpu_pool=ns.gpu_pool,
+                network_coupling=ns.network_coupling,
+                dt=dt,
+                params=ns.params,
+                config=ns.config
+            )
+            
+            # Update time tracking
+            ns.t += dt
+            ns.time_step += 1
+            self.t = ns.t  # Keep SimulationRunner's t in sync
+            self.step_count = ns.time_step
+            
+            return
+        
+        # Single-segment mode (legacy)
         # Ensure we don't overshoot t_final
         if self.t >= self.params.t_final:
             return
