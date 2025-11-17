@@ -72,9 +72,8 @@ class TestGPUOptimizationNumericalAccuracy:
             csv_path=csv_path,
             t_final=30.0,
             output_dt=5.0,
-            dx=25.0,
-            initial_density_cars=30.0,
-            initial_density_motorcycles=20.0
+            cells_per_100m=4,  # dx=25m
+            default_density=25.0
         )
         
         network_grid = NetworkGrid.from_config(config)
@@ -103,9 +102,8 @@ class TestGPUOptimizationNumericalAccuracy:
             csv_path=csv_path,
             t_final=15.0,
             output_dt=3.0,
-            dx=25.0,
-            initial_density_cars=30.0,
-            initial_density_motorcycles=20.0
+            cells_per_100m=4,  # dx=25m
+            default_density=25.0
         )
         
         network_grid = NetworkGrid.from_config(config)
@@ -165,9 +163,8 @@ class TestPerformanceRegression:
             csv_path=csv_path,
             t_final=5.0,
             output_dt=1.0,
-            dx=25.0,
-            initial_density_cars=30.0,
-            initial_density_motorcycles=20.0
+            cells_per_100m=4,  # dx=25m
+            default_density=25.0
         )
         
         network_grid = NetworkGrid.from_config(config)

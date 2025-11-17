@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.7.28)  17 NOV 2025 09:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.7.28)  17 NOV 2025 09:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -841,7 +841,7 @@ File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 File: l3backend-pdftex.def 2025-06-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count375
 )
-No file verification_beamer.aux.
+(verification_beamer.aux)
 \openout1 = `verification_beamer.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 56.
@@ -862,6 +862,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 56.
 LaTeX Font Info:    ... okay on input line 56.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 56.
 LaTeX Font Info:    ... okay on input line 56.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -918,6 +919,8 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 Package hyperref Info: Link coloring OFF on input line 56.
+
+(verification_beamer.out) (verification_beamer.out)
 \@outlinefile=\write5
 \openout5 = `verification_beamer.out'.
 
@@ -993,16 +996,12 @@ em-dictionary-English.dict
 Dictionary: translator-theorem-dictionary, Language: English 
 )
 \c@lstlisting=\count382
-
-No file verification_beamer.nav.
-
+ (verification_beamer.nav)
 
 [1
 
 {C:/Users/JOSAPHAT/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Program
- Files/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}]
-No file verification_beamer.toc.
-
+ Files/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}] (verification_beamer.toc)
 
 [2
 
@@ -1156,88 +1155,102 @@ LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <8> not available
 \openout4 = `verification_beamer.vrb'.
 
  (verification_beamer.vrb)
-! Extra }, or forgotten \endgroup.
-\endbeamer@frameslide ...amer@framepauses}\egroup 
-                                                  \ifx \beamer@frametitle \@...
-l.402 \end{frame}
-                 
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
 
+[14
 
-! LaTeX Error: \begin{beamer@framepauses} on input line 402 ended by \end{beame
-r@frameslide}.
+]
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.402 \end{frame}
-                 
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
+[15
 
-! Missing number, treated as zero.
-<to be read again> 
-                   }
-l.405     \frametitle
-                     {Étape 4 : Couplage Physique-Hyperbolique}
-A number should have been here; I inserted `0'.
-(If you can't figure out why I needed to see a number,
-look up `weird error' in the index to The TeXbook.)
+]
+\openout4 = `verification_beamer.vrb'.
 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   }
-l.405     \frametitle
-                     {Étape 4 : Couplage Physique-Hyperbolique}
-Dimensions can be in units of em, ex, in, pt, pc,
-cm, mm, dd, cc, nd, nc, bp, or sp; but yours is a new one!
-I'll assume that you meant to say pt, for printer's points.
-To recover gracefully from this error, it's best to
-delete the erroneous units; e.g., type `2' to delete
-two letters. (See Chapter 27 of The TeXbook.)
-
-! Extra }, or forgotten \endgroup.
-\endframe ->\egroup 
-                    \begingroup \def \@currenvir {frame}
-l.420 \end{frame}
-                 
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
-)
+ (verification_beamer.vrb)
 Runaway argument?
-{Couplage par Splitting de Strang \end {center} \end {frame} \par \begin \ETC.
+{Couplage par Splitting de Strang \end {center} 
 ! File ended while scanning use of \@xdblarg.
 <inserted text> 
                 \par 
-<*> ... project/arz_model/verification_beamer.tex"
-                                                  
+l.426 \end{frame}
+                 
 I suspect you have forgotten a `}', causing me
 to read past where you wanted me to stop.
 I'll try to recover; but if the error is serious,
 you'd better type `E' or `X' now and fix your file.
 
-! Emergency stop.
-<*> ... project/arz_model/verification_beamer.tex"
-                                                  
-*** (job aborted, no legal \end found)
 
- 
+
+[16
+
+]
+\openout4 = `verification_beamer.vrb'.
+
+ (verification_beamer.vrb
+Overfull \hbox (6.38005pt too wide) in paragraph at lines 25--27
+[][] 
+ []
+
+)
+
+[17
+
+]
+Overfull \vbox (19.98763pt too high) detected at line 494
+ []
+
+
+
+[18
+
+]
+
+[19
+
+ <C:/Program Files/MiKTeX/tex/latex/beamer/beamericonarticle.pdf>]
+\tf@nav=\write6
+\openout6 = `verification_beamer.nav'.
+
+\tf@toc=\write7
+\openout7 = `verification_beamer.toc'.
+
+\tf@snm=\write8
+\openout8 = `verification_beamer.snm'.
+
+
+(verification_beamer.aux)
+ ***********
+LaTeX2e <2025-06-01> patch level 1
+L3 programming layer <2025-07-19>
+ ***********
+Package rerunfilecheck Info: File `verification_beamer.out' has not changed.
+(rerunfilecheck)             Checksum: 40BC32A1EB146DDCD45C85003D772894;675.
+ ) 
 Here is how much of TeX's memory you used:
- 28564 strings out of 468149
- 562973 string characters out of 5441140
- 1192518 words of memory out of 5000000
- 56561 multiletter control sequences out of 15000+600000
- 709952 words of font info for 105 fonts, out of 8000000 for 9000
+ 28775 strings out of 468149
+ 567892 string characters out of 5441140
+ 1199518 words of memory out of 5000000
+ 56734 multiletter control sequences out of 15000+600000
+ 712720 words of font info for 106 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,15n,123p,453b,1854s stack positions out of 10000i,1000n,20000p,200000b,200000s
-!  ==> Fatal error occurred, no output PDF file produced!
+ 128i,15n,123p,453b,1855s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Program Files/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Program Files/M
+iKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/pub
+lic/lm/lmmi12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi7.pfb><C:/
+Program Files/MiKTeX/fonts/type1/public/lm/lmss10.pfb><C:/Program Files/MiKTeX/
+fonts/type1/public/lm/lmss12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm
+/lmss8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmss9.pfb><C:/Program
+ Files/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><C:/Program Files/MiKTeX/fonts
+/type1/public/lm/lmsso10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lms
+so12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso8.pfb><C:/Program 
+Files/MiKTeX/fonts/type1/public/lm/lmsso9.pfb><C:/Program Files/MiKTeX/fonts/ty
+pe1/public/lm/lmsy10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy6.p
+fb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><C:/Program Files/M
+iKTeX/fonts/type1/public/lm/lmsy9.pfb><C:/Program Files/MiKTeX/fonts/type1/publ
+ic/lm/lmtt10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt12.pfb><C:/
+Program Files/MiKTeX/fonts/type1/public/lm/lmtt8.pfb>
+Output written on verification_beamer.pdf (19 pages, 583461 bytes).
+PDF statistics:
+ 1092 PDF objects out of 1200 (max. 8388607)
+ 49 named destinations out of 1000 (max. 500000)
+ 1239 words of extra memory for PDF output out of 10000 (max. 10000000)
+
