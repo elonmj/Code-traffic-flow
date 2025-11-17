@@ -104,6 +104,113 @@ def _calculate_max_wavespeed_kernel(d_U, n_ghost, n_phys,
         cuda.atomic.max(d_max_ratio_out, 0, s_max_ratio[0])
 
 
+# --- Batched CFL Kernel ---
+
+@cuda.jit
+def _calculate_max_wavespeed_batched_kernel(d_U_batched, d_segment_lengths, d_batched_offsets,
+                                             num_segments,
+                                             # Physics parameters
+                                             alpha, rho_max, epsilon, v_max,
+                                             K_m, gamma_m, K_c, gamma_c,
+                                             dx,
+                                             # Per-segment output array (size: num_segments)
+                                             d_segment_max_ratios):
+    """
+    Batched kernel: Each block processes one segment, calculates max(lambda/dx) for that segment.
+    
+    Grid: num_segments blocks
+    Block: TPB_REDUCE threads
+    
+    Each block writes its segment's max ratio to d_segment_max_ratios[blockIdx.x].
+    CPU-side reduction then finds global max.
+    """
+    # Shared memory for block-level reduction
+    s_max_ratio = cuda.shared.array(shape=(TPB_REDUCE,), dtype=float64)
+    
+    # Block ID = segment index
+    seg_idx = cuda.blockIdx.x
+    if seg_idx >= num_segments:
+        return
+    
+    # Thread ID within block
+    tx = cuda.threadIdx.x
+    
+    # Get segment bounds
+    start_idx = d_batched_offsets[seg_idx]
+    seg_length = d_segment_lengths[seg_idx]
+    
+    # Initialize shared memory
+    s_max_ratio[tx] = 0.0
+    
+    # Each thread processes multiple cells (grid-stride loop)
+    max_ratio_thread = 0.0
+    cell_idx = tx
+    
+    while cell_idx < seg_length:
+        global_idx = start_idx + cell_idx
+        
+        # Get state (batched layout: [total_cells, 4])
+        rho_m = d_U_batched[global_idx, 0]
+        w_m = d_U_batched[global_idx, 1]
+        rho_c = d_U_batched[global_idx, 2]
+        w_c = d_U_batched[global_idx, 3]
+        
+        # Clamp densities
+        rho_m_calc = min(max(rho_m, epsilon), rho_max)
+        rho_c_calc = min(max(rho_c, epsilon), rho_max)
+        
+        # Handle NaN/inf
+        if not math.isfinite(rho_m_calc):
+            rho_m_calc = 0.0
+        if not math.isfinite(rho_c_calc):
+            rho_c_calc = 0.0
+        
+        # Calculate pressure
+        p_m, p_c = _calculate_pressure_cuda(rho_m_calc, rho_c_calc,
+                                             alpha, rho_max, epsilon,
+                                             K_m, gamma_m, K_c, gamma_c)
+        
+        # Calculate velocities
+        v_m, v_c = _calculate_physical_velocity_cuda(w_m, w_c, p_m, p_c)
+        
+        # Clamp velocities
+        v_m = min(max(v_m, -v_max), v_max)
+        v_c = min(max(v_c, -v_max), v_max)
+        
+        # Calculate eigenvalues
+        lambda1, lambda2, lambda3, lambda4 = _calculate_eigenvalues_cuda(
+            rho_m_calc, v_m, rho_c_calc, v_c,
+            alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c
+        )
+        
+        # Max absolute eigenvalue
+        max_lambda_cell = max(abs(lambda1), abs(lambda2), abs(lambda3), abs(lambda4))
+        
+        # Ratio
+        ratio_cell = max_lambda_cell / dx if dx > 0 else 0.0
+        
+        # Update thread max
+        max_ratio_thread = max(max_ratio_thread, ratio_cell)
+        
+        # Next cell for this thread
+        cell_idx += cuda.blockDim.x
+    
+    # Store thread max in shared memory
+    s_max_ratio[tx] = max_ratio_thread
+    cuda.syncthreads()
+    
+    # Reduction within block
+    stride = TPB_REDUCE // 2
+    while stride > 0:
+        if tx < stride:
+            s_max_ratio[tx] = max(s_max_ratio[tx], s_max_ratio[tx + stride])
+        cuda.syncthreads()
+        stride //= 2
+    
+    # Block leader writes segment max to output
+    if tx == 0:
+        d_segment_max_ratios[seg_idx] = s_max_ratio[0]
+
 
 # --- Main Function ---
 
@@ -305,6 +412,67 @@ def cfl_condition_gpu_native(gpu_pool: 'GPUMemoryPool', network: 'NetworkGrid', 
         return stable_dt, diagnostics
     else:
         return stable_dt
+
+
+def cfl_condition_gpu_batched(gpu_pool: 'GPUMemoryPool', dx: float, params: 'ModelParameters', cfl_max: float):
+    """
+    Calculates the maximum stable time step (dt) for batched GPU architecture.
+    
+    This function uses the batched arrays and launches ONE kernel with num_segments blocks,
+    where each block processes one segment in parallel. This eliminates the per-segment loop.
+    
+    Args:
+        gpu_pool: The GPUMemoryPool containing batched state arrays.
+        dx: Uniform grid spacing (Victoria Island: 25.0m).
+        params: The model parameters (PhysicsConfig).
+        cfl_max: The maximum CFL number.
+    
+    Returns:
+        The calculated stable time step.
+    
+    Performance:
+        - Single kernel launch vs 70 sequential launches
+        - Each block computes max(lambda/dx) for its segment
+        - CPU-side reduction finds global max
+    
+    References:
+        - .copilot-tracking/research/20251117-gpu-occupancy-warning-research.md
+        - .copilot-tracking/plans/20251117-gpu-batching-architecture-plan.instructions.md
+    """
+    # Get batched arrays
+    d_U_batched, _, d_segment_lengths, d_batched_offsets = gpu_pool.get_batched_arrays()
+    num_segments = len(gpu_pool.segment_ids)
+    
+    # Allocate output array for per-segment max ratios
+    d_segment_max_ratios = cuda.device_array(num_segments, dtype=np.float64)
+    
+    # Physics parameters
+    phys_params = params
+    v_max_physical = max(phys_params.v_max_m_kmh, phys_params.v_max_c_kmh) / 3.6
+    
+    # Launch batched kernel: grid=num_segments, block=TPB_REDUCE
+    # Each block processes one segment
+    _calculate_max_wavespeed_batched_kernel[num_segments, TPB_REDUCE](
+        d_U_batched, d_segment_lengths, d_batched_offsets, num_segments,
+        phys_params.alpha, phys_params.rho_max, phys_params.epsilon, v_max_physical,
+        phys_params.k_m, phys_params.gamma_m, phys_params.k_c, phys_params.gamma_c,
+        dx,
+        d_segment_max_ratios
+    )
+    
+    # CPU-side reduction: find max across all segments
+    segment_ratios_host = d_segment_max_ratios.copy_to_host()
+    global_max_ratio = np.max(segment_ratios_host)
+    
+    if global_max_ratio < 1e-9:
+        # Near-zero max speed
+        stable_dt = 1.0
+    else:
+        # dt = CFL / max(lambda/dx)
+        stable_dt = cfl_max / global_max_ratio
+    
+    return stable_dt
+
 
 def compute_adaptive_cfl_with_history(
     dt_history: list[float], 

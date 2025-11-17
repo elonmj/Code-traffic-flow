@@ -252,8 +252,8 @@ class UnifiedVisualizationOrchestrator:
                 segment_data,
                 time_array,
                 str(output_path),
-                fps=15,
-                max_frames=300  # Limit for reasonable GIF size
+                fps=2,  # VERY SLOW: 2 FPS (each frame visible 0.5 seconds!)
+                max_frames=300  # Use all frames available
             )
             print(f"   ✅ Saved: {output_path}")
             return True

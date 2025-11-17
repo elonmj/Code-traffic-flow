@@ -13,6 +13,7 @@ This is a REUSABLE system - no manual segment-by-segment configuration needed!
 import os
 import sys
 import pickle
+import time
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -27,6 +28,8 @@ from arz_model.simulation.runner import SimulationRunner
 def main():
     """Main execution function."""
     import sys
+    wall_start = time.time()
+    
     print("=" * 70, flush=True)
     print("=== DÉBUT DU SCRIPT main_network_simulation.py ===", flush=True)
     print("=" * 70, flush=True)
@@ -48,8 +51,8 @@ def main():
             default_velocity=50.0,  # km/h - moderate speed
             inflow_density=30.0,   # veh/km - entry traffic
             inflow_velocity=40.0,  # km/h - entry speed
-            t_final=240.0,         # 4 minutes simulation (baseline benchmark)
-            output_dt=10.0,        # Output every 10 seconds
+            t_final=120.0,         # 2 minutes for smooth animation
+            output_dt=2.0,         # Output every 2 seconds = 60 frames!
             cells_per_100m=10      # Grid resolution
         )
         print("✅ Network configuration generated successfully from CSV topology.", flush=True)
@@ -85,12 +88,26 @@ def main():
         return
 
     # --- 4. Run the Simulation ---
-    print("\n[PHASE 4] Running simulation for 120 seconds (benchmark - optimized version)...", flush=True)
+    print("\n[PHASE 4] Running simulation for 120 seconds (60 frames @ 2s intervals)...", flush=True)
+    print("=" * 70, flush=True)
+    wall_start_sim = time.time()
+    
     try:
         # The `run` method is now delegated to the NetworkSimulator
-        # No timeout - let it run to completion (1800s simulation time)
+        # No timeout - let it run to completion (240s simulation time)
         results = runner.run(timeout=None)
+        
+        wall_end_sim = time.time()
+        wall_elapsed = wall_end_sim - wall_start_sim
+        
+        print("=" * 70, flush=True)
         print("✅ Simulation finished.", flush=True)
+        print(f"\n⏱️  TIMING:", flush=True)
+        print(f"   Simulation time: 120.0 s", flush=True)
+        print(f"   Wall clock time: {wall_elapsed:.1f} s", flush=True)
+        print(f"   Time per sim second: {wall_elapsed/120.0:.3f} s/s", flush=True)
+        print(f"   Speedup ratio: {120.0/wall_elapsed:.2f}x", flush=True)
+        
     except Exception as e:
         print(f"❌ Error during simulation: {e}", flush=True)
         import traceback

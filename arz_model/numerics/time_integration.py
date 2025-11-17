@@ -15,6 +15,9 @@ from .reconstruction.weno_gpu import _compute_flux_divergence_weno_kernel
 from .riemann_solvers import central_upwind_flux_cuda_kernel
 from .reconstruction.converter import conserved_to_primitives_arr_gpu
 
+# Import optimized SSP-RK3 fused kernel (Phase 2.3+2.4)
+from .gpu.ssp_rk3_cuda import ssp_rk3_fused_kernel
+
 if TYPE_CHECKING:
     from ..core.parameters import PhysicsConfig
     from .gpu.memory_pool import GPUMemoryPool
@@ -172,13 +175,14 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     Solves the hyperbolic step w_t + F(w)_x = 0 using a 3rd-order SSP-RK scheme
     entirely on the GPU, leveraging the GPUMemoryPool.
 
-    This function replaces the legacy `solve_hyperbolic_step_ssprk3_gpu`.
+    **Phase 2.3+2.4 OPTIMIZED VERSION**: Uses fused SSP-RK3 kernel with integrated
+    WENO5 reconstruction and Central-Upwind Riemann solver for maximum performance.
 
     Args:
         d_U_in: Input state device array.
         dt: Time step.
         grid: Grid object.
-        params: ModelParameters object.
+        params: PhysicsConfig object.
         gpu_pool: The memory pool for managing GPU arrays.
         seg_id: The segment ID.
         current_time: The current simulation time.
@@ -186,45 +190,80 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     Returns:
         The state array after the hyperbolic step.
     """
-    # Get temporary arrays from the pool for intermediate RK steps
-    # This avoids reallocation and leverages cached memory.
-    d_U1 = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype)
-    d_U2 = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype)
-
-    # Configure kernel launch grid for RK stages
-    threadsperblock = (16, 16)  # 2D grid for state array (4 x N_total)
-    blockspergrid_x = (d_U_in.shape[0] + threadsperblock[0] - 1) // threadsperblock[0]
-    blockspergrid_y = (d_U_in.shape[1] + threadsperblock[1] - 1) // threadsperblock[1]
-    blockspergrid = (blockspergrid_x, blockspergrid_y)
+    # Allocate output array from pool
+    d_U_out = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype)
     
-    # --- RK Stage 1 ---
-    # L_U0 = L(U_n)
-    L_U0 = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, gpu_pool, seg_id, current_time)
-    # U_1 = U_n + dt * L(U_n)
-    ssp_rk3_stage_1_kernel[blockspergrid, threadsperblock](d_U_in, L_U0, dt, d_U1)
-    _apply_physical_bounds_gpu_in_place(d_U1, grid, params)
-
-    # --- RK Stage 2 ---
-    # L_U1 = L(U_1)
-    L_U1 = calculate_spatial_discretization_weno_gpu_native(d_U1, grid, params, gpu_pool, seg_id, current_time)
-    # U_2 = (3/4)U_n + (1/4)U_1 + (1/4)dt * L(U_1)
-    ssp_rk3_stage_2_kernel[blockspergrid, threadsperblock](d_U_in, d_U1, L_U1, dt, d_U2)
-    _apply_physical_bounds_gpu_in_place(d_U2, grid, params)
-
-    # --- RK Stage 3 ---
-    # L_U2 = L(U_2)
-    L_U2 = calculate_spatial_discretization_weno_gpu_native(d_U2, grid, params, gpu_pool, seg_id, current_time)
-    # U_np1 = (1/3)U_n + (2/3)U_2 + (2/3)dt * L(U_2)
-    d_U_out = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype) # Get a new array for the output
-    ssp_rk3_stage_3_kernel[blockspergrid, threadsperblock](d_U_in, d_U2, L_U2, dt, d_U_out)
+    # CRITICAL: Fused kernel expects shape (N, num_vars), but time_integration uses (num_vars, N)
+    # We need to transpose for compatibility
+    N = d_U_in.shape[1]  # Number of spatial cells
+    num_vars = d_U_in.shape[0]  # Number of conserved variables (4 for ARZ)
+    
+    # Transpose input: (num_vars, N) -> (N, num_vars)
+    d_U_in_T = cuda.device_array((N, num_vars), dtype=d_U_in.dtype)
+    d_U_out_T = cuda.device_array((N, num_vars), dtype=d_U_in.dtype)
+    
+    # Simple transpose kernel
+    @cuda.jit
+    def transpose_kernel(src, dst):
+        i, j = cuda.grid(2)
+        if i < src.shape[0] and j < src.shape[1]:
+            dst[j, i] = src[i, j]
+    
+    threadsperblock_2d = (16, 16)
+    blockspergrid_x = (num_vars + threadsperblock_2d[0] - 1) // threadsperblock_2d[0]
+    blockspergrid_y = (N + threadsperblock_2d[1] - 1) // threadsperblock_2d[1]
+    blockspergrid_2d = (blockspergrid_x, blockspergrid_y)
+    
+    transpose_kernel[blockspergrid_2d, threadsperblock_2d](d_U_in, d_U_in_T)
+    
+    # Extract spatial resolution from grid
+    dx = grid.dx
+    
+    # Extract physics parameters for WENO+Riemann
+    rho_max = params.rho_max
+    alpha = params.alpha
+    epsilon = params.epsilon
+    k_m = params.k_m
+    gamma_m = params.gamma_m
+    k_c = params.k_c
+    gamma_c = params.gamma_c
+    weno_eps = 1e-6  # WENO smoothness indicator epsilon
+    
+    # Configure kernel launch: 1D grid over spatial cells
+    # Each thread handles one spatial cell through all 3 RK stages
+    threadsperblock = 256
+    blockspergrid = (N + threadsperblock - 1) // threadsperblock
+    
+    # Launch FUSED kernel: Does WENO5 + Riemann + 3 RK stages in one go!
+    # This eliminates intermediate global memory traffic (Phase 2.3)
+    # and integrates high-order physics (Phase 2.4)
+    ssp_rk3_fused_kernel[blockspergrid, threadsperblock](
+        d_U_in_T,    # u_n: Input state (transposed to N, num_vars)
+        d_U_out_T,   # u_np1: Output state (transposed to N, num_vars)
+        dt,          # Time step
+        dx,          # Spatial resolution
+        N,           # Number of cells
+        num_vars,    # Number of variables (4)
+        alpha,       # Physics: anticipation parameter
+        rho_max,     # Physics: jam density (rho_jam)
+        epsilon,     # Numerical stability epsilon
+        k_m,         # Physics: motorway capacity
+        gamma_m,     # Physics: motorway exponent
+        k_c,         # Physics: city capacity
+        gamma_c,     # Physics: city exponent
+        weno_eps     # WENO: smoothness epsilon
+    )
+    
+    # Transpose output back: (N, num_vars) -> (num_vars, N)
+    blockspergrid_x_out = (N + threadsperblock_2d[0] - 1) // threadsperblock_2d[0]
+    blockspergrid_y_out = (num_vars + threadsperblock_2d[1] - 1) // threadsperblock_2d[1]
+    blockspergrid_2d_out = (blockspergrid_x_out, blockspergrid_y_out)
+    transpose_kernel[blockspergrid_2d_out, threadsperblock_2d](d_U_out_T, d_U_out)
+    
+    # Apply physical bounds to ensure positivity and max constraints
     _apply_physical_bounds_gpu_in_place(d_U_out, grid, params)
-
-    # Release temporary arrays back to the pool for reuse
-    gpu_pool.release_temp_array(d_U1)
-    gpu_pool.release_temp_array(d_U2)
     
-    # The final result is in d_U_out, which is also a temporary array.
-    # The caller (`strang_splitting_step_gpu_native`) will continue the process.
+    # Return the output (caller will continue Strang splitting process)
     return d_U_out
 
 
@@ -496,7 +535,79 @@ def solve_ode_step_gpu(d_U_in: cuda.devicearray.DeviceNDArray, dt_ode: float, gr
     return d_U_out
 
 
-# --- End of Physical State Bounds Enforcement ---
+# ================================================================
+# PHASE GPU BATCHING: Batched Time Integration
+# ================================================================
 
+def batched_strang_splitting_step_gpu_native(
+    gpu_pool: 'GPUMemoryPool',
+    dt: float,
+    dx: float,
+    params: 'PhysicsConfig',
+    current_time: float
+) -> None:
+    """
+    Single time step for ALL segments using batched kernel.
+    
+    Replaces per-segment loop in NetworkSimulator.run() with single
+    kernel launch processing all 70 segments in parallel.
+    
+    Args:
+        gpu_pool: GPUMemoryPool with batched arrays
+        dt: Time step (same for all segments)
+        dx: Spatial step (same for all segments in Victoria Island)
+        params: Physics configuration
+        current_time: Current simulation time
+        
+    Expected Performance:
+        - GPU utilization: 125% (70 blocks / 56 SMs)
+        - Speedup: 4-6× vs per-segment architecture
+        - Warnings: 0 (eliminated)
+    """
+    from .gpu.ssp_rk3_cuda import batched_ssp_rk3_kernel
+    
+    # Get batched arrays and metadata
+    d_U_batched, d_R_batched, d_batched_offsets, d_segment_lengths = gpu_pool.get_batched_arrays()
+    
+    # Allocate output array
+    total_cells = d_U_batched.shape[0]
+    d_U_batched_out = cuda.device_array((total_cells, 4), dtype=np.float64)
+    
+    # Kernel launch configuration
+    num_segments = gpu_pool.num_segments
+    threads_per_block = 256  # Standard block size
+    blocks_per_grid = num_segments  # One block per segment = 70 blocks
+    
+    # Extract physics parameters
+    rho_max = params.rho_max
+    alpha = params.alpha
+    epsilon = params.epsilon
+    K_m = params.k_m
+    gamma_m = params.gamma_m
+    K_c = params.k_c
+    gamma_c = params.gamma_c
+    weno_epsilon = 1e-6  # Standard WENO regularization
+    num_ghost = 3  # WENO5 requires 3 ghost cells
+    
+    # Launch batched kernel (grid=70, block=256)
+    batched_ssp_rk3_kernel[blocks_per_grid, threads_per_block](
+        d_U_batched,           # Input: [total_cells, 4]
+        d_U_batched_out,       # Output: [total_cells, 4]
+        d_R_batched,           # Road quality: [total_cells]
+        d_batched_offsets,     # Segment offsets: [num_segments]
+        d_segment_lengths,     # Segment lengths: [num_segments]
+        dt, dx,
+        rho_max, alpha, epsilon, K_m, gamma_m, K_c, gamma_c, weno_epsilon,
+        num_ghost
+    )
+    
+    # Copy result back to input array (in-place update)
+    d_U_batched[:] = d_U_batched_out
+    
+    # Synchronize to ensure kernel completion
+    cuda.synchronize()
+
+
+# --- End of Batched Time Integration ---
 
 
