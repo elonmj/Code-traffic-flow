@@ -104,8 +104,15 @@ class GPUMemoryPool:
         self.enable_streams = self.compute_capability[0] >= 3
         
         # GPU array pools
-        self.d_U_mega_pool: Optional[cuda.devicearray.DeviceNDArray] = None
+        self.d_U_mega_pool: Optional[cuda.devicearray.DeviceNDArray] = None  # Legacy: [4, total_cells]
         self.d_segment_offsets: Optional[cuda.devicearray.DeviceNDArray] = None
+        
+        # NEW: Batched arrays for GPU batching architecture
+        self.d_U_batched: Optional[cuda.devicearray.DeviceNDArray] = None  # [total_cells_no_ghosts, 4]
+        self.d_R_batched: Optional[cuda.devicearray.DeviceNDArray] = None  # [total_cells_no_ghosts]
+        self.d_segment_lengths: Optional[cuda.devicearray.DeviceNDArray] = None  # [num_segments]
+        self.segment_id_to_index: Dict[str, int] = {}  # Mapping seg_id -> array index
+        self.num_segments: int = len(segment_ids)
         
         self.d_R_pool: Dict[str, cuda.devicearray.DeviceNDArray] = {}
         self.d_BC_pool: Dict[str, Dict[str, cuda.devicearray.DeviceNDArray]] = {}
@@ -139,24 +146,54 @@ class GPUMemoryPool:
     def _allocate_contiguous_arrays(self):
         """
         Pre-allocate all GPU arrays using a contiguous memory layout for U.
+        Includes both legacy mega-pool and new batched arrays.
         """
-        total_cells = sum(self.N_per_segment[seg_id] + 2 * self.ghost_cells for seg_id in self.segment_ids)
+        total_cells_with_ghosts = sum(self.N_per_segment[seg_id] + 2 * self.ghost_cells for seg_id in self.segment_ids)
+        total_cells_no_ghosts = sum(self.N_per_segment.values())  # Physical cells only
         
-        # Allocate one large contiguous array for all segment states
-        self.d_U_mega_pool = cuda.device_array((4, total_cells), dtype=np.float64)
+        # ========== LEGACY: Mega-pool with ghosts [4, total_cells_with_ghosts] ==========
+        self.d_U_mega_pool = cuda.device_array((4, total_cells_with_ghosts), dtype=np.float64)
         
-        # Create and transfer segment offsets
-        offsets = np.zeros(len(self.segment_ids), dtype=np.int32)
+        # Create and transfer segment offsets for mega-pool (with ghosts)
+        offsets_with_ghosts = np.zeros(len(self.segment_ids), dtype=np.int32)
         current_offset = 0
-        seg_id_to_idx = {seg_id: i for i, seg_id in enumerate(self.segment_ids)}
 
         # Ensure we iterate in the same order as segment_ids to match seg_id_to_idx
         for i, seg_id in enumerate(self.segment_ids):
-            offsets[i] = current_offset
+            offsets_with_ghosts[i] = current_offset
             current_offset += self.N_per_segment[seg_id] + 2 * self.ghost_cells
             
-        self.d_segment_offsets = cuda.to_device(np.ascontiguousarray(offsets))
+        self.d_segment_offsets = cuda.to_device(np.ascontiguousarray(offsets_with_ghosts))
+        
+        # ========== NEW: Batched arrays (NO ghosts) ==========
+        # Task 1.1: Add concatenated arrays
+        self.d_U_batched = cuda.device_array((total_cells_no_ghosts, 4), dtype=np.float64)
+        self.d_R_batched = cuda.device_array(total_cells_no_ghosts, dtype=np.float64)
+        
+        # Task 1.2: Implement offset tracking for batched arrays
+        offsets_no_ghosts = [0]
+        lengths_no_ghosts = []
+        
+        for seg_id in self.segment_ids:
+            N_phys = self.N_per_segment[seg_id]
+            lengths_no_ghosts.append(N_phys)
+            offsets_no_ghosts.append(offsets_no_ghosts[-1] + N_phys)
+        
+        # Remove last element (total, not an offset)
+        offsets_no_ghosts = offsets_no_ghosts[:-1]
+        
+        # Transfer batched metadata to GPU
+        self.d_batched_offsets = cuda.to_device(np.array(offsets_no_ghosts, dtype=np.int32))
+        self.d_segment_lengths = cuda.to_device(np.array(lengths_no_ghosts, dtype=np.int32))
+        
+        # Store CPU copies for fast checkpointing
+        self.d_batched_offsets_host = np.array(offsets_no_ghosts, dtype=np.int32)
+        self.segment_lengths_host = np.array(lengths_no_ghosts, dtype=np.int32)
+        
+        # Create segment ID to index mapping
+        self.segment_id_to_index = {seg_id: idx for idx, seg_id in enumerate(self.segment_ids)}
 
+        # ========== Per-segment arrays (R, BC, flux pools) ==========
         for seg_id in self.segment_ids:
             N_phys = self.N_per_segment[seg_id]
             N_total = N_phys + 2 * self.ghost_cells
@@ -239,6 +276,19 @@ class GPUMemoryPool:
         temp_device = cuda.to_device(self.host_pinned_buffers[seg_id], stream=stream)
         self.d_U_mega_pool[:, offset:offset + N_total] = temp_device
         
+        # Task 1.4: Also populate batched arrays (NO ghosts, transposed layout)
+        idx = self.segment_id_to_index[seg_id]
+        h_batched_offsets = self.d_batched_offsets.copy_to_host()
+        batched_offset = h_batched_offsets[idx]
+        
+        # Extract physical cells only and transpose: [4, N_phys] -> [N_phys, 4]
+        U_phys = U_init[:, self.ghost_cells:self.ghost_cells+N_phys].T  # Now [N_phys, 4]
+        U_phys_contig = np.ascontiguousarray(U_phys)
+        
+        # Transfer to batched array
+        temp_batched = cuda.to_device(U_phys_contig, stream=stream)
+        self.d_U_batched[batched_offset:batched_offset+N_phys, :] = temp_batched
+        
         # Initialize road quality if provided
         if R_init is not None:
             if R_init.shape[0] == N_phys:
@@ -257,11 +307,22 @@ class GPUMemoryPool:
             temp_R_pinned = cuda.pinned_array(N_total, dtype=np.float64)
             temp_R_pinned[:] = R_init_contig
             self.d_R_pool[seg_id].copy_to_device(temp_R_pinned, stream=stream)
+            
+            # Task 1.4: Also populate R_batched (physical cells only)
+            R_phys = R_init[self.ghost_cells:self.ghost_cells+N_phys]
+            R_phys_contig = np.ascontiguousarray(R_phys)
+            temp_R_batched = cuda.to_device(R_phys_contig, stream=stream)
+            self.d_R_batched[batched_offset:batched_offset+N_phys] = temp_R_batched
         else:
             # Default: uniform road quality = 1.0
             temp_R_ones = cuda.pinned_array(N_total, dtype=np.float64)
             temp_R_ones[:] = 1.0
             self.d_R_pool[seg_id].copy_to_device(temp_R_ones, stream=stream)
+            
+            # Task 1.4: Also populate R_batched with default values
+            R_ones_phys = np.ones(N_phys, dtype=np.float64)
+            temp_R_batched_ones = cuda.to_device(R_ones_phys, stream=stream)
+            self.d_R_batched[batched_offset:batched_offset+N_phys] = temp_R_batched_ones
         
         # Synchronize stream to ensure transfer is complete
         if self.enable_streams:
@@ -315,6 +376,65 @@ class GPUMemoryPool:
         if seg_id not in self.d_R_pool:
             raise KeyError(f"Segment '{seg_id}' not found in memory pool")
         return self.d_R_pool[seg_id]
+    
+    # ========== Task 1.3: Compatibility Layer for Batched Arrays ==========
+    
+    def get_segment_state_batched(self, seg_id: str) -> cuda.devicearray.DeviceNDArray:
+        """
+        Get segment state from batched array (compatibility wrapper).
+        
+        Returns a view into the batched array for this segment's physical cells.
+        Array layout: [N_phys, 4] (transposed from legacy format).
+        
+        Args:
+            seg_id: Segment identifier
+            
+        Returns:
+            GPU device array view, shape (N_phys, 4)
+        """
+        idx = self.segment_id_to_index[seg_id]
+        h_offsets = self.d_batched_offsets.copy_to_host()
+        h_lengths = self.d_segment_lengths.copy_to_host()
+        
+        offset = h_offsets[idx]
+        length = h_lengths[idx]
+        
+        # Return slice view (no copy!)
+        return self.d_U_batched[offset:offset+length, :]
+    
+    def update_segment_state_batched(self, seg_id: str, new_U: cuda.devicearray.DeviceNDArray):
+        """
+        Update segment state in batched array (compatibility wrapper).
+        
+        Args:
+            seg_id: Segment identifier
+            new_U: New state array, shape (N_phys, 4)
+        """
+        idx = self.segment_id_to_index[seg_id]
+        h_offsets = self.d_batched_offsets.copy_to_host()
+        h_lengths = self.d_segment_lengths.copy_to_host()
+        
+        offset = h_offsets[idx]
+        length = h_lengths[idx]
+        
+        # Copy into batched array
+        self.d_U_batched[offset:offset+length, :] = new_U
+    
+    def get_batched_arrays(self) -> Tuple[cuda.devicearray.DeviceNDArray, cuda.devicearray.DeviceNDArray,
+                                            cuda.devicearray.DeviceNDArray, cuda.devicearray.DeviceNDArray]:
+        """
+        Get all batched arrays and metadata for batched kernel launch.
+        
+        Returns:
+            Tuple of (d_U_batched, d_R_batched, d_batched_offsets, d_segment_lengths)
+            - d_U_batched: [total_cells_no_ghosts, 4] state array
+            - d_R_batched: [total_cells_no_ghosts] road quality
+            - d_batched_offsets: [num_segments] starting index for each segment
+            - d_segment_lengths: [num_segments] number of cells per segment
+        """
+        return self.d_U_batched, self.d_R_batched, self.d_batched_offsets, self.d_segment_lengths
+    
+    # ========== End Task 1.3 ==========
     
     def get_temp_array(self, shape: tuple, dtype: np.dtype) -> cuda.devicearray.DeviceNDArray:
         """
@@ -399,6 +519,70 @@ class GPUMemoryPool:
                 stream.synchronize()
         else:
             cuda.synchronize()
+    
+    def checkpoint_to_cpu_batched(
+        self,
+        seg_id: str,
+        num_ghost_cells: int = 2
+    ) -> np.ndarray:
+        """
+        Create a CPU checkpoint from batched arrays for a single segment.
+        
+        PHASE GPU BATCHING: Extracts segment state from batched layout and adds ghost cells.
+        Returns same format as legacy checkpoint_to_cpu for compatibility.
+        
+        Args:
+            seg_id: Segment identifier
+            num_ghost_cells: Number of ghost cells to add (default: 2)
+            
+        Returns:
+            CPU numpy array with segment state, shape (4, N_phys + 2*num_ghost)
+            Layout: [4 vars, N_total_with_ghosts] (legacy format)
+            
+        Raises:
+            KeyError: If segment ID not found
+            ValueError: If batched arrays not available
+            
+        Performance:
+            - Single GPU->CPU transfer for segment slice
+            - Transposition and ghost cell addition on CPU (cheap)
+        """
+        # Get segment index
+        if seg_id not in self.segment_id_to_index:
+            raise KeyError(f"Segment {seg_id} not found in batched arrays")
+        
+        seg_idx = self.segment_id_to_index[seg_id]
+        
+        # Get segment bounds in batched array
+        start_idx = self.d_batched_offsets_host[seg_idx]
+        seg_length = self.segment_lengths_host[seg_idx]
+        
+        # Extract segment slice from batched array
+        # Batched layout: [N_phys, 4]
+        d_segment_slice = self.d_U_batched[start_idx : start_idx + seg_length, :]
+        
+        # Copy to CPU
+        segment_cpu_batched = d_segment_slice.copy_to_host()  # Shape: [N_phys, 4]
+        
+        # Transpose to legacy format: [4, N_phys]
+        segment_cpu = segment_cpu_batched.T  # Shape: [4, N_phys]
+        
+        # Add ghost cells (reflection BC for compatibility)
+        N_phys = seg_length
+        N_total = N_phys + 2 * num_ghost_cells
+        U_with_ghosts = np.zeros((4, N_total), dtype=np.float64)
+        
+        # Copy physical cells
+        U_with_ghosts[:, num_ghost_cells:num_ghost_cells+N_phys] = segment_cpu
+        
+        # Add reflection BC ghost cells
+        for g in range(num_ghost_cells):
+            # Left ghosts: reflect from first physical cell
+            U_with_ghosts[:, g] = U_with_ghosts[:, num_ghost_cells]
+            # Right ghosts: reflect from last physical cell
+            U_with_ghosts[:, num_ghost_cells+N_phys+g] = U_with_ghosts[:, num_ghost_cells+N_phys-1]
+        
+        return U_with_ghosts
     
     def checkpoint_to_cpu(
         self,

@@ -132,48 +132,180 @@ class NetworkCouplingGPU:
     def apply_coupling(self, params: PhysicsConfig):
         """
         Executes the network coupling on the GPU for all nodes in parallel.
+        
+        PHASE GPU BATCHING: Now uses batched arrays for compatibility with batched architecture.
+        Falls back to legacy mega-pool if batched arrays are not available.
         """
         if self.num_nodes == 0:
             return
 
-        # Get the contiguous memory pool and offsets
-        d_U_mega_pool, d_segment_offsets, seg_lengths = self.gpu_pool.get_all_segment_states()
+        # Try to get batched arrays first (Phase GPU Batching)
+        try:
+            d_U_batched, d_R_batched, d_segment_lengths, d_batched_offsets = self.gpu_pool.get_batched_arrays()
+            use_batched = True
+        except (AttributeError, ValueError):
+            # Fallback to legacy mega-pool if batched arrays not available
+            d_U_mega_pool, d_segment_offsets, seg_lengths = self.gpu_pool.get_all_segment_states()
+            use_batched = False
 
         # Configure kernel launch
         threads_per_block = 32
         blocks_per_grid = (self.num_nodes + (threads_per_block - 1)) // threads_per_block
 
-        # Launch the kernel
-        _apply_coupling_kernel[blocks_per_grid, threads_per_block](
-            self.d_node_types,
-            self.d_node_incoming_gids,
-            self.d_node_incoming_offsets,
-            self.d_node_outgoing_gids,
-            self.d_node_outgoing_offsets,
-            self.d_segment_n_phys,
-            self.d_segment_n_ghost,
-            self.d_segment_lengths,
-            # Physics parameters
-            params.alpha,
-            params.rho_max,
-            params.epsilon,
-            params.k_m,
-            params.gamma_m,
-            params.k_c,
-            params.gamma_c,
-            params.v_max_m_ms,
-            params.v_max_c_ms,
-            params.v_creeping_ms,
-            # Data arrays
-            d_U_mega_pool,
-            d_segment_offsets,
-            self.d_fluxes  # Output array for fluxes
-        )
+        if use_batched:
+            # Launch batched kernel
+            _apply_coupling_batched_kernel[blocks_per_grid, threads_per_block](
+                self.d_node_types,
+                self.d_node_incoming_gids,
+                self.d_node_incoming_offsets,
+                self.d_node_outgoing_gids,
+                self.d_node_outgoing_offsets,
+                self.d_segment_n_phys,
+                self.d_segment_n_ghost,
+                # Physics parameters
+                params.alpha,
+                params.rho_max,
+                params.epsilon,
+                params.k_m,
+                params.gamma_m,
+                params.k_c,
+                params.gamma_c,
+                params.v_max_m_ms,
+                params.v_max_c_ms,
+                params.v_creeping_ms,
+                # Batched data arrays
+                d_U_batched,
+                d_batched_offsets,
+                d_segment_lengths,
+                self.d_fluxes  # Output array for fluxes
+            )
+        else:
+            # Launch legacy kernel
+            _apply_coupling_kernel[blocks_per_grid, threads_per_block](
+                self.d_node_types,
+                self.d_node_incoming_gids,
+                self.d_node_incoming_offsets,
+                self.d_node_outgoing_gids,
+                self.d_node_outgoing_offsets,
+                self.d_segment_n_phys,
+                self.d_segment_n_ghost,
+                self.d_segment_lengths,
+                # Physics parameters
+                params.alpha,
+                params.rho_max,
+                params.epsilon,
+                params.k_m,
+                params.gamma_m,
+                params.k_c,
+                params.gamma_c,
+                params.v_max_m_ms,
+                params.v_max_c_ms,
+                params.v_creeping_ms,
+                # Data arrays
+                d_U_mega_pool,
+                d_segment_offsets,
+                self.d_fluxes  # Output array for fluxes
+            )
         
         # The kernel now handles everything, so the sequential loop is removed.
         # The second part of the logic (applying fluxes) is also in the kernel.
 
 # --- CUDA Kernel and Device Functions ---
+
+@cuda.jit(fastmath=True)
+def _apply_coupling_batched_kernel(
+    node_types,
+    node_incoming_gids,
+    node_incoming_offsets,
+    node_outgoing_gids,
+    node_outgoing_offsets,
+    segment_n_phys,
+    segment_n_ghost,
+    # Physics parameters
+    alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c,
+    v_max_m, v_max_c, v_creeping,
+    # Batched data arrays
+    d_U_batched,
+    d_batched_offsets,
+    d_segment_lengths,
+    d_fluxes_out
+):
+    """
+    CUDA kernel for batched network coupling.
+    Each thread processes one node.
+    
+    PHASE GPU BATCHING: Uses batched arrays layout [total_cells, 4] instead of legacy [4, total_cells].
+    
+    Args:
+        d_U_batched: Device array [total_cells, 4] with concatenated segments (no ghost cells)
+        d_batched_offsets: Start index of each segment in batched array
+        d_segment_lengths: Number of physical cells per segment
+    """
+    node_idx = cuda.grid(1)
+    if node_idx >= node_types.shape[0]:
+        return
+
+    node_type = node_types[node_idx]
+
+    if node_type == NODE_TYPE_JUNCTION:
+        # --- 1. Get incoming and outgoing segment GIDs for this node ---
+        inc_start = node_incoming_offsets[node_idx]
+        inc_end = node_incoming_offsets[node_idx + 1]
+        num_incoming = inc_end - inc_start
+        
+        out_start = node_outgoing_offsets[node_idx]
+        out_end = node_outgoing_offsets[node_idx + 1]
+        num_outgoing = out_end - out_start
+
+        if num_incoming == 0 or num_outgoing == 0:
+            return
+
+        # --- 2. Gather boundary states from incoming segments ---
+        U_L_m = cuda.local.array((10, 2), dtype=nb.float64) # Max 10 incoming
+        U_L_c = cuda.local.array((10, 2), dtype=nb.float64)
+
+        for i in range(num_incoming):
+            gid = node_incoming_gids[inc_start + i]
+            
+            # Get segment bounds in batched array (NO ghost cells in batched layout)
+            seg_offset = d_batched_offsets[gid]
+            seg_len = d_segment_lengths[gid]
+            
+            # Last physical cell index (batched layout: [N_phys, 4])
+            last_idx = seg_offset + seg_len - 1
+            
+            # Extract state (batched layout: [cell_idx, var])
+            U_L_m[i, 0] = d_U_batched[last_idx, 0]  # rho_m
+            U_L_m[i, 1] = d_U_batched[last_idx, 1]  # w_m
+            U_L_c[i, 0] = d_U_batched[last_idx, 2]  # rho_c
+            U_L_c[i, 1] = d_U_batched[last_idx, 3]  # w_c
+
+        # --- 3. Solve for the intermediate state (fluxes) ---
+        flux_m, flux_c = solve_node_fluxes_gpu(
+            U_L_m, U_L_c, num_incoming, num_outgoing,
+            alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c,
+            v_max_m, v_max_c, v_creeping
+        )
+
+        # --- 4. Apply the resulting state to the FIRST cells of outgoing segments ---
+        # Note: Batched layout has NO ghost cells, so first physical cell is at seg_offset
+        for i in range(num_outgoing):
+            gid = node_outgoing_gids[out_start + i]
+
+            # Get segment bounds in batched array
+            seg_offset = d_batched_offsets[gid]
+            
+            # First physical cell (batched: no ghost cells)
+            first_idx = seg_offset
+            
+            # Update first cell with junction flux (batched layout: [cell_idx, var])
+            d_U_batched[first_idx, 0] = flux_m[0]  # rho_m
+            d_U_batched[first_idx, 1] = flux_m[1]  # w_m
+            d_U_batched[first_idx, 2] = flux_c[0]  # rho_c
+            d_U_batched[first_idx, 3] = flux_c[1]  # w_c
+
+    # Note: Boundary condition nodes are handled by boundary condition kernels
+
 
 @cuda.jit(fastmath=True)
 def _apply_coupling_kernel(

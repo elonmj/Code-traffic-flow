@@ -298,28 +298,54 @@ class NetworkTrafficVisualizer:
         - 55-70 km/h: Yellow-green → Green (good flow)
         - 70-80 km/h: Green → Bright green (free flow)
         """
-        # Define color stops with RGB values for smooth gradient
+        # Define HIGHLY CONTRASTED color stops with MORE SEGMENTS (30 stops!)
+        # Each 2-3 km/h gets a distinct color for maximum differentiation
         colors = [
-            '#8B0000',  # 0 km/h - Dark red (stopped)
-            '#CC0000',  # 5 km/h - Red
-            '#FF0000',  # 10 km/h - Bright red
-            '#FF4500',  # 20 km/h - Orange-red
-            '#FF6600',  # 25 km/h - Dark orange
-            '#FF8800',  # 30 km/h - Orange
-            '#FFAA00',  # 35 km/h - Light orange
-            '#FFCC00',  # 40 km/h - Orange-yellow
-            '#FFDD44',  # 45 km/h - Yellow
-            '#DDEE55',  # 50 km/h - Yellow-green
-            '#AADD66',  # 55 km/h - Light green-yellow
-            '#77CC66',  # 60 km/h - Light green
-            '#44BB66',  # 65 km/h - Green
-            '#22AA55',  # 70 km/h - Bright green
-            '#00CC66',  # 75 km/h - Very bright green
-            '#00DD77',  # 80+ km/h - Brilliant green (free flow)
+            '#800000',  # 0 km/h - Very dark maroon (STOPPED)
+            '#990000',  # 2 km/h - Dark red
+            '#BB0000',  # 4 km/h - Strong red
+            '#DD0000',  # 6 km/h - Bright red
+            '#FF0000',  # 8 km/h - Pure red
+            '#FF0000',  # 10 km/h - Pure red (HEAVY CONGESTION)
+            '#FF2200',  # 12 km/h - Red-orange
+            '#FF3300',  # 14 km/h - Red-orange
+            '#FF4400',  # 16 km/h - Orange-red
+            '#FF5500',  # 18 km/h - Orange-red
+            '#FF6600',  # 20 km/h - Dark orange
+            '#FF7700',  # 22 km/h - Dark orange
+            '#FF8800',  # 24 km/h - Orange
+            '#FF9900',  # 26 km/h - Orange
+            '#FFAA00',  # 28 km/h - Light orange
+            '#FFBB00',  # 30 km/h - Orange-yellow (MODERATE CONGESTION)
+            '#FFCC00',  # 32 km/h - Orange-yellow
+            '#FFDD00',  # 34 km/h - Yellow-orange
+            '#FFEE00',  # 36 km/h - Yellow
+            '#FFFF00',  # 38 km/h - Pure yellow
+            '#FFFF00',  # 40 km/h - Pure yellow
+            '#EEFF00',  # 42 km/h - Yellow-lime
+            '#DDFF00',  # 44 km/h - Yellow-lime
+            '#CCFF00',  # 46 km/h - Lime-yellow
+            '#BBFF00',  # 48 km/h - Lime
+            '#AAFF00',  # 50 km/h - Lime (LIGHT CONGESTION)
+            '#99FF00',  # 52 km/h - Lime-green
+            '#88FF00',  # 54 km/h - Lime-green
+            '#77FF00',  # 56 km/h - Bright lime
+            '#66FF00',  # 58 km/h - Bright lime
+            '#55FF00',  # 60 km/h - Green-lime
+            '#44FF00',  # 62 km/h - Green-lime
+            '#33FF00',  # 64 km/h - Green-lime
+            '#22FF00',  # 66 km/h - Bright green
+            '#11FF00',  # 68 km/h - Bright green
+            '#00FF00',  # 70 km/h - Pure green (GOOD FLOW)
+            '#00FF22',  # 72 km/h - Green
+            '#00FF44',  # 74 km/h - Bright green
+            '#00FF66',  # 76 km/h - Cyan-green
+            '#00FF88',  # 78 km/h - Cyan-green
+            '#00FFAA',  # 80+ km/h - Brilliant cyan-green (FREE FLOW)
         ]
         
-        # Create custom colormap with these 16 gradient stops
-        n_bins = 100  # Smooth interpolation
+        # Create custom colormap with these 41 gradient stops for MAXIMUM detail
+        n_bins = 512  # Ultra-smooth interpolation
         cmap = LinearSegmentedColormap.from_list('speed_gradient', colors, N=n_bins)
         
         # Create normalizer to map speed values to [0, 1] range
@@ -444,18 +470,18 @@ class NetworkTrafficVisualizer:
             'tertiary': {'color': '#FF9933', 'width': 1.5}
         }
         
-        # FIRST: Draw ALL edges in light gray (background network)
+        # FIRST: Draw ALL edges in gray (inactive background)
         all_edges = list(self.graph.edges())
         nx.draw_networkx_edges(
             self.graph, self.positions,
             edgelist=all_edges,
-            edge_color='#CCCCCC',  # Light gray
-            width=1.0,
+            edge_color='#DDDDDD',  # Very light gray for maximum contrast
+            width=0.8,  # Thinner for inactive roads
             arrows=True,
             arrowstyle='->',
-            arrowsize=8,
+            arrowsize=6,
             connectionstyle='arc3,rad=0.05',
-            alpha=0.3,  # Semi-transparent
+            alpha=0.25,  # More transparent
             ax=ax
         )
         
@@ -531,18 +557,19 @@ class NetworkTrafficVisualizer:
         segment_data: Dict[str, Dict[str, np.ndarray]],
         time_array: np.ndarray,
         output_path: str,
-        fps: int = 10,
-        max_frames: int = 180
+        fps: int = 2,  # VERY SLOW: 2 FPS for maximum clarity (0.5 seconds per frame!)
+        max_frames: int = 300  # INCREASED from 180 to 300 to use more frames
     ) -> None:
         """
         Create animated GIF showing traffic flow evolution.
         
-        Edge colors represent average speed using a rich continuous gradient:
-        - Dark red (0-10 km/h): Nearly stopped traffic
-        - Red to Orange (10-40 km/h): Heavy to moderate congestion
-        - Orange to Yellow (40-55 km/h): Light congestion
-        - Yellow-green to Green (55-70 km/h): Good flow
-        - Bright green (70-80+ km/h): Free flow
+        Edge colors represent average speed using a HIGHLY SEGMENTED gradient (41 stops!):
+        - Dark maroon to Red (0-10 km/h): Stopped/Nearly stopped traffic
+        - Red to Orange (10-30 km/h): Heavy congestion
+        - Orange to Yellow (30-45 km/h): Moderate congestion
+        - Yellow to Lime (45-60 km/h): Light congestion
+        - Lime to Green (60-70 km/h): Good flow
+        - Green to Cyan-green (70-80+ km/h): Free flow
         
         Args:
             segment_data: Dictionary of segment data from SimulationDataLoader
@@ -621,17 +648,18 @@ class NetworkTrafficVisualizer:
                 active_edges.append((u, v))
                 active_edge_colors.append(color)
                 
-            # Draw active edges with traffic colors
+            # Draw active edges with traffic colors (THICKER for better visibility)
             if active_edges:
                 nx.draw_networkx_edges(
                     self.graph, self.positions,
                     edgelist=active_edges,
                     edge_color=active_edge_colors,
-                    width=3.0,
+                    width=5.0,  # Increased from 3.0 to 5.0 for better visibility
                     arrows=True,
                     arrowstyle='->',
-                    arrowsize=12,
-                    ax=ax
+                    arrowsize=15,  # Increased from 12 to 15
+                    ax=ax,
+                    alpha=0.9  # Slight transparency for overlapping edges
                 )
             
             # Add time text
@@ -731,12 +759,12 @@ class NetworkTrafficVisualizer:
             nx.draw_networkx_edges(
                 self.graph, self.positions,
                 edgelist=all_edges,
-                edge_color='#CCCCCC',
-                width=1.0,
+                edge_color='#DDDDDD',  # Very light gray for contrast
+                width=0.8,
                 arrows=True,
                 arrowstyle='->',
-                arrowsize=6,
-                alpha=0.3,
+                arrowsize=5,
+                alpha=0.25,  # More transparent
                 ax=ax
             )
             
@@ -771,17 +799,18 @@ class NetworkTrafficVisualizer:
                 active_edges.append((u, v))
                 active_edge_colors.append(color)
                 
-            # Draw active edges
+            # Draw active edges (THICKER and MORE VISIBLE)
             if active_edges:
                 nx.draw_networkx_edges(
                     self.graph, self.positions,
                     edgelist=active_edges,
                     edge_color=active_edge_colors,
-                    width=2.0,
+                    width=4.0,  # Increased from 2.0 to 4.0
                     arrows=True,
                     arrowstyle='->',
-                    arrowsize=8,
-                    ax=ax
+                    arrowsize=12,  # Increased from 8 to 12
+                    ax=ax,
+                    alpha=0.9  # Slight transparency
                 )
             
             # Panel title with time and avg speed

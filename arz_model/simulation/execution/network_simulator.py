@@ -209,23 +209,20 @@ class NetworkSimulator:
                         f"due to persistent dt collapse"
                     )
 
-                if enable_diag:
-                    stable_dt, diagnostics = cfl_condition_gpu_native(
-                        gpu_pool=self.gpu_pool,
-                        network=self.network,
-                        params=self.config.physics,
-                        cfl_max=adaptive_cfl_factor,
-                        return_diagnostics=True
-                    )
-                else:
-                    stable_dt = cfl_condition_gpu_native(
-                        gpu_pool=self.gpu_pool,
-                        network=self.network,
-                        params=self.config.physics,
-                        cfl_max=adaptive_cfl_factor,
-                        return_diagnostics=False
-                    )
-                    diagnostics = None
+                # PHASE GPU BATCHING: Use batched CFL calculation
+                from ..numerics.cfl import cfl_condition_gpu_batched
+                
+                # Get dx from first segment (all segments have same dx in Victoria Island)
+                first_seg = next(iter(self.network.segments.values()))
+                dx = first_seg['grid'].dx
+                
+                stable_dt = cfl_condition_gpu_batched(
+                    gpu_pool=self.gpu_pool,
+                    dx=dx,
+                    params=self.config.physics,
+                    cfl_max=adaptive_cfl_factor
+                )
+                diagnostics = None  # Batched version doesn't provide diagnostics yet
             
             # Store for next iteration
             self._last_dt = stable_dt
@@ -274,24 +271,22 @@ class NetworkSimulator:
                 self.logger.warning(f"Stopping simulation: stable_dt is {stable_dt}.")
                 break
 
-            # 2. Evolve each segment on the GPU using Strang splitting
-            for seg_id, segment_data in self.network.segments.items():
-                d_U_in = self.gpu_pool.get_segment_state(seg_id)
-                grid = segment_data['grid']
-                
-                # Perform one full time step for the segment
-                d_U_out = strang_splitting_step_gpu_native(
-                    d_U_n=d_U_in,
-                    dt=stable_dt,
-                    grid=grid,
-                    params=self.config.physics,
-                    gpu_pool=self.gpu_pool,
-                    seg_id=seg_id,
-                    current_time=self.t
-                )
-                
-                # The output d_U_out is a new array; update the pool to point to it.
-                self.gpu_pool.update_segment_state(seg_id, d_U_out)
+            # 2. Evolve ALL segments on GPU using batched kernel
+            # PHASE GPU BATCHING: Single kernel launch replaces per-segment loop
+            from ...numerics.time_integration import batched_strang_splitting_step_gpu_native
+            
+            # Get dx from first segment (all segments have same dx in Victoria Island)
+            first_seg = next(iter(self.network.segments.values()))
+            dx = first_seg['grid'].dx
+            
+            # Launch batched kernel for all 70 segments in parallel
+            batched_strang_splitting_step_gpu_native(
+                gpu_pool=self.gpu_pool,
+                dt=stable_dt,
+                dx=dx,
+                params=self.config.physics,
+                current_time=self.t
+            )
 
             # 3. Apply network coupling on the GPU
             self.network_coupling.apply_coupling(self.config.physics)
@@ -458,11 +453,18 @@ class NetworkSimulator:
         """
         Logs the current state by transferring data from GPU to CPU.
         This is an expensive operation and should be done infrequently.
+        
+        PHASE GPU BATCHING: Now uses batched checkpoint when available for better performance.
         """
         self.history['time'].append(self.t)
         for seg_id in self.network.segments.keys():
-            # Checkpoint the segment state from GPU to CPU
-            U_cpu = self.gpu_pool.checkpoint_to_cpu(seg_id)
+            # Try batched checkpoint first (Phase GPU Batching)
+            try:
+                U_cpu = self.gpu_pool.checkpoint_to_cpu_batched(seg_id)
+            except (AttributeError, ValueError, KeyError):
+                # Fallback to legacy checkpoint if batched not available
+                U_cpu = self.gpu_pool.checkpoint_to_cpu(seg_id)
+            
             grid = self.network.segments[seg_id]['grid']
             
             # Extract physical data from the CPU copy
