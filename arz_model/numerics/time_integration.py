@@ -197,9 +197,9 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     dx = grid.dx
     rho_max = params.rho_max
     alpha = params.alpha
-    K_m = params.K_m
+    k_m = params.k_m
     gamma_m = params.gamma_m
-    K_c = params.K_c
+    k_c = params.k_c
     gamma_c = params.gamma_c
     weno_eps = 1e-6  # WENO smoothness indicator epsilon
     
@@ -219,9 +219,9 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
         dx,          # Spatial resolution
         rho_max,     # Physics: max density
         alpha,       # Physics: anticipation parameter
-        K_m,         # Physics: motorway capacity
+        k_m,         # Physics: motorway capacity (lowercase!)
         gamma_m,     # Physics: motorway exponent
-        K_c,         # Physics: city capacity
+        k_c,         # Physics: city capacity (lowercase!)
         gamma_c,     # Physics: city exponent
         weno_eps     # WENO: smoothness epsilon
     )
