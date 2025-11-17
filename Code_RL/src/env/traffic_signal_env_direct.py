@@ -45,9 +45,7 @@ class TrafficSignalEnvDirect(gym.Env):
     metadata = {'render_modes': []}
     
     def __init__(self,
-                 scenario_config_path: str = None,
-                 simulation_config = None,  # NEW: Accept Pydantic SimulationConfig
-                 base_config_path: str = None,
+                 simulation_config = None,  # Pydantic SimulationConfig or NetworkSimulationConfig
                  decision_interval: float = 15.0,  # Changed from 10.0 (Bug #27 validation, 4x improvement)
                  observation_segments: Dict[str, list] = None,
                  normalization_params: Dict[str, float] = None,
@@ -59,9 +57,7 @@ class TrafficSignalEnvDirect(gym.Env):
         Initialize the traffic signal environment with direct simulator coupling.
         
         Args:
-            scenario_config_path: Path to ARZ scenario YAML config (DEPRECATED, use simulation_config)
-            simulation_config: Pydantic SimulationConfig object (NEW, preferred)
-            base_config_path: Path to ARZ base config (default: arz_model/config/config_base.yml)
+            simulation_config: Pydantic SimulationConfig or NetworkSimulationConfig object (REQUIRED)
             decision_interval: Time between agent decisions in seconds (default: 15.0)
                               Justification: Bug #27 investigation showed 4x improvement (593 → 2361 episode reward)
                               Literature: Chu et al. (2020) found 15s provides 'best balance' for urban TSC
@@ -77,21 +73,21 @@ class TrafficSignalEnvDirect(gym.Env):
             device: 'cpu' or 'gpu' for simulation backend
             
         Note:
-            You must provide either scenario_config_path (legacy) OR simulation_config (new).
-            If both provided, simulation_config takes precedence.
+            YAML configuration is no longer supported. Use Pydantic config objects.
+            For migration guide, see Code_RL/docs/MIGRATION_GUIDE.md
         """
         super().__init__()
         
         # Validate configuration inputs
-        if simulation_config is None and scenario_config_path is None:
-            raise ValueError("Must provide either simulation_config (Pydantic) or scenario_config_path (YAML)")
+        if simulation_config is None:
+            raise ValueError(
+                "simulation_config (Pydantic) is required. "
+                "YAML configuration mode has been removed. "
+                "See migration guide for details."
+            )
         
         # Store configuration
         self.simulation_config = simulation_config
-        self.scenario_config_path = scenario_config_path
-        self.base_config_path = base_config_path or os.path.join(
-            os.path.dirname(__file__), '../../../arz_model/config/config_base.yml'
-        )
         self.decision_interval = decision_interval
         self.episode_max_time = episode_max_time
         self.quiet = quiet
@@ -109,51 +105,19 @@ class TrafficSignalEnvDirect(gym.Env):
         
         # Normalization parameters (from calibration)
         # Separated by vehicle class (Chapter 6, Section 6.2.1)
-        # ✅ FIX: Load V0 free-flow speeds from scenario config if available
+        # NOTE: In Pydantic mode, extract from simulation_config.physics
         if normalization_params is None:
-            # Try to read V0_m/V0_c from scenario config for accurate normalization
-            import yaml
-            from pathlib import Path
-            try:
-                scenario_path = Path(scenario_config_path)
-                if scenario_path.exists():
-                    with open(scenario_path, 'r') as f:
-                        scenario_cfg = yaml.safe_load(f)
-                    
-                    v0_m_ms = None
-                    v0_c_ms = None
-                    
-                    # Strategy 1: Read V0 from global parameters section (old Lagos format)
-                    if 'parameters' in scenario_cfg:
-                        params = scenario_cfg['parameters']
-                        v0_m_ms = params.get('V0_m')  # m/s
-                        v0_c_ms = params.get('V0_c')  # m/s
-                    
-                    # Strategy 2: Read from network.segments (new NetworkConfig format)
-                    if (v0_m_ms is None or v0_c_ms is None) and 'network' in scenario_cfg:
-                        network = scenario_cfg['network']
-                        if 'segments' in network and isinstance(network['segments'], dict):
-                            # Get first segment's V0 parameters
-                            first_seg_name = list(network['segments'].keys())[0]
-                            first_seg = network['segments'][first_seg_name]
-                            if 'parameters' in first_seg:
-                                seg_params = first_seg['parameters']
-                                v0_m_ms = seg_params.get('V0_m')
-                                v0_c_ms = seg_params.get('V0_c')
-                        
-                        if v0_m_ms is not None and v0_c_ms is not None:
-                            # Use scenario V0 values for normalization
-                            normalization_params = {
-                                'rho_max_motorcycles': 300.0,  # veh/km (West African context)
-                                'rho_max_cars': 150.0,         # veh/km
-                                'v_free_motorcycles': v0_m_ms * 3.6,  # Convert m/s → km/h
-                                'v_free_cars': v0_c_ms * 3.6          # Convert m/s → km/h
-                            }
-                            if not quiet:
-                                print(f"[NORMALIZATION] Using scenario V0 speeds: v_m={v0_m_ms*3.6:.1f} km/h, v_c={v0_c_ms*3.6:.1f} km/h")
-            except Exception as e:
+            # Try to extract from Pydantic simulation_config if available
+            if simulation_config is not None and hasattr(simulation_config, 'physics'):
+                physics = simulation_config.physics
+                normalization_params = {
+                    'rho_max_motorcycles': physics.rho_max * physics.alpha * 1000.0,  # veh/km
+                    'rho_max_cars': physics.rho_max * (1.0 - physics.alpha) * 1000.0,  # veh/km
+                    'v_free_motorcycles': physics.V0_m * 3.6,  # m/s → km/h
+                    'v_free_cars': physics.V0_c * 3.6          # m/s → km/h
+                }
                 if not quiet:
-                    print(f"[NORMALIZATION] Could not load V0 from scenario: {e}")
+                    print(f"[NORMALIZATION] Using Pydantic config V0 speeds: v_m={physics.V0_m*3.6:.1f} km/h, v_c={physics.V0_c*3.6:.1f} km/h")
         
         # Fallback to default if still None
         if normalization_params is None:
@@ -225,51 +189,37 @@ class TrafficSignalEnvDirect(gym.Env):
         
         This enables seamless scaling from single-segment (20m) to multi-segment (400m-15km).
         """
-        if self.simulation_config is not None:
-            # NEW: Pydantic config mode
-            # SimulationRunner handles BOTH SimulationConfig and NetworkSimulationConfig
-            if not self.quiet:
-                from arz_model.config.network_simulation_config import NetworkSimulationConfig
-                if isinstance(self.simulation_config, NetworkSimulationConfig):
-                    print("🌐 Initializing NetworkGrid simulation (multi-segment)")
-                    print(f"   Segments: {len(self.simulation_config.segments)}")
-                    print(f"   Nodes: {len(self.simulation_config.nodes)}")
-                else:
-                    print("📏 Initializing Grid1D simulation (single segment)")
-            
-            # Create SimulationRunner (handles both types!)
-            self.runner = SimulationRunner(
-                config=self.simulation_config,
-                quiet=self.quiet,
-                device=self.device
+        if self.simulation_config is None:
+            raise ValueError(
+                "YAML configuration mode is deprecated. "
+                "Please provide simulation_config (Pydantic) instead. "
+                "See migration guide for details."
             )
-            
-            # Initialize simulation
-            self.runner.initialize_simulation()
-            
-            if not self.quiet:
-                print(f"✅ Simulation initialized")
-                print(f"   Decision interval: {self.decision_interval}s")
         
-        else:
-            # ============================================================
-            # LEGACY: YAML config mode
-            # ============================================================
-            if not self.quiet:
-                print("📄 Initializing from YAML (legacy mode)")
-            
-            self.runner = SimulationRunner(
-                scenario_config_path=self.scenario_config_path,
-                base_config_path=self.base_config_path,
-                quiet=self.quiet,
-                device=self.device
-            )
-            
-            # Initialize YAML-based simulation
-            self.runner.initialize_simulation()
-            
-            if not self.quiet:
-                print(f"✅ YAML config initialized")
+        # Pydantic config mode
+        # SimulationRunner handles BOTH SimulationConfig and NetworkSimulationConfig
+        if not self.quiet:
+            from arz_model.config.network_simulation_config import NetworkSimulationConfig
+            if isinstance(self.simulation_config, NetworkSimulationConfig):
+                print("🌐 Initializing NetworkGrid simulation (multi-segment)")
+                print(f"   Segments: {len(self.simulation_config.segments)}")
+                print(f"   Nodes: {len(self.simulation_config.nodes)}")
+            else:
+                print("📏 Initializing Grid1D simulation (single segment)")
+        
+        # Create SimulationRunner (handles both types!)
+        self.runner = SimulationRunner(
+            config=self.simulation_config,
+            quiet=self.quiet,
+            device=self.device
+        )
+        
+        # Initialize simulation
+        self.runner.initialize_simulation()
+        
+        if not self.quiet:
+            print(f"✅ Simulation initialized")
+            print(f"   Decision interval: {self.decision_interval}s")
         
         # Store grid/network reference for observation extraction
         if hasattr(self.runner, 'grid'):
