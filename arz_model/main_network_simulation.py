@@ -48,7 +48,7 @@ def main():
             default_velocity=50.0,  # km/h - moderate speed
             inflow_density=30.0,   # veh/km - entry traffic
             inflow_velocity=40.0,  # km/h - entry speed
-            t_final=120.0,         # 2 minutes simulation (benchmark)
+            t_final=240.0,         # 4 minutes simulation (baseline benchmark)
             output_dt=10.0,        # Output every 10 seconds
             cells_per_100m=10      # Grid resolution
         )
