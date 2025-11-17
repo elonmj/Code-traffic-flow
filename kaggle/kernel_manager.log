@@ -8262,3 +8262,35 @@
 2025-11-17 18:00:19,528 - kernel_manager - INFO - Current status: kernelworkerstatus.cancel_acknowledged (Elapsed: 521s)
 2025-11-17 18:00:50,175 - kernel_manager - INFO - Current status: kernelworkerstatus.cancel_acknowledged (Elapsed: 551s)
 2025-11-17 18:01:20,804 - kernel_manager - INFO - Current status: kernelworkerstatus.cancel_acknowledged (Elapsed: 582s)
+2025-11-17 18:18:38,253 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-17 18:18:38,253 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-17 18:18:38,421 - kernel_manager - INFO - 📍 Current branch: gpu-optimization-phase3
+2025-11-17 18:18:38,623 - kernel_manager - INFO - ✅ Git repository is clean and up to date
+2025-11-17 18:18:38,623 - kernel_manager - INFO - Building kernel script...
+2025-11-17 18:18:38,633 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmp_so7dus0
+2025-11-17 18:18:38,633 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-17 18:18:38,637 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-17 18:18:38,637 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-17 18:18:40,995 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-17 18:18:40,995 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-17 18:18:41,797 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-17 18:19:12,537 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-17 18:19:43,213 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-17 18:20:13,928 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 92s)
+2025-11-17 18:20:44,663 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 122s)
+2025-11-17 18:21:15,632 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 153s)
+2025-11-17 18:21:46,529 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 184s)
+2025-11-17 18:22:17,247 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 215s)
+2025-11-17 18:22:47,968 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 246s)
+2025-11-17 18:23:18,797 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 276s)
+2025-11-17 19:09:59,663 - kernel_manager - ERROR - ⌛️ Timeout of 600s exceeded. Aborting.
+2025-11-17 19:10:33,979 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-17 19:10:34,052 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-17 19:10:34,110 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-17 19:10:38,747 - kernel_manager - INFO - ✅ Artifacts downloaded in 4.6s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-17 19:10:38,747 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (157608 bytes)
+2025-11-17 19:10:38,747 - kernel_manager - INFO - Downloaded 4 item(s):
+2025-11-17 19:10:38,747 - kernel_manager - INFO -   - generic-test-runner-kernel.log (206544 bytes)
+2025-11-17 19:10:38,753 - kernel_manager - INFO -   - network_simulation_results.pkl (715732 bytes)
+2025-11-17 19:10:38,753 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-17 19:10:38,753 - kernel_manager - INFO -   - test_log.txt (157608 bytes)

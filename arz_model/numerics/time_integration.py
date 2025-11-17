@@ -15,6 +15,9 @@ from .reconstruction.weno_gpu import _compute_flux_divergence_weno_kernel
 from .riemann_solvers import central_upwind_flux_cuda_kernel
 from .reconstruction.converter import conserved_to_primitives_arr_gpu
 
+# Import optimized SSP-RK3 fused kernel (Phase 2.3+2.4)
+from .gpu.ssp_rk3_cuda import ssp_rk3_fused_kernel
+
 if TYPE_CHECKING:
     from ..core.parameters import PhysicsConfig
     from .gpu.memory_pool import GPUMemoryPool
@@ -172,13 +175,14 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     Solves the hyperbolic step w_t + F(w)_x = 0 using a 3rd-order SSP-RK scheme
     entirely on the GPU, leveraging the GPUMemoryPool.
 
-    This function replaces the legacy `solve_hyperbolic_step_ssprk3_gpu`.
+    **Phase 2.3+2.4 OPTIMIZED VERSION**: Uses fused SSP-RK3 kernel with integrated
+    WENO5 reconstruction and Central-Upwind Riemann solver for maximum performance.
 
     Args:
         d_U_in: Input state device array.
         dt: Time step.
         grid: Grid object.
-        params: ModelParameters object.
+        params: PhysicsConfig object.
         gpu_pool: The memory pool for managing GPU arrays.
         seg_id: The segment ID.
         current_time: The current simulation time.
@@ -186,45 +190,46 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     Returns:
         The state array after the hyperbolic step.
     """
-    # Get temporary arrays from the pool for intermediate RK steps
-    # This avoids reallocation and leverages cached memory.
-    d_U1 = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype)
-    d_U2 = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype)
-
-    # Configure kernel launch grid for RK stages
-    threadsperblock = (16, 16)  # 2D grid for state array (4 x N_total)
-    blockspergrid_x = (d_U_in.shape[0] + threadsperblock[0] - 1) // threadsperblock[0]
-    blockspergrid_y = (d_U_in.shape[1] + threadsperblock[1] - 1) // threadsperblock[1]
-    blockspergrid = (blockspergrid_x, blockspergrid_y)
+    # Allocate output array from pool
+    d_U_out = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype)
     
-    # --- RK Stage 1 ---
-    # L_U0 = L(U_n)
-    L_U0 = calculate_spatial_discretization_weno_gpu_native(d_U_in, grid, params, gpu_pool, seg_id, current_time)
-    # U_1 = U_n + dt * L(U_n)
-    ssp_rk3_stage_1_kernel[blockspergrid, threadsperblock](d_U_in, L_U0, dt, d_U1)
-    _apply_physical_bounds_gpu_in_place(d_U1, grid, params)
-
-    # --- RK Stage 2 ---
-    # L_U1 = L(U_1)
-    L_U1 = calculate_spatial_discretization_weno_gpu_native(d_U1, grid, params, gpu_pool, seg_id, current_time)
-    # U_2 = (3/4)U_n + (1/4)U_1 + (1/4)dt * L(U_1)
-    ssp_rk3_stage_2_kernel[blockspergrid, threadsperblock](d_U_in, d_U1, L_U1, dt, d_U2)
-    _apply_physical_bounds_gpu_in_place(d_U2, grid, params)
-
-    # --- RK Stage 3 ---
-    # L_U2 = L(U_2)
-    L_U2 = calculate_spatial_discretization_weno_gpu_native(d_U2, grid, params, gpu_pool, seg_id, current_time)
-    # U_np1 = (1/3)U_n + (2/3)U_2 + (2/3)dt * L(U_2)
-    d_U_out = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype) # Get a new array for the output
-    ssp_rk3_stage_3_kernel[blockspergrid, threadsperblock](d_U_in, d_U2, L_U2, dt, d_U_out)
+    # Extract physics parameters for WENO+Riemann
+    dx = grid.dx
+    rho_max = params.rho_max
+    alpha = params.alpha
+    K_m = params.K_m
+    gamma_m = params.gamma_m
+    K_c = params.K_c
+    gamma_c = params.gamma_c
+    weno_eps = 1e-6  # WENO smoothness indicator epsilon
+    
+    # Configure kernel launch: 1D grid over spatial cells
+    # Each thread handles one spatial cell through all 3 RK stages
+    num_cells = d_U_in.shape[1]  # shape is (4, N_total)
+    threadsperblock = 256
+    blockspergrid = (num_cells + threadsperblock - 1) // threadsperblock
+    
+    # Launch FUSED kernel: Does WENO5 + Riemann + 3 RK stages in one go!
+    # This eliminates intermediate global memory traffic (Phase 2.3)
+    # and integrates high-order physics (Phase 2.4)
+    ssp_rk3_fused_kernel[blockspergrid, threadsperblock](
+        d_U_in,      # Input state
+        d_U_out,     # Output state
+        dt,          # Time step
+        dx,          # Spatial resolution
+        rho_max,     # Physics: max density
+        alpha,       # Physics: anticipation parameter
+        K_m,         # Physics: motorway capacity
+        gamma_m,     # Physics: motorway exponent
+        K_c,         # Physics: city capacity
+        gamma_c,     # Physics: city exponent
+        weno_eps     # WENO: smoothness epsilon
+    )
+    
+    # Apply physical bounds to ensure positivity and max constraints
     _apply_physical_bounds_gpu_in_place(d_U_out, grid, params)
-
-    # Release temporary arrays back to the pool for reuse
-    gpu_pool.release_temp_array(d_U1)
-    gpu_pool.release_temp_array(d_U2)
     
-    # The final result is in d_U_out, which is also a temporary array.
-    # The caller (`strang_splitting_step_gpu_native`) will continue the process.
+    # Return the output (caller will continue Strang splitting process)
     return d_U_out
 
 
