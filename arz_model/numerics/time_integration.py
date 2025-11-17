@@ -216,6 +216,9 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     
     transpose_kernel[blockspergrid_2d, threadsperblock_2d](d_U_in, d_U_in_T)
     
+    # Extract spatial resolution from grid
+    dx = grid.dx
+    
     # Extract physics parameters for WENO+Riemann
     rho_max = params.rho_max
     alpha = params.alpha
