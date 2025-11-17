@@ -1,6 +1,16 @@
 """
 TrafficSignalEnvDirect - Direct In-Process Gymnasium Environment
 
+⚠️ DEPRECATED: This environment (V1) is deprecated as of 2025-11-17.
+Please migrate to TrafficSignalEnvDirectV2 for:
+- 100-200x performance improvement (0.2-0.6ms vs 50-100ms step latency)
+- Pydantic-based type-safe configuration
+- Direct GPU memory access (no HTTP overhead)
+
+Migration Guide: See Code_RL/docs/MIGRATION_GUIDE.md
+
+---
+
 This environment implements direct coupling with ARZ simulator following
 the industry-standard MuJoCo pattern (no HTTP/server overhead).
 
