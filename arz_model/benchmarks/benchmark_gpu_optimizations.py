@@ -32,49 +32,48 @@ from arz_model.network.network_grid import NetworkGrid
 from arz_model.simulation.runner import SimulationRunner
 
 
-def benchmark_simulation_step(runner, num_steps=100, warmup_steps=10):
+def benchmark_simulation_run(runner, t_final):
     """
-    Benchmark the average time per simulation step.
+    Benchmark the total time for a complete simulation run.
     
     Args:
         runner: SimulationRunner instance
-        num_steps: Number of steps to benchmark
-        warmup_steps: Number of warmup steps to skip
+        t_final: The final simulation time (in seconds).
         
     Returns:
-        dict: Benchmark results with timing statistics
+        dict: Benchmark results with timing statistics.
     """
-    print(f"🔥 Warming up with {warmup_steps} steps...")
+    print(f"⏱️  Running benchmark for a simulation of {t_final} seconds...")
     
-    # Warmup to compile kernels
-    for _ in range(warmup_steps):
-        runner.step()
+    # Warmup (optional, but good practice for JIT compilation)
+    # A very short run can ensure kernels are compiled.
+    print("🔥 Warming up kernels with a very short run...")
+    try:
+        runner.run(timeout=1.0) # Run for 1 simulation second to warm up
+    except Exception as e:
+        # This might fail if the timeout is too short for even one step, which is fine.
+        print(f"   (Warmup run interrupted as expected: {e})")
+        pass
     
-    cuda.synchronize()  # Ensure all GPU work is complete
+    cuda.synchronize()
     
-    print(f"⏱️  Running {num_steps} benchmark steps...")
-    step_times = []
+    # Main benchmark run
+    start_time = time.perf_counter()
+    results_dict = runner.run(timeout=None) # Run to completion based on config t_final
+    cuda.synchronize()
+    end_time = time.perf_counter()
     
-    for i in range(num_steps):
-        start = time.perf_counter()
-        runner.step()
-        cuda.synchronize()  # Wait for GPU to finish
-        end = time.perf_counter()
-        
-        step_time_ms = (end - start) * 1000
-        step_times.append(step_time_ms)
-        
-        if (i + 1) % 20 == 0:
-            print(f"  Step {i+1}/{num_steps}: {step_time_ms:.3f} ms")
+    total_time_s = end_time - start_time
+    total_steps = results_dict.get('total_steps', 0)
     
+    if total_steps == 0:
+        raise RuntimeError("Simulation reported 0 steps. Cannot calculate performance.")
+
     results = {
-        'mean_ms': np.mean(step_times),
-        'median_ms': np.median(step_times),
-        'std_ms': np.std(step_times),
-        'min_ms': np.min(step_times),
-        'max_ms': np.max(step_times),
-        'total_time_s': np.sum(step_times) / 1000,
-        'steps_per_sec': 1000 / np.mean(step_times),
+        'total_time_s': total_time_s,
+        'total_steps': total_steps,
+        'mean_ms_per_step': (total_time_s / total_steps) * 1000,
+        'steps_per_sec': total_steps / total_time_s,
     }
     
     return results
@@ -85,13 +84,10 @@ def print_results(results, title="Benchmark Results"):
     print(f"\n{'='*60}")
     print(f"  {title}")
     print(f"{'='*60}")
-    print(f"  Mean step time:      {results['mean_ms']:8.3f} ms")
-    print(f"  Median step time:    {results['median_ms']:8.3f} ms")
-    print(f"  Std deviation:       {results['std_ms']:8.3f} ms")
-    print(f"  Min step time:       {results['min_ms']:8.3f} ms")
-    print(f"  Max step time:       {results['max_ms']:8.3f} ms")
-    print(f"  Total time:          {results['total_time_s']:8.3f} s")
-    print(f"  Throughput:          {results['steps_per_sec']:8.2f} steps/sec")
+    print(f"  Total simulation time: {results['total_time_s']:8.3f} s")
+    print(f"  Total steps executed:  {results['total_steps']:8d} steps")
+    print(f"  Mean time per step:    {results['mean_ms_per_step']:8.3f} ms")
+    print(f"  Throughput:            {results['steps_per_sec']:8.2f} steps/sec")
     print(f"{'='*60}\n")
 
 
@@ -105,25 +101,24 @@ def main():
     """Main benchmark routine."""
     print("=" * 60)
     print("  GPU Kernel Optimization Performance Benchmark")
-    print("  Phase 1 + Phase 2 (Partial) Optimizations")
+    print("  (Corrected Method: Timing full runner.run())")
     print("=" * 60)
     print()
     
     # Configuration
     csv_path = "arz_model/data/fichier_de_travail_corridor_utf8.csv"
+    simulation_duration = 60.0 # seconds
     
     print("📋 Configuration:")
     print(f"  CSV file: {csv_path}")
-    print(f"  Simulation time: 30.0 seconds")
-    print(f"  Benchmark steps: 100")
-    print(f"  Warmup steps: 10")
+    print(f"  Simulation duration for benchmark: {simulation_duration} seconds")
     print()
     
     # Create simulation configuration
     print("🏗️  Building simulation configuration...")
-    config_factory = create_victoria_island_config(
+    config = create_victoria_island_config(
         csv_path=csv_path,
-        t_final=30.0,
+        t_final=simulation_duration,
         output_dt=5.0,
         cells_per_100m=4,  # dx=25m
         default_density=25.0
@@ -131,11 +126,11 @@ def main():
     
     # Build network grid
     print("🌐 Building network grid...")
-    network_grid = NetworkGrid.from_config(config_factory)
+    network_grid = NetworkGrid.from_config(config)
     
     # Create simulation runner
     print("🚀 Initializing simulation runner...")
-    runner = SimulationRunner(network_grid, config_factory)
+    runner = SimulationRunner(network_grid, config)
     
     # Run benchmark
     print("\n" + "="*60)
@@ -143,7 +138,7 @@ def main():
     print("="*60 + "\n")
     
     try:
-        results = benchmark_simulation_step(runner, num_steps=100, warmup_steps=10)
+        results = benchmark_simulation_run(runner, t_final=simulation_duration)
         print_results(results, "GPU Optimized Performance")
         
         # Save results to file
@@ -153,13 +148,10 @@ def main():
             f.write("=" * 60 + "\n")
             f.write(f"Date: 2025-11-17\n")
             f.write(f"Optimizations: Phase 1 (fastmath + division) + Phase 2 (device func)\n\n")
-            f.write(f"Mean step time:      {results['mean_ms']:.3f} ms\n")
-            f.write(f"Median step time:    {results['median_ms']:.3f} ms\n")
-            f.write(f"Std deviation:       {results['std_ms']:.3f} ms\n")
-            f.write(f"Min step time:       {results['min_ms']:.3f} ms\n")
-            f.write(f"Max step time:       {results['max_ms']:.3f} ms\n")
-            f.write(f"Total time:          {results['total_time_s']:.3f} s\n")
-            f.write(f"Throughput:          {results['steps_per_sec']:.2f} steps/sec\n")
+            f.write(f"Total simulation time: {results['total_time_s']:.3f} s\n")
+            f.write(f"Total steps executed:  {results['total_steps']} steps\n")
+            f.write(f"Mean time per step:    {results['mean_ms_per_step']:.3f} ms\n")
+            f.write(f"Throughput:            {results['steps_per_sec']:.2f} steps/sec\n")
         
         print(f"✅ Results saved to: {results_file}")
         
@@ -180,7 +172,7 @@ def main():
         print("📝 To compare with baseline:")
         print("  1. Revert GPU optimizations (git checkout baseline)")
         print("  2. Run this benchmark again")
-        print("  3. Compare mean step times")
+        print("  3. Compare throughput (steps/sec)")
         print()
         print("✅ Benchmark completed successfully!")
         
