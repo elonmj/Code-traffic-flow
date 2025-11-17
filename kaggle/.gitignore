@@ -1,0 +1,33 @@
+ecoles.md
+# .gitignore
+# Ignore Python bytecode files
+*.py[cod]
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+# Ignore all and anywhere pycache directories
+**/__pycache__/
+**/__pycache__/*
+
+**/.copilot-tracking/*
+.copilot-tracking/
+
+
+
+
+#ignorer tout ce qui est git
+.git/
+**/.git/*
+**/.github/*
+.github/
+.github/
+
+
+
+#ignorer tous les fichiers dans _archive
+_arxiv/
+_arxiv/*
+
+# Ignore Kaggle results
+kaggle/results/
+
+

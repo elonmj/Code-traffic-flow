@@ -1,0 +1,1 @@
+!python arz_model/benchmarks/benchmark_gpu_optimizations.py

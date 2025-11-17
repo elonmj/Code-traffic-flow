@@ -1,0 +1,13 @@
+{
+    "id": "elonmj/arz-gpu-benchmark---baseline-baseline-benchmark-20251117-114025",
+    "title": "ARZ GPU Benchmark - Baseline (baseline-benchmark)",
+    "code_file": "main_script.py",
+    "language": "python",
+    "kernel_type": "script",
+    "is_private": true,
+    "enable_gpu": true,
+    "enable_internet": false,
+    "dataset_sources": [],
+    "competition_sources": [],
+    "kernel_sources": []
+}

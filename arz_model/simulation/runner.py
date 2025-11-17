@@ -130,6 +130,11 @@ class SimulationRunner:
             device=self.device, # Pass device down
             debug=self.debug
         )
+        
+        # Initialize time tracking for step() method compatibility
+        # In network mode, step() delegates to network_simulator but needs self.t for boundary checks
+        self.t = 0.0
+        self.step_count = 0
     
     @staticmethod
     def _validate_gpu_architecture():
@@ -790,6 +795,60 @@ class SimulationRunner:
         3. Applies the chosen time integration scheme (e.g., SSP-RK3).
         4. Updates the current time and step count.
         """
+        # Network mode: delegate to network_simulator's time-stepping logic
+        if self.is_network_simulation:
+            # Network simulator doesn't expose a step() method but handles stepping internally
+            # We need to manually perform one time step using its components
+            from arz_model.numerics.cfl import cfl_condition_gpu_native
+            from arz_model.numerics.time_integration import strang_splitting_step_gpu_native
+            
+            # Access network simulator's components
+            ns = self.network_simulator
+            
+            # Check if we've reached t_final
+            if ns.t >= ns.config.time.t_final:
+                return
+            
+            # 1. Calculate dt using CFL condition
+            stable_dt = cfl_condition_gpu_native(
+                gpu_pool=ns.gpu_pool,
+                network=ns.network,
+                params=ns.config.physics,
+                cfl_max=ns.config.time.cfl_factor,
+                return_diagnostics=False
+            )
+            
+            # 2. Evolve each segment on the GPU using Strang splitting
+            for seg_id, segment_data in ns.network.segments.items():
+                d_U_in = ns.gpu_pool.get_segment_state(seg_id)
+                grid = segment_data['grid']
+                
+                # Perform one full time step for the segment
+                d_U_out = strang_splitting_step_gpu_native(
+                    d_U_n=d_U_in,
+                    dt=stable_dt,
+                    grid=grid,
+                    params=ns.config.physics,
+                    gpu_pool=ns.gpu_pool,
+                    seg_id=seg_id,
+                    current_time=ns.t
+                )
+                
+                # The output d_U_out is a new array; update the pool to point to it.
+                ns.gpu_pool.update_segment_state(seg_id, d_U_out)
+
+            # 3. Apply network coupling on the GPU
+            ns.network_coupling.apply_coupling(ns.config.physics)
+            
+            # 4. Update time tracking
+            ns.t += stable_dt
+            ns.time_step += 1
+            self.t = ns.t  # Keep SimulationRunner's t in sync
+            self.step_count = ns.time_step
+            
+            return
+        
+        # Single-segment mode (legacy)
         # Ensure we don't overshoot t_final
         if self.t >= self.params.t_final:
             return

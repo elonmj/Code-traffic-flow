@@ -31,7 +31,7 @@ def ssp_rk3_stage1_kernel(u_n, u_temp1, dt, flux_div, N):
             u_temp1[i, var] = u_n[i, var] + dt * flux_div[i, var]
 
 
-@cuda.jit  
+@cuda.jit
 def ssp_rk3_stage2_kernel(u_n, u_temp1, u_temp2, dt, flux_div, N):
     """
     Deuxième étape du SSP-RK3 : u^(2) = 3/4 * u^n + 1/4 * (u^(1) + dt * L(u^(1)))
