@@ -799,8 +799,8 @@ class SimulationRunner:
         if self.is_network_simulation:
             # Network simulator doesn't expose a step() method but handles stepping internally
             # We need to manually perform one time step using its components
-            from ...numerics.cfl import cfl_condition_gpu_native
-            from ...numerics.time_integration import strang_splitting_step_gpu_native
+            from arz_model.numerics.cfl import cfl_condition_gpu_native
+            from arz_model.numerics.time_integration import strang_splitting_step_gpu_native
             
             # Access network simulator's components
             ns = self.network_simulator
