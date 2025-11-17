@@ -27,7 +27,13 @@ if not cuda.is_available():
 gpu_info = cuda.get_current_device()
 print(f"\n✅ GPU Detected: {gpu_info.name.decode()}")
 print(f"   Compute Capability: {gpu_info.compute_capability}")
-print(f"   Memory: {gpu_info.get_memory_info()[1] / 1e9:.1f} GB")
+# Memory info not directly available in numba cuda API
+# We can get approximate info from cuda context
+try:
+    meminfo = cuda.current_context().get_memory_info()
+    print(f"   Memory: {meminfo.total / 1e9:.1f} GB")
+except:
+    print(f"   Memory: [info not available]")
 
 # Import après vérification GPU
 from arz_model.numerics.gpu.ssp_rk3_cuda import (
