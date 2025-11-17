@@ -809,24 +809,39 @@ class SimulationRunner:
             if ns.t >= ns.config.time.t_final:
                 return
             
-            # Calculate dt using CFL condition
-            dt = cfl_condition_gpu_native(
+            # 1. Calculate dt using CFL condition
+            stable_dt = cfl_condition_gpu_native(
                 gpu_pool=ns.gpu_pool,
-                params=ns.params,
-                config=ns.config
+                network=ns.network,
+                params=ns.config.physics,
+                cfl_max=ns.config.time.cfl_factor,
+                return_diagnostics=False
             )
             
-            # Execute single time step
-            strang_splitting_step_gpu_native(
-                gpu_pool=ns.gpu_pool,
-                network_coupling=ns.network_coupling,
-                dt=dt,
-                params=ns.params,
-                config=ns.config
-            )
+            # 2. Evolve each segment on the GPU using Strang splitting
+            for seg_id, segment_data in ns.network.segments.items():
+                d_U_in = ns.gpu_pool.get_segment_state(seg_id)
+                grid = segment_data['grid']
+                
+                # Perform one full time step for the segment
+                d_U_out = strang_splitting_step_gpu_native(
+                    d_U_n=d_U_in,
+                    dt=stable_dt,
+                    grid=grid,
+                    params=ns.config.physics,
+                    gpu_pool=ns.gpu_pool,
+                    seg_id=seg_id,
+                    current_time=ns.t
+                )
+                
+                # The output d_U_out is a new array; update the pool to point to it.
+                ns.gpu_pool.update_segment_state(seg_id, d_U_out)
+
+            # 3. Apply network coupling on the GPU
+            ns.network_coupling.apply_coupling(ns.config.physics)
             
-            # Update time tracking
-            ns.t += dt
+            # 4. Update time tracking
+            ns.t += stable_dt
             ns.time_step += 1
             self.t = ns.t  # Keep SimulationRunner's t in sync
             self.step_count = ns.time_step
