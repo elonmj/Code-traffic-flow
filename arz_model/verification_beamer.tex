@@ -255,6 +255,29 @@ def calculate_source_term_gpu(...):
 % --- Numerics Section ---
 \section{La Chaîne Numérique}
 
+\begin{frame}
+    \frametitle{Principe : La Méthode des Volumes Finis}
+    \begin{block}{Objectif}
+        Transformer le système d'équations aux dérivées partielles (PDE) en un système d'équations différentielles ordinaires (ODE) que l'on peut résoudre numériquement.
+    \end{block}
+    
+    L'équation de conservation pour une cellule $i$ s'écrit :
+    $$ \frac{d U_i}{dt} = - \frac{1}{\Delta x} \left( F_{i+1/2} - F_{i-1/2} \right) $$
+    
+    \begin{alertblock}{Les deux défis majeurs}
+    \begin{enumerate}
+        \item \textbf{Comment calculer le flux $F_{i+1/2}$ à l'interface ?}
+        \begin{itemize}
+            \item Cela nécessite de connaître les valeurs de $U$ de part et d'autre de l'interface.
+        \end{itemize}
+        \item \textbf{Comment faire avancer la solution $U_i$ dans le temps ?}
+        \begin{itemize}
+            \item Il faut un intégrateur temporel stable et précis.
+        \end{itemize}
+    \end{enumerate}
+    \end{alertblock}
+\end{frame}
+
 \begin{frame}[fragile]
     \frametitle{Reconstruction Spatiale : WENO5}
     \framesubtitle{Référence : Jiang \& Shu (1996)}
@@ -272,6 +295,19 @@ def calculate_source_term_gpu(...):
     
     \begin{alertblock}{Analyse de l'implémentation}
         L'implémentation dans \texttt{weno\_gpu.py} est une transcription \textbf{parfaite} des formules de Jiang \& Shu (1996) pour les $\beta_k$, les poids $\omega_k$ et les polynômes $p_k$.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Étape 2 : Calcul du Flux à l'Interface}
+    \begin{block}{Problème}
+        Une fois les valeurs $U_L$ (à gauche) et $U_R$ (à droite) de l'interface reconstruites par WENO, comment calculer le flux unique $F_{i+1/2}$ qui traverse cette interface ?
+    \end{block}
+    
+    \begin{alertblock}{Solution : Le Solveur de Riemann}
+        Un solveur de Riemann est une fonction qui prend en entrée les deux états ($U_L, U_R$) et retourne le flux numérique.
+        $$ F_{i+1/2} = \text{RiemannSolver}(U_L, U_R) $$
+        Notre choix se porte sur le schéma \textbf{Central-Upwind}.
     \end{alertblock}
 \end{frame}
 
@@ -313,6 +349,21 @@ F_CU = term1 + term2
     \end{center}
 \end{frame}
 
+\begin{frame}
+    \frametitle{Étape 3 : Évolution Temporelle}
+    \begin{block}{Problème}
+        Nous avons maintenant une méthode pour calculer la dérivée spatiale pour chaque cellule $i$:
+        $$ \frac{\partial U_i}{\partial t} = - \frac{F_{i+1/2} - F_{i-1/2}}{\Delta x} \equiv \mathcal{L}(U)_i $$
+        Comment utiliser cette information pour faire avancer la solution de $t^n$ à $t^{n+1}$ ?
+    \end{block}
+    
+    \begin{alertblock}{Solution : L'Intégration Temporelle}
+        Nous devons résoudre un système d'équations différentielles ordinaires (EDO).
+        $$ \frac{dU}{dt} = \mathcal{L}(U) $$
+        Pour cela, nous utilisons une méthode de Runge-Kutta, spécifiquement la méthode \textbf{SSP-RK3} (Strong Stability Preserving, 3ème ordre) pour sa stabilité et sa précision.
+    \end{alertblock}
+\end{frame}
+
 \begin{frame}[fragile]
     \frametitle{Intégration Temporelle : SSP-RK3}
     \framesubtitle{Référence : Gottlieb \& Shu (1998)}
@@ -346,7 +397,30 @@ u_np1 = (1.0/3.0) * u_n + (2.0/3.0) *
         \end{column}
     \end{columns}
     \begin{center}
-        \textbf{\textcolor{codegreen}{Conclusion : Les coefficients et étapes du SSP-RK3 sont exacts.}}
+        
+\textbf{\textcolor{codegreen}{Conclusion : Les coefficients et étapes du SSP-RK3 sont exacts.}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Étape 4 : Couplage Physique-Hyperbolique}
+    \begin{block}{Problème}
+        L'équation complète contient un terme source $S(U)$ qui modélise la relaxation de la vitesse :
+        $$ \frac{\partial U}{\partial t} + \frac{\partial F(U)}{\partial x} = S(U) $$
+        Comment intégrer ce terme source avec notre solveur hyperbolique (WENO+Flux+RK3) ?
+    \end{block}
+    
+    \begin{alertblock}{Solution : Le Splitting de Strang}
+        Nous séparons l'équation en deux parties, résolues séquentiellement :
+        \begin{enumerate}
+            \item \textbf{Partie Hyperbolique :} $\frac{\partial U}{\partial t} + \frac{\partial F(U)}{\partial x} = 0$
+            \item \textbf{Partie ODE (Source) :} $\frac{dU}{dt} = S(U)$
+        \end{enumerate}
+        Le \textbf{Splitting de Strang} (2ème ordre) combine ces étapes de manière symétrique pour une meilleure précision.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Couplage par Splitting de Strang
     \end{center}
 \end{frame}
 
