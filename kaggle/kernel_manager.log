@@ -8497,3 +8497,29 @@
 2025-11-17 20:22:23,749 - kernel_manager - INFO -   - network_simulation_results.pkl (1655359 bytes)
 2025-11-17 20:22:23,749 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-17 20:22:23,749 - kernel_manager - INFO -   - test_log.txt (5007126 bytes)
+2025-11-17 23:44:51,326 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-17 23:44:51,326 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-17 23:44:51,494 - kernel_manager - INFO - 📍 Current branch: gpu-optimization-phase3
+2025-11-17 23:44:51,706 - kernel_manager - INFO - ✅ Git repository is clean and up to date
+2025-11-17 23:44:51,707 - kernel_manager - INFO - Building kernel script...
+2025-11-17 23:44:51,711 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpfa011rl7
+2025-11-17 23:44:51,713 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-17 23:44:51,717 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-17 23:44:51,717 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-17 23:44:53,655 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-17 23:44:53,658 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-17 23:44:54,359 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-17 23:45:25,087 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-17 23:45:57,035 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-17 23:46:29,948 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 93s)
+2025-11-17 23:46:29,949 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-17 23:46:29,949 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-17 23:46:29,949 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-17 23:46:29,955 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-17 23:46:34,425 - kernel_manager - INFO - ✅ Artifacts downloaded in 4.5s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-17 23:46:34,426 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (13859 bytes)
+2025-11-17 23:46:34,430 - kernel_manager - INFO - Downloaded 4 item(s):
+2025-11-17 23:46:34,432 - kernel_manager - INFO -   - batched_gpu_benchmark_results.pkl (1656424 bytes)
+2025-11-17 23:46:34,432 - kernel_manager - INFO -   - generic-test-runner-kernel.log (19899 bytes)
+2025-11-17 23:46:34,432 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-17 23:46:34,435 - kernel_manager - INFO -   - test_log.txt (13859 bytes)

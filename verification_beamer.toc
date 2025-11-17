@@ -1,4 +1,0 @@
-\beamer@sectionintoc {1}{Introduction et Contexte}{3}{0}{1}
-\beamer@sectionintoc {2}{Le Modèle Physique (ARZ)}{5}{0}{2}
-\beamer@sectionintoc {3}{La Chaîne Numérique}{9}{0}{3}
-\beamer@sectionintoc {4}{Conclusion et Références}{18}{0}{4}
