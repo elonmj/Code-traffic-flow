@@ -130,6 +130,11 @@ class SimulationRunner:
             device=self.device, # Pass device down
             debug=self.debug
         )
+        
+        # Initialize time tracking for step() method compatibility
+        # In network mode, step() delegates to network_simulator but needs self.t for boundary checks
+        self.t = 0.0
+        self.step_count = 0
     
     @staticmethod
     def _validate_gpu_architecture():
