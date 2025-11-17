@@ -277,8 +277,8 @@ class KernelManager:
         """
         test_name = config['test_name']
         repo_url = self.repo_url
-        # TODO: Make branch configurable
-        branch = "main" 
+        # Use auto-detected branch from __init__
+        branch = self.branch
         
         # Get execution target
         target_path = config.get('target')
@@ -471,6 +471,7 @@ try:
     results_dir = Path(REPO_DIR) / "results"
     output_dir = Path("/kaggle/working/simulation_results")
     
+    # First, copy results if they exist
     if results_dir.exists() and any(results_dir.iterdir()):
         try:
             if not output_dir.exists():
@@ -485,10 +486,14 @@ try:
     else:
         log_and_print("warning", f"[WARN] No 'results' directory found or it is empty.")
 
-    # Clean up the cloned repository
+    # CRITICAL: Clean up the cloned repository AFTER copying results
+    # This prevents the entire .git directory from being included in Kaggle artifacts
     log_and_print("info", f"Cleaning up cloned repository at {{REPO_DIR}}...")
-    shutil.rmtree(REPO_DIR)
-    log_and_print("info", "[OK] Repository cleaned up successfully.")
+    try:
+        shutil.rmtree(REPO_DIR)
+        log_and_print("info", "[OK] Repository cleaned up successfully.")
+    except Exception as cleanup_error:
+        log_and_print("warning", f"Failed to cleanup repository: {{cleanup_error}}")
     
     log_and_print("info", "\\n[FINAL] Test workflow completed")
     
