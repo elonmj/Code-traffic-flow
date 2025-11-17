@@ -1,0 +1,38 @@
+\frametitle{Couplage des Opérateurs : Strang Splitting}
+
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \begin{block}{Objectif}
+                Découpler la résolution de la partie hyperbolique (transport) de celle des termes sources (relaxation), en maintenant un ordre de précision 2.
+            \end{block}
+
+            \textbf{Schéma de Strang :}
+            \begin{enumerate}
+                \item Résoudre ODE (source) sur $\Delta t/2$.
+                \item Résoudre PDE (transport) sur $\Delta t$.
+                \item Résoudre ODE (source) sur $\Delta t/2$.
+            \end{enumerate}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{exampleblock}{Code (\texttt{time\_integration.py})}
+\begin{lstlisting}
+def strang_splitting_step_gpu_native(...):
+    // 1. Premier sous-pas ODE (dt/2)
+    d_U_star = solve_ode_step_gpu(
+        d_U_n, dt / 2.0, ...)
+
+    // 2. Sous-pas hyperbolique (dt)
+    d_U_ss = solve_hyperbolic_step_ssp_rk3_gpu_native(...)
+
+    // 3. Second sous-pas ODE (dt/2)
+    d_U_np1 = solve_ode_step_gpu(
+        d_U_ss, dt / 2.0, ...)
+
+    return d_U_np1
+\end{lstlisting}
+            \end{exampleblock}
+        \end{column}
+    \end{columns}
+    \begin{center}
+        \textbf{\textcolor{codegreen}{Conclusion : Le couplage respecte le schéma de Strang d'ordre 2.}}
+    \end{center}

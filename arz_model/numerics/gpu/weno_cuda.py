@@ -12,10 +12,31 @@ import numpy as np
 from numba import cuda
 import math
 
-@cuda.jit
-def weno5_reconstruction_kernel(v_in, v_left_out, v_right_out, N, epsilon):
+# ========== WENO CONSTANTS FOR GPU KERNELS ==========
+# These will be loaded into registers by each thread (compiler may optimize to constant memory)
+
+# WENO linear weights
+WENO_C0_L = 0.1
+WENO_C1_L = 0.6
+WENO_C2_L = 0.3
+WENO_C0_R = 0.3
+WENO_C1_R = 0.6
+WENO_C2_R = 0.1
+
+# Smoothness indicator coefficients
+WENO_BETA_COEFF1 = 13.0/12.0
+WENO_BETA_COEFF2 = 0.25
+
+# Polynomial reconstruction coefficients
+WENO_POLY_INV6 = 1.0/6.0
+
+# Epsilon for WENO regularization
+WENO_EPSILON = 1e-6
+
+@cuda.jit(fastmath=True)
+def weno5_reconstruction_kernel(v_in, v_left_out, v_right_out, N):
     """
-    Kernel CUDA naïf pour la reconstruction WENO5.
+    Kernel CUDA naïf pour la reconstruction WENO5 avec optimisations de mémoire constante.
     
     Chaque thread traite une interface i+1/2 et calcule les reconstructions
     v_left[i+1] et v_right[i] pour cette interface.
@@ -25,7 +46,8 @@ def weno5_reconstruction_kernel(v_in, v_left_out, v_right_out, N, epsilon):
         v_left_out (cuda.device_array): Reconstructions à gauche [N] 
         v_right_out (cuda.device_array): Reconstructions à droite [N]
         N (int): Nombre de cellules
-        epsilon (float): Paramètre de régularisation WENO
+    
+    Note: epsilon is now in constant memory (WENO_EPSILON[0])
     """
     # Index du thread = index de l'interface
     i = cuda.grid(1)
@@ -44,48 +66,54 @@ def weno5_reconstruction_kernel(v_in, v_left_out, v_right_out, N, epsilon):
     # ========== RECONSTRUCTION GAUCHE v_left[i+1] ==========
     
     # Indicateurs de régularité (smoothness indicators)
-    beta0 = 13.0/12.0 * (vm2 - 2*vm1 + v0)**2 + 0.25 * (vm2 - 4*vm1 + 3*v0)**2
-    beta1 = 13.0/12.0 * (vm1 - 2*v0 + vp1)**2 + 0.25 * (vm1 - vp1)**2  
-    beta2 = 13.0/12.0 * (v0 - 2*vp1 + vp2)**2 + 0.25 * (3*v0 - 4*vp1 + vp2)**2
+    beta0 = WENO_BETA_COEFF1 * (vm2 - 2*vm1 + v0)**2 + WENO_BETA_COEFF2 * (vm2 - 4*vm1 + 3*v0)**2
+    beta1 = WENO_BETA_COEFF1 * (vm1 - 2*v0 + vp1)**2 + WENO_BETA_COEFF2 * (vm1 - vp1)**2  
+    beta2 = WENO_BETA_COEFF1 * (v0 - 2*vp1 + vp2)**2 + WENO_BETA_COEFF2 * (3*v0 - 4*vp1 + vp2)**2
     
     # Poids non-linéaires (privilégie les stencils de gauche)
-    alpha0 = 0.1 / (epsilon + beta0)**2
-    alpha1 = 0.6 / (epsilon + beta1)**2
-    alpha2 = 0.3 / (epsilon + beta2)**2
+    alpha0 = WENO_C0_L / (WENO_EPSILON + beta0)**2
+    alpha1 = WENO_C1_L / (WENO_EPSILON + beta1)**2
+    alpha2 = WENO_C2_L / (WENO_EPSILON + beta2)**2
     sum_alpha = alpha0 + alpha1 + alpha2
     
-    w0 = alpha0 / sum_alpha
-    w1 = alpha1 / sum_alpha  
-    w2 = alpha2 / sum_alpha
+    # OPTIMIZATION: Replace division with multiplication by reciprocal
+    inv_sum_alpha = 1.0 / sum_alpha
+    w0 = alpha0 * inv_sum_alpha
+    w1 = alpha1 * inv_sum_alpha
+    w2 = alpha2 * inv_sum_alpha
     
     # Polynômes de reconstruction
-    p0 = (2*vm2 - 7*vm1 + 11*v0) / 6.0    # stencil {vm2, vm1, v0}
-    p1 = (-vm1 + 5*v0 + 2*vp1) / 6.0       # stencil {vm1, v0, vp1}
-    p2 = (2*v0 + 5*vp1 - vp2) / 6.0        # stencil {v0, vp1, vp2}
+    # OPTIMIZATION: Use pre-computed inv6 instead of dividing by 6.0
+    p0 = (2*vm2 - 7*vm1 + 11*v0) * WENO_POLY_INV6    # stencil {vm2, vm1, v0}
+    p1 = (-vm1 + 5*v0 + 2*vp1) * WENO_POLY_INV6       # stencil {vm1, v0, vp1}
+    p2 = (2*v0 + 5*vp1 - vp2) * WENO_POLY_INV6        # stencil {v0, vp1, vp2}
     
     v_left_out[i + 1] = w0*p0 + w1*p1 + w2*p2
     
     # ========== RECONSTRUCTION DROITE v_right[i] ==========
     
     # Poids inversés (privilégie les stencils de droite)
-    alpha0_r = 0.3 / (epsilon + beta0)**2
-    alpha1_r = 0.6 / (epsilon + beta1)**2
-    alpha2_r = 0.1 / (epsilon + beta2)**2
+    alpha0_r = WENO_C0_R / (WENO_EPSILON + beta0)**2
+    alpha1_r = WENO_C1_R / (WENO_EPSILON + beta1)**2
+    alpha2_r = WENO_C2_R / (WENO_EPSILON + beta2)**2
     sum_alpha_r = alpha0_r + alpha1_r + alpha2_r
     
-    w0_r = alpha0_r / sum_alpha_r
-    w1_r = alpha1_r / sum_alpha_r
-    w2_r = alpha2_r / sum_alpha_r
+    # OPTIMIZATION: Replace division with multiplication by reciprocal
+    inv_sum_alpha_r = 1.0 / sum_alpha_r
+    w0_r = alpha0_r * inv_sum_alpha_r
+    w1_r = alpha1_r * inv_sum_alpha_r
+    w2_r = alpha2_r * inv_sum_alpha_r
     
     # Polynômes extrapolés vers la droite
-    p0_r = (11*vm2 - 7*vm1 + 2*v0) / 6.0
-    p1_r = (2*vm1 + 5*v0 - vp1) / 6.0
-    p2_r = (-v0 + 5*vp1 + 2*vp2) / 6.0
+    # OPTIMIZATION: Use pre-computed inv6
+    p0_r = (11*vm2 - 7*vm1 + 2*v0) * WENO_POLY_INV6
+    p1_r = (2*vm1 + 5*v0 - vp1) * WENO_POLY_INV6
+    p2_r = (-v0 + 5*vp1 + 2*vp2) * WENO_POLY_INV6
     
     v_right_out[i] = w0_r*p0_r + w1_r*p1_r + w2_r*p2_r
 
 
-@cuda.jit  
+@cuda.jit(fastmath=True)  
 def apply_boundary_conditions_kernel(v_left, v_right, v_in, N):
     """
     Kernel pour appliquer les conditions aux limites (extrapolation constante).
@@ -129,9 +157,9 @@ def reconstruct_weno5_gpu(d_v_in, epsilon=1e-6):
     threadsperblock = 256
     blockspergrid = (N + threadsperblock - 1) // threadsperblock
     
-    # Lancer le kernel de reconstruction
+    # Lancer le kernel de reconstruction (epsilon now in constant memory)
     weno5_reconstruction_kernel[blockspergrid, threadsperblock](
-        d_v_in, d_v_left, d_v_right, N, epsilon
+        d_v_in, d_v_left, d_v_right, N
     )
     
     # Lancer le kernel pour les conditions aux limites
@@ -142,8 +170,8 @@ def reconstruct_weno5_gpu(d_v_in, epsilon=1e-6):
     return d_v_left, d_v_right
 
 
-@cuda.jit
-def weno5_reconstruction_optimized_kernel(v_in, v_left_out, v_right_out, N, epsilon):
+@cuda.jit(fastmath=True)
+def weno5_reconstruction_optimized_kernel(v_in, v_left_out, v_right_out, N):
     """
     Kernel CUDA optimisé avec mémoire partagée pour la reconstruction WENO5.
     
@@ -155,7 +183,8 @@ def weno5_reconstruction_optimized_kernel(v_in, v_left_out, v_right_out, N, epsi
         v_left_out (cuda.device_array): Reconstructions à gauche [N]
         v_right_out (cuda.device_array): Reconstructions à droite [N] 
         N (int): Nombre de cellules
-        epsilon (float): Paramètre de régularisation WENO
+    
+    Note: epsilon is now in constant memory (WENO_EPSILON[0])
     """
     # Index global et local du thread
     i_global = cuda.grid(1)
@@ -215,39 +244,45 @@ def weno5_reconstruction_optimized_kernel(v_in, v_left_out, v_right_out, N, epsi
     vp2 = shared_v[i_shared + 2]
     
     # Calcul des indicateurs de régularité
-    beta0 = 13.0/12.0 * (vm2 - 2*vm1 + v0)**2 + 0.25 * (vm2 - 4*vm1 + 3*v0)**2
-    beta1 = 13.0/12.0 * (vm1 - 2*v0 + vp1)**2 + 0.25 * (vm1 - vp1)**2
-    beta2 = 13.0/12.0 * (v0 - 2*vp1 + vp2)**2 + 0.25 * (3*v0 - 4*vp1 + vp2)**2
+    beta0 = WENO_BETA_COEFF1 * (vm2 - 2*vm1 + v0)**2 + WENO_BETA_COEFF2 * (vm2 - 4*vm1 + 3*v0)**2
+    beta1 = WENO_BETA_COEFF1 * (vm1 - 2*v0 + vp1)**2 + WENO_BETA_COEFF2 * (vm1 - vp1)**2
+    beta2 = WENO_BETA_COEFF1 * (v0 - 2*vp1 + vp2)**2 + WENO_BETA_COEFF2 * (3*v0 - 4*vp1 + vp2)**2
     
-    # Reconstruction GAUCHE
-    alpha0 = 0.1 / (epsilon + beta0)**2
-    alpha1 = 0.6 / (epsilon + beta1)**2
-    alpha2 = 0.3 / (epsilon + beta2)**2
+    # Reconstruction GAUCHE with optimizations
+    alpha0 = WENO_C0_L / (WENO_EPSILON + beta0)**2
+    alpha1 = WENO_C1_L / (WENO_EPSILON + beta1)**2
+    alpha2 = WENO_C2_L / (WENO_EPSILON + beta2)**2
     sum_alpha = alpha0 + alpha1 + alpha2
     
-    w0 = alpha0 / sum_alpha
-    w1 = alpha1 / sum_alpha
-    w2 = alpha2 / sum_alpha
+    # OPTIMIZATION: Reciprocal multiplication instead of division
+    inv_sum_alpha = 1.0 / sum_alpha
+    w0 = alpha0 * inv_sum_alpha
+    w1 = alpha1 * inv_sum_alpha
+    w2 = alpha2 * inv_sum_alpha
     
-    p0 = (2*vm2 - 7*vm1 + 11*v0) / 6.0
-    p1 = (-vm1 + 5*v0 + 2*vp1) / 6.0
-    p2 = (2*v0 + 5*vp1 - vp2) / 6.0
+    # OPTIMIZATION: Pre-computed inv6
+    p0 = (2*vm2 - 7*vm1 + 11*v0) * WENO_POLY_INV6
+    p1 = (-vm1 + 5*v0 + 2*vp1) * WENO_POLY_INV6
+    p2 = (2*v0 + 5*vp1 - vp2) * WENO_POLY_INV6
     
     v_left_out[i_global + 1] = w0*p0 + w1*p1 + w2*p2
     
-    # Reconstruction DROITE
-    alpha0_r = 0.3 / (epsilon + beta0)**2
-    alpha1_r = 0.6 / (epsilon + beta1)**2  
-    alpha2_r = 0.1 / (epsilon + beta2)**2
+    # Reconstruction DROITE with optimizations
+    alpha0_r = WENO_C0_R / (WENO_EPSILON + beta0)**2
+    alpha1_r = WENO_C1_R / (WENO_EPSILON + beta1)**2  
+    alpha2_r = WENO_C2_R / (WENO_EPSILON + beta2)**2
     sum_alpha_r = alpha0_r + alpha1_r + alpha2_r
     
-    w0_r = alpha0_r / sum_alpha_r
-    w1_r = alpha1_r / sum_alpha_r
-    w2_r = alpha2_r / sum_alpha_r
+    # OPTIMIZATION: Reciprocal multiplication
+    inv_sum_alpha_r = 1.0 / sum_alpha_r
+    w0_r = alpha0_r * inv_sum_alpha_r
+    w1_r = alpha1_r * inv_sum_alpha_r
+    w2_r = alpha2_r * inv_sum_alpha_r
     
-    p0_r = (11*vm2 - 7*vm1 + 2*v0) / 6.0
-    p1_r = (2*vm1 + 5*v0 - vp1) / 6.0
-    p2_r = (-v0 + 5*vp1 + 2*vp2) / 6.0
+    # OPTIMIZATION: Pre-computed inv6
+    p0_r = (11*vm2 - 7*vm1 + 2*v0) * WENO_POLY_INV6
+    p1_r = (2*vm1 + 5*v0 - vp1) * WENO_POLY_INV6
+    p2_r = (-v0 + 5*vp1 + 2*vp2) * WENO_POLY_INV6
     
     v_right_out[i_global] = w0_r*p0_r + w1_r*p1_r + w2_r*p2_r
 
@@ -258,10 +293,13 @@ def reconstruct_weno5_gpu_optimized(d_v_in, epsilon=1e-6):
     
     Args:
         d_v_in (cuda.device_array): Valeurs aux centres des cellules (GPU)
-        epsilon (float): Paramètre de régularisation
+        epsilon (float): Paramètre de régularisation (deprecated, now in constant memory)
         
     Returns:
         tuple: (d_v_left, d_v_right) - reconstructions aux interfaces (GPU)
+    
+    Note: epsilon parameter is kept for backward compatibility but is now ignored.
+          The value is defined in constant memory WENO_EPSILON.
     """
     N = d_v_in.shape[0]
     
@@ -273,9 +311,9 @@ def reconstruct_weno5_gpu_optimized(d_v_in, epsilon=1e-6):
     threads_per_block = 128  # Taille réduite pour la mémoire partagée
     blocks_per_grid = (N + threads_per_block - 1) // threads_per_block
     
-    # Lancement du kernel optimisé
+    # Lancement du kernel optimisé (epsilon now in constant memory)
     weno5_reconstruction_optimized_kernel[blocks_per_grid, threads_per_block](
-        d_v_in, d_v_left, d_v_right, N, epsilon
+        d_v_in, d_v_left, d_v_right, N
     )
     
     # Application des conditions aux limites

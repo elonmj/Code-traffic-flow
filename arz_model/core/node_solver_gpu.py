@@ -27,7 +27,7 @@ from ..core.physics import (
 # CUDA KERNELS FOR NODE SOLVING
 # ============================================================================
 
-@cuda.jit(device=True)
+@cuda.jit(device=True, fastmath=True)
 def solve_node_fluxes_gpu(
     U_L_m, U_L_c, num_incoming, num_outgoing,
     alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c,

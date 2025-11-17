@@ -11,7 +11,7 @@ import numpy as np
 from numba import cuda
 import math
 
-@cuda.jit
+@cuda.jit(fastmath=True)
 def ssp_rk3_stage1_kernel(u_n, u_temp1, dt, flux_div, N):
     """
     Première étape du SSP-RK3 : u^(1) = u^n + dt * L(u^n)
@@ -31,7 +31,7 @@ def ssp_rk3_stage1_kernel(u_n, u_temp1, dt, flux_div, N):
             u_temp1[i, var] = u_n[i, var] + dt * flux_div[i, var]
 
 
-@cuda.jit  
+@cuda.jit(fastmath=True)  
 def ssp_rk3_stage2_kernel(u_n, u_temp1, u_temp2, dt, flux_div, N):
     """
     Deuxième étape du SSP-RK3 : u^(2) = 3/4 * u^n + 1/4 * (u^(1) + dt * L(u^(1)))
@@ -51,7 +51,7 @@ def ssp_rk3_stage2_kernel(u_n, u_temp1, u_temp2, dt, flux_div, N):
             u_temp2[i, var] = 0.75 * u_n[i, var] + 0.25 * (u_temp1[i, var] + dt * flux_div[i, var])
 
 
-@cuda.jit
+@cuda.jit(fastmath=True)
 def ssp_rk3_stage3_kernel(u_n, u_temp2, u_np1, dt, flux_div, N):
     """
     Troisième étape du SSP-RK3 : u^(n+1) = 1/3 * u^n + 2/3 * (u^(2) + dt * L(u^(2)))
@@ -71,7 +71,7 @@ def ssp_rk3_stage3_kernel(u_n, u_temp2, u_np1, dt, flux_div, N):
             u_np1[i, var] = (1.0/3.0) * u_n[i, var] + (2.0/3.0) * (u_temp2[i, var] + dt * flux_div[i, var])
 
 
-@cuda.jit
+@cuda.jit(fastmath=True)
 def compute_flux_divergence_kernel(u, flux_div, dx, N, num_vars):
     """
     Kernel pour calculer la divergence des flux numériques.

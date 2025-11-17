@@ -175,7 +175,7 @@ class NetworkCouplingGPU:
 
 # --- CUDA Kernel and Device Functions ---
 
-@cuda.jit
+@cuda.jit(fastmath=True)
 def _apply_coupling_kernel(
     node_types,
     node_incoming_gids,
