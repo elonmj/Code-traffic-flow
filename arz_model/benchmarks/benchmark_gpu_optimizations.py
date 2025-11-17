@@ -27,7 +27,7 @@ import os
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from arz_model.config.config_factory import VictoriaIslandConfigFactory
+from arz_model.config.config_factory import create_victoria_island_config
 from arz_model.network.network_grid import NetworkGrid
 from arz_model.simulation.runner import SimulationRunner
 
@@ -121,13 +121,12 @@ def main():
     
     # Create simulation configuration
     print("🏗️  Building simulation configuration...")
-    config_factory = VictoriaIslandConfigFactory.create_victoria_island_config(
+    config_factory = create_victoria_island_config(
         csv_path=csv_path,
         t_final=30.0,
         output_dt=5.0,
-        dx=25.0,
-        initial_density_cars=30.0,
-        initial_density_motorcycles=20.0
+        cells_per_100m=4,  # dx=25m
+        default_density=25.0
     )
     
     # Build network grid
