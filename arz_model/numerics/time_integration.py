@@ -193,10 +193,30 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     # Allocate output array from pool
     d_U_out = gpu_pool.get_temp_array(d_U_in.shape, d_U_in.dtype)
     
-    # Extract physics parameters for WENO+Riemann
-    dx = grid.dx
+    # CRITICAL: Fused kernel expects shape (N, num_vars), but time_integration uses (num_vars, N)
+    # We need to transpose for compatibility
     N = d_U_in.shape[1]  # Number of spatial cells
     num_vars = d_U_in.shape[0]  # Number of conserved variables (4 for ARZ)
+    
+    # Transpose input: (num_vars, N) -> (N, num_vars)
+    d_U_in_T = cuda.device_array((N, num_vars), dtype=d_U_in.dtype)
+    d_U_out_T = cuda.device_array((N, num_vars), dtype=d_U_in.dtype)
+    
+    # Simple transpose kernel
+    @cuda.jit
+    def transpose_kernel(src, dst):
+        i, j = cuda.grid(2)
+        if i < src.shape[0] and j < src.shape[1]:
+            dst[j, i] = src[i, j]
+    
+    threadsperblock_2d = (16, 16)
+    blockspergrid_x = (num_vars + threadsperblock_2d[0] - 1) // threadsperblock_2d[0]
+    blockspergrid_y = (N + threadsperblock_2d[1] - 1) // threadsperblock_2d[1]
+    blockspergrid_2d = (blockspergrid_x, blockspergrid_y)
+    
+    transpose_kernel[blockspergrid_2d, threadsperblock_2d](d_U_in, d_U_in_T)
+    
+    # Extract physics parameters for WENO+Riemann
     rho_max = params.rho_max
     alpha = params.alpha
     epsilon = params.epsilon
@@ -215,8 +235,8 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     # This eliminates intermediate global memory traffic (Phase 2.3)
     # and integrates high-order physics (Phase 2.4)
     ssp_rk3_fused_kernel[blockspergrid, threadsperblock](
-        d_U_in,      # u_n: Input state
-        d_U_out,     # u_np1: Output state
+        d_U_in_T,    # u_n: Input state (transposed to N, num_vars)
+        d_U_out_T,   # u_np1: Output state (transposed to N, num_vars)
         dt,          # Time step
         dx,          # Spatial resolution
         N,           # Number of cells
@@ -230,6 +250,12 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
         gamma_c,     # Physics: city exponent
         weno_eps     # WENO: smoothness epsilon
     )
+    
+    # Transpose output back: (N, num_vars) -> (num_vars, N)
+    blockspergrid_x_out = (N + threadsperblock_2d[0] - 1) // threadsperblock_2d[0]
+    blockspergrid_y_out = (num_vars + threadsperblock_2d[1] - 1) // threadsperblock_2d[1]
+    blockspergrid_2d_out = (blockspergrid_x_out, blockspergrid_y_out)
+    transpose_kernel[blockspergrid_2d_out, threadsperblock_2d](d_U_out_T, d_U_out)
     
     # Apply physical bounds to ensure positivity and max constraints
     _apply_physical_bounds_gpu_in_place(d_U_out, grid, params)
