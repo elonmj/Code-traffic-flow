@@ -48,7 +48,7 @@ def main():
             default_velocity=50.0,  # km/h - moderate speed
             inflow_density=30.0,   # veh/km - entry traffic
             inflow_velocity=40.0,  # km/h - entry speed
-            t_final=1800.0,        # 30 minutes simulation
+            t_final=120.0,         # 2 minutes simulation (benchmark)
             output_dt=10.0,        # Output every 10 seconds
             cells_per_100m=10      # Grid resolution
         )
@@ -85,7 +85,7 @@ def main():
         return
 
     # --- 4. Run the Simulation ---
-    print("\n[PHASE 4] Running simulation for 1800 seconds (no timeout - full run)...", flush=True)
+    print("\n[PHASE 4] Running simulation for 120 seconds (benchmark - optimized version)...", flush=True)
     try:
         # The `run` method is now delegated to the NetworkSimulator
         # No timeout - let it run to completion (1800s simulation time)
