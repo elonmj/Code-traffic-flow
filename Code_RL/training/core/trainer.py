@@ -303,7 +303,7 @@ class RLTrainer:
     def _create_single_env(self):
         """Factory pour créer un environnement individuel"""
         return TrafficSignalEnvDirect(
-            arz_simulation_config=self.rl_config.arz_simulation_config,
+            simulation_config=self.rl_config.arz_simulation_config,  # Fixed: was arz_simulation_config
             endpoint_params=self.rl_config.endpoint_params,
             signal_params=self.rl_config.signal_params,
             **self.rl_config.rl_env_params
