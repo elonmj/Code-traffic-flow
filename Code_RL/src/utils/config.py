@@ -122,6 +122,12 @@ class RLConfigBuilder:
         # Extract actual episode length from config
         actual_episode_length = arz_config.time.t_final
         
+        # Add RL metadata to the main config object
+        arz_config.rl_metadata = {
+            'observation_segment_ids': observation_segment_ids,
+            'signalized_nodes': [node.id for node in arz_config.nodes if node.type == 'signalized']
+        }
+        
         # RL environment parameters (Lagos-specific defaults)
         rl_env_params = {
             "dt_decision": kwargs.get("dt_decision", 15.0),  # RL decision interval

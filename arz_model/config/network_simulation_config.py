@@ -228,6 +228,7 @@ class NetworkSimulationConfig(BaseModel):
     grid: GridConfig = Field(default_factory=GridConfig, description="Global grid and numerical scheme parameters.")
     segments: List[SegmentConfig]
     nodes: List[NodeConfig]
+    rl_metadata: Dict[str, Any] = Field(default_factory=dict, description="Metadata for RL environment (observation segments, etc.)")
 
     @field_validator('segments')
     @classmethod
