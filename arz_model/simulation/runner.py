@@ -738,7 +738,7 @@ class SimulationRunner:
 
     def set_boundary_phase(
         self,
-        segment_id: int,
+        segment_id,  # Union[int, str] - either node ID or segment ID string
         phase: str,
         validate: bool = True
     ) -> None:
@@ -750,7 +750,7 @@ class SimulationRunner:
         change takes effect on the next timestep.
         
         Args:
-            segment_id: Segment ID (integer node ID from topology)
+            segment_id: Segment ID (int node ID or str segment ID like '5902583245->95636900')
             phase: Phase name (must exist in segment's traffic_signal_phases config)
             validate: Enable validation checks (default: True)
             
@@ -759,9 +759,12 @@ class SimulationRunner:
             ValueError: If phase name not found in configuration
             
         Examples:
-            >>> # Single phase change
+            >>> # Single phase change (int node ID)
             >>> runner.set_boundary_phase(31674708, 'green_NS')
             >>> runner.step(dt=1.0)  # Phase active in this step
+            >>>
+            >>> # Segment ID string format
+            >>> runner.set_boundary_phase('5902583245->95636900', 'green_EW')
             >>>
             >>> # Fast switching (disable validation for performance)
             >>> runner.set_boundary_phase(31674708, 'yellow_NS', validate=False)
@@ -850,12 +853,12 @@ class SimulationRunner:
             if self.debug:
                 print(f"[RL CONTROL] t={self.current_time:.1f}s: Segment {segment_id} -> Phase '{phase}'")
     
-    def _validate_segment_phase(self, segment_id: int, phase: str) -> None:
+    def _validate_segment_phase(self, segment_id, phase: str) -> None:
         """
         Validate that segment exists and phase is configured.
         
         Args:
-            segment_id: Segment ID to validate
+            segment_id: Segment ID to validate (int or str)
             phase: Phase name to validate
             
         Raises:

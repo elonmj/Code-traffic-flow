@@ -36,19 +36,19 @@ class RLNetworkConfig:
         self._phase_map = None
     
     @property
-    def signalized_segment_ids(self) -> List[int]:
+    def signalized_segment_ids(self) -> List[str]:
         """
         Extract segment IDs that connect to signalized nodes.
         
         Returns:
-            List of segment IDs (as integers) for signalized boundaries
+            List of segment IDs (as strings) for signalized boundaries
         """
         if self._signalized_segment_ids is None:
             self._signalized_segment_ids = []
             
             # Find all signalized nodes
             signalized_nodes = [
-                node.node_id for node in self.config.nodes
+                node.id for node in self.config.nodes
                 if hasattr(node, 'type') and node.type == 'signalized'
             ]
             
@@ -56,7 +56,7 @@ class RLNetworkConfig:
             for segment in self.config.segments:
                 # Check if segment flows into a signalized node
                 if hasattr(segment, 'end_node') and segment.end_node in signalized_nodes:
-                    self._signalized_segment_ids.append(int(segment.segment_id))
+                    self._signalized_segment_ids.append(str(segment.id))
         
         return self._signalized_segment_ids
     
@@ -80,7 +80,7 @@ class RLNetworkConfig:
         
         return self._phase_map
     
-    def get_phase_updates(self, phase: int) -> Dict[int, str]:
+    def get_phase_updates(self, phase: int) -> Dict[str, str]:
         """
         Generate phase updates dict for all signalized segments.
         
@@ -113,7 +113,6 @@ def create_rl_training_config(
     v_max_m_kmh: float = 100.0,
     v_max_c_kmh: float = 120.0,
     road_quality: float = 0.8,
-    alpha: float = 0.35,
     quiet: bool = False
 ) -> NetworkSimulationConfig:
     """
@@ -135,7 +134,6 @@ def create_rl_training_config(
         v_max_m_kmh: Motorcycle max speed in km/h (default: 100.0)
         v_max_c_kmh: Car max speed in km/h (default: 120.0)
         road_quality: Road quality coefficient [0, 1] (default: 0.8)
-        alpha: Motorcycle fraction (default: 0.35 = 35%)
         quiet: Suppress output (default: False)
     
     Returns:
@@ -162,8 +160,7 @@ def create_rl_training_config(
         cells_per_100m=cells_per_100m,
         v_max_m_kmh=v_max_m_kmh,
         v_max_c_kmh=v_max_c_kmh,
-        road_quality=road_quality,
-        alpha=alpha
+        road_quality=road_quality
     )
     
     # Determine observation segments
@@ -172,8 +169,7 @@ def create_rl_training_config(
         observation_segment_ids = [seg.id for seg in config.segments[:6]]
     
     # Attach RL-specific metadata
-    # Note: Pydantic strict mode may reject extra fields, so we use a workaround
-    # by storing in a dict that can be accessed separately
+    # Note: Pydantic forbids extra fields, so we use object.__setattr__ to bypass validation
     rl_metadata = {
         'observation_segment_ids': observation_segment_ids,
         'decision_interval': decision_interval,
@@ -181,8 +177,8 @@ def create_rl_training_config(
         'created_for': 'rl_training'
     }
     
-    # Store as custom attribute (Python allows this even on Pydantic models)
-    config.rl_metadata = rl_metadata
+    # Store as custom attribute using object.__setattr__ (bypasses Pydantic validation)
+    object.__setattr__(config, 'rl_metadata', rl_metadata)
     
     if not quiet:
         print(f"✅ RL Training Configuration Created:")
@@ -193,7 +189,6 @@ def create_rl_training_config(
         print(f"   Decision interval: {decision_interval}s")
         print(f"   Observation segments: {len(observation_segment_ids)}")
         print(f"   Initial density: {default_density} veh/km")
-        print(f"   Motorcycle fraction: {alpha:.0%}")
     
     return config
 
