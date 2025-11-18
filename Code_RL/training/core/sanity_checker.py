@@ -222,20 +222,22 @@ class SanityChecker:
             # Récupérer la config ARZ
             arz_config = self.arz_simulation_config
             
-            # Extraire les densités depuis le premier segment
+            # Extraire les densités
             rho_inflow = None
             rho_initial = None
             
             if hasattr(arz_config, 'segments') and arz_config.segments:
-                first_seg = arz_config.segments[0]
+                # Find a segment with InflowBC
+                for seg in arz_config.segments:
+                    if hasattr(seg.boundary_conditions.left, 'density'):
+                        rho_inflow = seg.boundary_conditions.left.density
+                        break
                 
-                # rho_initial
-                if hasattr(first_seg.initial_conditions, 'density'):
-                    rho_initial = first_seg.initial_conditions.density
-                
-                # rho_inflow (check left boundary)
-                if hasattr(first_seg.boundary_conditions.left, 'density'):
-                    rho_inflow = first_seg.boundary_conditions.left.density
+                # Find a segment with initial density
+                for seg in arz_config.segments:
+                    if hasattr(seg.initial_conditions, 'density'):
+                        rho_initial = seg.initial_conditions.density
+                        break
             
             # Fallback: check direct attributes if they exist (legacy)
             if rho_inflow is None:

@@ -133,6 +133,10 @@ class RLConfigBuilder:
                 "w_stops": kwargs.get("w_stops", 0.3),
                 "w_switch_penalty": kwargs.get("w_switch_penalty", 0.1),
                 "w_throughput": kwargs.get("w_throughput", 0.8),
+                # Compatibility with TrafficSignalEnvDirectV3
+                "alpha": kwargs.get("w_wait_time", 1.0),  # Congestion penalty
+                "kappa": kwargs.get("w_switch_penalty", 0.1),  # Phase change penalty
+                "mu": kwargs.get("w_throughput", 0.5),  # Throughput reward
             }
         }
         
