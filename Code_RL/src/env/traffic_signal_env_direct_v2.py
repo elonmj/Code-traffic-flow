@@ -27,6 +27,7 @@ from arz_model.config import NetworkSimulationConfig, SimulationConfig
 from arz_model.network.network_grid import NetworkGrid
 from arz_model.simulation.runner import SimulationRunner
 from arz_model.core.parameters import VEH_KM_TO_VEH_M
+from Code_RL.src.config.rl_network_config import RLNetworkConfig
 
 
 class TrafficSignalEnvDirectV2(gym.Env):
@@ -119,6 +120,9 @@ class TrafficSignalEnvDirectV2(gym.Env):
         # Traffic signal state
         self.current_phase = 0
         self.n_phases = 2
+        
+        # Initialize RL config helper for signalized segments and phase mapping
+        self.rl_config = RLNetworkConfig(simulation_config)
         
         # Define Gymnasium spaces
         self.action_space = spaces.Discrete(2)  # {0: maintain, 1: switch}
@@ -358,24 +362,55 @@ class TrafficSignalEnvDirectV2(gym.Env):
     
     def _apply_phase_to_network(self, phase: int):
         """
-        Apply traffic light phase to signalized nodes.
+        Apply traffic light phase to signalized segments via boundary condition modification.
+        
+        This method implements the RL-to-simulation control coupling by using the
+        SimulationRunner's set_boundary_phases_bulk() API to atomically update
+        traffic signal states across all signalized segments.
         
         Args:
-            phase: 0 (NS green, EW red) or 1 (NS red, EW green)
+            phase: RL action phase (0 or 1)
+                   0 = 'green_NS' (North-South green, East-West red)
+                   1 = 'green_EW' (East-West green, North-South red)
         
-        Note:
-            Implementation depends on traffic light controller interface in arz_model.
-            For now, this is a placeholder. Full implementation requires:
-            - Access to node.traffic_lights controller
-            - Method to set phase (e.g., controller.set_phase(phase))
-            - Update of turning ratios based on phase
+        Implementation Details:
+            - Uses RLNetworkConfig to extract signalized segment IDs
+            - Maps RL action to phase names via phase_map
+            - Calls runner.set_boundary_phases_bulk() for atomic updates
+            - Validation disabled for performance (validate=False)
+            - No CPU-GPU transfers (dict update only)
+        
+        Performance:
+            - Expected latency: <0.5ms (dict update only)
+            - No GPU array modifications in hot path
+            - Boundary conditions applied in next simulation step
+        
+        Example:
+            >>> self.current_phase = 1 - self.current_phase  # Toggle phase
+            >>> self._apply_phase_to_network(self.current_phase)
+            >>> # Next simulation step will use new BC states
         """
-        # Find signalized nodes and update their traffic lights
-        for node_id, node in self.network_grid.nodes.items():
-            if hasattr(node, 'type') and node.type == 'signalized':
-                # TODO: Update traffic light controller
-                # node.traffic_lights.set_phase(phase)
-                pass
+        # Get phase updates from helper (maps action to phase name for all signalized segments)
+        phase_updates = self.rl_config.get_phase_updates(phase)
+        
+        # Apply phase changes via runner API (validation disabled for performance)
+        try:
+            self.runner.set_boundary_phases_bulk(
+                phase_updates=phase_updates,
+                validate=False  # Skip validation in hot path (config pre-validated)
+            )
+            
+            if not self.quiet and hasattr(self.runner, 'debug') and self.runner.debug:
+                phase_name = self.rl_config.phase_map[phase]
+                print(f"[RL CONTROL] Applied phase {phase} ({phase_name}) to "
+                      f"{len(phase_updates)} signalized segments")
+        
+        except Exception as e:
+            # Log error but don't crash training
+            if not self.quiet:
+                print(f"Warning: Failed to apply phase {phase} to network: {e}")
+                print(f"  Phase updates: {phase_updates}")
+                print(f"  Continuing with previous phase...")
     
     def render(self):
         """

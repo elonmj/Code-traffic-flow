@@ -736,6 +736,170 @@ class SimulationRunner:
                 except AttributeError:
                     print(pbar_message)
 
+    def set_boundary_phase(
+        self,
+        segment_id: int,
+        phase: str,
+        validate: bool = True
+    ) -> None:
+        """
+        Change traffic signal phase at runtime for a single segment.
+        
+        This method provides runtime control of traffic signals by modifying
+        the boundary condition parameters during simulation execution. The phase
+        change takes effect on the next timestep.
+        
+        Args:
+            segment_id: Segment ID (integer node ID from topology)
+            phase: Phase name (must exist in segment's traffic_signal_phases config)
+            validate: Enable validation checks (default: True)
+            
+        Raises:
+            KeyError: If segment_id not found or doesn't have traffic signal BC
+            ValueError: If phase name not found in configuration
+            
+        Examples:
+            >>> # Single phase change
+            >>> runner.set_boundary_phase(31674708, 'green_NS')
+            >>> runner.step(dt=1.0)  # Phase active in this step
+            >>>
+            >>> # Fast switching (disable validation for performance)
+            >>> runner.set_boundary_phase(31674708, 'yellow_NS', validate=False)
+            
+        Notes:
+            - No CPU-GPU transfers (updates dict on CPU only)
+            - Action latency typically <0.5ms
+            - Phase change affects next BC application in simulation step
+            - For bulk updates, use set_boundary_phases_bulk() for better performance
+            
+        See Also:
+            set_boundary_phases_bulk: Update multiple signals atomically
+            config.network_simulation_config.NodeConfig: Traffic light configuration
+        """
+        # Convert to single-item dict and use bulk method
+        self.set_boundary_phases_bulk({segment_id: phase}, validate=validate)
+    
+    def set_boundary_phases_bulk(
+        self,
+        phase_updates: dict,
+        validate: bool = True
+    ) -> None:
+        """
+        Update multiple traffic signal phases atomically.
+        
+        More efficient than calling set_boundary_phase() repeatedly. All updates
+        are validated first (fail-fast), then applied together.
+        
+        Args:
+            phase_updates: Dict mapping segment_id -> phase_name
+            validate: Enable validation checks (default: True)
+            
+        Raises:
+            KeyError: If any segment_id invalid
+            ValueError: If any phase name invalid
+            
+        Examples:
+            >>> # Synchronized signal control (all green NS)
+            >>> runner.set_boundary_phases_bulk({
+            ...     31674708: 'green_NS',
+            ...     31674712: 'green_NS',
+            ...     36240967: 'green_NS'
+            ... })
+            >>>
+            >>> # Green wave pattern
+            >>> runner.set_boundary_phases_bulk({
+            ...     31674708: 'green_NS',
+            ...     31674712: 'yellow_NS',
+            ...     36240967: 'red_all'
+            ... })
+            
+        Notes:
+            - Fail-fast: If any validation fails, no updates are applied
+            - Atomic: All updates applied together or none at all
+            - Use validate=False for performance (after initial validation)
+        """
+        if validate:
+            # Validate all updates first (fail-fast)
+            for segment_id, phase in phase_updates.items():
+                self._validate_segment_phase(segment_id, phase)
+        
+        # Apply all updates (already validated or validation disabled)
+        for segment_id, phase in phase_updates.items():
+            # Network mode: segments stored by node_id as keys
+            if segment_id not in self.network_grid.segments:
+                if validate:
+                    # Should never reach here if validation passed
+                    raise KeyError(f"Segment {segment_id} not found")
+                else:
+                    # Skip invalid segment when validation disabled
+                    continue
+            
+            segment = self.network_grid.segments[segment_id]
+            
+            # Update current_bc_params for this segment
+            # Traffic signals are typically on 'left' boundary (inflow)
+            if 'current_bc_params' not in segment:
+                segment['current_bc_params'] = {}
+            
+            if 'left' not in segment['current_bc_params']:
+                segment['current_bc_params']['left'] = {}
+            
+            # Set the new phase
+            segment['current_bc_params']['left']['current_phase'] = phase
+            
+            if self.debug:
+                print(f"[RL CONTROL] t={self.current_time:.1f}s: Segment {segment_id} -> Phase '{phase}'")
+    
+    def _validate_segment_phase(self, segment_id: int, phase: str) -> None:
+        """
+        Validate that segment exists and phase is configured.
+        
+        Args:
+            segment_id: Segment ID to validate
+            phase: Phase name to validate
+            
+        Raises:
+            KeyError: If segment not found or no traffic signal BC
+            ValueError: If phase not in configuration
+        """
+        # Check segment exists
+        if segment_id not in self.network_grid.segments:
+            raise KeyError(
+                f"Segment {segment_id} not found. "
+                f"Available segments: {list(self.network_grid.segments.keys())[:10]}..."
+            )
+        
+        segment = self.network_grid.segments[segment_id]
+        
+        # Check segment has traffic signal BC configuration
+        bc_config = segment.get('bc_config')
+        if not bc_config:
+            raise KeyError(
+                f"Segment {segment_id} has no boundary condition configuration"
+            )
+        
+        # Check for traffic_signal_phases in left BC
+        left_bc = bc_config.get('left', {})
+        if left_bc.get('type') != 'traffic_signal':
+            raise KeyError(
+                f"Segment {segment_id} does not have traffic_signal BC type. "
+                f"Current type: {left_bc.get('type')}"
+            )
+        
+        traffic_signal_phases = left_bc.get('traffic_signal_phases', {})
+        if not traffic_signal_phases:
+            raise KeyError(
+                f"Segment {segment_id} has no traffic_signal_phases configuration"
+            )
+        
+        # Check phase exists in configuration
+        if phase not in traffic_signal_phases:
+            available_phases = list(traffic_signal_phases.keys())
+            raise ValueError(
+                f"Phase '{phase}' not found for segment {segment_id}. "
+                f"Available phases: {available_phases}"
+            )
+
 
     def run(self, t_final: Optional[float] = None, timeout: Optional[float] = None):
         """

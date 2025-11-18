@@ -17,6 +17,89 @@ from arz_model.config.config_factory import create_victoria_island_config
 from arz_model.config import NetworkSimulationConfig
 
 
+class RLNetworkConfig:
+    """
+    Helper class to extract RL-specific metadata from NetworkSimulationConfig.
+    
+    Provides easy access to signalized segments and phase mappings for RL environments.
+    """
+    
+    def __init__(self, simulation_config: NetworkSimulationConfig):
+        """
+        Initialize RL network config helper.
+        
+        Args:
+            simulation_config: NetworkSimulationConfig from arz_model
+        """
+        self.config = simulation_config
+        self._signalized_segment_ids = None
+        self._phase_map = None
+    
+    @property
+    def signalized_segment_ids(self) -> List[int]:
+        """
+        Extract segment IDs that connect to signalized nodes.
+        
+        Returns:
+            List of segment IDs (as integers) for signalized boundaries
+        """
+        if self._signalized_segment_ids is None:
+            self._signalized_segment_ids = []
+            
+            # Find all signalized nodes
+            signalized_nodes = [
+                node.node_id for node in self.config.nodes
+                if hasattr(node, 'type') and node.type == 'signalized'
+            ]
+            
+            # Find segments that have inflow to signalized nodes
+            for segment in self.config.segments:
+                # Check if segment flows into a signalized node
+                if hasattr(segment, 'end_node') and segment.end_node in signalized_nodes:
+                    self._signalized_segment_ids.append(int(segment.segment_id))
+        
+        return self._signalized_segment_ids
+    
+    @property
+    def phase_map(self) -> Dict[int, str]:
+        """
+        Default phase mapping for 2-phase traffic signal control.
+        
+        Returns:
+            Dict mapping RL action (0 or 1) to phase name
+            
+        Note:
+            Phase 0: 'green_NS' - North-South green, East-West red
+            Phase 1: 'green_EW' - East-West green, North-South red
+        """
+        if self._phase_map is None:
+            self._phase_map = {
+                0: 'green_NS',  # North-South green phase
+                1: 'green_EW'   # East-West green phase
+            }
+        
+        return self._phase_map
+    
+    def get_phase_updates(self, phase: int) -> Dict[int, str]:
+        """
+        Generate phase updates dict for all signalized segments.
+        
+        Args:
+            phase: RL action (0 or 1)
+            
+        Returns:
+            Dict mapping segment_id -> phase_name for use with
+            runner.set_boundary_phases_bulk()
+            
+        Example:
+            >>> rl_config = RLNetworkConfig(simulation_config)
+            >>> updates = rl_config.get_phase_updates(phase=1)
+            >>> runner.set_boundary_phases_bulk(updates)
+        """
+        phase_name = self.phase_map[phase]
+        return {seg_id: phase_name for seg_id in self.signalized_segment_ids}
+
+
 def create_rl_training_config(
     csv_topology_path: str,
     episode_duration: float = 3600.0,
