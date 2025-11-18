@@ -37,8 +37,10 @@ from .network_simulation_config import (
 )
 from .time_config import TimeConfig
 from .config_factory import (
+    CityNetworkConfigFactory,
     VictoriaIslandConfigFactory,
-    create_victoria_island_config
+    create_victoria_island_config,
+    create_city_network_config
 )
 
 __all__ = [
@@ -67,8 +69,10 @@ __all__ = [
     'LinkConfig',
     
     # Config Factory
+    'CityNetworkConfigFactory',
     'VictoriaIslandConfigFactory',
     'create_victoria_island_config',
+    'create_city_network_config',
 ]
 
 __version__ = '0.3.0'  # Major update: NetworkGrid Pydantic integration
