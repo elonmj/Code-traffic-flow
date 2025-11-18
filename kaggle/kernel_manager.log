@@ -9040,3 +9040,14 @@
 2025-11-18 21:06:06,860 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-18 21:06:06,867 - kernel_manager - INFO -   - test_log.txt (22081 bytes)
 2025-11-18 21:06:06,869 - kernel_manager - INFO -   - training_config.json (1085 bytes)
+2025-11-18 21:06:59,209 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-18 21:06:59,210 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-18 21:06:59,343 - kernel_manager - INFO - 📍 Current branch: experiment/kaggle-rl-training
+2025-11-18 21:06:59,420 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-18 21:06:59,420 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-18 21:06:59,420 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-18 21:06:59,533 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-18 21:07:00,476 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-18 21:07:00,477 - kernel_manager - INFO - 📤 Pushing to remote branch: experiment/kaggle-rl-training
+2025-11-18 21:08:38,436 - kernel_manager - ERROR - ❌ Git push timed out
+2025-11-18 21:08:38,436 - kernel_manager - ERROR - Git check failed. Aborting kernel update.
