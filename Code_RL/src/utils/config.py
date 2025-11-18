@@ -124,8 +124,16 @@ class RLConfigBuilder:
         
         # Add RL metadata to the main config object
         arz_config.rl_metadata = {
-            'observation_segment_ids': observation_segment_ids,
-            'signalized_nodes': [node.id for node in arz_config.nodes if node.type == 'signalized']
+            'observation_segment_ids': [s.id for s in arz_config.segments], # Observe all segments by default
+            'signalized_nodes': [node.id for node in arz_config.nodes if node.type == 'signalized'],
+            'decision_interval': kwargs.get("dt_decision", 15.0),
+            'reward_weights': {
+                "w_wait_time": kwargs.get("w_wait_time", 1.0),
+                "w_queue_length": kwargs.get("w_queue_length", 0.5),
+                "w_stops": kwargs.get("w_stops", 0.3),
+                "w_switch_penalty": kwargs.get("w_switch_penalty", 0.1),
+                "w_throughput": kwargs.get("w_throughput", 0.8),
+            }
         }
         
         # RL environment parameters (Lagos-specific defaults)

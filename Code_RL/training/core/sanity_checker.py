@@ -24,6 +24,7 @@ from stable_baselines3.common.env_util import make_vec_env
 
 # Imports locaux
 from Code_RL.src.utils.config import RLConfigBuilder
+from arz_model.config import NetworkSimulationConfig
 from ..config import SanityCheckConfig
 
 logger = logging.getLogger(__name__)
@@ -55,10 +56,10 @@ class SanityChecker:
     
     def __init__(
         self,
-        rl_config: RLConfigBuilder,
+        arz_simulation_config: "NetworkSimulationConfig",
         sanity_config: SanityCheckConfig
     ):
-        self.rl_config = rl_config
+        self.arz_simulation_config = arz_simulation_config
         self.sanity_config = sanity_config
         self.results: List[SanityCheckResult] = []
     
@@ -219,7 +220,7 @@ class SanityChecker:
         
         try:
             # Récupérer la config ARZ
-            arz_config = self.rl_config.arz_simulation_config
+            arz_config = self.arz_simulation_config
             
             # Extraire les densités
             # ATTENTION: Dépend de la structure de SimulationConfig
@@ -289,15 +290,14 @@ class SanityChecker:
         logger.info("\n[CHECK 3/5] Control Interval (BUG #27)")
         
         try:
-            # Récupérer dt_decision de la config RL
-            rl_params = self.rl_config.rl_env_params
-            dt_decision = rl_params.get('dt_decision', None)
+            # Get dt_decision from the rl_metadata in the arz_simulation_config
+            dt_decision = self.arz_simulation_config.rl_metadata.get('decision_interval', None)
             
             if dt_decision is None:
                 return SanityCheckResult(
                     name="Control Interval",
                     passed=False,
-                    message="⚠ Cannot extract dt_decision from config",
+                    message="⚠ Cannot extract decision_interval from config's rl_metadata",
                     details={"warning": "Manual verification required"}
                 )
             
@@ -483,14 +483,15 @@ class SanityChecker:
     
     def _create_test_env(self):
         """Crée un environnement de test pour les sanity checks"""
-        # Utiliser la factory du RLConfigBuilder
         from Code_RL.src.env.traffic_signal_env_direct_v3 import TrafficSignalEnvDirectV3
         
+        # Use the specific arz_simulation_config object passed to the checker
         env = TrafficSignalEnvDirectV3(
-            simulation_config=self.rl_config.arz_simulation_config,
-            decision_interval=self.rl_config.rl_env_params.get('decision_interval', 15.0),
-            observation_segment_ids=self.rl_config.rl_env_params.get('observation_segment_ids'),
-            reward_weights=self.rl_config.rl_env_params.get('reward_weights'),
+            simulation_config=self.arz_simulation_config,
+            # These are now read from arz_simulation_config.rl_metadata
+            decision_interval=self.arz_simulation_config.rl_metadata.get('decision_interval', 15.0),
+            observation_segment_ids=self.arz_simulation_config.rl_metadata.get('observation_segment_ids'),
+            reward_weights=self.arz_simulation_config.rl_metadata.get('reward_weights'),
             quiet=True
         )
         
@@ -498,14 +499,14 @@ class SanityChecker:
 
 
 def run_sanity_checks(
-    rl_config: RLConfigBuilder,
+    arz_simulation_config: "NetworkSimulationConfig",
     sanity_config: SanityCheckConfig
 ) -> bool:
     """
     Fonction utilitaire pour exécuter les sanity checks
     
     Args:
-        rl_config: Configuration RL
+        arz_simulation_config: The specific Pydantic config object for the simulation.
         sanity_config: Configuration des tests
     
     Returns:
@@ -514,7 +515,7 @@ def run_sanity_checks(
     Raises:
         RuntimeError si les tests échouent (selon config)
     """
-    checker = SanityChecker(rl_config, sanity_config)
+    checker = SanityChecker(arz_simulation_config, sanity_config)
     results = checker.run_all_checks()
     
     if not checker.all_passed(results):

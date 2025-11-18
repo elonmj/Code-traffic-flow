@@ -107,7 +107,8 @@ class RLTrainer:
         # 3. Sanity checks
         if self.training_config.sanity_check.enabled:
             logger.info("\n[STAGE 1/5] Running sanity checks...")
-            run_sanity_checks(self.rl_config, self.training_config.sanity_check)
+            # Pass the specific arz_simulation_config object
+            run_sanity_checks(self.rl_config.arz_simulation_config, self.training_config.sanity_check)
             logger.info("✅ All sanity checks passed!\n")
         else:
             logger.warning("⚠️ Sanity checks DISABLED - training at your own risk!\n")
