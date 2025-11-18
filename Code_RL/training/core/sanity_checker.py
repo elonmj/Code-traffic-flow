@@ -487,7 +487,7 @@ class SanityChecker:
         from Code_RL.src.env.traffic_signal_env_direct import TrafficSignalEnvDirect
         
         env = TrafficSignalEnvDirect(
-            arz_simulation_config=self.rl_config.arz_simulation_config,
+            simulation_config=self.rl_config.arz_simulation_config,  # Fixed: was arz_simulation_config
             endpoint_params=self.rl_config.endpoint_params,
             signal_params=self.rl_config.signal_params,
             **self.rl_config.rl_env_params
