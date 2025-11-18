@@ -77,7 +77,7 @@
 
 \begin{frame}
     \frametitle{Contexte : Victoria Island, Lagos}
-    
+
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
             \begin{block}{Localisation}
@@ -88,7 +88,7 @@
                     \item \textbf{Région} : Afrique de l'Ouest
                 \end{itemize}
             \end{block}
-            
+
             \begin{alertblock}{Enjeux de Mobilité}
                 \begin{itemize}
                     \item Trafic dense et mixte (motos + voitures)
@@ -98,7 +98,7 @@
                 \end{itemize}
             \end{alertblock}
         \end{column}
-        
+
         \begin{column}{0.5\textwidth}
             \begin{exampleblock}{Notre Corridor d'Étude}
                 \textbf{Caractéristiques topologiques :}
@@ -117,13 +117,13 @@
 
 \begin{frame}
     \frametitle{Objectifs de l'Analyse}
-    
+
     \begin{block}{Mission}
         Cartographier et modéliser le corridor Victoria Island avec détection automatique des infrastructures de régulation du trafic à partir de données OpenStreetMap (OSM).
     \end{block}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
             \textbf{Approche Technique :}
@@ -135,7 +135,7 @@
                 \item Validation pour simulation RL
             \end{enumerate}
         \end{column}
-        
+
         \begin{column}{0.5\textwidth}
             \textbf{Applications :}
             \begin{itemize}
@@ -154,25 +154,25 @@
 
 \begin{frame}
     \frametitle{Structure Hiérarchique des Rues}
-    
+
     \begin{table}
         \centering
         \small
         \begin{tabular}{lccl}
             \toprule
-            \textbf{Rue} & \textbf{Type} & \textbf{Segments} & \textbf{Rôle} \\
+            \textbf{Rue}        & \textbf{Type}     & \textbf{Segments} & \textbf{Rôle}   \\
             \midrule
-            Akin Adesola Street & Primary & 18 & Axe principal \\
-            Ahmadu Bello Way & Primary/Secondary & 12 & Axe structurant \\
-            Adeola Odeku Street & Secondary & 10 & Axe secondaire \\
-            Saka Tinubu Street & Tertiary & 11 & Axe tertiaire \\
-            Autres rues & Varied & 19 & Connexions \\
+            Akin Adesola Street & Primary           & 18                & Axe principal   \\
+            Ahmadu Bello Way    & Primary/Secondary & 12                & Axe structurant \\
+            Adeola Odeku Street & Secondary         & 10                & Axe secondaire  \\
+            Saka Tinubu Street  & Tertiary          & 11                & Axe tertiaire   \\
+            Autres rues         & Varied            & 19                & Connexions      \\
             \bottomrule
         \end{tabular}
     \end{table}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{block}{Longueurs Caractéristiques}
@@ -184,7 +184,7 @@
                 \end{itemize}
             \end{block}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{alertblock}{Points Clés}
                 \begin{itemize}
@@ -200,56 +200,56 @@
 
 \begin{frame}
     \frametitle{Visualisation Topologique}
-    
+
     \begin{center}
         \begin{tikzpicture}[scale=0.8, transform shape]
             % Légende
             \node[above] at (0,4.5) {\Large\textbf{Schéma Conceptuel du Corridor}};
-            
+
             % Axe principal - Akin Adesola Street
             \draw[roadcolor, line width=4pt, ->] (-5,2) -- (5,2);
             \node[above] at (0,2.2) {\textbf{Akin Adesola St} (Primary)};
-            
+
             % Points d'entrée et sortie
             \node[fill=green!40, circle, draw, minimum size=0.7cm] at (-5,2) {E1};
             \node[fill=red!40, circle, draw, minimum size=0.7cm] at (5,2) {S1};
-            
+
             % Feux tricolores sur axe principal
             \node[signalred, label=above:\tiny 31674708] at (-3,2) {};
             \node[signalgreen, label=above:\tiny 36240967] at (-1,2) {};
             \node[signalred, label=above:\tiny 95636900] at (1,2) {};
             \node[signalgreen, label=above:\tiny 95636908] at (3,2) {};
-            
+
             % Axe secondaire - Ahmadu Bello Way
             \draw[roadcolor!70, line width=3pt, ->] (-5,0) -- (5,0);
             \node[above] at (0,0.2) {\textbf{Ahmadu Bello Way} (Primary)};
-            
+
             % Points d'entrée et sortie
             \node[fill=green!40, circle, draw, minimum size=0.7cm] at (-5,0) {E2};
             \node[fill=red!40, circle, draw, minimum size=0.7cm] at (5,0) {S2};
-            
+
             % Feux tricolores sur Ahmadu Bello
             \node[signalgreen, label=below:\tiny 168577454] at (-1,0) {};
             \node[signalred, label=below:\tiny 168581819] at (1,0) {};
             \node[signalgreen, label=below:\tiny 95637019] at (3,0) {};
-            
+
             % Axe tertiaire - Adeola Odeku
             \draw[roadcolor!50, line width=2pt, ->] (-5,-2) -- (5,-2);
             \node[above] at (0,-1.8) {\textbf{Adeola Odeku St} (Secondary)};
-            
+
             % Point d'entrée
             \node[fill=green!40, circle, draw, minimum size=0.7cm] at (-5,-2) {E3};
             \node[fill=red!40, circle, draw, minimum size=0.7cm] at (5,-2) {S3};
-            
+
             % Feu tricolore
             \node[signalred, label=below:\tiny 31674712] at (0,-2) {};
-            
+
             % Connexions transversales (jonctions)
             \draw[gray, line width=1.5pt, dashed] (-3,2) -- (-3,0);
             \draw[gray, line width=1.5pt, dashed] (-1,2) -- (-1,0);
             \draw[gray, line width=1.5pt, dashed] (1,2) -- (1,-2);
             \draw[gray, line width=1.5pt, dashed] (3,2) -- (3,0);
-            
+
             % Légende en bas
             \begin{scope}[shift={(-5,-4)}]
                 \node[signalred, label=right:\small Feu (Phase Rouge)] at (0,0) {};
@@ -259,9 +259,9 @@
             \end{scope}
         \end{tikzpicture}
     \end{center}
-    
+
     \vspace{-0.3cm}
-    
+
     \begin{block}{Légende}
         \small
         Représentation simplifiée montrant les 3 axes principaux et la distribution des 8 feux tricolores détectés. Les lignes pointillées représentent les connexions transversales (carrefours).
@@ -273,7 +273,7 @@
 
 \begin{frame}
     \frametitle{Méthodologie : Extraction OSM}
-    
+
     \begin{block}{Pipeline de Détection}
         \begin{enumerate}
             \item \textbf{Source} : OpenStreetMap (base de données collaborative)
@@ -283,9 +283,9 @@
             \item \textbf{Validation} : Vérification topologique
         \end{enumerate}
     \end{block}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{exampleblock}{Tags OSM Recherchés}
@@ -299,7 +299,7 @@
                 \end{itemize}
             \end{exampleblock}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{alertblock}{Résultat}
                 \Large
@@ -308,7 +308,7 @@
                 \vspace{0.2cm}
                 Sur 60 nœuds totaux du réseau
                 \vspace{0.1cm}
-                
+
                 \textbf{Taux de signalisation :} 13.3\%
             \end{alertblock}
         \end{column}
@@ -317,21 +317,21 @@
 
 \begin{frame}[fragile]
     \frametitle{Implémentation Technique}
-    
+
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
             \begin{block}{Code Python (extrait)}
                 \tiny
-\begin{lstlisting}
+                \begin{lstlisting}
 def _load_osm_signalized_nodes(self):
-    """Charge les nœuds signalisés depuis OSM"""
+    """Charge les noeuds signalises depuis OSM"""
     df_enriched = pd.read_excel(
         self.enriched_path
     )
     
     signalized = set()
     
-    # Vérifier colonnes has_signal
+    # Verifier colonnes has_signal
     if 'u_has_signal' in df_enriched.columns:
         u_signals = df_enriched[
             df_enriched['u_has_signal'] == True
@@ -344,14 +344,14 @@ def _load_osm_signalized_nodes(self):
         ]['v'].astype(str).unique()
         signalized.update(v_signals)
     
-    print(f"Détecté {len(signalized)} "
-          f"nœuds signalisés")
+    print(f"Detecte {len(signalized)} "
+          f"noeuds signalises")
     
     return signalized
 \end{lstlisting}
             \end{block}
         \end{column}
-        
+
         \begin{column}{0.5\textwidth}
             \begin{exampleblock}{Enrichissement Automatique}
                 Pour chaque nœud signalisé :
@@ -363,7 +363,7 @@ def _load_osm_signalized_nodes(self):
                     \item \textbf{Configuration} : cycle, phases, timings
                 \end{itemize}
             \end{exampleblock}
-            
+
             \begin{alertblock}{Validation}
                 \begin{itemize}
                     \item Vérification topologique
@@ -378,32 +378,32 @@ def _load_osm_signalized_nodes(self):
 
 \begin{frame}
     \frametitle{Les 8 Feux Tricolores Détectés}
-    
+
     \begin{table}
         \centering
         \footnotesize
         \begin{tabular}{clccc}
             \toprule
-            \textbf{Node ID} & \textbf{Rue} & \textbf{Type} & \textbf{In} & \textbf{Out} \\
+            \textbf{Node ID} & \textbf{Rue}     & \textbf{Type}  & \textbf{In} & \textbf{Out} \\
             \midrule
             \rowcolor{green!10}
-            31674708 & Akin Adesola St & Junction & 2 & 2 \\
-            36240967 & Akin Adesola St & Junction & 2 & 3 \\
+            31674708         & Akin Adesola St  & Junction       & 2           & 2            \\
+            36240967         & Akin Adesola St  & Junction       & 2           & 3            \\
             \rowcolor{green!10}
-            31674712 & Multiple & Major Junction & 2 & 2 \\
-            168577454 & Ahmadu Bello Way & Junction & 2 & 2 \\
+            31674712         & Multiple         & Major Junction & 2           & 2            \\
+            168577454        & Ahmadu Bello Way & Junction       & 2           & 2            \\
             \rowcolor{green!10}
-            95636908 & Saka Tinubu St & Junction & 3 & 3 \\
-            95636900 & Multiple & Major Junction & 2 & 2 \\
+            95636908         & Saka Tinubu St   & Junction       & 3           & 3            \\
+            95636900         & Multiple         & Major Junction & 2           & 2            \\
             \rowcolor{green!10}
-            168581819 & Ahmadu Bello Way & Junction & 2 & 2 \\
-            95637019 & Ahmadu Bello Way & Junction & 2 & 1 \\
+            168581819        & Ahmadu Bello Way & Junction       & 2           & 2            \\
+            95637019         & Ahmadu Bello Way & Junction       & 2           & 1            \\
             \bottomrule
         \end{tabular}
     \end{table}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{block}{Analyse}
@@ -415,7 +415,7 @@ def _load_osm_signalized_nodes(self):
                 \end{itemize}
             \end{block}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{exampleblock}{Implications}
                 \begin{itemize}
@@ -434,13 +434,13 @@ def _load_osm_signalized_nodes(self):
 
 \begin{frame}
     \frametitle{Paramètres Régionaux : Afrique de l'Ouest}
-    
+
     \begin{block}{Standards de Temporisation (West Africa)}
         La configuration automatique applique des standards régionaux basés sur les pratiques observées en Afrique de l'Ouest.
     \end{block}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{exampleblock}{Cycle Standard}
@@ -453,7 +453,7 @@ def _load_osm_signalized_nodes(self):
                 \end{itemize}
             \end{exampleblock}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{alertblock}{Justification}
                 \begin{itemize}
@@ -466,19 +466,19 @@ def _load_osm_signalized_nodes(self):
             \end{alertblock}
         \end{column}
     \end{columns}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{center}
         \begin{tikzpicture}
             \draw[fill=signalgreen] (0,0) rectangle (3.5,0.5);
             \draw[fill=signalamberlabel] (3.5,0) rectangle (4,0.5);
             \draw[fill=signalred] (4,0) rectangle (9,0.5);
-            
+
             \node at (1.75,0.25) {\textbf{VERT 35s}};
             \node at (3.75,0.25) {\tiny O};
             \node at (6.5,0.25) {\textbf{ROUGE 52s}};
-            
+
             \draw[<->] (0,-0.3) -- (9,-0.3);
             \node at (4.5,-0.6) {Cycle complet : 90 secondes};
         \end{tikzpicture}
@@ -487,12 +487,12 @@ def _load_osm_signalized_nodes(self):
 
 \begin{frame}[fragile]
     \frametitle{Configuration Automatique}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{block}{Code de Configuration}
                 \tiny
-\begin{lstlisting}
+                \begin{lstlisting}
 REGIONAL_TRAFFIC_LIGHT_DEFAULTS = {
     'west_africa': {
         'cycle_time': 90.0,
@@ -511,7 +511,7 @@ REGIONAL_TRAFFIC_LIGHT_DEFAULTS = {
 def _create_traffic_light_config(
     self, node_id: str
 ) -> Dict[str, Any]:
-    """Configuration régionale automatique"""
+    """Configuration regionale automatique"""
     defaults = REGIONAL_TRAFFIC_LIGHT_DEFAULTS
         .get(self.region)
     
@@ -525,7 +525,7 @@ def _create_traffic_light_config(
 \end{lstlisting}
             \end{block}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{exampleblock}{Exemple de Sortie}
                 \footnotesize
@@ -540,7 +540,7 @@ def _create_traffic_light_config(
 }
                 \end{verbatim}
             \end{exampleblock}
-            
+
             \begin{alertblock}{Flexibilité}
                 \begin{itemize}
                     \item Configuration par région
@@ -556,41 +556,41 @@ def _create_traffic_light_config(
 
 \begin{frame}
     \frametitle{Système de Phases : Contrôle Multi-Direction}
-    
+
     \begin{block}{Architecture de Contrôle}
         Chaque feu supporte 2 phases principales : Nord-Sud (NS) et Est-Ouest (EW), avec états de transition (orange, tout-rouge).
     \end{block}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{center}
         \begin{tikzpicture}[scale=0.9]
             % Phase 0 : NS Green
             \node[rectangle, draw, fill=green!20, minimum width=3cm, minimum height=2cm, align=center] (phase0) at (0,0) {
-                \textbf{Phase 0}\\ [0.2cm]
-                \textcolor{signalgreen}{\textbf{NS : VERT}}\\
-                \textcolor{signalred}{EW : ROUGE}
+            \textbf{Phase 0}\\ [0.2cm]
+            \textcolor{signalgreen}{\textbf{NS : VERT}}\\
+            \textcolor{signalred}{EW : ROUGE}
             };
-            
+
             % Phase 1 : EW Green
             \node[rectangle, draw, fill=blue!20, minimum width=3cm, minimum height=2cm, align=center] (phase1) at (6,0) {
-                \textbf{Phase 1}\\ [0.2cm]
-                \textcolor{signalred}{NS : ROUGE}\\
-                \textcolor{signalgreen}{\textbf{EW : VERT}}
+            \textbf{Phase 1}\\ [0.2cm]
+            \textcolor{signalred}{NS : ROUGE}\\
+            \textcolor{signalgreen}{\textbf{EW : VERT}}
             };
-            
+
             % Transitions
             \draw[->, thick, bend left=40] (phase0.north) to node[above] {\tiny Orange 3s} (phase1.north);
             \draw[->, thick, bend left=40] (phase1.south) to node[below] {\tiny Orange 3s} (phase0.south);
-            
+
             % Durées
             \node[below=0.5cm of phase0] {\footnotesize Durée : 35s (vert) + 52s (rouge)};
             \node[below=0.5cm of phase1] {\footnotesize Durée : 35s (vert) + 52s (rouge)};
         \end{tikzpicture}
     \end{center}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{exampleblock}{Application au RL}
         L'agent RL peut sélectionner entre Phase 0 et Phase 1 toutes les 15 secondes, permettant une adaptation dynamique aux conditions de trafic observées.
     \end{exampleblock}
@@ -601,44 +601,44 @@ def _create_traffic_light_config(
 
 \begin{frame}
     \frametitle{Pipeline Complet : De OSM au Contrôle RL}
-    
+
     \begin{center}
         \begin{tikzpicture}[node distance=1.5cm, scale=0.85, transform shape]
             \node (osm) [rectangle, draw, fill=blue!20, text width=2.5cm, text centered] {
                 \textbf{OpenStreetMap}\\
                 \footnotesize Données brutes
             };
-            
+
             \node (enrich) [rectangle, draw, fill=green!20, text width=2.5cm, text centered, right=of osm] {
                 \textbf{Enrichissement}\\
                 \footnotesize Tags + Métadonnées
             };
-            
+
             \node (detect) [rectangle, draw, fill=yellow!20, text width=2.5cm, text centered, right=of enrich] {
                 \textbf{Détection Feux}\\
                 \footnotesize 8 nœuds signalisés
             };
-            
+
             \node (config) [rectangle, draw, fill=orange!20, text width=2.5cm, text centered, below=of detect] {
                 \textbf{Configuration}\\
                 \footnotesize Cycles régionaux
             };
-            
+
             \node (cache) [rectangle, draw, fill=purple!20, text width=2.5cm, text centered, left=of config] {
                 \textbf{Cache Système}\\
                 \footnotesize 50-200x speedup
             };
-            
+
             \node (sim) [rectangle, draw, fill=red!20, text width=2.5cm, text centered, left=of cache] {
                 \textbf{Simulation ARZ}\\
                 \footnotesize GPU-accelerated
             };
-            
+
             \node (rl) [rectangle, draw, fill=teal!20, text width=2.5cm, text centered, above=of sim] {
                 \textbf{Contrôle RL}\\
                 \footnotesize DQN/PPO
             };
-            
+
             % Arrows
             \draw[->, thick] (osm) -- (enrich);
             \draw[->, thick] (enrich) -- (detect);
@@ -647,13 +647,13 @@ def _create_traffic_light_config(
             \draw[->, thick] (cache) -- (sim);
             \draw[->, thick] (sim) -- (rl);
             \draw[->, thick, dashed] (rl.east) -- ++(1.5,0) |- (config.east);
-            
+
             \node[right=0.2cm of rl, text width=2cm, align=left] {\tiny Actions RL\\modifient\\les phases};
         \end{tikzpicture}
     \end{center}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{block}{Boucle de Simulation}
@@ -669,7 +669,7 @@ def _create_traffic_light_config(
                 \end{enumerate}
             \end{block}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{alertblock}{Performance}
                 \begin{itemize}
@@ -686,7 +686,7 @@ def _create_traffic_light_config(
 
 \begin{frame}
     \frametitle{Métriques du Corridor}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{block}{Topologie}
@@ -699,7 +699,7 @@ def _create_traffic_light_config(
                     \item \textbf{Jonctions} : 15
                 \end{itemize}
             \end{block}
-            
+
             \begin{exampleblock}{Feux Tricolores}
                 \begin{itemize}
                     \item \textbf{Nœuds signalisés} : 8
@@ -709,7 +709,7 @@ def _create_traffic_light_config(
                 \end{itemize}
             \end{exampleblock}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{alertblock}{Paramètres de Simulation}
                 \begin{itemize}
@@ -720,7 +720,7 @@ def _create_traffic_light_config(
                     \item \textbf{Arrays GPU} : 1920 valeurs
                 \end{itemize}
             \end{alertblock}
-            
+
             \begin{block}{RL Configuration}
                 \begin{itemize}
                     \item \textbf{Épisode} : 30-60 min
@@ -735,15 +735,15 @@ def _create_traffic_light_config(
 
 \begin{frame}
     \frametitle{Modèle de Contrôle RL}
-    
+
     \begin{block}{Formulation MDP}
         \textbf{État} $s_t \in \mathbb{R}^{12}$ : Densités et vitesses normalisées pour 6 segments observés + phase courante (one-hot)\\
         \textbf{Action} $a_t \in \{0, 1\}$ : Maintenir phase (0) ou changer (1)\\
         \textbf{Récompense} $r_t = -\alpha \cdot \text{congestion} + \mu \cdot \text{débit} - \kappa \cdot \text{changement\_phase}$
     \end{block}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{exampleblock}{Objectifs d'Optimisation}
@@ -756,7 +756,7 @@ def _create_traffic_light_config(
                 \end{itemize}
             \end{exampleblock}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{alertblock}{Algorithmes Compatibles}
                 \begin{itemize}
@@ -769,9 +769,9 @@ def _create_traffic_light_config(
             \end{alertblock}
         \end{column}
     \end{columns}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{center}
         \textbf{Framework} : Stable-Baselines3 + Gymnasium + Direct GPU coupling (100-200x faster)
     \end{center}
@@ -782,26 +782,26 @@ def _create_traffic_light_config(
 
 \begin{frame}
     \frametitle{Système de Cache : Performance}
-    
+
     \begin{table}
         \centering
         \begin{tabular}{lcc}
             \toprule
-            \textbf{Métrique} & \textbf{Sans Cache} & \textbf{Avec Cache} \\
+            \textbf{Métrique}    & \textbf{Sans Cache} & \textbf{Avec Cache} \\
             \midrule
-            Génération config & 500-2000 ms & \textbf{3 ms} \\
-            Chargement topologie & 200-400 ms & \textit{skip} \\
-            Détection OSM & 100-300 ms & \textit{skip} \\
-            Création segments & 300-800 ms & \textit{skip} \\
-            Validation réseau & 50-200 ms & \textit{skip} \\
+            Génération config    & 500-2000 ms         & \textbf{3 ms}       \\
+            Chargement topologie & 200-400 ms          & \textit{skip}       \\
+            Détection OSM        & 100-300 ms          & \textit{skip}       \\
+            Création segments    & 300-800 ms          & \textit{skip}       \\
+            Validation réseau    & 50-200 ms           & \textit{skip}       \\
             \midrule
-            \textbf{Speedup} & 1x & \textbf{166-666x} \\
+            \textbf{Speedup}     & 1x                  & \textbf{166-666x}   \\
             \bottomrule
         \end{tabular}
     \end{table}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{block}{Impact}
@@ -814,7 +814,7 @@ def _create_traffic_light_config(
                 \end{itemize}
             \end{block}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{exampleblock}{Validation}
                 \begin{itemize}
@@ -831,30 +831,30 @@ def _create_traffic_light_config(
 
 \begin{frame}
     \frametitle{Tests d'Intégration : Résultats}
-    
+
     \begin{block}{Suite de Tests API (Code\_RL/tests/test\_rl\_api\_integration.py)}
-        \textbf{Status} : \textcolor{green}{\textbf{✅ ALL PASS}}
+        \textbf{Status} : \textcolor{green}{\textbf{ ALL PASS}}
     \end{block}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{table}
         \centering
         \footnotesize
         \begin{tabular}{lcc}
             \toprule
-            \textbf{Test} & \textbf{Résultat} & \textbf{Détails} \\
+            \textbf{Test}           & \textbf{Résultat}       & \textbf{Détails}               \\
             \midrule
-            Config Generation & \textcolor{green}{PASS} & 3ms cached, 8 signalized nodes \\
-            RLNetworkConfig & \textcolor{green}{PASS} & 16 segments extracted \\
-            Runner API & \textcolor{green}{PASS} & 3 methods implemented \\
-            Environment Integration & \textcolor{green}{PASS} & 51 lines implementation \\
+            Config Generation       & \textcolor{green}{PASS} & 3ms cached, 8 signalized nodes \\
+            RLNetworkConfig         & \textcolor{green}{PASS} & 16 segments extracted          \\
+            Runner API              & \textcolor{green}{PASS} & 3 methods implemented          \\
+            Environment Integration & \textcolor{green}{PASS} & 51 lines implementation        \\
             \bottomrule
         \end{tabular}
     \end{table}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{exampleblock}{Critères Validés}
@@ -867,7 +867,7 @@ def _create_traffic_light_config(
                 \end{itemize}
             \end{exampleblock}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{alertblock}{Prochaines Étapes}
                 \begin{itemize}
@@ -887,7 +887,7 @@ def _create_traffic_light_config(
 
 \begin{frame}
     \frametitle{Synthèse du Projet}
-    
+
     \begin{block}{Réalisations Majeures}
         \begin{enumerate}
             \item \textbf{Cartographie complète} : 70 segments, 60 nœuds, topologie validée
@@ -898,9 +898,9 @@ def _create_traffic_light_config(
             \item \textbf{Validation} : All tests pass, production-ready
         \end{enumerate}
     \end{block}
-    
+
     \vspace{0.3cm}
-    
+
     \begin{alertblock}{Innovation Technique}
         \begin{itemize}
             \item Premier système de détection OSM automatique pour Victoria Island
@@ -913,7 +913,7 @@ def _create_traffic_light_config(
 
 \begin{frame}
     \frametitle{Perspectives et Applications}
-    
+
     \begin{columns}[T]
         \begin{column}{0.48\textwidth}
             \begin{block}{Recherche}
@@ -925,7 +925,7 @@ def _create_traffic_light_config(
                     \item Extension à Lagos entier
                 \end{itemize}
             \end{block}
-            
+
             \begin{exampleblock}{Opérationnel}
                 \begin{itemize}
                     \item Déploiement temps réel
@@ -935,7 +935,7 @@ def _create_traffic_light_config(
                 \end{itemize}
             \end{exampleblock}
         \end{column}
-        
+
         \begin{column}{0.48\textwidth}
             \begin{alertblock}{Impact Sociétal}
                 \begin{itemize}
@@ -946,7 +946,7 @@ def _create_traffic_light_config(
                     \item Amélioration qualité de vie
                 \end{itemize}
             \end{alertblock}
-            
+
             \begin{block}{Scalabilité}
                 \begin{itemize}
                     \item Architecture multi-ville
@@ -962,13 +962,13 @@ def _create_traffic_light_config(
 
 \begin{frame}
     \frametitle{Corridor Victoria Island : Vue d'Ensemble}
-    
+
     \begin{center}
         \Large\textbf{Un Laboratoire Vivant pour l'IA et le Transport}
     \end{center}
-    
+
     \vspace{0.5cm}
-    
+
     \begin{columns}[T]
         \begin{column}{0.3\textwidth}
             \centering
@@ -979,7 +979,7 @@ def _create_traffic_light_config(
             Trafic dense\\
             Infrastructure complexe
         \end{column}
-        
+
         \begin{column}{0.3\textwidth}
             \centering
             \textbf{Technologie}\\
@@ -989,7 +989,7 @@ def _create_traffic_light_config(
             Contrôle RL\\
             Cache intelligent
         \end{column}
-        
+
         \begin{column}{0.3\textwidth}
             \centering
             \textbf{Résultats}\\
@@ -1000,9 +1000,9 @@ def _create_traffic_light_config(
             Tests: ALL PASS
         \end{column}
     \end{columns}
-    
+
     \vspace{0.5cm}
-    
+
     \begin{center}
         \begin{tikzpicture}
             \node[fill=green!20, rounded corners, text width=12cm, align=center, draw, thick] {
@@ -1018,34 +1018,34 @@ def _create_traffic_light_config(
 
 \begin{frame}
     \frametitle{Références}
-    
+
     \small
     \begin{thebibliography}{99}
         \bibitem{OSM2024}
         OpenStreetMap Contributors,
         \textit{Victoria Island Road Network Data},
         \url{https://www.openstreetmap.org}, 2024.
-        
+
         \bibitem{AR2000}
         A. Aw \& M. Rascle,
         \textit{Resurrection of "second order" models of traffic flow},
         SIAM J. Appl. Math., 2000.
-        
+
         \bibitem{Villa2016}
         S. Villa,
         \textit{The Aw-Rascle-Zhang model with constraints},
         arXiv:1605.00632, 2016.
-        
+
         \bibitem{TSC2019}
         H. Wei et al.,
         \textit{A Survey on Traffic Signal Control Methods},
         arXiv:1904.08117, 2019.
-        
+
         \bibitem{Daganzo1995}
         C. F. Daganzo,
         \textit{The cell transmission model, part II: Network traffic},
         Transportation Research Part B, 1995.
-        
+
         \bibitem{Project2024}
         Projet Alibi,
         \textit{Multi-City Cache System with OSM Integration},
@@ -1056,17 +1056,17 @@ def _create_traffic_light_config(
 \begin{frame}
     \begin{center}
         {\Huge Merci de votre attention}
-        
+
         \vspace{1cm}
-        
+
         {\Large Questions ?}
-        
+
         \vspace{1cm}
-        
+
         \textit{``Optimiser le trafic urbain avec l'intelligence artificielle''}
-        
+
         \vspace{0.5cm}
-        
+
         \textbf{Projet Alibi - Victoria Island Corridor}\\
         \texttt{github.com/elonmj/Code-traffic-flow}
     \end{center}
