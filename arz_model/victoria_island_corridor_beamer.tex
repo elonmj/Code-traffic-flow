@@ -108,7 +108,7 @@
                     \item 4 points d'entrée
                     \item 4 points de sortie
                     \item 15 carrefours (jonctions)
-                    \item \textcolor{red}{\textbf{8 feux tricolores}} 🚦
+                    \item \textcolor{red}{\textbf{8 feux tricolores}}
                 \end{itemize}
             \end{exampleblock}
         \end{column}
@@ -566,17 +566,15 @@ def _create_traffic_light_config(
     \begin{center}
         \begin{tikzpicture}[scale=0.9]
             % Phase 0 : NS Green
-            \node[rectangle, draw, fill=green!20, minimum width=3cm, minimum height=2cm] (phase0) at (0,0) {
-                \textbf{Phase 0}\\
-                \vspace{0.2cm}
+            \node[rectangle, draw, fill=green!20, minimum width=3cm, minimum height=2cm, align=center] (phase0) at (0,0) {
+                \textbf{Phase 0}\\ [0.2cm]
                 \textcolor{signalgreen}{\textbf{NS : VERT}}\\
                 \textcolor{signalred}{EW : ROUGE}
             };
             
             % Phase 1 : EW Green
-            \node[rectangle, draw, fill=blue!20, minimum width=3cm, minimum height=2cm] (phase1) at (6,0) {
-                \textbf{Phase 1}\\
-                \vspace{0.2cm}
+            \node[rectangle, draw, fill=blue!20, minimum width=3cm, minimum height=2cm, align=center] (phase1) at (6,0) {
+                \textbf{Phase 1}\\ [0.2cm]
                 \textcolor{signalred}{NS : ROUGE}\\
                 \textcolor{signalgreen}{\textbf{EW : VERT}}
             };
@@ -861,11 +859,11 @@ def _create_traffic_light_config(
         \begin{column}{0.48\textwidth}
             \begin{exampleblock}{Critères Validés}
                 \begin{itemize}
-                    \item Détection 8 feux ✅
-                    \item Configuration automatique ✅
-                    \item API runtime control ✅
-                    \item Couplage RL-simulation ✅
-                    \item Performance <1ms action ✅
+                    \item Détection 8 feux : OK
+                    \item Configuration automatique : OK
+                    \item API runtime control : OK
+                    \item Couplage RL-simulation : OK
+                    \item Performance <1ms action : OK
                 \end{itemize}
             \end{exampleblock}
         \end{column}
@@ -974,7 +972,7 @@ def _create_traffic_light_config(
     \begin{columns}[T]
         \begin{column}{0.3\textwidth}
             \centering
-            \textbf{🌍 Contexte}\\
+            \textbf{Contexte}\\
             \vspace{0.2cm}
             Lagos, Nigeria\\
             District d'affaires\\
@@ -984,7 +982,7 @@ def _create_traffic_light_config(
         
         \begin{column}{0.3\textwidth}
             \centering
-            \textbf{🔬 Technologie}\\
+            \textbf{Technologie}\\
             \vspace{0.2cm}
             Détection OSM\\
             Simulation GPU\\
@@ -994,7 +992,7 @@ def _create_traffic_light_config(
         
         \begin{column}{0.3\textwidth}
             \centering
-            \textbf{📊 Résultats}\\
+            \textbf{Résultats}\\
             \vspace{0.2cm}
             8 feux détectés\\
             <1ms action latency\\
@@ -1055,7 +1053,7 @@ def _create_traffic_light_config(
     \end{thebibliography}
 \end{frame}
 
-\begin{frame}[standout]
+\begin{frame}
     \begin{center}
         {\Huge Merci de votre attention}
         
