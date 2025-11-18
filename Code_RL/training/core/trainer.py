@@ -265,7 +265,7 @@ class RLTrainer:
         # Just save the essential configs
         try:
             config_dict = {
-                "training_config": self.training_config.to_dict(),
+                "training_config": make_json_serializable(self.training_config.to_dict()),
                 "experiment_name": self.training_config.experiment_name,
                 "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
             }
