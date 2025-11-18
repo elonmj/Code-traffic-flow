@@ -232,32 +232,58 @@ class RLTrainer:
         # Helper function to convert complex objects to JSON-serializable format
         def make_json_serializable(obj):
             """Recursively convert Pydantic models and Path objects for JSON serialization"""
-            from pathlib import Path
+            from pathlib import Path, PurePath
             from pydantic import BaseModel
             
-            if isinstance(obj, Path):
+            # Check Path first (before BaseModel, as some paths might be in pydantic models)
+            if isinstance(obj, (Path, PurePath)):
                 return str(obj)
+            # Handle Pydantic models
             elif isinstance(obj, BaseModel):
-                # Convert Pydantic model to dict, then recursively clean
+                # Convert Pydantic model to dict using model_dump, then recursively clean
                 return make_json_serializable(obj.model_dump())
+            # Handle dictionaries
             elif isinstance(obj, dict):
                 return {k: make_json_serializable(v) for k, v in obj.items()}
+            # Handle lists and tuples
             elif isinstance(obj, (list, tuple)):
                 return [make_json_serializable(item) for item in obj]
+            # Handle other objects that might have __dict__
+            elif hasattr(obj, '__dict__') and not isinstance(obj, (str, int, float, bool, type(None))):
+                # Try to convert to dict and clean
+                try:
+                    return make_json_serializable(vars(obj))
+                except:
+                    # If fails, try to convert to string
+                    return str(obj)
+            # Return as-is for JSON-serializable primitives
             else:
                 return obj
         
-        config_dict = {
-            "training_config": self.training_config.to_dict(),
-            "rl_env_params": make_json_serializable(self.rl_config.rl_env_params),
-            "experiment_name": self.training_config.experiment_name,
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
-        }
-        
-        with open(config_file, 'w') as f:
-            json.dump(config_dict, f, indent=2)
-        
-        logger.info(f"Configs saved to: {config_file}")
+        # Don't even try to save rl_env_params if it's causing issues
+        # Just save the essential configs
+        try:
+            config_dict = {
+                "training_config": self.training_config.to_dict(),
+                "experiment_name": self.training_config.experiment_name,
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+            }
+            
+            # Try to add rl_env_params, but skip if it fails
+            try:
+                config_dict["rl_env_params"] = make_json_serializable(self.rl_config.rl_env_params)
+            except Exception as e:
+                logger.warning(f"Could not serialize rl_env_params, skipping: {e}")
+                config_dict["rl_env_params_error"] = str(e)
+            
+            with open(config_file, 'w') as f:
+                json.dump(config_dict, f, indent=2)
+            
+            logger.info(f"Configs saved to: {config_file}")
+        except Exception as e:
+            logger.error(f"Failed to save configs: {e}")
+            # Don't fail the training just because config save failed
+            pass
     
     def _create_environments(self):
         """Crée les environnements d'entraînement et d'évaluation"""
