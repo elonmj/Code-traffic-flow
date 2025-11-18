@@ -27,7 +27,7 @@ from stable_baselines3.common.vec_env import VecNormalize
 # Imports locaux
 from Code_RL.src.utils.config import RLConfigBuilder
 from Code_RL.src.rl.callbacks import RotatingCheckpointCallback, TrainingProgressCallback
-from Code_RL.src.env.traffic_signal_env_direct_v2 import TrafficSignalEnvDirectV2
+from Code_RL.src.env.traffic_signal_env_direct_v3 import TrafficSignalEnvDirectV3
 
 from ..config import TrainingConfig
 from .sanity_checker import SanityChecker, run_sanity_checks
@@ -302,7 +302,7 @@ class RLTrainer:
     
     def _create_single_env(self):
         """Factory pour créer un environnement individuel"""
-        return TrafficSignalEnvDirectV2(
+        return TrafficSignalEnvDirectV3(
             simulation_config=self.rl_config.arz_simulation_config,
             decision_interval=self.rl_config.rl_env_params.get('decision_interval', 15.0),
             observation_segment_ids=self.rl_config.rl_env_params.get('observation_segment_ids'),

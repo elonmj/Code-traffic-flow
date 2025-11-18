@@ -484,9 +484,9 @@ class SanityChecker:
     def _create_test_env(self):
         """Crée un environnement de test pour les sanity checks"""
         # Utiliser la factory du RLConfigBuilder
-        from Code_RL.src.env.traffic_signal_env_direct_v2 import TrafficSignalEnvDirectV2
+        from Code_RL.src.env.traffic_signal_env_direct_v3 import TrafficSignalEnvDirectV3
         
-        env = TrafficSignalEnvDirectV2(
+        env = TrafficSignalEnvDirectV3(
             simulation_config=self.rl_config.arz_simulation_config,
             decision_interval=self.rl_config.rl_env_params.get('decision_interval', 15.0),
             observation_segment_ids=self.rl_config.rl_env_params.get('observation_segment_ids'),
