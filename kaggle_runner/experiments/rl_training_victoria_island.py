@@ -147,8 +147,8 @@ def main():
         
         print(f"✅ Training config:")
         print(f"   - Total timesteps: {training_config.total_timesteps}")
-        print(f"   - Checkpoint freq: {training_config.checkpoint_strategy.frequency}")
-        print(f"   - Eval freq: {training_config.evaluation_strategy.frequency}")
+        print(f"   - Checkpoint freq: {training_config.checkpoint_strategy.save_freq}")
+        print(f"   - Eval freq: {training_config.evaluation_strategy.eval_freq}")
         print(f"   - Device: {training_config.device}")
         
     except Exception as e:
