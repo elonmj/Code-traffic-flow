@@ -48,7 +48,7 @@ class SanityChecker:
     Vérificateur de sanité pré-entraînement
     
     Usage:
-        checker = SanityChecker(rl_config, sanity_config)
+        checker = SanityChecker(arz_config, sanity_config)
         results = checker.run_all_checks()
         if not checker.all_passed(results):
             raise RuntimeError("Sanity checks failed!")
@@ -220,7 +220,7 @@ class SanityChecker:
         
         try:
             # Récupérer la config ARZ
-            arz_config = self.rl_config.arz_simulation_config
+            arz_config = self.arz_simulation_config
             
             # Extraire les densités depuis le premier segment
             rho_inflow = None
@@ -493,12 +493,11 @@ class SanityChecker:
     
     def _create_test_env(self):
         """Crée un environnement de test pour les sanity checks"""
+        # Utiliser la factory du RLConfigBuilder
         from Code_RL.src.env.traffic_signal_env_direct_v3 import TrafficSignalEnvDirectV3
         
-        # Use the specific arz_simulation_config object passed to the checker
         env = TrafficSignalEnvDirectV3(
             simulation_config=self.arz_simulation_config,
-            # These are now read from arz_simulation_config.rl_metadata
             decision_interval=self.arz_simulation_config.rl_metadata.get('decision_interval', 15.0),
             observation_segment_ids=self.arz_simulation_config.rl_metadata.get('observation_segment_ids'),
             reward_weights=self.arz_simulation_config.rl_metadata.get('reward_weights'),
