@@ -173,8 +173,14 @@ class TrainingConfig(BaseModel):
             return 1000  # Production
     
     def to_dict(self) -> dict:
-        """Convertit en dictionnaire pour logging"""
-        return self.dict()
+        """Convertit en dictionnaire pour logging (Path -> str pour JSON)"""
+        data = self.model_dump()
+        # Convert Path objects to strings for JSON serialization
+        if 'checkpoint_dir' in data and data['checkpoint_dir'] is not None:
+            data['checkpoint_dir'] = str(data['checkpoint_dir'])
+        if 'tensorboard_log' in data and data['tensorboard_log'] is not None:
+            data['tensorboard_log'] = str(data['tensorboard_log'])
+        return data
 
 
 # === Scénarios Prédéfinis ===
