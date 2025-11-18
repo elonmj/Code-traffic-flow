@@ -949,6 +949,13 @@ class SimulationRunner:
         if not self.quiet:
             print(f"Simulation finished in {end_time - start_time:.2f} seconds.")
             
+    def run_until(self, t_end: float):
+        """
+        Runs the simulation until the specified time t_end.
+        This is an alias for run(t_final=t_end) to support the RL environment API.
+        """
+        return self.run(t_final=t_end)
+            
         return history
 
 

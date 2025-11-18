@@ -220,18 +220,28 @@ class SanityChecker:
         
         try:
             # Récupérer la config ARZ
-            arz_config = self.arz_simulation_config
+            arz_config = self.rl_config.arz_simulation_config
             
-            # Extraire les densités
-            # ATTENTION: Dépend de la structure de SimulationConfig
-            # On assume qu'il y a des attributs rho_inflow et rho_initial
+            # Extraire les densités depuis le premier segment
+            rho_inflow = None
+            rho_initial = None
             
-            # Pour l'instant, on vérifie manuellement via les params
-            # TODO: Adapter selon la vraie structure de SimulationConfig
+            if hasattr(arz_config, 'segments') and arz_config.segments:
+                first_seg = arz_config.segments[0]
+                
+                # rho_initial
+                if hasattr(first_seg.initial_conditions, 'density'):
+                    rho_initial = first_seg.initial_conditions.density
+                
+                # rho_inflow (check left boundary)
+                if hasattr(first_seg.boundary_conditions.left, 'density'):
+                    rho_inflow = first_seg.boundary_conditions.left.density
             
-            # Heuristique: Vérifier que rho_inflow > 10 * rho_initial
-            rho_inflow = getattr(arz_config, 'rho_inflow', None)
-            rho_initial = getattr(arz_config, 'rho_initial', None)
+            # Fallback: check direct attributes if they exist (legacy)
+            if rho_inflow is None:
+                rho_inflow = getattr(arz_config, 'rho_inflow', None)
+            if rho_initial is None:
+                rho_initial = getattr(arz_config, 'rho_initial', None)
             
             if rho_inflow is None or rho_initial is None:
                 return SanityCheckResult(
