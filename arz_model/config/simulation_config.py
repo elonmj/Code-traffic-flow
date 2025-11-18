@@ -16,9 +16,13 @@ from .time_config import TimeConfig
 
 class SimulationConfig(BaseModel):
     """
-    Complete simulation configuration (ROOT)
+    DEPRECATED: Use NetworkSimulationConfig instead.
     
-    This replaces the old YAML-based ModelParameters
+    This single-road simulation config is deprecated in favor of NetworkSimulationConfig.
+    Even for single-segment RL training, use NetworkSimulationConfig with one segment.
+    
+    See: arz_model.config.network_simulation_config.NetworkSimulationConfig
+    See: arz_model.config.rl_scenarios for RL training helpers
     """
     
     # ========================================================================

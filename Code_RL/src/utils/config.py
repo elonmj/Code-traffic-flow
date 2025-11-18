@@ -1,18 +1,14 @@
 """
-Utility functions for configuration, logging, and analysis
+RL Training Configuration Utilities
 
-MIGRATION NOTE (2025-01-27):
-This module is being migrated to use Pydantic-based configurations.
-- NEW: RLConfigBuilder class uses arz_model.config.ConfigBuilder
-- DEPRECATED: load_config(), load_configs(), save_config() for ARZ configs
-- PRESERVED: RL-specific utilities (setup_logging, ExperimentTracker, etc.)
+Provides RLConfigBuilder that bridges RL training with arz_model's Pydantic config system.
+All legacy YAML functionality has been REMOVED.
 
 For new code, use:
-    from utils.config import RLConfigBuilder
+    from Code_RL.src.utils.config import RLConfigBuilder
     rl_config = RLConfigBuilder.for_training(scenario="lagos")
 """
 
-import yaml
 import json
 import logging
 import pandas as pd
@@ -20,24 +16,14 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 import numpy as np
 
-# NEW: Import Pydantic config system
-try:
-    import sys
-    from pathlib import Path
-    
-    # Add parent directory to path to access arz_model
-    project_root = Path(__file__).parent.parent.parent.parent
-    if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))
-    
-    from arz_model.config import ConfigBuilder, SimulationConfig
-    PYDANTIC_AVAILABLE = True
-except ImportError as e:
-    PYDANTIC_AVAILABLE = False
-    ConfigBuilder = None
-    SimulationConfig = None
-    print(f"[WARNING] Pydantic config system not available: {e}")
-    print("[WARNING] Falling back to legacy YAML configs")
+# Import Pydantic config system from arz_model
+from arz_model.config import (
+    NetworkSimulationConfig,
+    victoria_island_rl_config,
+    victoria_island_quick_test,
+    victoria_island_extended_training,
+    custom_city_rl_config
+)
 
 
 class RLConfigBuilder:
@@ -66,7 +52,7 @@ class RLConfigBuilder:
     
     def __init__(
         self,
-        arz_simulation_config: 'SimulationConfig',
+        arz_simulation_config: NetworkSimulationConfig,
         rl_env_params: Dict[str, Any],
         endpoint_params: Dict[str, Any],
         signal_params: Dict[str, Any]
@@ -75,7 +61,7 @@ class RLConfigBuilder:
         Initialize RL configuration.
         
         Args:
-            arz_simulation_config: Pydantic SimulationConfig for ARZ simulator
+            arz_simulation_config: Pydantic NetworkSimulationConfig for ARZ simulator
             rl_env_params: RL environment parameters (rewards, normalization, etc.)
             endpoint_params: Endpoint client parameters
             signal_params: Traffic signal controller parameters
@@ -88,52 +74,59 @@ class RLConfigBuilder:
     @classmethod
     def for_training(
         cls,
-        scenario: str = "simple",
-        N: int = 200,
-        episode_length: float = 3600.0,
-        device: str = "cpu",
+        scenario: str = "quick_test",
+        episode_length: float = None,
+        cells_per_100m: int = 4,
         **kwargs
     ) -> 'RLConfigBuilder':
         """
-        Create RL training configuration.
+        Create RL training configuration using FULL Victoria Island network.
+        
+        CRITICAL: Uses complete network with traffic lights (like main_network_simulation.py).
+        The RL agent learns to control traffic signals at signalized nodes.
         
         Args:
-            scenario: Scenario name ("simple", "lagos", "riemann")
-            N: Grid resolution
-            episode_length: Episode length in seconds
-            device: Compute device ("cpu" or "gpu")
-            **kwargs: Additional scenario-specific parameters
+            scenario: Scenario name ("quick_test", "victoria_island", "extended")
+            episode_length: Episode length in seconds (overrides scenario default)
+            cells_per_100m: Grid resolution
+            **kwargs: Additional factory parameters
         
         Returns:
-            RLConfigBuilder instance
+            RLConfigBuilder instance with FULL network config
         """
-        if not PYDANTIC_AVAILABLE:
-            raise RuntimeError(
-                "Pydantic config system not available. "
-                "Please ensure arz_model.config is accessible."
+        # Create ARZ simulation config based on scenario using FULL NETWORK
+        if scenario == "quick_test":
+            arz_config = victoria_island_quick_test(
+                t_final=episode_length or 120.0,
+                cells_per_100m=cells_per_100m,
+                **kwargs
+            )
+        elif scenario in ["section_7_6", "lagos", "victoria_island"]:
+            arz_config = victoria_island_rl_config(
+                t_final=episode_length or 450.0,
+                cells_per_100m=cells_per_100m,
+                **kwargs
+            )
+        elif scenario == "extended":
+            arz_config = victoria_island_extended_training(
+                t_final=episode_length or 3600.0,
+                cells_per_100m=cells_per_100m,
+                **kwargs
+            )
+        else:
+            raise ValueError(
+                f"Unknown scenario: {scenario}. "
+                f"Use 'quick_test', 'victoria_island', 'lagos', 'section_7_6', or 'extended'"
             )
         
-        # Create ARZ simulation config based on scenario
-        if scenario == "simple":
-            arz_config = ConfigBuilder.simple_test()
-        elif scenario == "section_7_6" or scenario == "lagos":
-            arz_config = ConfigBuilder.section_7_6(N=N, t_final=episode_length, device=device)
-        elif scenario == "riemann":
-            arz_config = ConfigBuilder.riemann_problem(N=N, t_final=episode_length, device=device)
-        else:
-            raise ValueError(f"Unknown scenario: {scenario}. Use 'simple', 'lagos', or 'riemann'")
-        
-        # Override config parameters if provided
-        if 't_final' in kwargs:
-            arz_config.t_final = kwargs['t_final']
-        if 'output_dt' in kwargs:
-            arz_config.output_dt = kwargs['output_dt']
+        # Extract actual episode length from config
+        actual_episode_length = arz_config.time.t_final
         
         # RL environment parameters (Lagos-specific defaults)
         rl_env_params = {
             "dt_decision": kwargs.get("dt_decision", 15.0),  # RL decision interval
-            "episode_length": episode_length,
-            "max_steps": int(episode_length / kwargs.get("dt_decision", 15.0)),
+            "episode_length": actual_episode_length,
+            "max_steps": int(actual_episode_length / kwargs.get("dt_decision", 15.0)),
             
             # Normalization (Lagos traffic conditions)
             "normalization": {
@@ -267,203 +260,18 @@ def setup_logging(level: str = "INFO", log_file: str = None):
     logging.config.dictConfig(logging_config)
 
 
-def load_config(config_path: str) -> Dict[str, Any]:
-    """
-    Load YAML configuration file.
-    
-    DEPRECATED: This function is deprecated for ARZ simulation configs.
-    Use RLConfigBuilder.for_training() instead for new code.
-    
-    This function is preserved for backward compatibility with legacy
-    RL training scripts.
-    """
-    import warnings
-    warnings.warn(
-        "load_config() is deprecated for ARZ configs. "
-        "Use RLConfigBuilder.for_training() instead.",
-        DeprecationWarning,
-        stacklevel=2
-    )
-    with open(config_path, 'r') as f:
-        return yaml.safe_load(f)
-
-
-def save_config(config: Dict[str, Any], config_path: str):
-    """
-    Save configuration to YAML file.
-    
-    DEPRECATED: YAML configs are being phased out in favor of Pydantic.
-    This function is preserved for backward compatibility only.
-    """
-    import warnings
-    warnings.warn(
-        "save_config() is deprecated. Use Pydantic configs instead.",
-        DeprecationWarning,
-        stacklevel=2
-    )
-    with open(config_path, 'w') as f:
-        yaml.dump(config, f, default_flow_style=False, indent=2)
-
-
-def load_configs(config_dir: str) -> Dict[str, Any]:
-    """
-    Load all configuration files from directory.
-    
-    DEPRECATED: This function is deprecated for ARZ simulation configs.
-    Use RLConfigBuilder.for_training() instead for new code.
-    
-    This function is preserved for backward compatibility with legacy
-    RL training scripts.
-    """
-    import warnings
-    warnings.warn(
-        "load_configs() is deprecated for ARZ configs. "
-        "Use RLConfigBuilder.for_training() instead.",
-        DeprecationWarning,
-        stacklevel=2
-    )
-    config_path = Path(config_dir)
-    configs = {}
-    
-    for config_file in ["endpoint.yaml", "signals.yaml", "network.yaml", "env.yaml"]:
-        file_path = config_path / config_file
-        if file_path.exists():
-            configs[file_path.stem] = load_config(str(file_path))
-    
-    return configs
-
-
-def load_lagos_traffic_params(config_dir: Optional[str] = None) -> Dict[str, float]:
-    """Load real Lagos traffic parameters from traffic_lagos.yaml.
-    
-    Extracts key traffic parameters for Victoria Island Lagos:
-    - Max densities: motorcycles and cars (veh/km)
-    - Free speeds: motorcycles and cars (km/h)
-    - Vehicle mix: percentages for each vehicle type
-    - Behaviors: creeping rate, gap filling, signal compliance
-    
-    Args:
-        config_dir: Path to configs directory. If None, uses default Code_RL/configs
-    
-    Returns:
-        Dictionary with extracted parameters ready for simulation use
-    
-    Example:
-        >>> params = load_lagos_traffic_params()
-        >>> print(params['max_density_motorcycles'])  # 250.0 veh/km
-        >>> print(params['free_speed_cars'])  # 28.0 km/h
-    """
-    if config_dir is None:
-        # Default to Code_RL/configs directory
-        config_dir = Path(__file__).parent.parent.parent / "configs"
-    else:
-        config_dir = Path(config_dir)
-    
-    lagos_config_path = config_dir / "traffic_lagos.yaml"
-    
-    if not lagos_config_path.exists():
-        print(f"[WARNING] traffic_lagos.yaml not found at {lagos_config_path}")
-        print("[WARNING] Using fallback parameters")
-        # Fallback to reasonable defaults
-        return {
-            'max_density_motorcycles': 200.0,  # veh/km
-            'max_density_cars': 100.0,
-            'free_speed_motorcycles': 30.0,  # km/h
-            'free_speed_cars': 25.0,
-            'vehicle_mix_motorcycles': 0.30,
-            'vehicle_mix_cars': 0.50,
-            'creeping_rate': 0.5,
-            'gap_filling_rate': 0.7,
-            'signal_compliance': 0.8
-        }
-    
-    config = load_config(str(lagos_config_path))
-    traffic = config.get('traffic', {})
-    
-    # Extract nested parameters
-    max_densities = traffic.get('max_densities', {})
-    free_speeds = traffic.get('free_speeds', {})
-    vehicle_mix = traffic.get('vehicle_mix', {})
-    behaviors = traffic.get('behaviors', {})
-    
-    params = {
-        'max_density_motorcycles': float(max_densities.get('motorcycles', 250)),  # veh/km
-        'max_density_cars': float(max_densities.get('cars', 120)),
-        'max_density_total': float(max_densities.get('total', 370)),
-        'free_speed_motorcycles': float(free_speeds.get('motorcycles', 32)),  # km/h
-        'free_speed_cars': float(free_speeds.get('cars', 28)),
-        'free_speed_average': float(free_speeds.get('average', 30)),
-        'vehicle_mix_motorcycles': float(vehicle_mix.get('motorcycles_percentage', 35)) / 100.0,
-        'vehicle_mix_cars': float(vehicle_mix.get('cars_percentage', 45)) / 100.0,
-        'vehicle_mix_buses': float(vehicle_mix.get('buses_percentage', 15)) / 100.0,
-        'vehicle_mix_trucks': float(vehicle_mix.get('trucks_percentage', 5)) / 100.0,
-        'creeping_rate': float(behaviors.get('creeping_rate', 0.6)),
-        'gap_filling_rate': float(behaviors.get('gap_filling_rate', 0.8)),
-        'signal_compliance': float(behaviors.get('signal_compliance', 0.7)),
-        'context': traffic.get('context', 'Victoria Island Lagos')
-    }
-    
-    return params
-
-
-def validate_config_consistency(configs: Dict[str, Any]) -> bool:
-    """Validate consistency between configuration files"""
-    errors = []
-    warnings = []
-    
-    # Check dt_decision vs dt_sim compatibility
-    if "endpoint" in configs and "env" in configs:
-        endpoint_config = configs["endpoint"]
-        env_config = configs["env"]
-        
-        # Check if dt_sim exists in endpoint config (at root level or nested)
-        dt_sim = None
-        if "dt_sim" in endpoint_config:
-            dt_sim = endpoint_config["dt_sim"]
-        elif "endpoint" in endpoint_config and "dt_sim" in endpoint_config["endpoint"]:
-            dt_sim = endpoint_config["endpoint"]["dt_sim"]
-            
-        if dt_sim is not None:
-            if "environment" in env_config and "dt_decision" in env_config["environment"]:
-                dt_decision = env_config["environment"]["dt_decision"]
-                
-                k = dt_decision / dt_sim
-                if not k.is_integer() or k < 1:
-                    errors.append(f"dt_decision ({dt_decision}) must be integer multiple of dt_sim ({dt_sim})")
-        else:
-            warnings.append("dt_sim not found in endpoint config, skipping timing validation")
-    
-    # Check phase count consistency
-    if "signals" in configs and "env" in configs:
-        signals_config = configs["signals"]
-        if "signals" in signals_config and "phases" in signals_config["signals"]:
-            num_phases = len(signals_config["signals"]["phases"])
-            # Could add more phase-related validations here
-            if num_phases < 2:
-                warnings.append(f"Only {num_phases} phases defined, consider adding more for complex intersections")
-    
-    # Check branch mapping
-    if "network" in configs:
-        network_config = configs["network"]
-        if "network" in network_config and "branches" in network_config["network"]:
-            branch_ids = [b["id"] for b in network_config["network"]["branches"]]
-            if len(branch_ids) != len(set(branch_ids)):
-                errors.append("Duplicate branch IDs in network configuration")
-        else:
-            warnings.append("No branches found in network configuration")
-    
-    # Print warnings
-    if warnings:
-        for warning in warnings:
-            print(f"Config validation warning: {warning}")
-    
-    # Print errors
-    if errors:
-        for error in errors:
-            print(f"Config validation error: {error}")
-        return False
-    
-    return True
+# ============================================================================
+# YAML LEGACY CODE REMOVED (2025-01-27)
+# ============================================================================
+# All YAML-based configuration functions have been removed:
+#   - load_config()
+#   - save_config()
+#   - load_configs()
+#   - load_lagos_traffic_params()
+#   - validate_config_consistency()
+#
+# Use RLConfigBuilder.for_training() for RL configuration instead.
+# ============================================================================
 
 
 def save_episode_data(episode_data: List[Dict[str, Any]], filepath: str):
