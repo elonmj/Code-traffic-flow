@@ -187,14 +187,26 @@ class RLTrainer:
         episode_lengths = []
         
         for ep in range(n_episodes):
-            obs = self.eval_env.reset()
+            reset_result = self.eval_env.reset()
+            if isinstance(reset_result, tuple):
+                obs = reset_result[0]
+            else:
+                obs = reset_result
+                
             done = False
             ep_reward = 0.0
             ep_length = 0
             
             while not done:
                 action, _ = self.model.predict(obs, deterministic=True)
-                obs, reward, done, info = self.eval_env.step(action)
+                step_result = self.eval_env.step(action)
+                
+                if len(step_result) == 5:
+                    obs, reward, terminated, truncated, info = step_result
+                    done = terminated or truncated
+                else:
+                    obs, reward, done, info = step_result
+                    
                 ep_reward += reward
                 ep_length += 1
             
