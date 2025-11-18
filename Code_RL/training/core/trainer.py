@@ -367,7 +367,8 @@ class RLTrainer:
         
         # 2. Training progress callback
         progress_callback = TrainingProgressCallback(
-            check_freq=1000,
+            total_timesteps=self.training_config.total_timesteps,
+            log_freq=1000,
             verbose=1
         )
         callbacks.append(progress_callback)
