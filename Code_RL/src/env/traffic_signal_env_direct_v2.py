@@ -292,8 +292,8 @@ class TrafficSignalEnvDirectV2(gym.Env):
             phys = self.simulation_config.physics
             rho_max_m = phys.rho_max * phys.alpha
             rho_max_c = phys.rho_max * (1.0 - phys.alpha)
-            v_max_m = phys.V0_m
-            v_max_c = phys.V0_c
+            v_max_m = phys.v_max_m_ms
+            v_max_c = phys.v_max_c_ms
             
             # Clip to [0, 1] range
             rho_m_norm = np.clip(rho_m / rho_max_m, 0, 1)
