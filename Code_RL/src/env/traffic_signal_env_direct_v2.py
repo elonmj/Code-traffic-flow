@@ -275,8 +275,8 @@ class TrafficSignalEnvDirectV2(gym.Env):
             grid = seg['grid']
             
             # Extract physical cells only (exclude ghost cells)
-            i_start = grid.i_physical_start
-            i_end = grid.i_physical_end
+            i_start = grid.num_ghost_cells
+            i_end = grid.num_ghost_cells + grid.N_physical
             
             # Average densities and momenta over spatial cells
             rho_m = U[0, i_start:i_end].mean()  # Motorcycle density (veh/m)
@@ -333,8 +333,8 @@ class TrafficSignalEnvDirectV2(gym.Env):
             seg = self.network_grid.segments[seg_id]
             U = seg['U']
             grid = seg['grid']
-            i_start = grid.i_physical_start
-            i_end = grid.i_physical_end
+            i_start = grid.num_ghost_cells
+            i_end = grid.num_ghost_cells + grid.N_physical
             
             # Total density (motorcycles + cars)
             rho_total = (U[0, i_start:i_end] + U[2, i_start:i_end]).mean()
