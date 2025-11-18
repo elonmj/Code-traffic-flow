@@ -180,7 +180,11 @@ def main():
         start_time = time.time()
         
         # Train the agent
-        model, metrics = trainer.train()
+        model = trainer.train()
+        
+        # Evaluate to get final metrics
+        print("\n📊 Evaluating final model...")
+        metrics = trainer.evaluate(n_episodes=5)
         
         elapsed = time.time() - start_time
         
