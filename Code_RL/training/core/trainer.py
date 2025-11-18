@@ -27,7 +27,7 @@ from stable_baselines3.common.vec_env import VecNormalize
 # Imports locaux
 from Code_RL.src.utils.config import RLConfigBuilder
 from Code_RL.src.rl.callbacks import RotatingCheckpointCallback, TrainingProgressCallback
-from Code_RL.src.env.traffic_signal_env_direct import TrafficSignalEnvDirect
+from Code_RL.src.env.traffic_signal_env_direct_v2 import TrafficSignalEnvDirectV2
 
 from ..config import TrainingConfig
 from .sanity_checker import SanityChecker, run_sanity_checks
