@@ -302,11 +302,12 @@ class RLTrainer:
     
     def _create_single_env(self):
         """Factory pour créer un environnement individuel"""
-        return TrafficSignalEnvDirect(
-            simulation_config=self.rl_config.arz_simulation_config,  # Fixed: was arz_simulation_config
-            endpoint_params=self.rl_config.endpoint_params,
-            signal_params=self.rl_config.signal_params,
-            **self.rl_config.rl_env_params
+        return TrafficSignalEnvDirectV2(
+            simulation_config=self.rl_config.arz_simulation_config,
+            decision_interval=self.rl_config.rl_env_params.get('decision_interval', 15.0),
+            observation_segment_ids=self.rl_config.rl_env_params.get('observation_segment_ids'),
+            reward_weights=self.rl_config.rl_env_params.get('reward_weights'),
+            quiet=True
         )
     
     def _create_or_load_model(self):
