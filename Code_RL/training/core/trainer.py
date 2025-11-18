@@ -229,23 +229,27 @@ class RLTrainer:
         """Sauvegarde les configurations pour reproducibilité"""
         config_file = self.output_dir / "training_config.json"
         
-        # Helper function to convert Path objects to strings recursively
-        def convert_paths_to_str(obj):
-            """Recursively convert Path objects to strings for JSON serialization"""
+        # Helper function to convert complex objects to JSON-serializable format
+        def make_json_serializable(obj):
+            """Recursively convert Pydantic models and Path objects for JSON serialization"""
             from pathlib import Path
+            from pydantic import BaseModel
             
             if isinstance(obj, Path):
                 return str(obj)
+            elif isinstance(obj, BaseModel):
+                # Convert Pydantic model to dict, then recursively clean
+                return make_json_serializable(obj.model_dump())
             elif isinstance(obj, dict):
-                return {k: convert_paths_to_str(v) for k, v in obj.items()}
+                return {k: make_json_serializable(v) for k, v in obj.items()}
             elif isinstance(obj, (list, tuple)):
-                return [convert_paths_to_str(item) for item in obj]
+                return [make_json_serializable(item) for item in obj]
             else:
                 return obj
         
         config_dict = {
             "training_config": self.training_config.to_dict(),
-            "rl_env_params": convert_paths_to_str(self.rl_config.rl_env_params),
+            "rl_env_params": make_json_serializable(self.rl_config.rl_env_params),
             "experiment_name": self.training_config.experiment_name,
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
         }
