@@ -80,6 +80,13 @@ class NetworkSimulator:
             'time': [],
             'segments': {seg_id: {'density': [], 'speed': []} for seg_id in self.network.segments.keys()}
         }
+
+        # Initialize traffic lights logging
+        self.history['traffic_lights'] = {}
+        for node_id, node in self.network.nodes.items():
+            # Check if node has traffic lights (handle both attribute existence and None value)
+            if getattr(node, 'traffic_lights', None) is not None:
+                self.history['traffic_lights'][node_id] = {'green_segments': []}
         
         self.logger.info("✅ GPU Network Simulator initialized.")
 
@@ -529,6 +536,14 @@ class NetworkSimulator:
             
             self.history['segments'][seg_id]['density'].append(total_density)
             self.history['segments'][seg_id]['speed'].append(avg_speed)
+
+        # Log traffic lights state
+        for node_id, node_log in self.history['traffic_lights'].items():
+            node = self.network.nodes[node_id]
+            if getattr(node, 'traffic_lights', None) is not None:
+                # Get list of currently green segments
+                green_segments = node.traffic_lights.get_current_green_segments(self.t)
+                node_log['green_segments'].append(green_segments)
 
     def _log_diagnostics(self):
         """Logs diagnostic information about the simulation run."""

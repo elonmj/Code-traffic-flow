@@ -1,11 +1,26 @@
 """
 Main script to run a full Victoria Island corridor network simulation.
 
+NOTE: This is a CUDA-accelerated implementation.
+It MUST be executed using the `kaggle_runner` to ensure proper GPU environment setup.
+Usage: python kaggle_runner/executor.py --target arz_model/main_network_simulation.py
+
+⚠️ IMPORTANT: GPU/CUDA IMPLEMENTATION - USE KAGGLE RUNNER ⚠️
+=============================================================
+This script requires CUDA GPU support and should ALWAYS be executed via:
+
+    python -m kaggle_runner.executor --script arz_model/main_network_simulation.py
+
+Do NOT run this script directly on local machines without CUDA GPU.
+The kaggle_runner automatically uploads to Kaggle and executes on P100 GPU.
+
+=============================================================
+
 This script demonstrates the complete automated workflow:
 1. Uses ConfigFactory to automatically generate network configuration from CSV topology
 2. Builds the NetworkGrid from the generated configuration
 3. Initializes the SimulationRunner with the NetworkGrid and config
-4. Runs the simulation (delegated to NetworkSimulator)
+4. Runs the simulation (delegated to NetworkSimulator on GPU)
 5. Saves the results dictionary
 
 This is a REUSABLE system - no manual segment-by-segment configuration needed!
