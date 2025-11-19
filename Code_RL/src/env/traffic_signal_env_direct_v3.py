@@ -119,7 +119,7 @@ class TrafficSignalEnvDirectV3(gym.Env):
         self.episode_step = 0
         self.total_reward = 0.0
         obs = self._get_observation()
-        info = {'time': self.runner.network_grid.t, 'phase': self.current_phase, 'episode_step': 0}
+        info = {'time': self.runner.network_simulator.t, 'phase': self.current_phase, 'episode_step': 0}
         return obs, info
 
     def step(self, action: int):
@@ -127,7 +127,8 @@ class TrafficSignalEnvDirectV3(gym.Env):
             self.current_phase = 1 - self.current_phase
             self._apply_phase_to_network(self.current_phase)
         
-        t_start = self.runner.network_grid.t
+        # Use the simulator's time as the source of truth
+        t_start = self.runner.network_simulator.t
         t_end = t_start + self.decision_interval
         
         self.runner.run_until(t_end)
@@ -138,11 +139,11 @@ class TrafficSignalEnvDirectV3(gym.Env):
         self.episode_step += 1
         self.total_reward += reward
         
-        terminated = self.runner.network_grid.t >= self.simulation_config.time.t_final
+        terminated = self.runner.network_simulator.t >= self.simulation_config.time.t_final
         truncated = False
         
         info = {
-            'time': self.runner.network_grid.t,
+            'time': self.runner.network_simulator.t,
             'phase': self.current_phase,
             'episode_step': self.episode_step,
             'total_reward': self.total_reward

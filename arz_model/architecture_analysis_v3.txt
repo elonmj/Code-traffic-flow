@@ -2,27 +2,23 @@
 🧠 ENHANCED ARCHITECTURE ANALYSIS V3.1
 ================================================================================
 
-Fixes from v3:
-  ✓ Fixed pathlib.relative_to → py_file.as_posix()
-  ✓ file_relative before try/except (no NameError)
-  ✓ Full module labels for decorator matching
-  ✓ Merged all_decorated set for FPs
+
 ================================================================================
 
 📂 Loading dependency graph...
 
 📦 LOADED:
-  - 79 modules
-  - 289 functions
-  - 50 classes
+  - 105 modules
+  - 414 functions
+  - 63 classes
 
 ================================================================================
 🔍 SCANNING FOR DECORATORS AND SPECIAL PATTERNS (v3.1 FIXED)
 ================================================================================
 
-🔬 Scanning 61 Python files for decorators...
+🔬 Scanning 75 Python files for decorators...
 
-🔍 DEBUG - Decorators found: 66
+🔍 DEBUG - Decorators found: 71
   ✓ validate_x_max @field_validator in arz_model/config/network_simulation_config.py
   ✓ validate_x_max @classmethod in arz_model/config/network_simulation_config.py
   ✓ validate_N @field_validator in arz_model/config/network_simulation_config.py
@@ -34,55 +30,55 @@ Fixes from v3:
   ✓ validate_traffic_light_config @field_validator in arz_model/config/network_simulation_config.py
   ✓ validate_traffic_light_config @classmethod in arz_model/config/network_simulation_config.py
 
-🔍 DEBUG - Pytest tests found: 25
+🔍 DEBUG - Pytest tests found: 56
+  ✓ test_dt_min_protection_triggers in arz_model/tests/test_dt_min_protection.py
+  ✓ test_dt_min_protection_allows_stable_runs in arz_model/tests/test_dt_min_protection.py
+  ✓ test_stable_simulation_completes in arz_model/tests/test_dt_min_protection_v2.py
+  ✓ test_high_density_simulation_stability in arz_model/tests/test_dt_min_protection_v2.py
   ✓ test_cuda_availability_check in arz_model/tests/test_gpu_memory_pool.py
   ✓ test_valid_initialization in arz_model/tests/test_gpu_memory_pool.py
   ✓ test_segment_mismatch_validation in arz_model/tests/test_gpu_memory_pool.py
   ✓ test_streams_configuration in arz_model/tests/test_gpu_memory_pool.py
   ✓ test_segment_state_access in arz_model/tests/test_gpu_memory_pool.py
   ✓ test_road_quality_access in arz_model/tests/test_gpu_memory_pool.py
-  ✓ test_stream_access in arz_model/tests/test_gpu_memory_pool.py
-  ✓ test_state_initialization_full_array in arz_model/tests/test_gpu_memory_pool.py
-  ✓ test_state_initialization_physical_only in arz_model/tests/test_gpu_memory_pool.py
-  ✓ test_invalid_initialization in arz_model/tests/test_gpu_memory_pool.py
 
-🔍 DEBUG - Main calls found: 59
+🔍 DEBUG - Main calls found: 81
   ✓ main called from main in arz_model/main_network_builder.py
-  ✓ benchmark_simulation_performance called from main in arz_model/benchmarks/benchmark_gpu_only.py
-  ✓ profile_memory_usage called from main in arz_model/benchmarks/benchmark_gpu_only.py
-  ✓ BoundaryConditionsConfig called from main in arz_model/config/bc_config.py
-  ✓ print called from main in arz_model/config/bc_config.py
-  ✓ BoundaryConditionsConfig called from main in arz_model/config/bc_config.py
-  ✓ print called from main in arz_model/config/bc_config.py
-  ✓ BoundaryConditionsConfig called from main in arz_model/config/bc_config.py
-  ✓ print called from main in arz_model/config/bc_config.py
-  ✓ InflowBC called from main in arz_model/config/bc_config.py
+  ✓ print called from main in arz_model/main_network_simulation.py
+  ✓ print called from main in arz_model/main_network_simulation.py
+  ✓ print called from main in arz_model/main_network_simulation.py
+  ✓ flush called from main in arz_model/main_network_simulation.py
+  ✓ main called from main in arz_model/main_network_simulation.py
+  ✓ print called from main in arz_model/main_network_simulation.py
+  ✓ print called from main in arz_model/main_network_simulation.py
+  ✓ print called from main in arz_model/main_network_simulation.py
+  ✓ flush called from main in arz_model/main_network_simulation.py
 
 📊 DECORATOR DETECTION RESULTS:
-  - 57 functions with decorators
-  - 25 pytest test functions (test_*)
+  - 63 functions with decorators
+  - 56 pytest test functions (test_*)
   - 0 pytest fixtures (@pytest.fixture)
-  - 11 Pydantic validators (@field_validator)
+  - 12 Pydantic validators (@field_validator)
   - 0 property methods (@property)
-  - 11 class methods (@classmethod)
+  - 10 class methods (@classmethod)
   - 1 static methods (@staticmethod)
-  - 27 main entry point calls (if __name__ == '__main__')
+  - 38 main entry point calls (if __name__ == '__main__')
 
 ================================================================================
 🔗 BUILDING ENHANCED CALL GRAPH
 ================================================================================
-Total dependencies: 251
-  - 164 functions that call others
-  - 115 functions that are called
+Total dependencies: 429
+  - 279 functions that call others
+  - 187 functions that are called
 
 ================================================================================
 ⚠️  ENHANCED DEAD CODE DETECTION
 ================================================================================
 
 📊 RESULTS:
-  - 74 CONFIRMED DEAD functions
-  - 77 SUSPECTED FALSE POSITIVES
-  - Total analyzed: 224
+  - 83 CONFIRMED DEAD functions
+  - 116 SUSPECTED FALSE POSITIVES
+  - Total analyzed: 290
 
 ================================================================================
 🚨 SUSPECTED FALSE POSITIVES (DO NOT DELETE)
@@ -95,7 +91,7 @@ These functions appear 'dead' but are likely called via:
   - Public API conventions (run, get_*, set_*)
 ================================================================================
 
-🔍 Decorated/special function (pytest/field_validator/property/etc.) (37 functions)
+🔍 Decorated/special function (pytest/field_validator/property/etc.) (70 functions)
 --------------------------------------------------------------------------------
 
    📄 arz_model/benchmarks/benchmark_gpu_only.py
@@ -111,6 +107,9 @@ These functions appear 'dead' but are likely called via:
    📄 arz_model/config/time_config.py
       ✓ output_dt_must_be_less_than_t_final
 
+   📄 arz_model/core/node_solver_gpu.py
+      ✓ solve_node_fluxes_gpu
+
    📄 arz_model/core/physics.py
       ✓ _calculate_supply_flux_cuda
       ✓ _invert_flux_function_cuda
@@ -118,16 +117,29 @@ These functions appear 'dead' but are likely called via:
       ✓ calculate_relaxation_time_gpu
       ✓ calculate_source_term_gpu
 
+   📄 arz_model/main_network_builder.py
+      ✓ main
+
+   📄 arz_model/main_network_simulation.py
+      ✓ main
+
    📄 arz_model/numerics/gpu/network_coupling_gpu.py
-      ✓ apply_ghost_cell_fluxes
-      ✓ apply_inflow_boundary_condition
-      ✓ apply_outflow_boundary_condition
+      ✓ _apply_coupling_batched_kernel
+      ✓ _apply_coupling_kernel
+
+   📄 arz_model/numerics/gpu/ssp_rk3_cuda.py
+      ✓ batched_ssp_rk3_kernel
+
+   📄 arz_model/numerics/gpu/weno_cuda.py
+      ✓ apply_boundary_conditions_kernel
+      ✓ weno5_reconstruction_optimized_kernel
 
    📄 arz_model/numerics/reconstruction/converter.py
       ✓ conserved_to_primitives_arr
       ✓ primitives_to_conserved_arr
 
    📄 arz_model/numerics/reconstruction/weno_gpu.py
+      ✓ _apply_positivity_limiter_gpu_device
       ✓ _central_upwind_flux_gpu_device
       ✓ _primitives_to_conserved_gpu_device
 
@@ -136,6 +148,17 @@ These functions appear 'dead' but are likely called via:
 
    📄 arz_model/road_network/models.py
       ✓ must_be_positive
+
+   📄 arz_model/simulation/runner.py
+      ✓ _validate_gpu_architecture
+
+   📄 arz_model/tests/test_dt_min_protection.py
+      ✓ test_dt_min_protection_allows_stable_runs
+      ✓ test_dt_min_protection_triggers
+
+   📄 arz_model/tests/test_dt_min_protection_v2.py
+      ✓ test_high_density_simulation_stability
+      ✓ test_stable_simulation_completes
 
    📄 arz_model/tests/test_gpu_memory_pool.py
       ✓ test_asynchronous_checkpoint
@@ -157,27 +180,45 @@ These functions appear 'dead' but are likely called via:
       ✓ test_mass_conservation_gpu
       ✓ test_simulation_runs_end_to_end_on_gpu
 
-🔍 GPU kernel (called indirectly via classes) (18 functions)
+   📄 arz_model/tests/test_gpu_optimizations.py
+      ✓ test_device_function_integration
+      ✓ test_optimized_kernels_import
+      ✓ test_physical_bounds_preservation
+      ✓ test_simulation_stability_30s
+
+   📄 arz_model/tests/test_network_config_cache.py
+      ✓ test_cache_clear
+      ✓ test_cache_save_and_load
+      ✓ test_fingerprint_changes_on_param_change
+      ✓ test_fingerprint_stability
+      ✓ test_osm_integration
+      ✓ test_victoria_island_with_cache
+
+   📄 arz_model/tests/test_positivity_preservation.py
+      ✓ test_physics_config_validates_positivity_bounds
+
+   📄 arz_model/tests/test_ssp_rk3_fusion.py
+      ✓ test_class_interface_consistency
+      ✓ test_constant_state_preservation_fused
+      ✓ test_equivalence_various_dt
+      ✓ test_equivalence_various_sizes
+      ✓ test_equivalence_zero_flux_discontinuous
+      ✓ test_equivalence_zero_flux_random
+      ✓ test_equivalence_zero_flux_smooth
+      ✓ test_linearity_fused
+      ✓ test_multiple_timesteps_consistency
+      ✓ test_performance_comparison
+      ✓ test_very_small_dt
+
+🔍 GPU kernel (called indirectly via classes) (13 functions)
 --------------------------------------------------------------------------------
 
    📄 arz_model/numerics/cfl.py
+      ✓ _calculate_max_wavespeed_batched_kernel
       ✓ _calculate_max_wavespeed_kernel
-
-   📄 arz_model/numerics/gpu/network_coupling_gpu.py
-      ✓ network_coupling_kernel
-
-   📄 arz_model/numerics/gpu/ssp_rk3_cuda.py
-      ✓ compute_flux_divergence_kernel
-      ✓ ssp_rk3_stage1_kernel
-      ✓ ssp_rk3_stage2_kernel
-      ✓ ssp_rk3_stage3_kernel
 
    📄 arz_model/numerics/gpu/utils.py
       ✓ profile_gpu_kernel
-
-   📄 arz_model/numerics/gpu/weno_cuda.py
-      ✓ apply_boundary_conditions_kernel
-      ✓ weno5_reconstruction_optimized_kernel
 
    📄 arz_model/numerics/reconstruction/converter.py
       ✓ conserved_to_primitives_kernel
@@ -195,12 +236,17 @@ These functions appear 'dead' but are likely called via:
       ✓ _apply_bounds_kernel
       ✓ _ode_step_kernel
       ✓ ssp_rk3_stage_1_kernel
+      ✓ transpose_kernel
 
-🔍 Public API method (run/get/set/execute/etc.) (22 functions)
+🔍 Public API method (run/get/set/execute/etc.) (33 functions)
 --------------------------------------------------------------------------------
 
-   📄 arz_model/core/node_solver_gpu.py
-      ✓ create_gpu_node_solver_for_network
+   📄 arz_model/benchmarks/benchmark_gpu_optimizations.py
+      ✓ benchmark_simulation_run
+
+   📄 arz_model/config/config_factory.py
+      ✓ _create_node_config
+      ✓ _create_segment_config
 
    📄 arz_model/core/parameter_manager.py
       ✓ get_all
@@ -213,17 +259,11 @@ These functions appear 'dead' but are likely called via:
    📄 arz_model/network/network_grid.py
       ✓ initialize
 
-   📄 arz_model/network/network_simulator.py
-      ✓ _build_network_from_config_simple
-      ✓ _build_state
-      ✓ get_metrics
-      ✓ set_signal
-
    📄 arz_model/network/topology.py
       ✓ get_network_diameter
 
    📄 arz_model/numerics/gpu/memory_pool.py
-      ✓ get_road_quality_array
+      ✓ get_all_checkpoints
 
    📄 arz_model/numerics/gpu/utils.py
       ✓ get_optimal_block_size
@@ -246,6 +286,25 @@ These functions appear 'dead' but are likely called via:
       ✓ _create_legacy_params_from_config
       ✓ _initialize_boundary_conditions
       ✓ _initialize_network
+      ✓ run_until
+      ✓ set_boundary_phases_bulk
+
+   📄 arz_model/visualization/data_loader.py
+      ✓ get_all_segments
+      ✓ get_simulated_segment_ids
+      ✓ get_time_array
+
+   📄 arz_model/visualization/network_builder.py
+      ✓ create_subgraph_from_simulated
+      ✓ get_graph
+      ✓ get_statistics
+
+   📄 arz_model/visualization/network_visualizer.py
+      ✓ _build_segment_to_edge_mapping
+      ✓ _create_enhanced_speed_colormap
+      ✓ create_snapshots
+      ✓ create_static_topology
+      ✓ create_traffic_animation
 
 ================================================================================
 ❌ CONFIRMED DEAD FUNCTIONS (SAFE TO DELETE)
@@ -255,13 +314,15 @@ These functions are NOT called anywhere and have no decorators.
 They are likely legacy code that can be safely removed.
 ================================================================================
 
-📊 Total: 74 functions across 28 modules
+📊 Total: 83 functions across 33 modules
 
 
-   📄 arz_model/core/node_solver_gpu.py (3 dead functions)
-      ❌ apply_network_coupling_gpu_native
-      ❌ setup_network_topology
-      ❌ setup_physics_parameters
+   📄 arz_model/benchmarks/benchmark_gpu_optimizations.py (1 dead functions)
+      ❌ print_results
+
+
+
+
 
    📄 arz_model/core/parameter_manager.py (3 dead functions)
       ❌ has_local
@@ -271,6 +332,11 @@ They are likely legacy code that can be safely removed.
    📄 arz_model/core/parameters.py (1 dead functions)
       ❌ _validate_parameters
 
+   📄 arz_model/data/enrich_osm_metadata.py (3 dead functions)
+      ❌ enrich_corridor_data
+      ❌ extract_node_metadata
+      ❌ fetch_osm_nodes
+
    📄 arz_model/io/data_manager.py (3 dead functions)
       ❌ load_road_quality_file
       ❌ save_mass_data
@@ -279,13 +345,12 @@ They are likely legacy code that can be safely removed.
    📄 arz_model/network/link.py (1 dead functions)
       ❌ apply_behavioral_coupling
 
-   📄 arz_model/network/network_grid.py (3 dead functions)
+   📄 arz_model/network/network_grid.py (5 dead functions)
       ❌ _apply_network_boundary_conditions
       ❌ _prepare_junction_info
       ❌ add_link
-
-   📄 arz_model/network/network_simulator.py (1 dead functions)
-      ❌ _apply_initial_conditions
+      ❌ add_node_from_config
+      ❌ add_segment_from_config
 
    📄 arz_model/network/topology.py (3 dead functions)
       ❌ compute_shortest_path
@@ -295,21 +360,23 @@ They are likely legacy code that can be safely removed.
    📄 arz_model/numerics/boundary_conditions.py (1 dead functions)
       ❌ apply_boundary_conditions
 
-   📄 arz_model/numerics/cfl.py (3 dead functions)
+   📄 arz_model/numerics/cfl.py (5 dead functions)
       ❌ calculate_cfl_dt
       ❌ cfl_condition
+      ❌ cfl_condition_gpu_batched
       ❌ cfl_condition_gpu_native
+      ❌ compute_adaptive_cfl_with_history
 
-   📄 arz_model/numerics/gpu/memory_pool.py (2 dead functions)
+   📄 arz_model/numerics/gpu/memory_pool.py (3 dead functions)
       ❌ _allocate_all_arrays
       ❌ release_temp_array
+      ❌ update_segment_state_batched
 
    📄 arz_model/numerics/gpu/network_coupling_gpu.py (1 dead functions)
       ❌ _prepare_gpu_topology
 
-   📄 arz_model/numerics/gpu/ssp_rk3_cuda.py (2 dead functions)
-      ❌ cleanup
-      ❌ integrate_step
+   📄 arz_model/numerics/gpu/ssp_rk3_cuda.py (1 dead functions)
+      ❌ compute_flux_div_shared
 
    📄 arz_model/numerics/gpu/utils.py (3 dead functions)
       ❌ check_cuda_availability
@@ -334,38 +401,31 @@ They are likely legacy code that can be safely removed.
       ❌ central_upwind_flux_gpu
       ❌ godunov_flux_upwind
 
-   📄 arz_model/numerics/time_integration.py (15 dead functions)
-      ❌ _ode_rhs
-      ❌ _ode_rhs_corrected
-      ❌ apply_inflow_bc_manually
-      ❌ apply_physical_state_bounds
-      ❌ apply_physical_state_bounds_gpu
-      ❌ calculate_spatial_discretization_godunov
-      ❌ calculate_spatial_discretization_weno
-      ❌ check_cfl_condition
-      ❌ compute_boundary_correction
-      ❌ compute_boundary_weight
-      ❌ primitives_to_conserved_single
+   📄 arz_model/numerics/time_integration.py (5 dead functions)
+      ❌ _apply_physical_bounds_gpu_in_place
+      ❌ batched_strang_splitting_step_gpu_native
       ❌ solve_hyperbolic_step_ssp_rk3_gpu_native
-      ❌ solve_ode_step_cpu
       ❌ solve_ode_step_gpu
-      ❌ strang_splitting_step
+      ❌ strang_splitting_step_gpu_native
 
-   📄 arz_model/simulation/execution/network_simulator.py (1 dead functions)
+   📄 arz_model/simulation/execution/network_simulator.py (3 dead functions)
+      ❌ _log_cfl_diagnostics_throttled
+      ❌ _log_diagnostics
       ❌ _log_state
 
    📄 arz_model/simulation/initial_conditions.py (1 dead functions)
       ❌ uniform_initial_condition
 
-   📄 arz_model/simulation/runner.py (8 dead functions)
+   📄 arz_model/simulation/runner.py (9 dead functions)
       ❌ _common_initialization
       ❌ _convert_bc_to_legacy
       ❌ _convert_ic_to_legacy
       ❌ _init_from_network_grid
       ❌ _update_bc_from_schedule
+      ❌ _validate_gpu_availability
+      ❌ _validate_segment_phase
       ❌ animate_results
       ❌ save_results
-      ❌ step
 
    📄 arz_model/simulation/state/state_manager.py (3 dead functions)
       ❌ advance_time
@@ -375,8 +435,20 @@ They are likely legacy code that can be safely removed.
    📄 arz_model/tests/test_gpu_memory_pool.py (1 dead functions)
       ❌ simple_config
 
-   📄 arz_model/visualization/network_visualizer.py (2 dead functions)
+   📄 arz_model/tests/test_ssp_rk3_fusion.py (1 dead functions)
+      ❌ sample_state_random
+
+   📄 arz_model/visualization/data_loader.py (1 dead functions)
+      ❌ _validate
+
+   📄 arz_model/visualization/network_builder.py (1 dead functions)
+      ❌ compute_layout
+
+   📄 arz_model/visualization/network_visualizer.py (5 dead functions)
       ❌ _draw_base_network
+      ❌ _is_edge_active
+      ❌ _speed_to_color
+      ❌ update
       ❌ update_plot
 
    📄 arz_model/visualization/plotting.py (3 dead functions)
@@ -394,45 +466,52 @@ They are likely legacy code that can be safely removed.
 
 1. ENTRY POINTS (functions likely called externally):
 --------------------------------------------------------------------------------
-  run                                      in arz_model/simulation/execution/network_simulator.py - called by 4 functions
-  main                                     in arz_model/main_network_builder.py        - called by 1 functions
-  main                                     in arz_model/main_network_simulation.py     - called by 1 functions
+  run                                      in arz_model/simulation/execution/network_simulator.py - called by 10 functions
+  main                                     in arz_model/benchmarks/benchmark_gpu_optimizations.py - called by 4 functions
+  run_legacy                               in arz_model/tests/test_ssp_rk3_fusion.py   - called by 2 functions
+  run_fused                                in arz_model/tests/test_ssp_rk3_fusion.py   - called by 2 functions
+  main                                     in arz_model/data/enrich_osm_metadata.py    - called by 1 functions
   run                                      in arz_model/simulation/runner.py           - called by 1 functions
+  main                                     in arz_model/main_network_builder.py        - called by 0 functions
+  test_dt_min_protection_allows_stable_runs in arz_model/tests/test_dt_min_protection.py - called by 0 functions
+  main                                     in arz_model/main_network_simulation.py     - called by 0 functions
+  run_until                                in arz_model/simulation/runner.py           - called by 0 functions
   test_simulation_runs_end_to_end_on_gpu   in arz_model/tests/test_gpu_only_integration.py - called by 0 functions
+  benchmark_simulation_run                 in arz_model/benchmarks/benchmark_gpu_optimizations.py - called by 0 functions
 
 
 2. HUB FUNCTIONS (called by many others):
 --------------------------------------------------------------------------------
-  cleanup                                  (arz_model/core/node_solver_gpu.py       ) - called by 20 functions
-  __init__                                 (arz_model/core/node_solver_gpu.py       ) - called by 17 functions
+  __init__                                 (arz_model/config/config_factory.py      ) - called by 24 functions
+  cleanup                                  (arz_model/numerics/gpu/ssp_rk3_cuda.py  ) - called by 18 functions
+  integrate_ssp_rk3_gpu                    (arz_model/numerics/gpu/ssp_rk3_cuda.py  ) - called by 17 functions
+  clear                                    (arz_model/config/network_config_cache.py) - called by 15 functions
+  from_config                              (arz_model/network/network_grid.py       ) - called by 13 functions
   get                                      (arz_model/core/parameter_manager.py     ) - called by 13 functions
-  __repr__                                 (arz_model/config/physics_config.py      ) - called by 12 functions
-  from_config                              (arz_model/network/network_grid.py       ) - called by 11 functions
+  run                                      (arz_model/simulation/execution/network_simulator.py) - called by 10 functions
+  __repr__                                 (arz_model/config/physics_config.py      ) - called by 10 functions
+  info                                     (arz_model/simulation/logging/simulation_logger.py) - called by 10 functions
+  load                                     (arz_model/config/network_config_cache.py) - called by 10 functions
+  debug                                    (arz_model/simulation/logging/simulation_logger.py) - called by 8 functions
+  initialize_segment_state                 (arz_model/numerics/gpu/memory_pool.py   ) - called by 8 functions
   checkpoint_to_cpu                        (arz_model/numerics/gpu/memory_pool.py   ) - called by 8 functions
-  initialize_segment_state                 (arz_model/numerics/gpu/memory_pool.py   ) - called by 7 functions
-  get_boundary_states                      (arz_model/network/node.py               ) - called by 5 functions
-  get_segment_state                        (arz_model/numerics/gpu/memory_pool.py   ) - called by 5 functions
+  get_segment_state                        (arz_model/numerics/gpu/memory_pool.py   ) - called by 7 functions
+  step                                     (arz_model/network/network_grid.py       ) - called by 6 functions
   create_test_config                       (arz_model/tests/test_gpu_only_integration.py) - called by 5 functions
-  step                                     (arz_model/network/network_grid.py       ) - called by 4 functions
+  load_topology                            (arz_model/visualization/network_builder.py) - called by 5 functions
+  main                                     (arz_model/benchmarks/benchmark_gpu_optimizations.py) - called by 4 functions
+  compute_fingerprint                      (arz_model/config/network_config_cache.py) - called by 4 functions
+  __str__                                  (arz_model/core/parameters.py            ) - called by 4 functions
+  get_boundary_states                      (arz_model/network/node.py               ) - called by 4 functions
   get_outgoing_capacities                  (arz_model/network/node.py               ) - called by 4 functions
-  _get_memory_delta                        (arz_model/numerics/gpu/memory_pool.py   ) - called by 4 functions
   _get_gpu_memory_usage                    (arz_model/numerics/gpu/memory_pool.py   ) - called by 4 functions
+  synchronize_all_streams                  (arz_model/numerics/gpu/memory_pool.py   ) - called by 4 functions
+  get_stream                               (arz_model/numerics/gpu/memory_pool.py   ) - called by 4 functions
+  central_upwind_flux_device               (arz_model/numerics/gpu/ssp_rk3_cuda.py  ) - called by 4 functions
   get_memory_stats                         (arz_model/numerics/gpu/memory_pool.py   ) - called by 4 functions
   calculate_spatial_discretization_weno_gpu_native (arz_model/numerics/reconstruction/weno_gpu.py) - called by 4 functions
-  run                                      (arz_model/simulation/execution/network_simulator.py) - called by 4 functions
-  get_results                              (arz_model/simulation/runner.py          ) - called by 3 functions
-  get_stream                               (arz_model/numerics/gpu/memory_pool.py   ) - called by 3 functions
-  _update_plot_from_state                  (arz_model/visualization/network_visualizer.py) - called by 3 functions
-  close                                    (arz_model/visualization/network_visualizer.py) - called by 3 functions
-  create_benchmark_config                  (arz_model/benchmarks/benchmark_gpu_only.py) - called by 2 functions
-  _calculate_physical_velocity_cuda        (arz_model/core/physics.py               ) - called by 2 functions
-  _calculate_pressure_derivative_cuda      (arz_model/core/physics.py               ) - called by 2 functions
-  __str__                                  (arz_model/core/parameters.py            ) - called by 2 functions
-  add_node_from_config                     (arz_model/network/network_grid.py       ) - called by 2 functions
-  add_segment                              (arz_model/network/network_grid.py       ) - called by 2 functions
-  add_outgoing_segment                     (arz_model/network/node.py               ) - called by 2 functions
-  build_graph                              (arz_model/network/topology.py           ) - called by 2 functions
-  get_temp_array                           (arz_model/numerics/gpu/memory_pool.py   ) - called by 2 functions
+  create_victoria_island_config            (arz_model/config/config_factory.py      ) - called by 4 functions
+  __enter__                                (arz_model/numerics/gpu/memory_pool.py   ) - called by 3 functions
 
 ================================================================================
 📋 SUMMARY
@@ -440,21 +519,21 @@ They are likely legacy code that can be safely removed.
 
 Architecture Analysis Complete! (v3.1)
 
-Total Functions: 289
-  ├─ Called at least once: 115
-  ├─ Never called (total): 224
-  │   ├─ Confirmed dead: 74
-  │   └─ Suspected false positives: 77
-  └─ With decorators: 57
+Total Functions: 414
+  ├─ Called at least once: 187
+  ├─ Never called (total): 290
+  │   ├─ Confirmed dead: 83
+  │   └─ Suspected false positives: 116
+  └─ With decorators: 63
 
 Special Functions Detected:
-  ├─ Pytest tests: 25
+  ├─ Pytest tests: 56
   ├─ Pytest fixtures: 0
-  ├─ Pydantic validators: 11
+  ├─ Pydantic validators: 12
   ├─ Property methods: 0
-  ├─ Class methods: 11
+  ├─ Class methods: 10
   ├─ Static methods: 1
-  └─ Main entry points: 27
+  └─ Main entry points: 38
 
 Recommendations:
   ✓ DO NOT delete functions in "SUSPECTED FALSE POSITIVES"

@@ -9508,3 +9508,59 @@
 2025-11-19 10:42:29,837 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-19 10:42:29,839 - kernel_manager - INFO -   - test_log.txt (19008 bytes)
 2025-11-19 10:42:29,841 - kernel_manager - INFO -   - training_config.json (1978 bytes)
+2025-11-19 10:43:54,722 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-19 10:43:54,723 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-19 10:43:54,817 - kernel_manager - INFO - 📍 Current branch: experiment/kaggle-rl-training
+2025-11-19 10:43:54,882 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-19 10:43:54,882 - kernel_manager - INFO -   M  rz_model/simulation/execution/network_simulator.py (Modified (staged))
+2025-11-19 10:43:54,882 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-19 10:43:54,882 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-19 10:43:55,024 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-19 10:43:55,795 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-19 10:43:55,795 - kernel_manager - INFO - 📤 Pushing to remote branch: experiment/kaggle-rl-training
+2025-11-19 10:44:04,114 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-19 10:44:04,114 - kernel_manager - INFO - Building kernel script...
+2025-11-19 10:44:04,119 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpei3bh2fq
+2025-11-19 10:44:04,125 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-19 10:44:04,127 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-19 10:44:04,128 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-19 10:44:05,873 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-19 10:44:05,888 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-19 10:44:06,468 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-19 10:44:36,992 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-19 10:45:07,531 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-19 10:45:38,054 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 91s)
+2025-11-19 10:46:08,583 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 122s)
+2025-11-19 10:46:39,096 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 152s)
+2025-11-19 10:47:09,632 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 183s)
+2025-11-19 10:47:43,028 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 213s)
+2025-11-19 10:48:13,571 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 247s)
+2025-11-19 10:48:44,090 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 277s)
+2025-11-19 10:49:14,620 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 308s)
+2025-11-19 10:49:46,166 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 338s)
+2025-11-19 10:50:17,004 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 370s)
+2025-11-19 10:50:47,843 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 401s)
+2025-11-19 10:51:18,404 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 431s)
+2025-11-19 10:51:48,961 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 462s)
+2025-11-19 10:52:19,482 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 493s)
+2025-11-19 10:52:50,073 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 523s)
+2025-11-19 10:53:20,617 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 554s)
+2025-11-19 10:53:51,153 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 584s)
+2025-11-19 10:54:21,699 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 615s)
+2025-11-19 10:54:52,258 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 645s)
+2025-11-19 10:55:23,119 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 676s)
+2025-11-19 10:55:53,663 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 707s)
+2025-11-19 10:56:24,205 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 737s)
+2025-11-19 10:56:54,756 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 768s)
+2025-11-19 10:57:25,322 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 798s)
+2025-11-19 10:57:55,847 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 829s)
+2025-11-19 10:58:26,369 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 859s)
+2025-11-19 10:58:56,932 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 890s)
+2025-11-19 10:59:27,452 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 921s)
+2025-11-19 10:59:57,993 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 951s)
+2025-11-19 11:00:28,540 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 982s)
+2025-11-19 11:00:59,141 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1012s)
+2025-11-19 11:01:29,692 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1043s)
+2025-11-19 11:02:00,222 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1073s)
+2025-11-19 11:02:30,804 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1104s)
+2025-11-19 11:03:01,340 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1134s)
