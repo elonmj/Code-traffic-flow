@@ -65,6 +65,17 @@ def main():
         data_dir = os.path.join(project_root, 'arz_model', 'data')
         enriched_path = os.path.join(data_dir, 'fichier_de_travail_corridor_enriched.xlsx')
         
+        print(f"Checking enriched file at: {enriched_path}")
+        if os.path.exists(enriched_path):
+            print("✅ Enriched file found!")
+        else:
+            print("❌ Enriched file NOT found!")
+            # List directory content to debug
+            if os.path.exists(data_dir):
+                print(f"Contents of {data_dir}: {os.listdir(data_dir)}")
+            else:
+                print(f"Data directory {data_dir} does not exist!")
+
         config = create_victoria_island_config(
             enriched_path=enriched_path,
             # You can customize parameters here if needed:
