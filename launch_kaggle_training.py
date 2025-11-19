@@ -30,6 +30,7 @@ def main():
     print(f"Timesteps: {args.timesteps}")
     print(f"Timeout: {args.timeout}s ({args.timeout//60} min)")
     print(f"Scenario: {args.scenario}")
+    print(f"Kernel: rl-training-runner (Config: kaggle_runner/config/rl_training_victoria_island.yml)")
     print("=" * 80)
     print()
     

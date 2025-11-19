@@ -1,0 +1,6 @@
+test_name: "RL Training Victoria Island"
+kernel:
+  slug: "rl-training-runner"
+  title: "RL Training Runner"
+  enable_gpu: true
+  enable_internet: true
