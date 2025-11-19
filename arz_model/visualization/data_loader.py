@@ -77,6 +77,11 @@ class SimulationDataLoader:
         if self.results is None:
             raise ValueError("No results loaded. Call load() first.")
             
+        # Normalize structure: if 'history' is missing but 'time' is present,
+        # assume the root dictionary IS the history (common in RL training dumps).
+        if 'history' not in self.results and 'time' in self.results:
+            self.results = {'history': self.results}
+
         # Check for required top-level keys
         if 'history' not in self.results:
             raise ValueError("Results missing 'history' key")

@@ -9776,3 +9776,53 @@
 2025-11-19 14:22:13,650 - kernel_manager - INFO -   - network_simulation_results.pkl (1657715 bytes)
 2025-11-19 14:22:13,666 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-19 14:22:13,666 - kernel_manager - INFO -   - test_log.txt (16170 bytes)
+2025-11-19 15:41:35,357 - kernel_manager - INFO - ✅ Loaded config: RL Training Victoria Island
+2025-11-19 15:41:35,357 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-19 15:41:35,360 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-19 15:41:35,514 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-19 15:41:35,599 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-19 15:41:35,599 - kernel_manager - INFO -   M  ode_RL/src/env/traffic_signal_env_direct_v3.py (Modified (staged))
+2025-11-19 15:41:35,602 - kernel_manager - INFO -    M Code_RL/training/core/trainer.py (Modified (unstaged))
+2025-11-19 15:41:35,602 - kernel_manager - INFO -    M arz_model/config/config_factory.py (Modified (unstaged))
+2025-11-19 15:41:35,602 - kernel_manager - INFO -    M arz_model/network/traffic_lights.py (Modified (unstaged))
+2025-11-19 15:41:35,602 - kernel_manager - INFO -    D kaggle/results/elonmj_generic-test-runner-kernel/generic-test-runner-kernel.log (Deleted (unstaged))
+2025-11-19 15:41:35,602 - kernel_manager - INFO -    D kaggle/results/elonmj_generic-test-runner-kernel/simulation_results/final_state_seg-1.npz (Deleted (unstaged))
+2025-11-19 15:41:35,602 - kernel_manager - INFO -    D kaggle/results/elonmj_generic-test-runner-kernel/simulation_results/final_state_seg-2.npz (Deleted (unstaged))
+2025-11-19 15:41:35,604 - kernel_manager - INFO -    D kaggle/results/elonmj_generic-test-runner-kernel/simulation_results/history_seg-1.npz (Deleted (unstaged))
+2025-11-19 15:41:35,604 - kernel_manager - INFO -    D kaggle/results/elonmj_generic-test-runner-kernel/simulation_results/history_seg-2.npz (Deleted (unstaged))
+2025-11-19 15:41:35,606 - kernel_manager - INFO -    D kaggle/results/elonmj_generic-test-runner-kernel/simulation_results/simulation_metadata.npz (Deleted (unstaged))
+2025-11-19 15:41:35,606 - kernel_manager - INFO -    D kaggle/results/elonmj_generic-test-runner-kernel/simulation_results/simulation_times.npz (Deleted (unstaged))
+2025-11-19 15:41:35,606 - kernel_manager - INFO -    D kaggle/results/elonmj_generic-test-runner-kernel/test_log.txt (Deleted (unstaged))
+2025-11-19 15:41:35,607 - kernel_manager - INFO -    M kaggle_runner/experiments/rl_training_victoria_island.py (Modified (unstaged))
+2025-11-19 15:41:35,607 - kernel_manager - INFO -   ?? arz_model/cache/victoria_island/5fc4c7f3f056e7a2.pkl (Untracked)
+2025-11-19 15:41:35,607 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-19 15:41:35,722 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-19 15:41:37,022 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-19 15:41:37,024 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-19 15:41:43,449 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-19 15:41:43,449 - kernel_manager - INFO - Building kernel script...
+2025-11-19 15:41:43,454 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmp2icq3vko
+2025-11-19 15:41:43,456 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-19 15:41:43,459 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-19 15:41:43,460 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-19 15:41:45,358 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-19 15:41:45,361 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/rl-training-runner
+2025-11-19 15:41:46,194 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 0s)
+2025-11-19 15:42:18,241 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-19 15:42:48,995 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 62s)
+2025-11-19 15:43:19,816 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 93s)
+2025-11-19 15:43:50,536 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 124s)
+2025-11-19 15:43:50,536 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-19 15:43:50,538 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: rl-training-runner
+2025-11-19 15:43:50,538 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-19 15:44:03,653 - kernel_manager - INFO - ✅ Artifacts downloaded in 13.1s to: D:\Projets\Alibi\Code project\kaggle\results\rl-training-runner
+2025-11-19 15:44:03,655 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (23114 bytes)
+2025-11-19 15:44:03,656 - kernel_manager - INFO - Downloaded 8 item(s):
+2025-11-19 15:44:03,656 - kernel_manager - INFO -   - checkpoints/ (directory)
+2025-11-19 15:44:03,656 - kernel_manager - INFO -   - final_model.zip (208891 bytes)
+2025-11-19 15:44:03,658 - kernel_manager - INFO -   - network_simulation_results.pkl (11880590 bytes)
+2025-11-19 15:44:03,658 - kernel_manager - INFO -   - rl-training-runner.log (31584 bytes)
+2025-11-19 15:44:03,658 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-19 15:44:03,660 - kernel_manager - INFO -   - test_log.txt (23114 bytes)
+2025-11-19 15:44:03,660 - kernel_manager - INFO -   - training_config.json (1978 bytes)
+2025-11-19 15:44:03,663 - kernel_manager - INFO -   - training_metrics.json (102 bytes)
