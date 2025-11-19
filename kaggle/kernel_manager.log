@@ -9939,3 +9939,56 @@
 2025-11-19 17:39:08,586 - kernel_manager - INFO -   - generic-test-runner-kernel.log (13078 bytes)
 2025-11-19 17:39:08,586 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-19 17:39:08,586 - kernel_manager - INFO -   - test_log.txt (8789 bytes)
+2025-11-19 18:42:49,020 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-19 18:42:49,020 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-19 18:42:49,119 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-19 18:42:49,173 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-19 18:42:49,173 - kernel_manager - INFO -   D  MPLEMENTATION_SUMMARY.md (Deleted (staged))
+2025-11-19 18:42:49,173 - kernel_manager - INFO -    D KAGGLE_LOG_ANALYSIS_COMPLETE.md (Deleted (unstaged))
+2025-11-19 18:42:49,173 - kernel_manager - INFO -    D MERGE_VALIDATION_SUCCESS.md (Deleted (unstaged))
+2025-11-19 18:42:49,173 - kernel_manager - INFO -    D OPTIMIZATION_SANS_LOGGING_REPORT.md (Deleted (unstaged))
+2025-11-19 18:42:49,173 - kernel_manager - INFO -    D POST_MERGE_VALIDATION_REPORT.md (Deleted (unstaged))
+2025-11-19 18:42:49,173 - kernel_manager - INFO -    D RL_INTEGRATION_COMPLETE.md (Deleted (unstaged))
+2025-11-19 18:42:49,176 - kernel_manager - INFO -    D RL_INTEGRATION_STATUS.md (Deleted (unstaged))
+2025-11-19 18:42:49,176 - kernel_manager - INFO -    D VISUALIZATION_SUCCESS.md (Deleted (unstaged))
+2025-11-19 18:42:49,176 - kernel_manager - INFO -    D benchmark_batched_gpu_kaggle.py (Deleted (unstaged))
+2025-11-19 18:42:49,176 - kernel_manager - INFO -    D debug_config.py (Deleted (unstaged))
+2025-11-19 18:42:49,176 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-19 18:42:49,176 - kernel_manager - INFO -    M kaggle_runner/experiments/evaluate_baseline.py (Modified (unstaged))
+2025-11-19 18:42:49,176 - kernel_manager - INFO -    M kaggle_runner/experiments/rl_training_victoria_island.py (Modified (unstaged))
+2025-11-19 18:42:49,176 - kernel_manager - INFO -    D quick_start_kaggle.py (Deleted (unstaged))
+2025-11-19 18:42:49,176 - kernel_manager - INFO -    D quick_verify_post_merge.py (Deleted (unstaged))
+2025-11-19 18:42:49,176 - kernel_manager - INFO -    D test_full_network.py (Deleted (unstaged))
+2025-11-19 18:42:49,178 - kernel_manager - INFO -    D test_quick.py (Deleted (unstaged))
+2025-11-19 18:42:49,178 - kernel_manager - INFO -    D test_sanity_optimization.py (Deleted (unstaged))
+2025-11-19 18:42:49,178 - kernel_manager - INFO -    D validate_phase2.4_weno_riemann_kaggle_gpu_optimized.py (Deleted (unstaged))
+2025-11-19 18:42:49,178 - kernel_manager - INFO -    D validate_ssp_rk3_fusion_kaggle_gpu_optimized.py (Deleted (unstaged))
+2025-11-19 18:42:49,178 - kernel_manager - INFO -   ?? docs/ (Untracked)
+2025-11-19 18:42:49,178 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-19 18:42:49,345 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-19 18:42:50,118 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-19 18:42:50,118 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-19 18:42:54,716 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-19 18:42:54,716 - kernel_manager - INFO - Building kernel script...
+2025-11-19 18:42:54,719 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpt4zueu_9
+2025-11-19 18:42:54,720 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-19 18:42:54,720 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-19 18:42:54,721 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-19 18:42:56,523 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-19 18:42:56,525 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-19 18:42:57,081 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-19 18:43:27,640 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-19 18:43:58,194 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-19 18:44:28,762 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 91s)
+2025-11-19 18:44:59,646 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 122s)
+2025-11-19 18:45:30,196 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 153s)
+2025-11-19 18:45:30,196 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-19 18:45:30,196 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-19 18:45:30,196 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-19 18:45:30,196 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-19 18:45:33,357 - kernel_manager - INFO - ✅ Artifacts downloaded in 3.2s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-19 18:45:33,357 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (283754 bytes)
+2025-11-19 18:45:33,357 - kernel_manager - INFO - Downloaded 3 item(s):
+2025-11-19 18:45:33,357 - kernel_manager - INFO -   - generic-test-runner-kernel.log (363718 bytes)
+2025-11-19 18:45:33,357 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-19 18:45:33,357 - kernel_manager - INFO -   - test_log.txt (283754 bytes)
