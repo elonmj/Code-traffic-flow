@@ -239,6 +239,17 @@ class RLTrainer:
             episode_rewards.append(ep_reward)
             episode_lengths.append(ep_length)
             logger.info(f"Episode {ep+1}/{n_episodes}: reward={ep_reward:.2f}, length={ep_length}")
+            
+            # Save history of the last episode for visualization
+            if ep == n_episodes - 1:
+                try:
+                    # Unwrap if necessary (though self.eval_env is usually the direct env here)
+                    env = self.eval_env
+                    if hasattr(env, 'runner') and env.runner:
+                        self.last_episode_history = env.runner.network_simulator.history
+                        logger.info("Captured simulation history from last evaluation episode")
+                except Exception as e:
+                    logger.warning(f"Could not capture simulation history: {e}")
         
         # Statistiques
         metrics = {

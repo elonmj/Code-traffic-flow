@@ -23,10 +23,28 @@ class TrafficLightController:
         self.offset = float(config.get('offset', 0.0))
         self.initial_phase = config.get('initial_phase', 'green')
         
+        # Manual control mode for RL
+        self.manual_mode = False
+        self.current_green_segments: List[str] = []
+        
+    def set_manual_phase(self, green_segments: List[str]):
+        """
+        Sets the traffic light to a manual phase (overriding the timer).
+        
+        Args:
+            green_segments: List of segment IDs that should be green.
+        """
+        self.manual_mode = True
+        self.current_green_segments = green_segments
+
     def get_current_green_segments(self, t: float) -> List[str]:
         """
         Returns a list of segment IDs that currently have a green light.
         """
+        # If in manual mode (RL control), return the manually set state
+        if self.manual_mode:
+            return self.current_green_segments
+
         # Calculate time in cycle
         t_cycle = (t + self.offset) % self.cycle_time
         

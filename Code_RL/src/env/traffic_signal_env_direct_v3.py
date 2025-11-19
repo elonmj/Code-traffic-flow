@@ -206,6 +206,23 @@ class TrafficSignalEnvDirectV3(gym.Env):
         phase_updates = self.rl_config_helper.get_phase_updates(phase)
         try:
             self.runner.set_boundary_phases_bulk(phase_updates=phase_updates, validate=False)
+            
+            # Update TrafficLightControllers for logging
+            # We map RL phases to manual traffic light states for visualization
+            # Phase 0 (green_NS) -> Assume Green for incoming segments
+            # Phase 1 (green_EW) -> Assume Red for incoming segments (simplified)
+            
+            for node_id, node in self.network_grid.nodes.items():
+                if getattr(node, 'traffic_lights', None) is not None:
+                    if phase == 0:
+                        # Phase 0: Assume Green
+                        green_segments = node.incoming_segments
+                    else:
+                        # Phase 1: Assume Red
+                        green_segments = []
+                    
+                    node.traffic_lights.set_manual_phase(green_segments)
+                    
         except Exception as e:
             if not self.quiet:
                 print(f"Warning: Failed to apply phase {phase} to network: {e}")

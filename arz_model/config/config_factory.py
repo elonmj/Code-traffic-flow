@@ -591,7 +591,8 @@ def create_victoria_island_config(
     if enriched_path is None:
         # Try default enriched file location
         config_dir = Path(__file__).parent
-        default_enriched = config_dir.parent / 'data' / 'fichier_de_travail_complet_enriched.xlsx'
+        # Updated to point to the correct file (corridor) which exists
+        default_enriched = config_dir.parent / 'data' / 'fichier_de_travail_corridor_enriched.xlsx'
         if default_enriched.exists():
             enriched_path = str(default_enriched)
     

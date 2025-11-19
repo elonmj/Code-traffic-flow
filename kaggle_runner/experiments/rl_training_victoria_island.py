@@ -211,6 +211,14 @@ def main():
             json.dump(metrics, f, indent=2)
         print(f"📄 Metrics saved: {metrics_path}")
         
+        # Save simulation history (traffic lights, density, etc.)
+        if hasattr(trainer, 'last_episode_history') and trainer.last_episode_history:
+            history_path = output_dir / "network_simulation_results.pkl"
+            import pickle
+            with open(history_path, 'wb') as f:
+                pickle.dump(trainer.last_episode_history, f)
+            print(f"📄 Simulation history saved: {history_path}")
+        
         print("\n✅ SUCCESS - All artifacts saved")
         return 0
         
