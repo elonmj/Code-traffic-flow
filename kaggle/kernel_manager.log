@@ -9709,3 +9709,35 @@
 2025-11-19 14:11:21,969 - kernel_manager - INFO -   - network_simulation_results.pkl (1655378 bytes)
 2025-11-19 14:11:21,969 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-19 14:11:21,971 - kernel_manager - INFO -   - test_log.txt (15961 bytes)
+2025-11-19 14:11:57,864 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-19 14:11:57,866 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-19 14:11:57,948 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-19 14:11:58,002 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-19 14:11:58,002 - kernel_manager - INFO -   M  rz_model/main_network_simulation.py (Modified (staged))
+2025-11-19 14:11:58,002 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-19 14:11:58,002 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-19 14:11:58,075 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-19 14:11:58,690 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-19 14:11:58,691 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-19 14:12:03,152 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-19 14:12:03,152 - kernel_manager - INFO - Building kernel script...
+2025-11-19 14:12:03,154 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmptead8arw
+2025-11-19 14:12:03,156 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-19 14:12:03,156 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-19 14:12:03,156 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-19 14:12:05,276 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-19 14:12:05,303 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-19 14:12:05,834 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-19 14:12:36,442 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-19 14:13:06,997 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 61s)
+2025-11-19 14:13:06,997 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-19 14:13:06,999 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-19 14:13:06,999 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-19 14:13:07,007 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-19 14:13:10,773 - kernel_manager - INFO - ✅ Artifacts downloaded in 3.8s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-19 14:13:10,773 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (16170 bytes)
+2025-11-19 14:13:10,774 - kernel_manager - INFO - Downloaded 4 item(s):
+2025-11-19 14:13:10,774 - kernel_manager - INFO -   - generic-test-runner-kernel.log (22216 bytes)
+2025-11-19 14:13:10,775 - kernel_manager - INFO -   - network_simulation_results.pkl (1655378 bytes)
+2025-11-19 14:13:10,775 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-19 14:13:10,776 - kernel_manager - INFO -   - test_log.txt (16170 bytes)

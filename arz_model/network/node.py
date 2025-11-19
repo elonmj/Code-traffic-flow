@@ -17,6 +17,7 @@ import numpy as np
 
 from ..core.node_solver_gpu import solve_node_fluxes_gpu
 from ..core.parameters import ModelParameters
+from .traffic_lights import TrafficLightController
 
 
 class Node:
@@ -38,20 +39,30 @@ class Node:
         """
         Creates a Node instance from a NodeConfig object.
         """
+        traffic_lights = None
+        if config.traffic_light_config:
+            traffic_lights = TrafficLightController(
+                node_id=config.id,
+                config=config.traffic_light_config,
+                incoming_segments=config.incoming_segments or []
+            )
+
         return cls(
             node_id=config.id,
             position=config.position if config.position else (0.0, 0.0),
             node_type=config.type,
             incoming_segments=config.incoming_segments,
-            outgoing_segments=config.outgoing_segments
+            outgoing_segments=config.outgoing_segments,
+            traffic_lights=traffic_lights
         )
 
-    def __init__(self, node_id: str, position: Tuple[float, float] = (0.0, 0.0), node_type: str = 'junction', incoming_segments: List[str] = None, outgoing_segments: List[str] = None):
+    def __init__(self, node_id: str, position: Tuple[float, float] = (0.0, 0.0), node_type: str = 'junction', incoming_segments: List[str] = None, outgoing_segments: List[str] = None, traffic_lights: Optional[TrafficLightController] = None):
         self.node_id = node_id
         self.position = position
         self.node_type = node_type
         self.incoming_segments: List[str] = incoming_segments or []
         self.outgoing_segments: List[str] = outgoing_segments or []
+        self.traffic_lights = traffic_lights
 
     def add_incoming_segment(self, segment: 'Link'):
         self.incoming_segments.append(segment)
