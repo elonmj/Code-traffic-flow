@@ -28,9 +28,6 @@ def evaluate_baseline(timesteps=1000, cycle_time=90.0, split=0.5, decision_inter
     signalized_segments = rl_config.signalized_segment_ids
     print(f"Signalized segments: {len(signalized_segments)}")
     
-    # Initialize simulation
-    runner.initialize()
-    
     # Metrics
     total_densities = []
     
