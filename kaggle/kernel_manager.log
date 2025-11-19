@@ -9468,3 +9468,43 @@
 2025-11-19 00:26:14,053 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1747s)
 2025-11-19 00:26:44,612 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1777s)
 2025-11-19 00:27:14,620 - kernel_manager - ERROR - ⌛️ Timeout of 1800s exceeded. Aborting.
+2025-11-19 10:40:46,712 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-19 10:40:46,712 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-19 10:40:46,799 - kernel_manager - INFO - 📍 Current branch: experiment/kaggle-rl-training
+2025-11-19 10:40:46,878 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-19 10:40:46,878 - kernel_manager - INFO -   M  ode_RL/src/env/traffic_signal_env_direct_v3.py (Modified (staged))
+2025-11-19 10:40:46,879 - kernel_manager - INFO -    M Code_RL/training/core/trainer.py (Modified (unstaged))
+2025-11-19 10:40:46,879 - kernel_manager - INFO -    M arz_model/config/rl_scenarios.py (Modified (unstaged))
+2025-11-19 10:40:46,880 - kernel_manager - INFO -    M arz_model/network/network_grid.py (Modified (unstaged))
+2025-11-19 10:40:46,880 - kernel_manager - INFO -    M arz_model/numerics/gpu/memory_pool.py (Modified (unstaged))
+2025-11-19 10:40:46,880 - kernel_manager - INFO -    M arz_model/numerics/gpu/network_coupling_gpu.py (Modified (unstaged))
+2025-11-19 10:40:46,881 - kernel_manager - INFO -    M arz_model/simulation/execution/network_simulator.py (Modified (unstaged))
+2025-11-19 10:40:46,881 - kernel_manager - INFO -    M arz_model/simulation/runner.py (Modified (unstaged))
+2025-11-19 10:40:46,881 - kernel_manager - INFO -   ?? arz_model/cache/victoria_island/c68e1593202eb785.pkl (Untracked)
+2025-11-19 10:40:46,881 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-19 10:40:46,973 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-19 10:40:48,042 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-19 10:40:48,042 - kernel_manager - INFO - 📤 Pushing to remote branch: experiment/kaggle-rl-training
+2025-11-19 10:40:53,079 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-19 10:40:53,079 - kernel_manager - INFO - Building kernel script...
+2025-11-19 10:40:53,095 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpcbj32671
+2025-11-19 10:40:53,095 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-19 10:40:53,095 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-19 10:40:53,095 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-19 10:40:54,976 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-19 10:40:54,992 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-19 10:40:55,513 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-19 10:41:26,065 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-19 10:41:56,616 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-19 10:42:27,182 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 91s)
+2025-11-19 10:42:27,182 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-19 10:42:27,182 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-19 10:42:27,182 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-19 10:42:27,182 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-19 10:42:29,829 - kernel_manager - INFO - ✅ Artifacts downloaded in 2.6s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-19 10:42:29,831 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (19008 bytes)
+2025-11-19 10:42:29,834 - kernel_manager - INFO - Downloaded 4 item(s):
+2025-11-19 10:42:29,836 - kernel_manager - INFO -   - generic-test-runner-kernel.log (26438 bytes)
+2025-11-19 10:42:29,837 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-19 10:42:29,839 - kernel_manager - INFO -   - test_log.txt (19008 bytes)
+2025-11-19 10:42:29,841 - kernel_manager - INFO -   - training_config.json (1978 bytes)

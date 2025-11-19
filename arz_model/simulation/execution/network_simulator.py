@@ -392,7 +392,10 @@ class NetworkSimulator:
             
         for seg_id, segment_data in self.network.segments.items():
             d_U = self.gpu_pool.get_segment_state(seg_id)
-            d_U.copy_to_host(segment_data['U'])
+            # Fix for stride mismatch: copy to new host array then assign
+            # d_U is a slice of a larger array, so it has different strides than a contiguous segment array
+            host_U = d_U.copy_to_host()
+            segment_data['U'][:] = host_U
 
     def _debug_dump_state(self, label: str):
         """Prints min/max/mean stats for each segment's density and speed (DEBUG mode only)."""
