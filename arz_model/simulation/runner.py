@@ -1144,3 +1144,18 @@ class SimulationRunner:
         scenario = getattr(self.params, 'scenario_name', 'N/A')
         return f"SimulationRunner(scenario='{scenario}', t={self.t:.2f}/{self.params.t_final}, device='{self.device}')"
 
+    def reset(self):
+        """Resets the simulation to initial state."""
+        if self.mode == 'network':
+            self.network_simulator.reset()
+            self.t = 0.0
+            self.step_count = 0
+            self.times = [0.0]
+            # Reset history if needed, or clear it
+            self.states = {} # Clear history
+            
+    def sync_state_to_cpu(self):
+        """Synchronizes GPU state to CPU for observation."""
+        if self.mode == 'network':
+            self.network_simulator.sync_state_to_cpu()
+

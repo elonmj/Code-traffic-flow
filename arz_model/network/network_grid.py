@@ -162,6 +162,7 @@ class NetworkGrid:
         self.segments[seg_config.id] = {
             "grid": grid,
             "U": U,
+            "U_initial": U.copy(),  # Store initial state for reset
             "start_node": seg_config.start_node,
             "end_node": seg_config.end_node,
             "parameters": seg_config.parameters

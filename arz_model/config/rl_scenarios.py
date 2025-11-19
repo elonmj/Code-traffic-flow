@@ -23,7 +23,8 @@ def victoria_island_rl_config(
     cells_per_100m: int = 4,
     default_density: float = 20.0,
     inflow_density: float = 30.0,
-    use_cache: bool = True
+    use_cache: bool = True,
+    **kwargs
 ) -> NetworkSimulationConfig:
     """
     Victoria Island network configuration for RL training (Section 7.6).
@@ -61,7 +62,8 @@ def victoria_island_quick_test(
     t_final: float = 120.0,
     output_dt: float = 5.0,
     cells_per_100m: int = 2,
-    use_cache: bool = True
+    use_cache: bool = True,
+    **kwargs
 ) -> NetworkSimulationConfig:
     """
     Quick test configuration with FULL network but shorter time and coarser grid.
@@ -91,7 +93,8 @@ def victoria_island_extended_training(
     t_final: float = 3600.0,
     output_dt: float = 30.0,
     cells_per_100m: int = 6,
-    use_cache: bool = True
+    use_cache: bool = True,
+    **kwargs
 ) -> NetworkSimulationConfig:
     """
     Extended training configuration with FULL network for longer episodes.

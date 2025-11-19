@@ -23,6 +23,7 @@ from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import CallbackList, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecNormalize
+import gymnasium as gym
 
 # Imports locaux
 from Code_RL.src.utils.config import RLConfigBuilder
@@ -34,6 +35,23 @@ from .sanity_checker import SanityChecker, run_sanity_checks
 
 logger = logging.getLogger(__name__)
 
+
+class KaggleKeepAliveWrapper(gym.Wrapper):
+    """Wrapper to print keep-alive messages during evaluation to prevent Kaggle timeout"""
+    def __init__(self, env, print_freq=100):
+        super().__init__(env)
+        self.print_freq = print_freq
+        self.step_count = 0
+        
+    def reset(self, **kwargs):
+        self.step_count = 0
+        return super().reset(**kwargs)
+        
+    def step(self, action):
+        self.step_count += 1
+        if self.step_count % self.print_freq == 0:
+            print(f"   ...eval step {self.step_count}...", flush=True)
+        return super().step(action)
 
 class RLTrainer:
     """
@@ -395,8 +413,11 @@ class RLTrainer:
         callbacks.append(progress_callback)
         
         # 3. Eval callback
+        # Wrap eval env for keep-alive printing during long evaluation episodes
+        eval_env_wrapped = KaggleKeepAliveWrapper(self.eval_env, print_freq=100)
+        
         eval_callback = EvalCallback(
-            self.eval_env,
+            eval_env_wrapped,
             best_model_save_path=str(self.checkpoints_dir / "best"),
             log_path=str(self.eval_dir),
             eval_freq=self.training_config.evaluation_strategy.eval_freq,

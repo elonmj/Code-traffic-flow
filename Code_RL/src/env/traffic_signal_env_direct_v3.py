@@ -108,7 +108,13 @@ class TrafficSignalEnvDirectV3(gym.Env):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        self._initialize_simulator()
+        
+        if self.runner is None:
+            self._initialize_simulator()
+        else:
+            # Reuse existing simulator
+            self.runner.reset()
+            
         self.current_phase = 0
         self.episode_step = 0
         self.total_reward = 0.0
@@ -145,6 +151,9 @@ class TrafficSignalEnvDirectV3(gym.Env):
         return obs, reward, terminated, truncated, info
 
     def _get_observation(self) -> np.ndarray:
+        # Sync GPU state to CPU first!
+        self.runner.sync_state_to_cpu()
+        
         obs_list = []
         for seg_id in self.observation_segment_ids:
             seg = self.network_grid.segments[seg_id]

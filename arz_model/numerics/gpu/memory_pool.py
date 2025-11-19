@@ -58,34 +58,8 @@ class GPUMemoryPool:
         >>> pool.synchronize_all_streams()
     """
     
-    _instance = None
-    _instance_config_hash = None
-
-    def __new__(cls, segment_ids: List[str], N_per_segment: Dict[str, int], ghost_cells: int = 3, compute_capability: Tuple[int, int] = (6, 0)):
-        # Create a config key to check compatibility
-        # We use the ordered list of segment_ids and their corresponding N values
-        # This ensures that if the network structure changes, we recreate the pool
-        n_values = tuple(N_per_segment[seg_id] for seg_id in segment_ids)
-        config_key = (tuple(segment_ids), n_values, ghost_cells)
-        
-        if cls._instance is None:
-            print("✨ Creating new GPUMemoryPool Singleton instance")
-            cls._instance = super(GPUMemoryPool, cls).__new__(cls)
-            cls._instance_config_hash = config_key
-            return cls._instance
-        
-        if cls._instance_config_hash != config_key:
-            print("⚠️ WARNING: Requesting GPUMemoryPool with different config than singleton!")
-            print("   Destroying old pool and creating new one...")
-            # We can't easily 'destroy' the old instance in Python, but we can clear its references
-            if hasattr(cls._instance, 'clear'):
-                cls._instance.clear()
-            cls._instance = super(GPUMemoryPool, cls).__new__(cls)
-            cls._instance_config_hash = config_key
-            return cls._instance
-            
-        print("♻️  Reusing existing GPUMemoryPool Singleton instance")
-        return cls._instance
+    # Shared topology cache (Class Level) to avoid re-allocating static topology arrays
+    _shared_topology: Dict[str, cuda.devicearray.DeviceNDArray] = {}
 
     def __init__(
         self,
@@ -150,6 +124,9 @@ class GPUMemoryPool:
         self.d_R_pool: Dict[str, cuda.devicearray.DeviceNDArray] = {}
         self.d_BC_pool: Dict[str, Dict[str, cuda.devicearray.DeviceNDArray]] = {}
         self.d_flux_pool: Dict[str, cuda.devicearray.DeviceNDArray] = {}
+        
+        # Reference to shared topology cache
+        self.shared_topology = GPUMemoryPool._shared_topology
         
         # CUDA streams for parallel processing
         self.streams: Dict[str, cuda.stream] = {}
@@ -740,6 +717,7 @@ class GPUMemoryPool:
         self.d_R_pool.clear()
         self.d_BC_pool.clear()
         self.d_flux_pool.clear()
+        # Do NOT clear shared_topology here as it is shared across instances
         self.streams.clear()
         self.host_pinned_buffers.clear()
         self._temp_pool.clear()

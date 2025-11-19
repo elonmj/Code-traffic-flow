@@ -353,6 +353,47 @@ class NetworkSimulator:
             'history': self.history  # Keep history for backward compatibility
         }
 
+    def reset(self):
+        """Resets the simulation state to t=0 and restores initial conditions."""
+        self.t = 0.0
+        self.time_step = 0
+        self.last_log_time = -np.inf
+        self.last_diagnostic_time = -np.inf
+        self.last_checkpoint_time = -self.config.time.output_dt
+        self.cfl_warning_count = 0
+        self.dt_history = []
+        
+        # Reset GPU data (zeroes out arrays)
+        if self.gpu_pool:
+            self.gpu_pool.reset_data()
+            
+            # Restore Initial Conditions from NetworkGrid
+            for seg_id, segment_data in self.network.segments.items():
+                if 'U_initial' in segment_data:
+                    U_cpu = np.ascontiguousarray(segment_data['U_initial'])
+                    
+                    # Get road quality
+                    road_quality = segment_data['grid'].road_quality
+                    if road_quality is None:
+                        N_phys = segment_data['grid'].N_physical
+                        road_quality = np.full(N_phys, self.config.physics.default_road_quality, dtype=np.float64)
+                    R_cpu = np.ascontiguousarray(road_quality)
+                    
+                    self.gpu_pool.initialize_segment_state(seg_id, U_cpu, R_cpu)
+                else:
+                    self.logger.warning(f"Segment {seg_id} has no U_initial, resetting to zero.")
+        
+        self.logger.info("✅ NetworkSimulator reset to t=0.")
+
+    def sync_state_to_cpu(self):
+        """Downloads current GPU state to NetworkGrid segments on CPU."""
+        if not self.gpu_pool:
+            return
+            
+        for seg_id, segment_data in self.network.segments.items():
+            d_U = self.gpu_pool.get_segment_state(seg_id)
+            d_U.copy_to_host(segment_data['U'])
+
     def _debug_dump_state(self, label: str):
         """Prints min/max/mean stats for each segment's density and speed (DEBUG mode only)."""
         if not self.debug or self.device != 'gpu':

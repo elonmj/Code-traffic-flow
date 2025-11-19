@@ -51,6 +51,7 @@ class NetworkCouplingGPU:
         self.d_segment_lengths = None # New array for total segment lengths
         
         # Add a device array for the resulting fluxes
+        # Fluxes are instance-specific (mutable), so we don't share them in the static pool
         self.d_fluxes = cuda.device_array((self.num_nodes, 4), dtype=np.float64)
 
         self._prepare_gpu_topology()
@@ -59,6 +60,19 @@ class NetworkCouplingGPU:
         """
         Converts the network topology into GPU-friendly data structures (pinned memory and device arrays).
         """
+        # Check if topology is already in the shared pool
+        if "node_types" in self.gpu_pool.shared_topology:
+            # print("  - Reusing existing GPU topology from shared pool.")
+            self.d_node_types = self.gpu_pool.shared_topology["node_types"]
+            self.d_node_incoming_gids = self.gpu_pool.shared_topology["node_incoming_gids"]
+            self.d_node_incoming_offsets = self.gpu_pool.shared_topology["node_incoming_offsets"]
+            self.d_node_outgoing_gids = self.gpu_pool.shared_topology["node_outgoing_gids"]
+            self.d_node_outgoing_offsets = self.gpu_pool.shared_topology["node_outgoing_offsets"]
+            self.d_segment_n_phys = self.gpu_pool.shared_topology["segment_n_phys"]
+            self.d_segment_n_ghost = self.gpu_pool.shared_topology["segment_n_ghost"]
+            self.d_segment_lengths = self.gpu_pool.shared_topology["segment_lengths"]
+            return
+
         print("  - Preparing GPU topology for network coupling...")
 
         nodes = self.network_topology["nodes"]
@@ -126,6 +140,16 @@ class NetworkCouplingGPU:
         self.d_segment_n_phys = cuda.to_device(np.ascontiguousarray(h_segment_n_phys))
         self.d_segment_n_ghost = cuda.to_device(np.ascontiguousarray(h_segment_n_ghost))
         self.d_segment_lengths = cuda.to_device(np.ascontiguousarray(h_segment_lengths))
+        
+        # Store in shared pool
+        self.gpu_pool.shared_topology["node_types"] = self.d_node_types
+        self.gpu_pool.shared_topology["node_incoming_gids"] = self.d_node_incoming_gids
+        self.gpu_pool.shared_topology["node_incoming_offsets"] = self.d_node_incoming_offsets
+        self.gpu_pool.shared_topology["node_outgoing_gids"] = self.d_node_outgoing_gids
+        self.gpu_pool.shared_topology["node_outgoing_offsets"] = self.d_node_outgoing_offsets
+        self.gpu_pool.shared_topology["segment_n_phys"] = self.d_segment_n_phys
+        self.gpu_pool.shared_topology["segment_n_ghost"] = self.d_segment_n_ghost
+        self.gpu_pool.shared_topology["segment_lengths"] = self.d_segment_lengths
         
         print("    - GPU topology prepared and transferred.")
 
