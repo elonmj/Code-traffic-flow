@@ -60,7 +60,13 @@ def main():
     try:
         # The factory reads the CSV and automatically generates the complete config
         # This replaces all manual segment-by-segment configuration!
+        
+        # Define paths
+        data_dir = os.path.join(project_root, 'arz_model', 'data')
+        enriched_path = os.path.join(data_dir, 'fichier_de_travail_corridor_enriched.xlsx')
+        
         config = create_victoria_island_config(
+            enriched_path=enriched_path,
             # You can customize parameters here if needed:
             default_density=20.0,  # veh/km - light baseline traffic
             default_velocity=50.0,  # km/h - moderate speed
