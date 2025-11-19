@@ -60,12 +60,24 @@ class TimeConfig(BaseModel):
         gt=0,
         description="Threshold below which dt is considered 'collapsed' - triggers warnings"
     )
+    
+    timeout_seconds: Optional[float] = Field(
+        default=None,
+        description="Maximum wall-clock time in seconds (None = infinite). Useful for Kaggle kernels."
+    )
 
     @field_validator('output_dt')
     def output_dt_must_be_less_than_t_final(cls, v, info):
         """Validate output_dt < t_final"""
         if 't_final' in info.data and v > info.data['t_final']:
             raise ValueError(f'output_dt ({v}) must be < t_final ({info.data["t_final"]})')
+        return v
+    
+    @field_validator('timeout_seconds')
+    def validate_timeout(cls, v):
+        """Validate timeout > 0 if set"""
+        if v is not None and v <= 0:
+            raise ValueError('timeout_seconds must be > 0 or None')
         return v
 
     model_config = {"extra": "forbid"}

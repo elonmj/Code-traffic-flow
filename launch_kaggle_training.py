@@ -18,7 +18,7 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser(description='Launch RL training on Kaggle')
-    parser.add_argument('--timesteps', type=int, default=300, help='Training timesteps (default: 300)')
+    parser.add_argument('--timesteps', type=int, default=100, help='Training timesteps (default: 100)')
     parser.add_argument('--timeout', type=int, default=1800, help='Kaggle timeout in seconds (default: 1800 = 30min)')
     parser.add_argument('--scenario', type=str, default='victoria_island', help='Training scenario')
     parser.add_argument('--commit-message', type=str, default=None, help='Custom commit message')

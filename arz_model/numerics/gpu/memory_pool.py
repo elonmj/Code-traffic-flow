@@ -58,6 +58,35 @@ class GPUMemoryPool:
         >>> pool.synchronize_all_streams()
     """
     
+    _instance = None
+    _instance_config_hash = None
+
+    def __new__(cls, segment_ids: List[str], N_per_segment: Dict[str, int], ghost_cells: int = 3, compute_capability: Tuple[int, int] = (6, 0)):
+        # Create a config key to check compatibility
+        # We use the ordered list of segment_ids and their corresponding N values
+        # This ensures that if the network structure changes, we recreate the pool
+        n_values = tuple(N_per_segment[seg_id] for seg_id in segment_ids)
+        config_key = (tuple(segment_ids), n_values, ghost_cells)
+        
+        if cls._instance is None:
+            print("✨ Creating new GPUMemoryPool Singleton instance")
+            cls._instance = super(GPUMemoryPool, cls).__new__(cls)
+            cls._instance_config_hash = config_key
+            return cls._instance
+        
+        if cls._instance_config_hash != config_key:
+            print("⚠️ WARNING: Requesting GPUMemoryPool with different config than singleton!")
+            print("   Destroying old pool and creating new one...")
+            # We can't easily 'destroy' the old instance in Python, but we can clear its references
+            if hasattr(cls._instance, 'clear'):
+                cls._instance.clear()
+            cls._instance = super(GPUMemoryPool, cls).__new__(cls)
+            cls._instance_config_hash = config_key
+            return cls._instance
+            
+        print("♻️  Reusing existing GPUMemoryPool Singleton instance")
+        return cls._instance
+
     def __init__(
         self,
         segment_ids: List[str],
@@ -79,6 +108,10 @@ class GPUMemoryPool:
             RuntimeError: If CUDA is not available
             ValueError: If segment_ids and N_per_segment don't match
         """
+        # Check if already initialized (Singleton pattern)
+        if hasattr(self, '_initialized') and self._initialized:
+            return
+
         # Validate CUDA availability
         if not cuda.is_available():
             raise RuntimeError(
@@ -134,6 +167,8 @@ class GPUMemoryPool:
         
         # Pre-allocate all arrays
         self._allocate_contiguous_arrays()
+        
+        self._initialized = True
         
         print(f"✅ GPUMemoryPool initialized:")
         print(f"   - Segments: {len(segment_ids)}")
@@ -710,6 +745,10 @@ class GPUMemoryPool:
         self._temp_pool.clear()
         self._active_temp_arrays.clear()
         
+        # Reset singleton instance
+        GPUMemoryPool._instance = None
+        GPUMemoryPool._instance_config_hash = None
+        
         # It's good practice to force a garbage collection on the GPU
         # although Numba's context management should handle this.
         try:
@@ -717,3 +756,28 @@ class GPUMemoryPool:
             context.reset()
         except Exception as e:
             print(f"Warning: Could not reset CUDA context: {e}")
+
+    def reset_data(self):
+        """
+        Reset the data in the pool without deallocating memory.
+        Useful for resetting the environment between episodes.
+        """
+        # Reset U arrays to zero
+        if self.d_U_mega_pool is not None:
+            self.d_U_mega_pool[:] = 0.0
+            
+        if self.d_U_batched is not None:
+            self.d_U_batched[:] = 0.0
+            
+        # Reset Flux pools
+        for flux in self.d_flux_pool.values():
+            flux[:] = 0.0
+            
+        # Reset BC pools
+        for bc_dict in self.d_BC_pool.values():
+            bc_dict['left'][:] = 0.0
+            bc_dict['right'][:] = 0.0
+            
+        # Note: We do NOT reset R (road quality) as it is static property of the road
+        # Note: We do NOT reset streams or pinned buffers
+

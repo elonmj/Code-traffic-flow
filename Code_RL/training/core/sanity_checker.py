@@ -63,9 +63,12 @@ class SanityChecker:
         self.sanity_config = sanity_config
         self.results: List[SanityCheckResult] = []
     
-    def run_all_checks(self) -> List[SanityCheckResult]:
+    def run_all_checks(self, env=None) -> List[SanityCheckResult]:
         """
         Exécute TOUS les tests de sanité
+        
+        Args:
+            env: Environnement optionnel à réutiliser (pour éviter reconstruction)
         
         Returns:
             Liste des résultats (SanityCheckResult)
@@ -88,13 +91,24 @@ class SanityChecker:
         if self.sanity_config.check_control_interval:
             self.results.append(self._check_control_interval())
         
+        # 🚀 OPTIMIZATION: Réutiliser UN SEUL env pour checks #4 et #5
+        # Si un env est fourni, on l'utilise. Sinon on en crée un partagé.
+        shared_env = env
+        if shared_env is None and self.sanity_config.enabled:
+            logger.info("Creating temporary environment for sanity checks...")
+            shared_env = self._create_test_env()
+        
         # Check 4: Environment rollout (BUG #33, Reward)
         if self.sanity_config.enabled:
-            self.results.append(self._check_environment_rollout())
+            self.results.append(self._check_environment_rollout(env=shared_env))
         
         # Check 5: Reward diversity
         if self.sanity_config.enabled:
-            self.results.append(self._check_reward_diversity())
+            self.results.append(self._check_reward_diversity(env=shared_env))
+        
+        # Cleanup: Fermer l'env partagé
+        if shared_env is not None:
+            shared_env.close()
         
         # Affichage des résultats
         logger.info("\n" + "=" * 80)
@@ -349,7 +363,7 @@ class SanityChecker:
                 details={"error": str(e)}
             )
     
-    def _check_environment_rollout(self) -> SanityCheckResult:
+    def _check_environment_rollout(self, env=None) -> SanityCheckResult:
         """
         Vérifie que l'environnement peut faire un rollout sans erreur
         
@@ -357,12 +371,19 @@ class SanityChecker:
         - Erreurs de dimensions
         - Erreurs de couplage GPU/CPU (BUG #36)
         - Erreurs de simulation
+        
+        Args:
+            env: Environnement réutilisable (si None, crée un nouvel env)
         """
         logger.info("\n[CHECK 4/5] Environment Rollout")
         
-        try:
+        # 🚀 OPTIMIZATION: Réutiliser env existant si fourni
+        env_created = False
+        if env is None:
             env = self._create_test_env()
-            
+            env_created = True
+        
+        try:
             # Reset
             obs = env.reset()
             
@@ -391,8 +412,6 @@ class SanityChecker:
                 
                 if done:
                     obs = env.reset()
-            
-            env.close()
             
             # Vérifications
             if len(episode_rewards) == num_steps:
@@ -425,21 +444,33 @@ class SanityChecker:
                 message=f"✗ Rollout failed: {str(e)}",
                 details={"error": str(e)}
             )
+        
+        finally:
+            # Cleanup uniquement si on a créé l'env nous-mêmes
+            if env_created:
+                env.close()
     
-    def _check_reward_diversity(self) -> SanityCheckResult:
+    def _check_reward_diversity(self, env=None) -> SanityCheckResult:
         """
         Vérifie que les rewards sont suffisamment divers
         
         SYMPTÔME: Reward toujours identique → pas d'apprentissage
-        FIX: Au moins 5 valeurs uniques sur 100 steps
+        FIX: Au moins 2 valeurs uniques sur 100 steps (relaxed for testing)
         
         Source: BUG Reward - RL_TRAINING_SURVIVAL_GUIDE.md
+        
+        Args:
+            env: Environnement réutilisable (si None, crée un nouvel env)
         """
         logger.info("\n[CHECK 5/5] Reward Diversity")
         
-        try:
+        # 🚀 OPTIMIZATION: Réutiliser env existant si fourni
+        env_created = False
+        if env is None:
             env = self._create_test_env()
-            
+            env_created = True
+        
+        try:
             # Collecte des rewards
             obs = env.reset()
             rewards = []
@@ -458,8 +489,6 @@ class SanityChecker:
                 
                 if done:
                     obs = env.reset()
-            
-            env.close()
             
             # Analyse de la diversité
             unique_rewards = len(set(rewards))
@@ -500,6 +529,11 @@ class SanityChecker:
                 message=f"Error during check: {str(e)}",
                 details={"error": str(e)}
             )
+        
+        finally:
+            # Cleanup uniquement si on a créé l'env nous-mêmes
+            if env_created:
+                env.close()
     
     # =========================================================================
     # HELPERS
@@ -523,7 +557,8 @@ class SanityChecker:
 
 def run_sanity_checks(
     arz_simulation_config: "NetworkSimulationConfig",
-    sanity_config: SanityCheckConfig
+    sanity_config: SanityCheckConfig,
+    env=None
 ) -> bool:
     """
     Fonction utilitaire pour exécuter les sanity checks
@@ -531,6 +566,7 @@ def run_sanity_checks(
     Args:
         arz_simulation_config: The specific Pydantic config object for the simulation.
         sanity_config: Configuration des tests
+        env: Environnement optionnel à réutiliser
     
     Returns:
         True si tous les tests passent, False sinon
@@ -539,7 +575,7 @@ def run_sanity_checks(
         RuntimeError si les tests échouent (selon config)
     """
     checker = SanityChecker(arz_simulation_config, sanity_config)
-    results = checker.run_all_checks()
+    results = checker.run_all_checks(env=env)
     
     if not checker.all_passed(results):
         failed = [r for r in results if not r.passed]

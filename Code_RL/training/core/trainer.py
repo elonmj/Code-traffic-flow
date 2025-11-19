@@ -104,19 +104,23 @@ class RLTrainer:
         # 2. Save configs
         self._save_configs()
         
-        # 3. Sanity checks
+        # 3. Create environments (MOVED UP for optimization)
+        logger.info("[STAGE 1/5] Creating environments...")
+        self._create_environments()
+        logger.info("✅ Environments created\n")
+        
+        # 4. Sanity checks (using existing env)
         if self.training_config.sanity_check.enabled:
-            logger.info("\n[STAGE 1/5] Running sanity checks...")
-            # Pass the specific arz_simulation_config object
-            run_sanity_checks(self.rl_config.arz_simulation_config, self.training_config.sanity_check)
+            logger.info("\n[STAGE 2/5] Running sanity checks...")
+            # Pass the specific arz_simulation_config object AND the eval_env
+            run_sanity_checks(
+                self.rl_config.arz_simulation_config, 
+                self.training_config.sanity_check,
+                env=self.eval_env  # Reuse eval env to avoid reconstruction
+            )
             logger.info("✅ All sanity checks passed!\n")
         else:
             logger.warning("⚠️ Sanity checks DISABLED - training at your own risk!\n")
-        
-        # 4. Create environments
-        logger.info("[STAGE 2/5] Creating environments...")
-        self._create_environments()
-        logger.info("✅ Environments created\n")
         
         # 5. Create or load model
         logger.info("[STAGE 3/5] Creating/loading model...")
@@ -209,9 +213,14 @@ class RLTrainer:
                     
                 ep_reward += reward
                 ep_length += 1
+                
+                # Keep-alive for Kaggle (every 100 steps)
+                if ep_length % 100 == 0:
+                    print(f"   ...eval episode {ep+1}/{n_episodes} step {ep_length}...", flush=True)
             
             episode_rewards.append(ep_reward)
             episode_lengths.append(ep_length)
+            logger.info(f"Episode {ep+1}/{n_episodes}: reward={ep_reward:.2f}, length={ep_length}")
         
         # Statistiques
         metrics = {

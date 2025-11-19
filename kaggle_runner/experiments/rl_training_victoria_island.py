@@ -44,7 +44,8 @@ from Code_RL.training.config.training_config import (
 
 def main():
     parser = argparse.ArgumentParser(description='RL Training on Victoria Island Network')
-    parser.add_argument('--timesteps', type=int, default=300, help='Total timesteps (default: 300 for quick test)')
+    # Default to 100 for quick testing/debugging on Kaggle
+    parser.add_argument('--timesteps', type=int, default=100, help='Total timesteps (default: 100 for quick test)')
     parser.add_argument('--scenario', type=str, default='victoria_island', choices=['quick_test', 'victoria_island', 'extended'], help='Training scenario')
     parser.add_argument('--device', type=str, default='auto', choices=['auto', 'cpu', 'cuda'], help='Training device')
     parser.add_argument('--output-dir', type=str, default=None, help='Output directory (default: /kaggle/working/ on Kaggle)')

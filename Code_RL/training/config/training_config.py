@@ -61,11 +61,18 @@ class EvaluationStrategy(BaseModel):
     eval_freq: int = Field(default=1000, description="Fréquence d'évaluation (steps)")
     n_eval_episodes: int = Field(default=5, description="Nombre d'épisodes pour évaluation")
     deterministic: bool = Field(default=True, description="Actions déterministes pour évaluation")
+    timeout_seconds: Optional[float] = Field(default=None, description="Timeout max (s) pour évaluation (None = infini)")
     
     @validator('eval_freq')
     def validate_eval_freq(cls, v):
         if v <= 0:
             raise ValueError("eval_freq must be > 0")
+        return v
+    
+    @validator('timeout_seconds')
+    def validate_timeout(cls, v):
+        if v is not None and v <= 0:
+            raise ValueError("timeout_seconds must be > 0 or None")
         return v
 
 
@@ -233,6 +240,7 @@ def kaggle_gpu_config(experiment_name: str = "lagos_kaggle_gpu") -> TrainingConf
         ),
         evaluation_strategy=EvaluationStrategy(
             eval_freq=10000,
-            n_eval_episodes=10
+            n_eval_episodes=10,
+            timeout_seconds=300.0  # 5 min timeout pour éviter inactivité Kaggle
         )
     )
