@@ -10064,3 +10064,45 @@
 2025-11-19 19:05:18,742 - kernel_manager - INFO -   - test_log.txt (67605 bytes)
 2025-11-19 19:05:18,742 - kernel_manager - INFO -   - training_config.json (1984 bytes)
 2025-11-19 19:05:18,742 - kernel_manager - INFO -   - training_metrics.json (102 bytes)
+2025-11-20 01:32:36,194 - kernel_manager - INFO - ✅ Loaded config: RL Training Victoria Island
+2025-11-20 01:32:36,194 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-20 01:32:36,194 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-20 01:32:36,345 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-20 01:32:36,445 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-20 01:32:36,445 - kernel_manager - INFO -   M  ode_RL/src/env/traffic_signal_env_direct_v3.py (Modified (staged))
+2025-11-20 01:32:36,445 - kernel_manager - INFO -    M Code_RL/training/config/training_config.py (Modified (unstaged))
+2025-11-20 01:32:36,445 - kernel_manager - INFO -    M Code_RL/training/core/trainer.py (Modified (unstaged))
+2025-11-20 01:32:36,445 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-20 01:32:36,445 - kernel_manager - INFO -   ?? arz_model/cache/victoria_island/521455a26b5a60eb.pkl (Untracked)
+2025-11-20 01:32:36,445 - kernel_manager - INFO -   ?? docs/RL_UPGRADE_PPO_THROUGHPUT.md (Untracked)
+2025-11-20 01:32:36,445 - kernel_manager - INFO -   ?? viz_output/RL_VS_BASELINE_ANALYSIS.md (Untracked)
+2025-11-20 01:32:36,445 - kernel_manager - INFO -   ?? viz_output/analyze_rl_results.py (Untracked)
+2025-11-20 01:32:36,445 - kernel_manager - INFO -   ?? viz_output/rl_training_progress.png (Untracked)
+2025-11-20 01:32:36,445 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-20 01:32:36,617 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-20 01:32:38,253 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-20 01:32:38,255 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-20 01:32:45,036 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-20 01:32:45,036 - kernel_manager - INFO - Building kernel script...
+2025-11-20 01:32:45,043 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpbu6oo_d_
+2025-11-20 01:32:45,044 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-20 01:32:45,047 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-20 01:32:45,047 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-20 01:32:47,198 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-20 01:32:47,198 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/rl-training-runner
+2025-11-20 01:32:47,961 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 0s)
+2025-11-20 01:33:18,679 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-20 01:33:49,399 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-20 01:34:20,119 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 92s)
+2025-11-20 01:34:50,835 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 122s)
+2025-11-20 01:34:50,835 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-20 01:34:50,835 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: rl-training-runner
+2025-11-20 01:34:50,835 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\rl-training-runner
+2025-11-20 01:34:50,835 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-20 01:34:54,326 - kernel_manager - INFO - ✅ Artifacts downloaded in 3.5s to: D:\Projets\Alibi\Code project\kaggle\results\rl-training-runner
+2025-11-20 01:34:54,326 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (21158 bytes)
+2025-11-20 01:34:54,326 - kernel_manager - INFO - Downloaded 4 item(s):
+2025-11-20 01:34:54,330 - kernel_manager - INFO -   - rl-training-runner.log (29022 bytes)
+2025-11-20 01:34:54,331 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-20 01:34:54,331 - kernel_manager - INFO -   - test_log.txt (21158 bytes)
+2025-11-20 01:34:54,333 - kernel_manager - INFO -   - training_config.json (2235 bytes)

@@ -407,7 +407,7 @@ class RLTrainer:
                 verbose=1,
                 seed=self.training_config.seed,
                 device=self.training_config.device,
-                tensorboard_log=str(self.log_dir)
+                tensorboard_log=str(self.logs_dir)
             )
         
         # Option 2: DQN (Deep Q-Network) - DEFAULT
@@ -431,7 +431,7 @@ class RLTrainer:
                 verbose=1,
                 seed=self.training_config.seed,
                 device=self.training_config.device,
-                tensorboard_log=str(self.log_dir)
+                tensorboard_log=str(self.logs_dir)
             )
     
     def _create_callbacks(self) -> CallbackList:
