@@ -36,6 +36,20 @@ class DQNHyperparameters(BaseModel):
     exploration_final_eps: float = Field(default=0.05, description="Final epsilon")
 
 
+class PPOHyperparameters(BaseModel):
+    """
+    Hyperparamètres PPO
+    """
+    learning_rate: float = Field(default=3e-4, description="Learning rate")
+    n_steps: int = Field(default=2048, description="Number of steps to run for each environment per update")
+    batch_size: int = Field(default=64, description="Minibatch size")
+    n_epochs: int = Field(default=10, description="Number of epoch when optimizing the surrogate loss")
+    gamma: float = Field(default=0.99, description="Discount factor")
+    gae_lambda: float = Field(default=0.95, description="Factor for trade-off of bias vs variance for GAE")
+    clip_range: float = Field(default=0.2, description="Clipping parameter")
+    ent_coef: float = Field(default=0.01, description="Entropy coefficient for exploration")
+
+
 class CheckpointStrategy(BaseModel):
     """
     Stratégie de sauvegarde des checkpoints
@@ -121,8 +135,12 @@ class TrainingConfig(BaseModel):
         description="Nombre total de timesteps (None = auto selon mode)"
     )
     
-    # === Hyperparamètres DQN ===
+    # === Algorithme ===
+    algorithm: Literal["DQN", "PPO"] = Field(default="DQN", description="RL Algorithm to use")
+
+    # === Hyperparamètres ===
     dqn_hyperparams: DQNHyperparameters = Field(default_factory=DQNHyperparameters)
+    ppo_hyperparams: PPOHyperparameters = Field(default_factory=PPOHyperparameters)
     
     # === Stratégies ===
     checkpoint_strategy: CheckpointStrategy = Field(default_factory=CheckpointStrategy)

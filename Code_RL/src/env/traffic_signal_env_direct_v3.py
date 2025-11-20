@@ -184,21 +184,59 @@ class TrafficSignalEnvDirectV3(gym.Env):
 
     def _compute_reward(self, action: int) -> float:
         total_density = 0.0
+        total_throughput = 0.0
+        
+        phys = self.simulation_config.physics
+        rho_max = phys.rho_max
+        
         for seg_id in self.observation_segment_ids:
             seg = self.network_grid.segments[seg_id]
             U = seg['U']
             grid = seg['grid']
             i_start = grid.num_ghost_cells
             i_end = grid.num_ghost_cells + grid.N_physical
+            
+            # Density Calculation
             total_density += (U[0, i_start:i_end] + U[2, i_start:i_end]).mean()
+            
+            # Throughput Calculation (Flux at the end of the segment)
+            # We use the last physical cell to estimate outflow
+            idx = i_end - 1
+            rho_m = max(U[0, idx], 0.0)
+            w_m = U[1, idx]
+            rho_c = max(U[2, idx], 0.0)
+            w_c = U[3, idx]
+            
+            # Calculate Pressure
+            rho_eff_m = rho_m + phys.alpha * rho_c
+            rho_total = rho_m + rho_c
+            
+            norm_rho_eff_m = max(rho_eff_m / rho_max, 0.0)
+            norm_rho_total = max(rho_total / rho_max, 0.0)
+            
+            p_m = phys.k_m * (norm_rho_eff_m ** phys.gamma_m)
+            p_c = phys.k_c * (norm_rho_total ** phys.gamma_c)
+            
+            # Calculate Velocity: v = w - p
+            v_m = w_m - p_m
+            v_c = w_c - p_c
+            
+            # Flux Q = rho * v
+            flux = rho_m * v_m + rho_c * v_c
+            total_throughput += max(flux, 0.0) # Only positive flux counts
         
-        avg_density_norm = (total_density / len(self.observation_segment_ids)) / self.simulation_config.physics.rho_max
+        avg_density_norm = (total_density / len(self.observation_segment_ids)) / rho_max
+        
+        # Normalize throughput (approximate max flux is rho_max * v_max / 4)
+        # Let's just scale it reasonably. Max flux ~ 0.2 * 30 ~ 6.0 veh/s?
+        # We'll use a small weight or normalize it.
+        # Let's assume max flux per lane is roughly rho_max * v_free / 4 (LWR max flux)
+        # rho_max ~ 0.2 veh/m, v_free ~ 30 m/s -> max flux ~ 1.5 veh/s per lane?
+        # Let's just use the raw value and weight it.
         
         congestion_penalty = self.reward_weights['alpha'] * avg_density_norm
         phase_change_penalty = self.reward_weights['kappa'] if action == 1 else 0.0
-        
-        # Throughput reward is simplified for now
-        throughput_reward = 0.0
+        throughput_reward = self.reward_weights.get('mu', 0.0) * total_throughput
         
         return float(-congestion_penalty + throughput_reward - phase_change_penalty)
 

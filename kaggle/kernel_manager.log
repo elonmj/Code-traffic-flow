@@ -9992,3 +9992,75 @@
 2025-11-19 18:45:33,357 - kernel_manager - INFO -   - generic-test-runner-kernel.log (363718 bytes)
 2025-11-19 18:45:33,357 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-19 18:45:33,357 - kernel_manager - INFO -   - test_log.txt (283754 bytes)
+2025-11-19 18:45:55,290 - kernel_manager - INFO - ✅ Loaded config: RL Training Victoria Island
+2025-11-19 18:45:55,290 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-19 18:45:55,290 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-19 18:45:55,388 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-19 18:45:55,440 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-19 18:45:55,440 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-19 18:45:55,440 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-19 18:45:55,507 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-19 18:45:56,104 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-19 18:45:56,104 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-19 18:46:00,226 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-19 18:46:00,226 - kernel_manager - INFO - Building kernel script...
+2025-11-19 18:46:00,226 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmp0lumd1np
+2025-11-19 18:46:00,226 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-19 18:46:00,226 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-19 18:46:00,226 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-19 18:46:01,841 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-19 18:46:01,841 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/rl-training-runner
+2025-11-19 18:46:02,409 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-19 18:46:32,965 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-19 18:47:03,561 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-19 18:47:34,155 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 91s)
+2025-11-19 18:48:04,734 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 122s)
+2025-11-19 18:48:35,257 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 152s)
+2025-11-19 18:49:05,912 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 183s)
+2025-11-19 18:49:36,466 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 214s)
+2025-11-19 18:50:07,022 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 244s)
+2025-11-19 18:50:37,562 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 275s)
+2025-11-19 18:51:08,161 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 305s)
+2025-11-19 18:51:38,791 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 336s)
+2025-11-19 18:52:09,350 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 366s)
+2025-11-19 18:52:39,913 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 397s)
+2025-11-19 18:53:10,483 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 428s)
+2025-11-19 18:53:41,145 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 458s)
+2025-11-19 18:54:11,742 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 489s)
+2025-11-19 18:54:42,432 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 519s)
+2025-11-19 18:55:12,983 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 550s)
+2025-11-19 18:55:43,528 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 581s)
+2025-11-19 18:56:14,095 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 611s)
+2025-11-19 18:56:44,657 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 642s)
+2025-11-19 18:57:15,205 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 672s)
+2025-11-19 18:57:45,823 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 703s)
+2025-11-19 18:58:16,381 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 733s)
+2025-11-19 18:58:46,955 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 764s)
+2025-11-19 18:59:17,547 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 795s)
+2025-11-19 18:59:48,141 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 825s)
+2025-11-19 19:00:18,711 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 856s)
+2025-11-19 19:00:49,261 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 886s)
+2025-11-19 19:01:24,012 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 917s)
+2025-11-19 19:01:54,628 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 952s)
+2025-11-19 19:02:25,299 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 982s)
+2025-11-19 19:02:55,855 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1013s)
+2025-11-19 19:03:26,438 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1044s)
+2025-11-19 19:03:56,988 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1074s)
+2025-11-19 19:04:27,547 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 1105s)
+2025-11-19 19:04:58,096 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 1135s)
+2025-11-19 19:04:58,096 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-19 19:04:58,096 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: rl-training-runner
+2025-11-19 19:04:58,096 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\rl-training-runner
+2025-11-19 19:04:58,096 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-19 19:05:18,727 - kernel_manager - INFO - ✅ Artifacts downloaded in 20.6s to: D:\Projets\Alibi\Code project\kaggle\results\rl-training-runner
+2025-11-19 19:05:18,742 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (67605 bytes)
+2025-11-19 19:05:18,742 - kernel_manager - INFO - Downloaded 9 item(s):
+2025-11-19 19:05:18,742 - kernel_manager - INFO -   - checkpoints/ (directory)
+2025-11-19 19:05:18,742 - kernel_manager - INFO -   - eval/ (directory)
+2025-11-19 19:05:18,742 - kernel_manager - INFO -   - final_model.zip (396266 bytes)
+2025-11-19 19:05:18,742 - kernel_manager - INFO -   - network_simulation_results.pkl (22065123 bytes)
+2025-11-19 19:05:18,742 - kernel_manager - INFO -   - rl-training-runner.log (92693 bytes)
+2025-11-19 19:05:18,742 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-19 19:05:18,742 - kernel_manager - INFO -   - test_log.txt (67605 bytes)
+2025-11-19 19:05:18,742 - kernel_manager - INFO -   - training_config.json (1984 bytes)
+2025-11-19 19:05:18,742 - kernel_manager - INFO -   - training_metrics.json (102 bytes)

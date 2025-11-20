@@ -19,7 +19,7 @@ from typing import Optional, Dict, Any
 import json
 
 import numpy as np
-from stable_baselines3 import DQN
+from stable_baselines3 import DQN, PPO
 from stable_baselines3.common.callbacks import CallbackList, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecNormalize
@@ -368,37 +368,71 @@ class RLTrainer:
             checkpoint = self._find_latest_checkpoint()
             if checkpoint is not None:
                 logger.info(f"Resuming from checkpoint: {checkpoint}")
-                self.model = DQN.load(
-                    checkpoint,
-                    env=self.env,
-                    device=self.training_config.device
-                )
-                return
+                try:
+                    if self.training_config.algorithm == "PPO":
+                        self.model = PPO.load(
+                            checkpoint,
+                            env=self.env,
+                            device=self.training_config.device
+                        )
+                    else:
+                        self.model = DQN.load(
+                            checkpoint,
+                            env=self.env,
+                            device=self.training_config.device
+                        )
+                    return
+                except Exception as e:
+                    logger.warning(f"Failed to load checkpoint {checkpoint} as {self.training_config.algorithm}: {e}")
+                    logger.warning(f"Starting fresh training with {self.training_config.algorithm}...")
         
         # Créer nouveau modèle
-        logger.info("Creating new DQN model...")
+        logger.info(f"Creating new {self.training_config.algorithm} model...")
         
-        hyperparams = self.training_config.dqn_hyperparams
+        # Option 1: PPO (Proximal Policy Optimization)
+        # Configure 'algorithm="PPO"' in TrainingConfig to use this block
+        if self.training_config.algorithm == "PPO":
+            hyperparams = self.training_config.ppo_hyperparams
+            self.model = PPO(
+                policy="MlpPolicy",
+                env=self.env,
+                learning_rate=hyperparams.learning_rate,
+                n_steps=hyperparams.n_steps,
+                batch_size=hyperparams.batch_size,
+                n_epochs=hyperparams.n_epochs,
+                gamma=hyperparams.gamma,
+                gae_lambda=hyperparams.gae_lambda,
+                clip_range=hyperparams.clip_range,
+                ent_coef=hyperparams.ent_coef,
+                verbose=1,
+                seed=self.training_config.seed,
+                device=self.training_config.device,
+                tensorboard_log=str(self.log_dir)
+            )
         
-        self.model = DQN(
-            policy="MlpPolicy",
-            env=self.env,
-            learning_rate=hyperparams.learning_rate,
-            buffer_size=hyperparams.buffer_size,
-            learning_starts=hyperparams.learning_starts,
-            batch_size=hyperparams.batch_size,
-            tau=hyperparams.tau,
-            gamma=hyperparams.gamma,
-            train_freq=hyperparams.train_freq,
-            gradient_steps=hyperparams.gradient_steps,
-            target_update_interval=hyperparams.target_update_interval,
-            exploration_fraction=hyperparams.exploration_fraction,
-            exploration_initial_eps=hyperparams.exploration_initial_eps,
-            exploration_final_eps=hyperparams.exploration_final_eps,
-            verbose=1,
-            seed=self.training_config.seed,
-            device=self.training_config.device
-        )
+        # Option 2: DQN (Deep Q-Network) - DEFAULT
+        else:
+            hyperparams = self.training_config.dqn_hyperparams
+            self.model = DQN(
+                policy="MlpPolicy",
+                env=self.env,
+                learning_rate=hyperparams.learning_rate,
+                buffer_size=hyperparams.buffer_size,
+                learning_starts=hyperparams.learning_starts,
+                batch_size=hyperparams.batch_size,
+                tau=hyperparams.tau,
+                gamma=hyperparams.gamma,
+                train_freq=hyperparams.train_freq,
+                gradient_steps=hyperparams.gradient_steps,
+                target_update_interval=hyperparams.target_update_interval,
+                exploration_fraction=hyperparams.exploration_fraction,
+                exploration_initial_eps=hyperparams.exploration_initial_eps,
+                exploration_final_eps=hyperparams.exploration_final_eps,
+                verbose=1,
+                seed=self.training_config.seed,
+                device=self.training_config.device,
+                tensorboard_log=str(self.log_dir)
+            )
     
     def _create_callbacks(self) -> CallbackList:
         """Crée la liste des callbacks pour l'entraînement"""
