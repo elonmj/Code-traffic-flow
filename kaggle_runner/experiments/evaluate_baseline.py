@@ -152,6 +152,11 @@ def evaluate_baseline(timesteps=1000, cycle_time=90.0, split=0.5, decision_inter
     
     # Save results for Kaggle artifact retrieval
     import json
+    
+    # Ensure results directory exists
+    results_dir = Path("results")
+    results_dir.mkdir(exist_ok=True)
+    
     results = {
         "mean_density": mean_density,
         "mean_reward": mean_reward,
@@ -164,7 +169,7 @@ def evaluate_baseline(timesteps=1000, cycle_time=90.0, split=0.5, decision_inter
         "density_history": total_densities
     }
     
-    output_path = "baseline_results.json"
+    output_path = results_dir / "baseline_results.json"
     with open(output_path, "w") as f:
         json.dump(results, f, indent=4)
     print(f"Results saved to {output_path}")
@@ -174,7 +179,7 @@ def evaluate_baseline(timesteps=1000, cycle_time=90.0, split=0.5, decision_inter
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--timesteps', type=int, default=1000)
+    parser.add_argument('--timesteps', type=int, default=10000)
     args = parser.parse_args()
     
     evaluate_baseline(timesteps=args.timesteps)
