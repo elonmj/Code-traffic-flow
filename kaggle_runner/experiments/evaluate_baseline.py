@@ -1,3 +1,5 @@
+# Note: This script requires a GPU-enabled environment (like Kaggle) to run the ARZ simulation.
+# Do not attempt to run locally without a CUDA-compatible GPU.
 import sys
 import os
 from pathlib import Path
@@ -30,6 +32,11 @@ def evaluate_baseline(timesteps=1000, cycle_time=90.0, split=0.5, decision_inter
     
     # Metrics
     total_densities = []
+    total_rewards = []
+    cumulative_reward = 0.0
+    
+    # Reward weights (matching TrafficSignalEnvDirectV3)
+    reward_weights = {'alpha': 1.0, 'kappa': 0.1, 'mu': 0.5}
     
     start_time = time.time()
     
@@ -38,6 +45,8 @@ def evaluate_baseline(timesteps=1000, cycle_time=90.0, split=0.5, decision_inter
     print(f"Total simulation time: {total_sim_time}s")
     
     current_step = 0
+    last_phase = 0
+    
     while runner.t < total_sim_time:
         t = runner.t
         
@@ -58,9 +67,14 @@ def evaluate_baseline(timesteps=1000, cycle_time=90.0, split=0.5, decision_inter
         next_t = (current_step + 1) * decision_interval
         runner.run_until(next_t)
         
-        # Calculate Metric (Density)
+        # Calculate Metric (Density & Reward)
         # Replicating TrafficSignalEnvDirectV3._compute_reward logic
         current_total_density = 0.0
+        current_total_throughput = 0.0
+        
+        phys = config.physics
+        rho_max = phys.rho_max
+        
         for seg_id in signalized_segments:
             if seg_id in runner.network_grid.segments:
                 seg = runner.network_grid.segments[seg_id]
@@ -68,21 +82,58 @@ def evaluate_baseline(timesteps=1000, cycle_time=90.0, split=0.5, decision_inter
                 grid = seg['grid']
                 i_start = grid.num_ghost_cells
                 i_end = grid.num_ghost_cells + grid.N_physical
-                # Rho_m + Rho_c
+                
+                # Density Calculation
                 # U is (4, N)
                 # U[0] is rho_m, U[2] is rho_c
                 current_total_density += (U[0, i_start:i_end] + U[2, i_start:i_end]).mean()
+                
+                # Throughput Calculation (Flux at the end of the segment)
+                # We use the last physical cell to estimate outflow
+                idx = i_end - 1
+                rho_m = max(U[0, idx], 0.0)
+                w_m = U[1, idx]
+                rho_c = max(U[2, idx], 0.0)
+                w_c = U[3, idx]
+                
+                # Calculate Pressure
+                rho_eff_m = rho_m + phys.alpha * rho_c
+                rho_total = rho_m + rho_c
+                
+                norm_rho_eff_m = max(rho_eff_m / rho_max, 0.0)
+                norm_rho_total = max(rho_total / rho_max, 0.0)
+                
+                p_m = phys.k_m * (norm_rho_eff_m ** phys.gamma_m)
+                p_c = phys.k_c * (norm_rho_total ** phys.gamma_c)
+                
+                # Calculate Velocity: v = w - p
+                v_m = w_m - p_m
+                v_c = w_c - p_c
+                
+                # Flux Q = rho * v
+                flux = rho_m * v_m + rho_c * v_c
+                current_total_throughput += max(flux, 0.0) # Only positive flux counts
         
         avg_density = current_total_density / len(signalized_segments) if signalized_segments else 0
         # Normalize
-        rho_max = config.physics.rho_max
         avg_density_norm = avg_density / rho_max
         
         total_densities.append(float(avg_density_norm))
         
+        # Calculate Reward
+        action_penalty = reward_weights['kappa'] if phase != last_phase else 0.0
+        congestion_penalty = reward_weights['alpha'] * avg_density_norm
+        throughput_reward = reward_weights['mu'] * current_total_throughput
+        
+        step_reward = -congestion_penalty + throughput_reward - action_penalty
+        total_rewards.append(step_reward)
+        cumulative_reward += step_reward
+        
+        last_phase = phase
         current_step += 1
+        
         if current_step % 100 == 0:
-            print(f"Step {current_step}/{timesteps}, Time: {runner.t:.1f}s, Avg Density: {avg_density_norm:.4f}")
+            print(f"Step {current_step}/{timesteps}, Time: {runner.t:.1f}s, Avg Density: {avg_density_norm:.4f}, Reward: {step_reward:.4f}")
             
         if current_step >= timesteps:
             break
@@ -91,14 +142,20 @@ def evaluate_baseline(timesteps=1000, cycle_time=90.0, split=0.5, decision_inter
     duration = end_time - start_time
     
     mean_density = float(np.mean(total_densities))
+    mean_reward = float(np.mean(total_rewards))
+    
     print(f"\nBaseline Evaluation Complete")
     print(f"Duration: {duration:.2f}s")
     print(f"Mean Normalized Density: {mean_density:.6f}")
+    print(f"Mean Reward: {mean_reward:.6f}")
+    print(f"Total Cumulative Reward: {cumulative_reward:.6f}")
     
     # Save results for Kaggle artifact retrieval
     import json
     results = {
         "mean_density": mean_density,
+        "mean_reward": mean_reward,
+        "cumulative_reward": cumulative_reward,
         "duration": duration,
         "timesteps": timesteps,
         "cycle_time": cycle_time,
