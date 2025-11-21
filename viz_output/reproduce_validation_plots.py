@@ -52,7 +52,7 @@ def set_riemann_state(runner, rho_L, v_L, rho_R, v_R, split_frac=0.5):
     # rho_L/R: tuple (rho_m, rho_c) in veh/km
     # v_L/R: tuple (v_m, v_c) in km/h
     
-    grid = runner.network_grid.segments['seg-0'].grid
+    grid = runner.network_grid.segments['seg-0']['grid']
     params = runner.params
     
     # Convert to SI
@@ -120,7 +120,7 @@ def run_and_plot(runner, filename, title):
     
     # Get final state
     final_state = runner.network_simulator.segments['seg-0'].current_state.copy_to_host()
-    grid = runner.network_grid.segments['seg-0'].grid
+    grid = runner.network_grid.segments['seg-0']['grid']
     params = runner.params
     
     # Extract physical cells

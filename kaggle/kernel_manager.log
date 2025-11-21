@@ -10301,3 +10301,71 @@
 2025-11-20 11:15:01,282 - kernel_manager - INFO -   - generic-test-runner-kernel.log (3579794 bytes)
 2025-11-20 11:15:01,283 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-20 11:15:01,284 - kernel_manager - INFO -   - test_log.txt (2798434 bytes)
+2025-11-21 09:13:28,961 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-21 09:13:28,963 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-21 09:13:29,107 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-21 09:13:29,185 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-21 09:13:29,185 - kernel_manager - INFO -   D  arz_model/to do.md" (Deleted (staged))
+2025-11-21 09:13:29,185 - kernel_manager - INFO -    D arz_model/victoria_island_corridor_beamer.aux (Deleted (unstaged))
+2025-11-21 09:13:29,185 - kernel_manager - INFO -    D arz_model/victoria_island_corridor_beamer.fdb_latexmk (Deleted (unstaged))
+2025-11-21 09:13:29,185 - kernel_manager - INFO -    D arz_model/victoria_island_corridor_beamer.fls (Deleted (unstaged))
+2025-11-21 09:13:29,185 - kernel_manager - INFO -    D arz_model/victoria_island_corridor_beamer.log (Deleted (unstaged))
+2025-11-21 09:13:29,185 - kernel_manager - INFO -    D arz_model/victoria_island_corridor_beamer.nav (Deleted (unstaged))
+2025-11-21 09:13:29,185 - kernel_manager - INFO -    D arz_model/victoria_island_corridor_beamer.out (Deleted (unstaged))
+2025-11-21 09:13:29,185 - kernel_manager - INFO -    D arz_model/victoria_island_corridor_beamer.snm (Deleted (unstaged))
+2025-11-21 09:13:29,192 - kernel_manager - INFO -    D arz_model/victoria_island_corridor_beamer.toc (Deleted (unstaged))
+2025-11-21 09:13:29,192 - kernel_manager - INFO -    D arz_model/victoria_island_corridor_beamer.vrb (Deleted (unstaged))
+2025-11-21 09:13:29,192 - kernel_manager - INFO -    D baseline_log.txt (Deleted (unstaged))
+2025-11-21 09:13:29,192 - kernel_manager - INFO -    D demo_cache_system.py (Deleted (unstaged))
+2025-11-21 09:13:29,192 - kernel_manager - INFO -    D depviz.json (Deleted (unstaged))
+2025-11-21 09:13:29,195 - kernel_manager - INFO -    D download.txt (Deleted (unstaged))
+2025-11-21 09:13:29,195 - kernel_manager - INFO -    D first.md (Deleted (unstaged))
+2025-11-21 09:13:29,195 - kernel_manager - INFO -    D generate_visuals.py (Deleted (unstaged))
+2025-11-21 09:13:29,199 - kernel_manager - INFO -    M kaggle/kernel_manager.log (Modified (unstaged))
+2025-11-21 09:13:29,200 - kernel_manager - INFO -    D list_arz_structure_v3.py (Deleted (unstaged))
+2025-11-21 09:13:29,200 - kernel_manager - INFO -    D local_test_results/training_config.json (Deleted (unstaged))
+2025-11-21 09:13:29,200 - kernel_manager - INFO -    D verify_pkl_results.py (Deleted (unstaged))
+2025-11-21 09:13:29,200 - kernel_manager - INFO -    D visualize_interactive.py (Deleted (unstaged))
+2025-11-21 09:13:29,200 - kernel_manager - INFO -    M viz_output/README_VISUALISATIONS.md (Modified (unstaged))
+2025-11-21 09:13:29,200 - kernel_manager - INFO -   ?? .env (Untracked)
+2025-11-21 09:13:29,200 - kernel_manager - INFO -   ?? arz_model/data/enrich_corridor.py (Untracked)
+2025-11-21 09:13:29,200 - kernel_manager - INFO -   ?? arz_model/indent.log (Untracked)
+2025-11-21 09:13:29,200 - kernel_manager - INFO -   ?? arz_model/presentation_resultats_rl.pdf (Untracked)
+2025-11-21 09:13:29,200 - kernel_manager - INFO -   ?? arz_model/presentation_resultats_rl.synctex.gz (Untracked)
+2025-11-21 09:13:29,200 - kernel_manager - INFO -   ?? arz_model/presentation_resultats_rl.tex (Untracked)
+2025-11-21 09:13:29,205 - kernel_manager - INFO -   ?? main.pdf (Untracked)
+2025-11-21 09:13:29,205 - kernel_manager - INFO -   ?? viz_output/README_DINGUERIE.md (Untracked)
+2025-11-21 09:13:29,205 - kernel_manager - INFO -   ?? viz_output/check_viz_data.py (Untracked)
+2025-11-21 09:13:29,205 - kernel_manager - INFO -   ?? viz_output/final_dinguerie.png (Untracked)
+2025-11-21 09:13:29,205 - kernel_manager - INFO -   ?? viz_output/final_dinguerie_v2.png (Untracked)
+2025-11-21 09:13:29,205 - kernel_manager - INFO -   ?? viz_output/generate_interactive_dashboard.py (Untracked)
+2025-11-21 09:13:29,205 - kernel_manager - INFO -   ?? viz_output/generate_kepler_map.py (Untracked)
+2025-11-21 09:13:29,205 - kernel_manager - INFO -   ?? viz_output/generate_static_visuals.py (Untracked)
+2025-11-21 09:13:29,205 - kernel_manager - INFO -   ?? viz_output/reproduce_validation_plots.py (Untracked)
+2025-11-21 09:13:29,205 - kernel_manager - INFO -   ?? viz_output/screenshot_anim.png (Untracked)
+2025-11-21 09:13:29,209 - kernel_manager - INFO -   ?? viz_output/traffic_dinguerie.html (Untracked)
+2025-11-21 09:13:29,209 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-21 09:13:29,812 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-21 09:13:32,342 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-21 09:13:32,342 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-21 09:13:47,210 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-21 09:13:47,210 - kernel_manager - INFO - Building kernel script...
+2025-11-21 09:13:47,215 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmp6b9x5wya
+2025-11-21 09:13:47,216 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-21 09:13:47,218 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-21 09:13:47,218 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-21 09:13:49,292 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-21 09:13:49,292 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-21 09:13:52,509 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 0s)
+2025-11-21 09:14:27,061 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 33s)
+2025-11-21 09:15:01,243 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 67s)
+2025-11-21 09:15:01,243 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-21 09:15:01,243 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-21 09:15:01,258 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-21 09:15:01,504 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-21 09:15:08,468 - kernel_manager - INFO - ✅ Artifacts downloaded in 7.0s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-21 09:15:08,469 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (4978 bytes)
+2025-11-21 09:15:08,469 - kernel_manager - INFO - Downloaded 3 item(s):
+2025-11-21 09:15:08,470 - kernel_manager - INFO -   - generic-test-runner-kernel.log (7850 bytes)
+2025-11-21 09:15:08,472 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-21 09:15:08,473 - kernel_manager - INFO -   - test_log.txt (4978 bytes)
