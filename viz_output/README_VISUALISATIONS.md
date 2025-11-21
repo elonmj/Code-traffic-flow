@@ -49,18 +49,17 @@
 ### 1. Évolution Temporelle des Densités (`01_density_evolution.png`)
 Graphiques montrant l'évolution des densités moyennes, min et max pour chaque segment au cours du temps.
 
-**Observations**:
-- Segment 1: Densité stable autour de ~14 veh/km (conversion depuis 50 veh/km initial)
-- Segment 2: Densité stable autour de ~17 veh/km (conversion depuis 20 veh/km initial)
-- Variations faibles: système reste proche de l'équilibre
+### 2. Visualisation 3D Interactive "La Dinguerie" (`traffic_dinguerie.html`)
+Une carte interactive 3D générée avec PyDeck montrant :
+- **Topologie du réseau** : Les routes réelles basées sur les coordonnées GPS.
+- **Trafic animé** : Des véhicules (particules 3D) se déplaçant le long des routes.
+- **Code couleur** : 
+  - 🔴 Rouge : Trafic dense / lent
+  - 🟢 Vert : Trafic fluide / rapide
+  - 🟡 Jaune : Trafic moyen
+- **Contrôles** : Zoom, rotation (Ctrl + Clic gauche), inclinaison pour explorer le réseau sous tous les angles.
 
-### 2. Évolution Temporelle des Vitesses (`02_speed_evolution.png`)
-Graphiques montrant l'évolution des vitesses moyennes pour chaque segment.
-
-**Observations**:
-- Segment 1: Vitesse moyenne ~14.2 m/s (~51 km/h)
-- Segment 2: Vitesse moyenne ~16.9 m/s (~61 km/h)
-- Stabilité remarquable: pas d'oscillations pathologiques
+Cette visualisation permet de présenter les résultats de manière spectaculaire pour des présentations ou le mémoire.
 
 ### 3. Diagrammes Spatio-Temporels (`03_spatiotemporal_diagrams.png`)
 Heatmaps montrant la distribution spatiale des densités et vitesses au cours du temps.
@@ -143,4 +142,4 @@ Les modifications ont permis de:
 
 **Rapport généré le**: 15 novembre 2025  
 **Simulation**: ARZ Two-Class Traffic Flow Model (GPU-native)  
-**Code source**: https://github.com/elonmj/Code-traffic-flow  
+**Code source**: https://github.com/elonmj/Code-traffic-flow

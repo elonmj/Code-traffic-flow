@@ -10247,3 +10247,57 @@
 2025-11-20 11:00:27,814 - kernel_manager - INFO -   - generic-test-runner-kernel.log (364060 bytes)
 2025-11-20 11:00:27,829 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-20 11:00:27,829 - kernel_manager - INFO -   - test_log.txt (284040 bytes)
+2025-11-20 11:01:54,040 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-20 11:01:54,040 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-20 11:01:54,157 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-20 11:01:54,241 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-20 11:01:54,241 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-20 11:01:54,241 - kernel_manager - INFO -    M kaggle_runner/experiments/evaluate_baseline.py (Modified (unstaged))
+2025-11-20 11:01:54,241 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-20 11:01:54,352 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-20 11:01:55,275 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-20 11:01:55,289 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-20 11:02:00,276 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-20 11:02:00,276 - kernel_manager - INFO - Building kernel script...
+2025-11-20 11:02:00,276 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpcfu8ap51
+2025-11-20 11:02:00,276 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-20 11:02:00,276 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-20 11:02:00,276 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-20 11:02:02,111 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-20 11:02:02,128 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-20 11:02:02,678 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-20 11:02:33,157 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-20 11:03:03,628 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-20 11:03:34,136 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 91s)
+2025-11-20 11:04:04,610 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 122s)
+2025-11-20 11:04:35,102 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 152s)
+2025-11-20 11:05:08,803 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 182s)
+2025-11-20 11:05:39,293 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 216s)
+2025-11-20 11:06:09,906 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 247s)
+2025-11-20 11:06:40,405 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 277s)
+2025-11-20 11:07:10,904 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 308s)
+2025-11-20 11:07:41,465 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 338s)
+2025-11-20 11:08:12,121 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 369s)
+2025-11-20 11:08:42,657 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 399s)
+2025-11-20 11:09:13,832 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 430s)
+2025-11-20 11:09:44,347 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 461s)
+2025-11-20 11:10:14,819 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 492s)
+2025-11-20 11:10:45,290 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 522s)
+2025-11-20 11:11:15,763 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 553s)
+2025-11-20 11:11:46,243 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 583s)
+2025-11-20 11:12:16,804 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 614s)
+2025-11-20 11:12:47,477 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 644s)
+2025-11-20 11:13:18,886 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 675s)
+2025-11-20 11:13:49,378 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 706s)
+2025-11-20 11:14:19,935 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 737s)
+2025-11-20 11:14:50,467 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 767s)
+2025-11-20 11:14:50,470 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-20 11:14:50,472 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-20 11:14:50,488 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-20 11:14:50,507 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-20 11:15:01,278 - kernel_manager - INFO - ✅ Artifacts downloaded in 10.8s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-20 11:15:01,278 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (2798434 bytes)
+2025-11-20 11:15:01,279 - kernel_manager - INFO - Downloaded 3 item(s):
+2025-11-20 11:15:01,282 - kernel_manager - INFO -   - generic-test-runner-kernel.log (3579794 bytes)
+2025-11-20 11:15:01,283 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-20 11:15:01,284 - kernel_manager - INFO -   - test_log.txt (2798434 bytes)
