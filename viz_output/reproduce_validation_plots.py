@@ -106,10 +106,8 @@ def set_riemann_state(runner, rho_L, v_L, rho_R, v_R, split_frac=0.5):
     U[3] = y_c
     
     # Update GPU state
-    # Accessing the segment simulator directly
-    # Note: runner.network_simulator is likely NetworkCouplingGPU
-    # It has a .segments dictionary mapping ID to SegmentSimulatorGPU
-    runner.network_simulator.segments['seg-0'].current_state = cuda.to_device(U)
+    # Use GPUMemoryPool to initialize state
+    runner.network_simulator.gpu_pool.initialize_segment_state('seg-0', U)
     
     return U
 
@@ -119,7 +117,8 @@ def run_and_plot(runner, filename, title):
     runner.run()
     
     # Get final state
-    final_state = runner.network_simulator.segments['seg-0'].current_state.copy_to_host()
+    d_U = runner.network_simulator.gpu_pool.get_segment_state('seg-0')
+    final_state = d_U.copy_to_host()
     grid = runner.network_grid.segments['seg-0']['grid']
     params = runner.params
     
