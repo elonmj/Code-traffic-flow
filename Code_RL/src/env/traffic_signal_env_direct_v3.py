@@ -149,6 +149,10 @@ class TrafficSignalEnvDirectV3(gym.Env):
             'total_reward': self.total_reward
         }
         
+        # Add metrics if available
+        if hasattr(self, 'last_metrics'):
+            info.update(self.last_metrics)
+            
         return obs, reward, terminated, truncated, info
 
     def _get_observation(self) -> np.ndarray:
@@ -237,6 +241,14 @@ class TrafficSignalEnvDirectV3(gym.Env):
         congestion_penalty = self.reward_weights['alpha'] * avg_density_norm
         phase_change_penalty = self.reward_weights['kappa'] if action == 1 else 0.0
         throughput_reward = self.reward_weights.get('mu', 0.0) * total_throughput
+        
+        # Store metrics for info
+        self.last_metrics = {
+            'avg_density': float(avg_density_norm),
+            'throughput': float(total_throughput),
+            'congestion_penalty': float(congestion_penalty),
+            'throughput_reward': float(throughput_reward)
+        }
         
         return float(-congestion_penalty + throughput_reward - phase_change_penalty)
 
