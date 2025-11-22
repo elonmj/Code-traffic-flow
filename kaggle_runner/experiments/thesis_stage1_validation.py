@@ -42,6 +42,13 @@ from arz_model.visualization.plotting import plot_profiles
 from Code_RL.src.config.rl_network_config import RLNetworkConfig
 from Code_RL.src.env.traffic_signal_env_direct_v3 import TrafficSignalEnvDirectV3
 
+# Correct imports for Pydantic config system
+from arz_model.config.network_simulation_config import NetworkSimulationConfig, SegmentConfig, NodeConfig
+from arz_model.config.physics_config import PhysicsConfig
+from arz_model.config.bc_config import BoundaryConditionsConfig, InflowBC, OutflowBC, BCState
+from arz_model.config.ic_config import ICConfig, UniformIC
+from arz_model.config.time_config import TimeConfig
+
 
 def create_riemann_config(U_L, U_R, t_final=30.0, L=1000.0, N_cells=200):
     """
@@ -54,62 +61,51 @@ def create_riemann_config(U_L, U_R, t_final=30.0, L=1000.0, N_cells=200):
         L: Domain length (m)
         N_cells: Number of grid cells
     """
-    from arz_model.config.segment_config import SegmentConfig
-    from arz_model.config.physics_config import PhysicsConfig
-    from arz_model.config.simulation_config import SimulationConfig
-    from arz_model.config.node_config import NodeConfig
-    from arz_model.config.boundary_conditions import BoundaryCondition
     
     # Physics parameters
     physics = PhysicsConfig(
         rho_max=0.2,  # Max density (veh/m)
-        v_max=30.0,   # Max velocity (m/s) = 108 km/h
+        v_max_m_kmh=108.0, # 30 m/s
+        v_max_c_kmh=108.0, # 30 m/s
         alpha=0.5     # Interaction coefficient
     )
     
     # Single segment (1D road)
     segment = SegmentConfig(
-        segment_id=0,
-        length=L,
-        lanes=2,
-        cells_per_100m=N_cells / (L/100),  # Cells per 100m
-        upstream_node_id=0,
-        downstream_node_id=1
+        id="seg_0",
+        x_min=0.0,
+        x_max=L,
+        N=int(N_cells),
+        initial_conditions=UniformIC(density=0.0, velocity=0.0), # Dummy IC, will be overwritten
+        boundary_conditions=BoundaryConditionsConfig(
+            left=OutflowBC(density=0.0, velocity=0.0), # Transmissive-like
+            right=OutflowBC(density=0.0, velocity=0.0)
+        )
     )
     
     # Nodes (simple connections)
     nodes = [
-        NodeConfig(node_id=0, position=(0.0, 0.0), type="boundary"),
-        NodeConfig(node_id=1, position=(L, 0.0), type="boundary")
+        NodeConfig(
+            id="node_0", 
+            type="boundary", 
+            position=[0.0, 0.0], 
+            outgoing_segments=["seg_0"],
+            boundary_condition={"type": "inflow"}
+        ),
+        NodeConfig(
+            id="node_1", 
+            type="boundary", 
+            position=[L, 0.0], 
+            incoming_segments=["seg_0"],
+            boundary_condition={"type": "outflow"}
+        )
     ]
     
-    # Riemann initial condition
-    def riemann_ic(x, segment_id):
-        """Discontinuity at x = L/2"""
-        x_disc = L / 2.0
-        U = np.zeros((4, len(x)))
-        for i, xi in enumerate(x):
-            if xi < x_disc:
-                U[:, i] = U_L
-            else:
-                U[:, i] = U_R
-        return U
-    
-    # Boundary conditions (transmissive)
-    bc_upstream = BoundaryCondition(type="transmissive")
-    bc_downstream = BoundaryCondition(type="transmissive")
-    
-    config = SimulationConfig(
+    config = NetworkSimulationConfig(
         segments=[segment],
         nodes=nodes,
         physics=physics,
-        dt=0.1,  # Small timestep for accuracy
-        t_max=t_final,
-        initial_condition=riemann_ic,
-        boundary_conditions={
-            0: {"upstream": bc_upstream},
-            1: {"downstream": bc_downstream}
-        }
+        time=TimeConfig(dt=0.1, t_max=t_final)
     )
     
     return config
@@ -257,11 +253,33 @@ def run_riemann_validation():
             )
             
             network_grid = NetworkGrid.from_config(config)
+            
+            # Manually set Riemann Initial Condition (Multi-class)
+            # Because config system only supports single-class ICs currently
+            seg_data = network_grid.segments["seg_0"]
+            grid = seg_data['grid']
+            x = grid.x_centers
+            
+            # Riemann IC function
+            def riemann_ic(x_arr):
+                x_disc = 1000.0 / 2.0
+                U = np.zeros((4, len(x_arr)))
+                for i, xi in enumerate(x_arr):
+                    if xi < x_disc:
+                        U[:, i] = test["U_L"]
+                    else:
+                        U[:, i] = test["U_R"]
+                return U
+            
+            U_init = riemann_ic(x)
+            seg_data['U'] = U_init.copy()
+            seg_data['U_initial'] = U_init.copy()
+            
             runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)
             runner.run()
             
             # Get final state
-            seg = runner.network_grid.segments[0]
+            seg = runner.network_grid.segments["seg_0"]
             U_final = seg['U'].copy()  # (4, N)
             x_grid = seg['grid'].x_centers
             
@@ -367,48 +385,66 @@ def run_behavioral_validation():
         
         # Run Simulation
         try:
-            # Create config for behavioral test (Victoria Island segment or simple road)
-            # We use a simple segment to isolate behavior
-            from arz_model.config.segment_config import SegmentConfig
-            from arz_model.config.physics_config import PhysicsConfig
-            from arz_model.config.simulation_config import SimulationConfig
-            from arz_model.config.node_config import NodeConfig
-            from arz_model.config.boundary_conditions import BoundaryCondition
+            # Create config for behavioral test
+            physics = PhysicsConfig(
+                rho_max=0.2,
+                v_max_m_kmh=108.0,
+                v_max_c_kmh=108.0,
+                alpha=0.5
+            )
             
-            physics = PhysicsConfig()
-            segment = SegmentConfig(segment_id=0, length=1000.0, lanes=2)
-            nodes = [NodeConfig(0, (0,0), "boundary"), NodeConfig(1, (1000,0), "boundary")]
+            segment = SegmentConfig(
+                id="seg_0",
+                x_min=0.0,
+                x_max=1000.0,
+                N=100,
+                initial_conditions=UniformIC(density=0.0, velocity=0.0), # Dummy
+                boundary_conditions=BoundaryConditionsConfig(
+                    left=OutflowBC(density=0.0, velocity=0.0),
+                    right=OutflowBC(density=0.0, velocity=0.0)
+                )
+            )
             
-            # Initial condition: Uniform density based on test case
-            rho_m_init = test['initial_density_moto']
-            rho_c_init = test['initial_density_car']
+            nodes = [
+                NodeConfig(id="node_0", type="boundary", position=[0.0, 0.0], outgoing_segments=["seg_0"], boundary_condition={"type": "inflow"}),
+                NodeConfig(id="node_1", type="boundary", position=[1000.0, 0.0], incoming_segments=["seg_0"], boundary_condition={"type": "outflow"})
+            ]
             
-            def behavioral_ic(x, seg_id):
-                U = np.zeros((4, len(x)))
-                U[0, :] = rho_m_init
-                U[2, :] = rho_c_init
-                # Velocities will equilibrate
-                return U
-                
-            config = SimulationConfig(
+            config = NetworkSimulationConfig(
                 segments=[segment],
                 nodes=nodes,
                 physics=physics,
-                dt=0.5,
-                t_max=60.0, # Run for 1 minute to settle
-                initial_condition=behavioral_ic,
-                boundary_conditions={
-                    0: {"upstream": BoundaryCondition("transmissive")},
-                    1: {"downstream": BoundaryCondition("transmissive")}
-                }
+                time=TimeConfig(dt=0.5, t_max=60.0)
             )
             
             network_grid = NetworkGrid.from_config(config)
+            
+            # Manually set Initial Condition
+            seg_data = network_grid.segments["seg_0"]
+            grid = seg_data['grid']
+            U = np.zeros((4, grid.N_total))
+            
+            # Uniform IC
+            rho_m_init = test['initial_density_moto']
+            rho_c_init = test['initial_density_car']
+            
+            # Velocities: assume equilibrium or zero?
+            # Let's assume zero and let them accelerate, or equilibrium.
+            # For behavioral test, we want to see if they reach equilibrium.
+            # Let's start with zero velocity.
+            
+            U[0, :] = rho_m_init
+            U[2, :] = rho_c_init
+            # U[1] and U[3] (momentum) = 0
+            
+            seg_data['U'] = U.copy()
+            seg_data['U_initial'] = U.copy()
+            
             runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)
             runner.run()
             
             # Get average state
-            seg = runner.network_grid.segments[0]
+            seg = runner.network_grid.segments["seg_0"]
             U = seg['U']
             grid = seg['grid']
             i_start, i_end = grid.num_ghost_cells, grid.num_ghost_cells + grid.N_physical
@@ -419,7 +455,15 @@ def run_behavioral_validation():
             avg_w_c = U[3, i_start:i_end].mean()
             
             # Calculate physical velocity (approx)
-            avg_velocity = (avg_w_m + avg_w_c) / 2.0 # Simplified
+            # Need pressure calculation for accurate velocity
+            # But for validation, w/rho is often used as "velocity" in simple plots, 
+            # though strictly v = w - p.
+            # Let's use w/rho for now as it's simpler and indicative.
+            
+            avg_v_m = avg_w_m / avg_rho_m if avg_rho_m > 1e-6 else 0.0
+            avg_v_c = avg_w_c / avg_rho_c if avg_rho_c > 1e-6 else 0.0
+            
+            avg_velocity = (avg_v_m + avg_v_c) / 2.0
             avg_density = avg_rho_m + avg_rho_c
             
             status = "PASS"
@@ -436,6 +480,8 @@ def run_behavioral_validation():
             
         except Exception as e:
             print(f"Simulation failed: {e}")
+            import traceback
+            traceback.print_exc()
             avg_density = 0.0
             avg_velocity = 0.0
             status = "FAIL"
