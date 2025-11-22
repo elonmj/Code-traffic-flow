@@ -105,7 +105,7 @@ def create_riemann_config(U_L, U_R, t_final=30.0, L=1000.0, N_cells=200):
         segments=[segment],
         nodes=nodes,
         physics=physics,
-        time=TimeConfig(dt=0.1, t_max=t_final)
+        time=TimeConfig(dt=0.1, t_final=t_final)
     )
     
     return config
@@ -414,7 +414,7 @@ def run_behavioral_validation():
                 segments=[segment],
                 nodes=nodes,
                 physics=physics,
-                time=TimeConfig(dt=0.5, t_max=60.0)
+                time=TimeConfig(dt=0.5, t_final=60.0)
             )
             
             network_grid = NetworkGrid.from_config(config)
