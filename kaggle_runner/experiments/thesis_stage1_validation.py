@@ -80,7 +80,9 @@ def create_riemann_config(U_L, U_R, t_final=30.0, L=1000.0, N_cells=200):
         boundary_conditions=BoundaryConditionsConfig(
             left=OutflowBC(density=0.0, velocity=0.0), # Transmissive-like
             right=OutflowBC(density=0.0, velocity=0.0)
-        )
+        ),
+        start_node="node_0",
+        end_node="node_1"
     )
     
     # Nodes (simple connections)
@@ -402,7 +404,9 @@ def run_behavioral_validation():
                 boundary_conditions=BoundaryConditionsConfig(
                     left=OutflowBC(density=0.0, velocity=0.0),
                     right=OutflowBC(density=0.0, velocity=0.0)
-                )
+                ),
+                start_node="node_0",
+                end_node="node_1"
             )
             
             nodes = [

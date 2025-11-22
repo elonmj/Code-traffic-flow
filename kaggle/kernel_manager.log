@@ -10596,3 +10596,42 @@
 2025-11-22 22:34:39,220 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-22 22:34:39,221 - kernel_manager - INFO -   - test_log.txt (26296 bytes)
 2025-11-22 22:34:39,224 - kernel_manager - INFO -   - thesis_stage1/ (directory)
+2025-11-22 22:47:27,664 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-22 22:47:27,665 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-22 22:47:27,827 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-22 22:47:27,932 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-22 22:47:27,933 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-22 22:47:27,933 - kernel_manager - INFO -    M kaggle_runner/experiments/thesis_stage1_validation.py (Modified (unstaged))
+2025-11-22 22:47:27,933 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-22 22:47:28,057 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-22 22:47:28,930 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-22 22:47:28,931 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-22 22:47:36,644 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-22 22:47:36,644 - kernel_manager - INFO - Building kernel script...
+2025-11-22 22:47:36,650 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpf6v8gk6p
+2025-11-22 22:47:36,652 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-22 22:47:36,654 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-22 22:47:36,654 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-22 22:47:41,827 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-22 22:47:41,829 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-22 22:47:42,346 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-22 22:48:12,884 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-22 22:48:43,417 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-22 22:49:13,934 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 91s)
+2025-11-22 22:49:44,467 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 122s)
+2025-11-22 22:50:14,984 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 152s)
+2025-11-22 22:50:45,514 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 183s)
+2025-11-22 22:51:18,690 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 213s)
+2025-11-22 22:51:49,211 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 246s)
+2025-11-22 22:52:19,739 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 277s)
+2025-11-22 22:52:19,741 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-22 22:52:19,743 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-22 22:52:19,748 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-22 22:52:19,759 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-22 22:52:23,802 - kernel_manager - INFO - ✅ Artifacts downloaded in 4.0s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-22 22:52:23,802 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (30017 bytes)
+2025-11-22 22:52:23,803 - kernel_manager - INFO - Downloaded 4 item(s):
+2025-11-22 22:52:23,804 - kernel_manager - INFO -   - generic-test-runner-kernel.log (40609 bytes)
+2025-11-22 22:52:23,804 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-22 22:52:23,804 - kernel_manager - INFO -   - test_log.txt (30017 bytes)
+2025-11-22 22:52:23,805 - kernel_manager - INFO -   - thesis_stage1/ (directory)
