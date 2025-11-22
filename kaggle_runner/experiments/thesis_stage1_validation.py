@@ -260,7 +260,7 @@ def run_riemann_validation():
             # Because config system only supports single-class ICs currently
             seg_data = network_grid.segments["seg_0"]
             grid = seg_data['grid']
-            x = grid.x_centers
+            x = grid.cell_centers(include_ghost=True)
             
             # Riemann IC function
             def riemann_ic(x_arr):
@@ -283,7 +283,7 @@ def run_riemann_validation():
             # Get final state
             seg = runner.network_grid.segments["seg_0"]
             U_final = seg['U'].copy()  # (4, N)
-            x_grid = seg['grid'].x_centers
+            x_grid = seg['grid'].cell_centers(include_ghost=True)
             
             # Save data for Stage 3 Visualization
             output_dir = Path("/kaggle/working" if os.path.exists("/kaggle/working") else "results") / "thesis_stage1"

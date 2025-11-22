@@ -10635,3 +10635,42 @@
 2025-11-22 22:52:23,804 - kernel_manager - INFO -   - simulation_results/ (directory)
 2025-11-22 22:52:23,804 - kernel_manager - INFO -   - test_log.txt (30017 bytes)
 2025-11-22 22:52:23,805 - kernel_manager - INFO -   - thesis_stage1/ (directory)
+2025-11-22 23:02:11,869 - kernel_manager - INFO - 🚀 Starting kernel update process...
+2025-11-22 23:02:11,870 - kernel_manager - INFO - 🔍 Checking Git status and ensuring changes are pushed...
+2025-11-22 23:02:11,985 - kernel_manager - INFO - 📍 Current branch: main
+2025-11-22 23:02:12,039 - kernel_manager - INFO - 📝 Detected local changes:
+2025-11-22 23:02:12,039 - kernel_manager - INFO -   M  aggle/kernel_manager.log (Modified (staged))
+2025-11-22 23:02:12,040 - kernel_manager - INFO -    M kaggle_runner/experiments/thesis_stage1_validation.py (Modified (unstaged))
+2025-11-22 23:02:12,040 - kernel_manager - INFO - 📦 Adding all changes...
+2025-11-22 23:02:12,200 - kernel_manager - INFO - 💾 Committing changes...
+2025-11-22 23:02:13,141 - kernel_manager - INFO - ✅ Changes committed successfully
+2025-11-22 23:02:13,141 - kernel_manager - INFO - 📤 Pushing to remote branch: main
+2025-11-22 23:02:18,210 - kernel_manager - INFO - ✅ Changes pushed successfully to GitHub
+2025-11-22 23:02:18,210 - kernel_manager - INFO - Building kernel script...
+2025-11-22 23:02:18,214 - kernel_manager - INFO - Created temporary directory: C:\Users\JOSAPHAT\AppData\Local\Temp\tmpfnveje61
+2025-11-22 23:02:18,215 - kernel_manager - INFO - Generated kernel-metadata.json
+2025-11-22 23:02:18,218 - kernel_manager - INFO - Generated script file: execute_test.py
+2025-11-22 23:02:18,218 - kernel_manager - INFO - Pushing kernel to Kaggle...
+2025-11-22 23:02:20,026 - kernel_manager - INFO - ✅ Kernel push/update command sent successfully.
+2025-11-22 23:02:20,028 - kernel_manager - INFO - 🕵️‍♂️ Starting to monitor kernel: elonmj/generic-test-runner-kernel
+2025-11-22 23:02:20,561 - kernel_manager - INFO - Current status: kernelworkerstatus.queued (Elapsed: 0s)
+2025-11-22 23:02:51,072 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 30s)
+2025-11-22 23:03:21,656 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 61s)
+2025-11-22 23:04:12,668 - kernel_manager - ERROR - Error checking kernel status: HTTPSConnectionPool(host='www.kaggle.com', port=443): Max retries exceeded with url: /api/v1/kernels/status?username=elonmj&kernelslug=generic-test-runner-kernel (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x0000015AE627FB30>, 'Connection to www.kaggle.com timed out. (connect timeout=None)'))
+2025-11-22 23:04:43,597 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 142s)
+2025-11-22 23:05:14,126 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 173s)
+2025-11-22 23:05:44,701 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 204s)
+2025-11-22 23:06:15,248 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 234s)
+2025-11-22 23:06:45,771 - kernel_manager - INFO - Current status: kernelworkerstatus.running (Elapsed: 265s)
+2025-11-22 23:07:16,352 - kernel_manager - INFO - Current status: kernelworkerstatus.complete (Elapsed: 295s)
+2025-11-22 23:07:16,352 - kernel_manager - INFO - ✅ Kernel execution completed successfully.
+2025-11-22 23:07:16,354 - kernel_manager - INFO - ⬇️ Downloading artifacts for kernel: generic-test-runner-kernel
+2025-11-22 23:07:16,355 - kernel_manager - INFO - Clearing existing output directory: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-22 23:07:16,357 - kernel_manager - INFO - ⏳ Download in progress (Kaggle API, may take 30-60s)...
+2025-11-22 23:07:22,595 - kernel_manager - INFO - ✅ Artifacts downloaded in 6.2s to: D:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel
+2025-11-22 23:07:22,595 - kernel_manager - INFO - ✅ Critical file found: test_log.txt (25586 bytes)
+2025-11-22 23:07:22,596 - kernel_manager - INFO - Downloaded 4 item(s):
+2025-11-22 23:07:22,597 - kernel_manager - INFO -   - generic-test-runner-kernel.log (35401 bytes)
+2025-11-22 23:07:22,597 - kernel_manager - INFO -   - simulation_results/ (directory)
+2025-11-22 23:07:22,597 - kernel_manager - INFO -   - test_log.txt (25586 bytes)
+2025-11-22 23:07:22,598 - kernel_manager - INFO -   - thesis_stage1/ (directory)
