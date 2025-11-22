@@ -76,7 +76,7 @@ def create_riemann_config(U_L, U_R, t_final=30.0, L=1000.0, N_cells=200):
         x_min=0.0,
         x_max=L,
         N=int(N_cells),
-        initial_conditions=UniformIC(density=0.0, velocity=0.0), # Dummy IC, will be overwritten
+        initial_conditions=ICConfig(config=UniformIC(density=0.0, velocity=0.0)), # Dummy IC, will be overwritten
         boundary_conditions=BoundaryConditionsConfig(
             left=OutflowBC(density=0.0, velocity=0.0), # Transmissive-like
             right=OutflowBC(density=0.0, velocity=0.0)
@@ -398,7 +398,7 @@ def run_behavioral_validation():
                 x_min=0.0,
                 x_max=1000.0,
                 N=100,
-                initial_conditions=UniformIC(density=0.0, velocity=0.0), # Dummy
+                initial_conditions=ICConfig(config=UniformIC(density=0.0, velocity=0.0)), # Dummy
                 boundary_conditions=BoundaryConditionsConfig(
                     left=OutflowBC(density=0.0, velocity=0.0),
                     right=OutflowBC(density=0.0, velocity=0.0)
