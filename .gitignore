@@ -27,7 +27,10 @@ ecoles.md
 _arxiv/
 _arxiv/*
 
-# Ignore Kaggle results
+# Ignore Kaggle results and logs
 kaggle/results/
+kaggle/.git/
+kaggle/kernel_manager.log
+*.log
 
 
