@@ -1,0 +1,10 @@
+{
+  "observation_normalized": true,
+  "observation_range": [
+    0.0,
+    1.0
+  ],
+  "reward_correlation": NaN,
+  "min_green_compliance": 100.0,
+  "intergreen_compliance": 100.0
+}

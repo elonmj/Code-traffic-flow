@@ -1,0 +1,20 @@
+[
+  {
+    "scenario": "Trafic Fluide",
+    "density_veh_m": "0.0270",
+    "velocity_m_s": "0.00",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Congestion Mod\u00e9r\u00e9e",
+    "density_veh_m": "0.1250",
+    "velocity_m_s": "0.00",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Formation de Bouchon",
+    "density_veh_m": "0.1850",
+    "velocity_m_s": "0.00",
+    "status": "PASS"
+  }
+]

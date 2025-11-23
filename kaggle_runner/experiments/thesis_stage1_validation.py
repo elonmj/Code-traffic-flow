@@ -109,7 +109,7 @@ def create_riemann_config(U_L, U_R, t_final=30.0, L=1000.0, N_cells=200, output_
         segments=[segment],
         nodes=nodes,
         physics=physics,
-        time=TimeConfig(dt=0.1, t_final=t_final, output_dt=output_dt)
+        time=TimeConfig(dt=0.0, t_final=t_final, output_dt=output_dt)
     )
     
     return config

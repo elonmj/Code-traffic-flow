@@ -25,12 +25,15 @@ print("=" * 80)
 print("THESIS STAGE 3: VISUALIZATION")
 print("=" * 80)
 
-# Setup paths
-RESULTS_DIR = Path("/kaggle/working" if os.path.exists("/kaggle/working") else "results")
+# Setup paths - Always use local 'results' directory
+RESULTS_DIR = Path("results")
 STAGE1_DIR = RESULTS_DIR / "thesis_stage1"
 STAGE2_DIR = RESULTS_DIR / "thesis_stage2"
 OUTPUT_DIR = RESULTS_DIR / "thesis_figures"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+print(f"Looking for data in: {STAGE1_DIR.absolute()}")
+print(f"Output directory: {OUTPUT_DIR.absolute()}")
 
 # Set style
 plt.style.use('seaborn-v0_8-whitegrid')
@@ -203,12 +206,20 @@ def plot_riemann_spacetime_heatmaps():
             config = data['config'].item()
             name = config['name']
             
+            # Get physical cells only (exclude ghost cells)
+            # x has ghost cells, history data is physical only
+            N_physical = rho_c.shape[1]  # Number of physical cells
+            N_total = len(x)  # Total including ghost cells
+            
+            # Extract physical cells from x (typically middle portion)
+            n_ghost = (N_total - N_physical) // 2
+            x_physical = x[n_ghost:n_ghost+N_physical]
+            
             # Create 2x2 grid of heatmaps
             fig, axes = plt.subplots(2, 2, figsize=(16, 12), sharex=True, sharey=True)
             
             # Meshgrid for plotting
-            # t_hist is 1D, x is 1D. rho_c is (T, X)
-            X, T = np.meshgrid(x, t_hist)
+            X, T = np.meshgrid(x_physical, t_hist)
             
             # Plot settings
             cmap = 'viridis'
