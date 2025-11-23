@@ -3,7 +3,7 @@ Thesis Stage 2: RL Training & Baseline Evaluation
 
 This script generates results for Section 8 of the thesis:
 - Part 2A: Baseline Evaluation (Fixed-Time Control)
-- Part 2B: RL Agent Training (PPO)
+- Part 2B: RL Agent Training (DQN)
 - Part 2C: RL Agent Evaluation & Comparison
 
 Usage:
@@ -21,7 +21,7 @@ import time
 import json
 import numpy as np
 from pathlib import Path
-from stable_baselines3 import PPO
+from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
 
@@ -163,32 +163,37 @@ def main():
     with open(output_dir / "baseline_results.json", "w") as f:
         json.dump(baseline_results, f, indent=2)
         
-    # 2. RL Training (PPO)
+    # 2. RL Training (DQN)
     print("\n" + "=" * 60)
-    print("PART 2B: RL TRAINING (PPO)")
+    print("PART 2B: RL TRAINING (DQN)")
     print("=" * 60)
     
     # Re-create env wrapped for training
     env = Monitor(create_env(quiet=True), str(output_dir))
     
-    model = PPO(
+    model = DQN(
         "MlpPolicy",
         env,
         verbose=1,
-        learning_rate=3e-4,
-        n_steps=2048,
-        batch_size=64,
-        n_epochs=10,
+        learning_rate=1e-3,
+        buffer_size=50000,
+        learning_starts=1000,
+        batch_size=32,
+        tau=1.0,
         gamma=0.99,
-        gae_lambda=0.95,
-        clip_range=0.2,
+        train_freq=4,
+        gradient_steps=1,
+        target_update_interval=1000,
+        exploration_fraction=0.1,
+        exploration_initial_eps=1.0,
+        exploration_final_eps=0.05,
         tensorboard_log=str(output_dir / "logs")
     )
     
     print(f"Training for {args.timesteps} timesteps...")
     model.learn(total_timesteps=args.timesteps)
     
-    model_path = output_dir / "ppo_victoria_island_final"
+    model_path = output_dir / "dqn_victoria_island_final"
     model.save(model_path)
     print(f"Model saved to {model_path}")
     
@@ -212,7 +217,7 @@ def main():
     # 4. Comparison Summary
     summary = {
         "baseline": baseline_results,
-        "rl_ppo": rl_results,
+        "rl_dqn": rl_results,
         "improvement": {
             "reward": (rl_results['mean_reward'] - baseline_results['mean_reward']) / abs(baseline_results['mean_reward']) * 100,
             "density": (rl_results['mean_density'] - baseline_results['mean_density']) / baseline_results['mean_density'] * 100,

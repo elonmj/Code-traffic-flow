@@ -41,7 +41,9 @@ def main():
         'kaggle_runner/executor.py',
         '--target', 'kaggle_runner/experiments/thesis_stage2_rl_training.py',
         '--timeout', str(timeout),
-        '--args', f"--timesteps {timesteps} --episodes 5"
+        '--',  # Separator for target script args
+        '--timesteps', str(timesteps),
+        '--episodes', '5'
     ]
     
     # Add commit message
