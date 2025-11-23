@@ -21,6 +21,7 @@ import time
 import json
 from pathlib import Path
 import numpy as np
+from numba import cuda
 
 # Ensure project root is in path
 project_root = Path(__file__).parent.parent.parent
@@ -50,7 +51,7 @@ from arz_model.config.ic_config import ICConfig, UniformIC
 from arz_model.config.time_config import TimeConfig
 
 
-def create_riemann_config(U_L, U_R, t_final=30.0, L=1000.0, N_cells=200):
+def create_riemann_config(U_L, U_R, t_final=30.0, L=1000.0, N_cells=200, output_dt=0.1):
     """
     Create 1D Riemann problem configuration
     
@@ -60,6 +61,7 @@ def create_riemann_config(U_L, U_R, t_final=30.0, L=1000.0, N_cells=200):
         t_final: Final time
         L: Domain length (m)
         N_cells: Number of grid cells
+        output_dt: Output interval for history
     """
     
     # Physics parameters
@@ -107,7 +109,7 @@ def create_riemann_config(U_L, U_R, t_final=30.0, L=1000.0, N_cells=200):
         segments=[segment],
         nodes=nodes,
         physics=physics,
-        time=TimeConfig(dt=0.1, t_final=t_final)
+        time=TimeConfig(dt=0.1, t_final=t_final, output_dt=output_dt)
     )
     
     return config
@@ -251,7 +253,8 @@ def run_riemann_validation():
                 test["U_L"], 
                 test["U_R"],
                 t_final=test["t_final"],
-                N_cells=200
+                N_cells=200,
+                output_dt=0.1  # Enable high-frequency logging for Space-Time diagrams
             )
             
             network_grid = NetworkGrid.from_config(config)
@@ -277,13 +280,31 @@ def run_riemann_validation():
             seg_data['U'] = U_init.copy()
             seg_data['U_initial'] = U_init.copy()
             
-            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True)
-            runner.run()
+            # Detect device
+            try:
+                device = 'gpu' if cuda.is_available() else 'cpu'
+            except:
+                device = 'cpu'
+            
+            runner = SimulationRunner(network_grid=network_grid, simulation_config=config, quiet=True, device=device)
+            results = runner.run()
             
             # Get final state
             seg = runner.network_grid.segments["seg_0"]
             U_final = seg['U'].copy()  # (4, N)
             x_grid = seg['grid'].cell_centers(include_ghost=True)
+            
+            # Extract History for Space-Time Diagrams
+            history = results['history']
+            t_history = np.array(history['time'])
+            seg_hist = history['segments']['seg_0']
+            
+            # Convert lists to arrays (Time, Space)
+            # Note: Each element in the list is a 1D array of size N_physical
+            rho_c_hist = np.array(seg_hist['rho_c'])
+            rho_m_hist = np.array(seg_hist['rho_m'])
+            v_c_hist = np.array(seg_hist['v_c'])
+            v_m_hist = np.array(seg_hist['v_m'])
             
             # Save data for Stage 3 Visualization
             output_dir = Path("/kaggle/working" if os.path.exists("/kaggle/working") else "results") / "thesis_stage1"
@@ -294,7 +315,13 @@ def run_riemann_validation():
                 x=x_grid,
                 U=U_final,
                 t=test["t_final"],
-                config=test
+                config=test,
+                # History data
+                t_history=t_history,
+                rho_c_history=rho_c_hist,
+                rho_m_history=rho_m_hist,
+                v_c_history=v_c_hist,
+                v_m_history=v_m_hist
             )
             
             # Compute metrics (Placeholder for analytical solution comparison)

@@ -176,10 +176,84 @@ def plot_comparison_chart():
         print(f"  Error plotting comparison: {e}")
 
 
+def plot_riemann_spacetime_heatmaps():
+    """Generate Space-Time Heatmaps for Riemann Problems"""
+    print("\nGenerating Riemann Space-Time Heatmaps...")
+    
+    files = list(STAGE1_DIR.glob("riemann_*.npz"))
+    if not files:
+        print("⚠️ No Riemann data found in", STAGE1_DIR)
+        return
+
+    for f in files:
+        try:
+            data = np.load(f, allow_pickle=True)
+            
+            # Check if history data exists
+            if 'rho_c_history' not in data:
+                print(f"  Skipping {f.name}: No history data found (run Stage 1 with output_dt set)")
+                continue
+                
+            t_hist = data['t_history']
+            x = data['x']
+            rho_c = data['rho_c_history']
+            rho_m = data['rho_m_history']
+            v_c = data['v_c_history']
+            v_m = data['v_m_history']
+            config = data['config'].item()
+            name = config['name']
+            
+            # Create 2x2 grid of heatmaps
+            fig, axes = plt.subplots(2, 2, figsize=(16, 12), sharex=True, sharey=True)
+            
+            # Meshgrid for plotting
+            # t_hist is 1D, x is 1D. rho_c is (T, X)
+            X, T = np.meshgrid(x, t_hist)
+            
+            # Plot settings
+            cmap = 'viridis'
+            
+            # 1. Moto Density
+            im1 = axes[0, 0].pcolormesh(X, T, rho_m, cmap='inferno', shading='auto')
+            axes[0, 0].set_title('Moto Density (veh/m)')
+            axes[0, 0].set_ylabel('Time (s)')
+            plt.colorbar(im1, ax=axes[0, 0])
+            
+            # 2. Car Density
+            im2 = axes[0, 1].pcolormesh(X, T, rho_c, cmap='inferno', shading='auto')
+            axes[0, 1].set_title('Car Density (veh/m)')
+            plt.colorbar(im2, ax=axes[0, 1])
+            
+            # 3. Moto Velocity
+            im3 = axes[1, 0].pcolormesh(X, T, v_m, cmap='plasma', shading='auto')
+            axes[1, 0].set_title('Moto Velocity (m/s)')
+            axes[1, 0].set_ylabel('Time (s)')
+            axes[1, 0].set_xlabel('Position (m)')
+            plt.colorbar(im3, ax=axes[1, 0])
+            
+            # 4. Car Velocity
+            im4 = axes[1, 1].pcolormesh(X, T, v_c, cmap='plasma', shading='auto')
+            axes[1, 1].set_title('Car Velocity (m/s)')
+            axes[1, 1].set_xlabel('Position (m)')
+            plt.colorbar(im4, ax=axes[1, 1])
+            
+            plt.suptitle(f"Space-Time Evolution: {config['description']}", fontsize=16)
+            plt.tight_layout()
+            
+            output_path = OUTPUT_DIR / f"heatmap_{name}.png"
+            plt.savefig(output_path, dpi=300)
+            plt.close()
+            print(f"  Saved {output_path.name}")
+            
+        except Exception as e:
+            print(f"  Error plotting heatmaps for {f.name}: {e}")
+
+
 def main():
     plot_riemann_profiles()
     plot_rl_training_curve()
     plot_comparison_chart()
+    plot_riemann_spacetime_heatmaps()
     
     print("\n" + "=" * 80)
     print("VISUALIZATION COMPLETE")

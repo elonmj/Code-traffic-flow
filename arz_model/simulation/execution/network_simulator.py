@@ -78,7 +78,12 @@ class NetworkSimulator:
         # 3. Data logging setup
         self.history = {
             'time': [],
-            'segments': {seg_id: {'density': [], 'speed': []} for seg_id in self.network.segments.keys()}
+            'segments': {
+                seg_id: {
+                    'density': [], 'speed': [],
+                    'rho_c': [], 'rho_m': [], 'v_c': [], 'v_m': []
+                } for seg_id in self.network.segments.keys()
+            }
         }
 
         # Initialize traffic lights logging
@@ -536,6 +541,12 @@ class NetworkSimulator:
             
             self.history['segments'][seg_id]['density'].append(total_density)
             self.history['segments'][seg_id]['speed'].append(avg_speed)
+            
+            # Log individual class data
+            self.history['segments'][seg_id]['rho_c'].append(rho_c)
+            self.history['segments'][seg_id]['rho_m'].append(rho_m)
+            self.history['segments'][seg_id]['v_c'].append(v_c)
+            self.history['segments'][seg_id]['v_m'].append(v_m)
 
         # Log traffic lights state
         for node_id, node_log in self.history['traffic_lights'].items():
