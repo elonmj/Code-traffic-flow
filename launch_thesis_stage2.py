@@ -17,7 +17,7 @@ import sys
 
 def main():
     parser = argparse.ArgumentParser(description='Launch Thesis Stage 2 on Kaggle')
-    parser.add_argument('--timesteps', type=int, default=100000, help='Training timesteps (default: 100k)')
+    parser.add_argument('--timesteps', type=int, default=50000, help='Training timesteps (default: 50k)')
     parser.add_argument('--timeout', type=int, default=7200, help='Kaggle timeout (default: 7200s = 2h)')
     parser.add_argument('--quick-test', action='store_true', help='Quick test mode (1000 steps)')
     parser.add_argument('--commit-message', type=str, default=None, help='Custom commit message')

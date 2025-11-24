@@ -130,8 +130,8 @@ def evaluate_policy(env, model=None, policy_type='model', n_episodes=5, fixed_ti
 
 def main():
     parser = argparse.ArgumentParser(description='Thesis Stage 2: RL Training')
-    parser.add_argument('--timesteps', type=int, default=10000, help='Training timesteps (default: 10K for quick run)')
-    parser.add_argument('--episodes', type=int, default=3, help='Evaluation episodes (default: 3)')
+    parser.add_argument('--timesteps', type=int, default=50000, help='Training timesteps (default: 50K)')
+    parser.add_argument('--episodes', type=int, default=5, help='Evaluation episodes (default: 5)')
     parser.add_argument('--output-dir', type=str, default=None, help='Output directory')
     args = parser.parse_args()
     

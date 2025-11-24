@@ -142,7 +142,7 @@ def plot_comparison_chart():
             data = json.load(f)
             
         baseline = data['baseline']
-        rl = data['rl_ppo']
+        rl = data.get('rl_dqn', data.get('rl_ppo'))  # Handle both keys
         
         metrics = ['mean_reward', 'mean_density', 'mean_throughput']
         labels = ['Reward (Higher is better)', 'Density (Lower is better)', 'Throughput (Higher is better)']
@@ -160,7 +160,7 @@ def plot_comparison_chart():
             vals = [b_vals[i], r_vals[i]]
             colors = ['gray', 'green']
             
-            bars = ax.bar(['Fixed Time', 'RL (PPO)'], vals, color=colors)
+            bars = ax.bar(['Fixed Time', 'RL (DQN)'], vals, color=colors)
             ax.set_title(labels[i])
             
             # Add value labels

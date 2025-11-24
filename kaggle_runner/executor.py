@@ -73,6 +73,13 @@ Examples:
         help='Disable timeout (let kernel run to completion)'
     )
     
+    parser.add_argument(
+        '--args',
+        type=str,
+        default="",
+        help='Additional arguments to pass to the target script (e.g. "--timesteps 50000")'
+    )
+    
     args = parser.parse_args()
     
     print("=" * 80)
@@ -119,6 +126,8 @@ Examples:
         config['target'] = args.target
         if args.quick:
             config['quick_test'] = True
+        if args.args:
+            config['script_args'] = args.args
         
         # Update kernel
         kernel_slug = manager.update_kernel(config, args.commit_message)
