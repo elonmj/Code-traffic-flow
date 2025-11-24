@@ -180,16 +180,16 @@ def main():
         verbose=1,
         learning_rate=1e-3,
         buffer_size=50000,
-        learning_starts=min(1000, args.timesteps // 10),  # Adaptive
+        learning_starts=min(5000, args.timesteps // 5),  # Increased warmup
         batch_size=32,
         tau=1.0,
         gamma=0.99,
         train_freq=4,
         gradient_steps=1,
         target_update_interval=1000,
-        exploration_fraction=0.1,
+        exploration_fraction=0.3,  # Increased exploration
         exploration_initial_eps=1.0,
-        exploration_final_eps=0.05,
+        exploration_final_eps=0.02,
         tensorboard_log=None  # Disable tensorboard to save time
     )
     
