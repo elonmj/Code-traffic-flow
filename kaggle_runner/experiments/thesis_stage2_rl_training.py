@@ -130,8 +130,8 @@ def evaluate_policy(env, model=None, policy_type='model', n_episodes=5, fixed_ti
 
 def main():
     parser = argparse.ArgumentParser(description='Thesis Stage 2: RL Training')
-    parser.add_argument('--timesteps', type=int, default=100000, help='Training timesteps')
-    parser.add_argument('--episodes', type=int, default=5, help='Evaluation episodes')
+    parser.add_argument('--timesteps', type=int, default=10000, help='Training timesteps (default: 10K for quick run)')
+    parser.add_argument('--episodes', type=int, default=3, help='Evaluation episodes (default: 3)')
     parser.add_argument('--output-dir', type=str, default=None, help='Output directory')
     args = parser.parse_args()
     
@@ -149,6 +149,7 @@ def main():
     print("\n" + "=" * 60)
     print("PART 2A: BASELINE EVALUATION (FIXED TIME)")
     print("=" * 60)
+    print(f"Running {args.episodes} episodes with fixed-time 30s...")
     
     env = create_env(quiet=True)
     baseline_results = evaluate_policy(
@@ -157,6 +158,7 @@ def main():
         n_episodes=args.episodes,
         fixed_time_interval=30.0 # Standard 30s green/red
     )
+    env.close()
     
     print(f"\nBaseline Results: {json.dumps(baseline_results, indent=2)}")
     
@@ -167,6 +169,7 @@ def main():
     print("\n" + "=" * 60)
     print("PART 2B: RL TRAINING (DQN)")
     print("=" * 60)
+    print(f"Training DQN for {args.timesteps} timesteps...")
     
     # Re-create env wrapped for training
     env = Monitor(create_env(quiet=True), str(output_dir))
@@ -177,7 +180,7 @@ def main():
         verbose=1,
         learning_rate=1e-3,
         buffer_size=50000,
-        learning_starts=1000,
+        learning_starts=min(1000, args.timesteps // 10),  # Adaptive
         batch_size=32,
         tau=1.0,
         gamma=0.99,
@@ -187,11 +190,14 @@ def main():
         exploration_fraction=0.1,
         exploration_initial_eps=1.0,
         exploration_final_eps=0.05,
-        tensorboard_log=str(output_dir / "logs")
+        tensorboard_log=None  # Disable tensorboard to save time
     )
     
-    print(f"Training for {args.timesteps} timesteps...")
+    print(f"Starting training at {time.strftime('%H:%M:%S')}...")
+    start_time = time.time()
     model.learn(total_timesteps=args.timesteps)
+    elapsed = time.time() - start_time
+    print(f"Training completed in {elapsed:.1f}s ({elapsed/60:.1f} min)")
     
     model_path = output_dir / "dqn_victoria_island_final"
     model.save(model_path)
@@ -201,6 +207,7 @@ def main():
     print("\n" + "=" * 60)
     print("PART 2C: RL EVALUATION")
     print("=" * 60)
+    print(f"Evaluating trained DQN over {args.episodes} episodes...")
     
     rl_results = evaluate_policy(
         env,
@@ -208,6 +215,7 @@ def main():
         policy_type='model',
         n_episodes=args.episodes
     )
+    env.close()
     
     print(f"\nRL Results: {json.dumps(rl_results, indent=2)}")
     
