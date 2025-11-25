@@ -833,6 +833,10 @@ def batched_ssp_rk3_kernel(
     for v in range(4):
         u_stage1[v] = u_n_local[v] + dt * flux1[v]
     
+    # Apply positivity bounds after Stage 1
+    u_stage1[0] = max(0.0, min(u_stage1[0], rho_max))  # rho_m
+    u_stage1[2] = max(0.0, min(u_stage1[2], rho_max))  # rho_c
+    
     # ========== SSP-RK3 STAGE 2 ==========
     # Note: Approximation - uses shared_U (u^n) for stencils instead of u_stage1
     flux2 = cuda.local.array(4, dtype=nb.float64)
@@ -840,6 +844,10 @@ def batched_ssp_rk3_kernel(
     
     for v in range(4):
         u_stage2[v] = 0.75 * u_n_local[v] + 0.25 * (u_stage1[v] + dt * flux2[v])
+    
+    # Apply positivity bounds after Stage 2
+    u_stage2[0] = max(0.0, min(u_stage2[0], rho_max))  # rho_m
+    u_stage2[2] = max(0.0, min(u_stage2[2], rho_max))  # rho_c
     
     # ========== SSP-RK3 STAGE 3 ==========
     flux3 = cuda.local.array(4, dtype=nb.float64)
@@ -849,6 +857,40 @@ def batched_ssp_rk3_kernel(
     inv_3 = 1.0 / 3.0
     two_thirds = 2.0 / 3.0
     
-    for v in range(4):
-        all_U_np1[i_global, v] = inv_3 * u_n_local[v] + two_thirds * (u_stage2[v] + dt * flux3[v])
+    # Compute final result before bounds enforcement
+    rho_m_out = inv_3 * u_n_local[0] + two_thirds * (u_stage2[0] + dt * flux3[0])
+    w_m_out = inv_3 * u_n_local[1] + two_thirds * (u_stage2[1] + dt * flux3[1])
+    rho_c_out = inv_3 * u_n_local[2] + two_thirds * (u_stage2[2] + dt * flux3[2])
+    w_c_out = inv_3 * u_n_local[3] + two_thirds * (u_stage2[3] + dt * flux3[3])
+    
+    # ========== POSITIVITY-PRESERVING LIMITER ==========
+    # Enforce density positivity: rho >= 0 and rho <= rho_max
+    rho_m_out = max(0.0, min(rho_m_out, rho_max))
+    rho_c_out = max(0.0, min(rho_c_out, rho_max))
+    
+    # Enforce reasonable velocity bounds: |v| <= v_max (30 m/s)
+    v_max = 30.0
+    
+    # Calculate physical velocities from w (Lagrangian coordinate)
+    # v = w - p(rho)
+    rho_total = rho_m_out + rho_c_out
+    norm_rho_total = rho_total / rho_max if rho_max > epsilon else 0.0
+    
+    # Pressure for motorcycles
+    p_m = K_m * (norm_rho_total ** gamma_m) if rho_m_out > epsilon else 0.0
+    v_m = w_m_out - p_m
+    v_m = max(-v_max, min(v_m, v_max))
+    w_m_out = v_m + p_m
+    
+    # Pressure for cars
+    p_c = K_c * (norm_rho_total ** gamma_c) if rho_c_out > epsilon else 0.0
+    v_c = w_c_out - p_c
+    v_c = max(-v_max, min(v_c, v_max))
+    w_c_out = v_c + p_c
+    
+    # Write bounded values to output
+    all_U_np1[i_global, 0] = rho_m_out
+    all_U_np1[i_global, 1] = w_m_out
+    all_U_np1[i_global, 2] = rho_c_out
+    all_U_np1[i_global, 3] = w_c_out
 
