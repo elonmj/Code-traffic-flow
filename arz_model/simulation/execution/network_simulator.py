@@ -222,7 +222,7 @@ class NetworkSimulator:
                     )
 
                 # PHASE GPU BATCHING: Use batched CFL calculation
-                from ..numerics.cfl import cfl_condition_gpu_batched
+                from ...numerics.cfl import cfl_condition_gpu_batched
                 
                 # Get dx from first segment (all segments have same dx in Victoria Island)
                 first_seg = next(iter(self.network.segments.values()))

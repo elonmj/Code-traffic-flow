@@ -2,7 +2,7 @@
 import numpy as np
 from pathlib import Path
 
-INPUT_DIR = Path(r"d:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel\simulation_results\thesis_stage1")
+INPUT_DIR = Path(r"d:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel\simulation_results")
 
 # Test cases
 tests = [
