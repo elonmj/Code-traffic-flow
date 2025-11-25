@@ -419,10 +419,11 @@ class NetworkSimulator:
             U_cpu = self.gpu_pool.checkpoint_to_cpu(seg_id)
             grid = self.network.segments[seg_id]['grid']
 
-            rho_c = U_cpu[0, grid.physical_cell_indices]
-            rho_m = U_cpu[1, grid.physical_cell_indices]
-            v_c = U_cpu[2, grid.physical_cell_indices]
-            v_m = U_cpu[3, grid.physical_cell_indices]
+            # State vector U = [rho_moto, v_moto, rho_car, v_car]
+            rho_m = U_cpu[0, grid.physical_cell_indices]  # Motos density
+            v_m = U_cpu[1, grid.physical_cell_indices]    # Motos velocity
+            rho_c = U_cpu[2, grid.physical_cell_indices]  # Cars density
+            v_c = U_cpu[3, grid.physical_cell_indices]    # Cars velocity
 
             total_density = rho_c + rho_m
             avg_speed = np.divide(

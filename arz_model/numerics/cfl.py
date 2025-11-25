@@ -241,7 +241,11 @@ def calculate_cfl_dt(U, grid, params: 'NetworkSimulationConfig'):
     K_c = params.physics.k_c
     gamma_c = params.physics.gamma_c
 
-    rho_m, rho_c, v_m, v_c = U[0, :], U[1, :], U[2, :], U[3, :]
+    # State vector U = [rho_moto, v_moto, rho_car, v_car]
+    rho_m = U[0, :]  # Motos density
+    v_m = U[1, :]    # Motos velocity
+    rho_c = U[2, :]  # Cars density
+    v_c = U[3, :]    # Cars velocity
     dx = grid.dx
     
     # Calculate eigenvalues - pass the full params object
