@@ -323,6 +323,22 @@ def compute_flux_divergence_device(u_global, i, dx, N, num_vars, flux_div_out,
 # ================================================================
 
 @cuda.jit(fastmath=True)
+def compute_flux_divergence_global_kernel(u, flux_div, dx, N, num_vars,
+                                          alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c, weno_eps):
+    """
+    Global kernel wrapper for compute_flux_divergence_device.
+    Computes L(u) and stores it in global memory.
+    """
+    i = cuda.grid(1)
+    if i < N:
+        flux_div_local = cuda.local.array(4, dtype=nb.float64)
+        compute_flux_divergence_device(u, i, dx, N, num_vars, flux_div_local,
+                                       alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c, weno_eps)
+        for v in range(num_vars):
+            flux_div[i, v] = flux_div_local[v]
+
+
+@cuda.jit(fastmath=True)
 def ssp_rk3_fused_kernel(u_n, u_np1, dt, dx, N, num_vars,
                          alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c, weno_eps):
     """
@@ -370,8 +386,8 @@ def ssp_rk3_fused_kernel(u_n, u_np1, dt, dx, N, num_vars,
     # ----------------------------------------------------------------
     flux1 = cuda.local.array(4, dtype=nb.float64)
     # Calcul de L(u^n) avec accès global à u_n pour stencils WENO5
-    compute_flux_divergence_device(
-        u_n, i, dx, N, num_vars, flux1,
+    compute_flux_divergence_global_kernel(
+        u_n, flux1, dx, N, num_vars,
         alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c, weno_eps
     )
     
@@ -385,8 +401,8 @@ def ssp_rk3_fused_kernel(u_n, u_np1, dt, dx, N, num_vars,
     flux2 = cuda.local.array(4, dtype=nb.float64)
     # ⚠️ APPROXIMATION Phase 2.4: Utilise u_n pour le stencil au lieu de u_temp1
     # Future: utiliser shared memory pour propager u_temp1 entre threads
-    compute_flux_divergence_device(
-        u_n, i, dx, N, num_vars, flux2,
+    compute_flux_divergence_global_kernel(
+        u_n, flux2, dx, N, num_vars,
         alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c, weno_eps
     )
     
@@ -399,8 +415,8 @@ def ssp_rk3_fused_kernel(u_n, u_np1, dt, dx, N, num_vars,
     # ----------------------------------------------------------------
     flux3 = cuda.local.array(4, dtype=nb.float64)
     # ⚠️ APPROXIMATION Phase 2.4: Utilise u_n pour le stencil au lieu de u_temp2
-    compute_flux_divergence_device(
-        u_n, i, dx, N, num_vars, flux3,
+    compute_flux_divergence_global_kernel(
+        u_n, flux3, dx, N, num_vars,
         alpha, rho_jam, epsilon, K_m, gamma_m, K_c, gamma_c, weno_eps
     )
     

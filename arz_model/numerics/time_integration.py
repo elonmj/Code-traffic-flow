@@ -16,7 +16,13 @@ from .riemann_solvers import central_upwind_flux_cuda_kernel
 from .reconstruction.converter import conserved_to_primitives_arr_gpu
 
 # Import optimized SSP-RK3 fused kernel (Phase 2.3+2.4)
-from .gpu.ssp_rk3_cuda import ssp_rk3_fused_kernel
+from .gpu.ssp_rk3_cuda import (
+    ssp_rk3_fused_kernel,
+    ssp_rk3_stage1_kernel,
+    ssp_rk3_stage2_kernel,
+    ssp_rk3_stage3_kernel,
+    compute_flux_divergence_global_kernel
+)
 
 if TYPE_CHECKING:
     from ..core.parameters import PhysicsConfig
@@ -234,24 +240,60 @@ def solve_hyperbolic_step_ssp_rk3_gpu_native(
     threadsperblock = 256
     blockspergrid = (N + threadsperblock - 1) // threadsperblock
     
-    # Launch FUSED kernel: Does WENO5 + Riemann + 3 RK stages in one go!
-    # This eliminates intermediate global memory traffic (Phase 2.3)
-    # and integrates high-order physics (Phase 2.4)
-    ssp_rk3_fused_kernel[blockspergrid, threadsperblock](
-        d_U_in_T,    # u_n: Input state (transposed to N, num_vars)
-        d_U_out_T,   # u_np1: Output state (transposed to N, num_vars)
-        dt,          # Time step
-        dx,          # Spatial resolution
-        N,           # Number of cells
-        num_vars,    # Number of variables (4)
-        alpha,       # Physics: anticipation parameter
-        rho_max,     # Physics: jam density (rho_jam)
-        epsilon,     # Numerical stability epsilon
-        k_m,         # Physics: motorway capacity
-        gamma_m,     # Physics: motorway exponent
-        k_c,         # Physics: city capacity
-        gamma_c,     # Physics: city exponent
-        weno_eps     # WENO: smoothness epsilon
+    # Allocate temps for RK3 stages (Transposed layout: N, num_vars)
+    # Note: Allocating inside the loop is not ideal for performance, but necessary for correctness
+    # until we implement a transposed memory pool or shared memory fused kernel.
+    d_U_temp1_T = cuda.device_array((N, num_vars), dtype=d_U_in.dtype)
+    d_U_temp2_T = cuda.device_array((N, num_vars), dtype=d_U_in.dtype)
+    d_flux_div_T = cuda.device_array((N, num_vars), dtype=d_U_in.dtype)
+
+    # --- STAGE 1 ---
+    # L(u^n) -> flux_div
+    compute_flux_divergence_global_kernel[blockspergrid, threadsperblock](
+        d_U_in_T, d_flux_div_T, dx, N, num_vars,
+        alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c, weno_eps
+    )
+    # u^(1) = u^n + dt * L(u^n)
+    ssp_rk3_stage1_kernel[blockspergrid, threadsperblock](
+        d_U_in_T, d_U_temp1_T, dt, d_flux_div_T, N
+    )
+    # Apply bounds to u^(1)
+    v_max_physical = max(params.v_max_m_kmh, params.v_max_c_kmh) / 3.6
+    _apply_bounds_kernel_transposed[blockspergrid, threadsperblock](
+        d_U_temp1_T, N, rho_max, v_max_physical, epsilon,
+        alpha, k_m, gamma_m, k_c, gamma_c
+    )
+
+    # --- STAGE 2 ---
+    # L(u^(1)) -> flux_div
+    compute_flux_divergence_global_kernel[blockspergrid, threadsperblock](
+        d_U_temp1_T, d_flux_div_T, dx, N, num_vars,
+        alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c, weno_eps
+    )
+    # u^(2) = 3/4 u^n + 1/4 (u^(1) + dt * L(u^(1)))
+    ssp_rk3_stage2_kernel[blockspergrid, threadsperblock](
+        d_U_in_T, d_U_temp1_T, d_U_temp2_T, dt, d_flux_div_T, N
+    )
+    # Apply bounds to u^(2)
+    _apply_bounds_kernel_transposed[blockspergrid, threadsperblock](
+        d_U_temp2_T, N, rho_max, v_max_physical, epsilon,
+        alpha, k_m, gamma_m, k_c, gamma_c
+    )
+
+    # --- STAGE 3 ---
+    # L(u^(2)) -> flux_div
+    compute_flux_divergence_global_kernel[blockspergrid, threadsperblock](
+        d_U_temp2_T, d_flux_div_T, dx, N, num_vars,
+        alpha, rho_max, epsilon, k_m, gamma_m, k_c, gamma_c, weno_eps
+    )
+    # u^(n+1) = 1/3 u^n + 2/3 (u^(2) + dt * L(u^(2)))
+    ssp_rk3_stage3_kernel[blockspergrid, threadsperblock](
+        d_U_in_T, d_U_temp2_T, d_U_out_T, dt, d_flux_div_T, N
+    )
+    # Apply bounds to u^(n+1) (output)
+    _apply_bounds_kernel_transposed[blockspergrid, threadsperblock](
+        d_U_out_T, N, rho_max, v_max_physical, epsilon,
+        alpha, k_m, gamma_m, k_c, gamma_c
     )
     
     # Transpose output back: (N, num_vars) -> (num_vars, N)
@@ -609,5 +651,55 @@ def batched_strang_splitting_step_gpu_native(
 
 
 # --- End of Batched Time Integration ---
+
+@cuda.jit
+def _apply_bounds_kernel_transposed(U_T, N, rho_max, v_max, epsilon,
+                                    alpha, K_m, gamma_m, K_c, gamma_c):
+    """
+    GPU kernel for applying physical bounds to state variables in TRANSPOSED layout (N, num_vars).
+    Used inside the explicit SSP-RK3 solver loop.
+    """
+    i = cuda.grid(1)
+    
+    if i < N:
+        # U_T is (N, 4) -> [rho_m, w_m, rho_c, w_c]
+        rho_m = U_T[i, 0]
+        w_m = U_T[i, 1]
+        rho_c = U_T[i, 2]
+        w_c = U_T[i, 3]
+        
+        # 1. Clamp densities to [0, rho_max]
+        rho_m = max(0.0, min(rho_m, rho_max))
+        rho_c = max(0.0, min(rho_c, rho_max))
+        
+        # 2. Calculate pressure and clamp velocity (motorcycles)
+        if rho_m > epsilon:
+            rho_total = rho_m + rho_c
+            pressure_factor = (rho_total / rho_max) ** gamma_m if rho_total > epsilon else 0.0
+            p_m = K_m * pressure_factor
+            
+            v_m = w_m - p_m
+            v_m = max(-v_max, min(v_m, v_max))
+            w_m = v_m + p_m
+        else:
+            w_m = 0.0
+        
+        # 3. Same for cars
+        if rho_c > epsilon:
+            rho_total = rho_m + rho_c
+            pressure_factor = (rho_total / rho_max) ** gamma_c if rho_total > epsilon else 0.0
+            p_c = K_c * pressure_factor
+            
+            v_c = w_c - p_c
+            v_c = max(-v_max, min(v_c, v_max))
+            w_c = v_c + p_c
+        else:
+            w_c = 0.0
+        
+        # Write back bounded values
+        U_T[i, 0] = rho_m
+        U_T[i, 1] = w_m
+        U_T[i, 2] = rho_c
+        U_T[i, 3] = w_c
 
 

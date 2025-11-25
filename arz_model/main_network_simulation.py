@@ -68,12 +68,12 @@ def main():
         config = create_victoria_island_config(
             enriched_path=enriched_path,
             # You can customize parameters here if needed:
-            default_density=20.0,  # veh/km - light baseline traffic
-            default_velocity=50.0,  # km/h - moderate speed
-            inflow_density=30.0,   # veh/km - entry traffic
-            inflow_velocity=40.0,  # km/h - entry speed
-            t_final=120.0,         # 2 minutes for smooth animation
-            output_dt=2.0,         # Output every 2 seconds = 60 frames!
+            default_density=40.0,  # veh/km - moderate baseline traffic
+            default_velocity=40.0,  # km/h - moderate speed
+            inflow_density=80.0,   # veh/km - HEAVY entry traffic (congestion source)
+            inflow_velocity=20.0,  # km/h - slow entry speed
+            t_final=300.0,         # 5 minutes to observe shockwave propagation
+            output_dt=2.0,         # Output every 2 seconds
             cells_per_100m=10      # Grid resolution
         )
         print("✅ Network configuration generated successfully from CSV topology.", flush=True)
