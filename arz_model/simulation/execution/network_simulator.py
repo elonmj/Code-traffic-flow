@@ -14,7 +14,7 @@ from typing import Optional
 
 from ...network.network_grid import NetworkGrid
 from ...config.network_simulation_config import NetworkSimulationConfig
-from ...numerics.cfl import cfl_condition_gpu_native
+from ...numerics.cfl import cfl_condition_gpu_native, compute_adaptive_cfl_with_history
 from ...numerics.time_integration import strang_splitting_step_gpu_native
 from ...numerics.gpu.memory_pool import GPUMemoryPool
 from ...numerics.gpu.network_coupling_gpu import NetworkCouplingGPU
