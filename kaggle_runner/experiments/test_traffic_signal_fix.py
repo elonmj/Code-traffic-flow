@@ -229,6 +229,15 @@ def test_5_1_unit_tests():
         'success': passed == total
     }
     
+    # Clean up CUDA context after unit tests to avoid corruption in integration tests
+    print("\n[Cleanup] Resetting CUDA context for integration tests...")
+    try:
+        cuda.synchronize()
+        cuda.close()
+        print("  ✓ CUDA context reset successfully")
+    except Exception as e:
+        print(f"  ⚠ CUDA reset warning: {e}")
+    
     return passed == total
 
 
