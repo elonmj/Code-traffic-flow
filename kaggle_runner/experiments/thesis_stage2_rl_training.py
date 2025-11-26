@@ -36,15 +36,77 @@ print("=" * 80)
 
 from Code_RL.src.utils.config import RLConfigBuilder
 from Code_RL.src.env.traffic_signal_env_direct_v3 import TrafficSignalEnvDirectV3
+from arz_model.config import create_victoria_island_config
 
 
-def create_env(scenario='victoria_island', quiet=True):
-    """Create the environment"""
-    rl_config = RLConfigBuilder.for_training(
-        scenario=scenario,
-        episode_length=None,  # Use default
-        cells_per_100m=4
-    )
+def create_env(scenario='congested', quiet=True):
+    """
+    Create the environment with appropriate traffic density.
+    
+    Scenarios:
+    - 'congested': HIGH density (80 veh/km) to create significant congestion
+    - 'moderate': MODERATE density (50 veh/km) for balanced training
+    - 'victoria_island': Default low density (20 veh/km) - TOO EASY
+    """
+    if scenario == 'congested':
+        # HIGH CONGESTION scenario - RL agent must learn to optimize!
+        arz_config = create_victoria_island_config(
+            t_final=450.0,
+            output_dt=15.0,
+            cells_per_100m=4,
+            default_density=80.0,   # HIGH: 80 veh/km (40% of capacity)
+            inflow_density=100.0,   # HIGH inflow to create queues
+            use_cache=False
+        )
+        # Add RL metadata manually
+        arz_config.rl_metadata = {
+            'observation_segment_ids': [s.id for s in arz_config.segments],
+            'decision_interval': 15.0,
+        }
+        
+        class SimpleConfig:
+            def __init__(self, arz_config):
+                self.arz_simulation_config = arz_config
+                self.rl_env_params = {
+                    'dt_decision': 15.0,
+                    'observation_segment_ids': None,  # Use all
+                    'reward_weights': {'alpha': 1.0, 'kappa': 0.1, 'mu': 0.5}
+                }
+        
+        rl_config = SimpleConfig(arz_config)
+        
+    elif scenario == 'moderate':
+        # MODERATE congestion for balanced learning
+        arz_config = create_victoria_island_config(
+            t_final=450.0,
+            output_dt=15.0,
+            cells_per_100m=4,
+            default_density=50.0,   # MODERATE: 50 veh/km
+            inflow_density=70.0,
+            use_cache=False
+        )
+        arz_config.rl_metadata = {
+            'observation_segment_ids': [s.id for s in arz_config.segments],
+            'decision_interval': 15.0,
+        }
+        
+        class SimpleConfig:
+            def __init__(self, arz_config):
+                self.arz_simulation_config = arz_config
+                self.rl_env_params = {
+                    'dt_decision': 15.0,
+                    'observation_segment_ids': None,
+                    'reward_weights': {'alpha': 1.0, 'kappa': 0.1, 'mu': 0.5}
+                }
+        
+        rl_config = SimpleConfig(arz_config)
+    else:
+        # Default (low density - not recommended for meaningful RL)
+        rl_config = RLConfigBuilder.for_training(
+            scenario='victoria_island',
+            episode_length=None,
+            cells_per_100m=4
+        )
     
     env = TrafficSignalEnvDirectV3(
         simulation_config=rl_config.arz_simulation_config,
@@ -150,8 +212,9 @@ def main():
     print("PART 2A: BASELINE EVALUATION (FIXED TIME)")
     print("=" * 60)
     print(f"Running {args.episodes} episodes with fixed-time 30s...")
+    print("Using CONGESTED scenario (80 veh/km) for meaningful RL training")
     
-    env = create_env(quiet=True)
+    env = create_env(scenario='congested', quiet=True)
     baseline_results = evaluate_policy(
         env, 
         policy_type='fixed_time', 
@@ -171,8 +234,8 @@ def main():
     print("=" * 60)
     print(f"Training DQN for {args.timesteps} timesteps...")
     
-    # Re-create env wrapped for training
-    env = Monitor(create_env(quiet=True), str(output_dir))
+    # Re-create env wrapped for training (CONGESTED scenario)
+    env = Monitor(create_env(scenario='congested', quiet=True), str(output_dir))
     
     model = DQN(
         "MlpPolicy",
