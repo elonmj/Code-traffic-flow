@@ -315,6 +315,11 @@ def _apply_coupling_batched_kernel(
             # light_factor = 0.01 (RED) blocks 99% of flux into the junction
             light_factor = d_light_factors[gid]
             
+            # Apply HARD blocking for RED lights (light_factor < 0.5)
+            # This ensures zero demand from the incoming segment
+            if light_factor < 0.5:
+                light_factor = 0.0
+            
             # Extract state and apply light_factor (batched layout: [cell_idx, var])
             # This reduces the effective flux from RED segments into the junction
             U_L_m[i, 0] = d_U_batched[last_idx, 0] * light_factor  # rho_m
