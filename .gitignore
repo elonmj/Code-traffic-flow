@@ -27,10 +27,21 @@ ecoles.md
 _arxiv/
 _arxiv/*
 
-# Ignore Kaggle results and logs
+# Ignore Kaggle results and logs (all outputs, npz, figures, etc.)
 kaggle/results/
+kaggle/kaggle/
 kaggle/.git/
 kaggle/kernel_manager.log
+kaggle/*.npz
+kaggle/*.json
+kaggle/*.log
+
+# Ignore all result/output files
+results/
+viz_output/
+*.npz
+*.pkl
 *.log
+!requirements.txt
 
 
