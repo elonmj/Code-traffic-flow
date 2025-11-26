@@ -854,33 +854,29 @@ class SimulationRunner:
                 print(f"[RL CONTROL] t={self.current_time:.1f}s: Segment {segment_id} -> Phase '{phase}'")
         
         # ========== Task 2.1 & 2.2: Sync light_factors to GPU ==========
-        # Build light_factors dict from stored phases
+        # Build light_factors dict directly from phase values
+        # CRITICAL FIX (2025-11-26): Simplified logic - no longer depends on
+        # 'traffic_signal_phases' config which was never set by config_factory.py
+        #
+        # Phase naming conventions:
+        #   - 'green_NS', 'green_EW', or anything with 'green' → GREEN (1.0)
+        #   - Integer 0 → GREEN (1.0)
+        #   - Anything else → RED (0.01 = 99% blocking)
         light_factors = {}
         for segment_id, phase in phase_updates.items():
-            segment = self.network_grid.segments.get(segment_id)
-            if not segment:
-                continue
-            
-            bc_config = segment.get('bc_config', {})
-            left_bc = bc_config.get('left', {})
-            traffic_signal_phases = left_bc.get('traffic_signal_phases', {})
-            
-            # Get light_factor from phase config (default: 1.0 if not specified)
-            if phase in traffic_signal_phases:
-                phase_config = traffic_signal_phases[phase]
-                # Phase config can specify light_factor directly, or infer from type
-                if isinstance(phase_config, dict) and 'light_factor' in phase_config:
-                    light_factors[segment_id] = phase_config['light_factor']
-                elif hasattr(phase_config, 'light_factor'):
-                    light_factors[segment_id] = phase_config.light_factor
-                elif phase == 0 or phase == 'green' or 'green' in str(phase).lower():
-                    # Convention: phase 0 or 'green*' = GREEN
-                    light_factors[segment_id] = 1.0
-                else:
-                    # phase 1+ or 'red*' = RED (99% blocking)
-                    light_factors[segment_id] = 0.01
+            # Simple and direct: determine light_factor from phase value
+            if isinstance(phase, int):
+                # Integer phase: 0 = GREEN, others = RED
+                light_factors[segment_id] = 1.0 if phase == 0 else 0.01
+            elif isinstance(phase, str) and 'green' in phase.lower():
+                # String phase containing 'green' = GREEN
+                light_factors[segment_id] = 1.0
             else:
-                light_factors[segment_id] = 1.0  # Default GREEN
+                # Default to RED (blocking) for unknown/red phases
+                light_factors[segment_id] = 0.01
+            
+            if self.debug:
+                print(f"   [LIGHT_FACTOR] {segment_id}: phase={phase} -> light_factor={light_factors[segment_id]}")
         
         # Update GPU light_factors array
         if hasattr(self, 'network_simulator') and self.network_simulator is not None:

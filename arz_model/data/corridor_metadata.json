@@ -1,0 +1,36 @@
+{
+  "metadata": {
+    "source": "OpenStreetMap",
+    "bbox": {
+      "south": 6.42,
+      "west": 3.4,
+      "north": 6.46,
+      "east": 3.46
+    },
+    "fetch_date": "2025-11-26T13:44:02.947127",
+    "total_segments": 377,
+    "total_signals": 53,
+    "total_nodes": 370,
+    "total_length_km": 17.25
+  },
+  "roads": [
+    "Ahmadu Bello Way",
+    "Adeola Odeku Street",
+    "Saka Tinubu Street",
+    "Akin Adesola Street"
+  ],
+  "segments_summary": {
+    "segment_id": {
+      "Adeola Odeku Street": 93,
+      "Ahmadu Bello Way": 210,
+      "Akin Adesola Street": 63,
+      "Saka Tinubu Street": 11
+    },
+    "length_m": {
+      "Adeola Odeku Street": 3412.89,
+      "Ahmadu Bello Way": 9553.21,
+      "Akin Adesola Street": 3460.73,
+      "Saka Tinubu Street": 827.84
+    }
+  }
+}

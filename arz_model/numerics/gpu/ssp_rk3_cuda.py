@@ -816,14 +816,6 @@ def batched_ssp_rk3_kernel(
         
         central_upwind_flux_device(U_L, U_R, F_left, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
         
-        # ========== TRAFFIC SIGNAL FLUX BLOCKING (Task 3.2) ==========
-        # Apply light_factor to LEFT boundary flux (i_local == 0)
-        # This blocks inflow when signal is RED (light_factor = 0.01)
-        # GREEN (1.0) = full flow, RED (0.01) = 99% blocking
-        if i_local == 0:
-            for v in range(4):
-                F_left[v] = F_left[v] * light_factor
-        
         # Right flux at i+1/2
         for v in range(4):
             stencil[0] = shared_U[i_local + num_ghost - 1, v]
@@ -837,6 +829,20 @@ def batched_ssp_rk3_kernel(
             U_R[v] = v_left
         
         central_upwind_flux_device(U_L, U_R, F_right, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
+        
+        # ========== TRAFFIC SIGNAL FLUX BLOCKING (Task 3.2 - CORRECTED) ==========
+        # CRITICAL FIX (2025-11-26): Apply light_factor to RIGHT boundary flux
+        # at the LAST cell (i_local == N - 1), not LEFT boundary.
+        # 
+        # Reason: Traffic signals are at segment END (end_node), not START:
+        #   - segment.end_node → signalized node
+        #   - Signal controls OUTFLOW from segment (right boundary)
+        #   - RED blocks traffic LEAVING the segment toward the intersection
+        #
+        # GREEN (1.0) = full flow out, RED (0.01) = 99% blocking
+        if i_local == N - 1:
+            for v in range(4):
+                F_right[v] = F_right[v] * light_factor
         
         # Divergence
         inv_dx = 1.0 / dx
