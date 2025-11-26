@@ -253,7 +253,7 @@ def test_5_2_integration():
     
     # Create congested scenario to make signal effects visible
     print("\n[Setup] Creating congested traffic scenario...")
-    arz_config = create_victoria_island_config(
+    config = create_victoria_island_config(
         t_final=120.0,  # Short episode for testing
         output_dt=15.0,
         cells_per_100m=4,
@@ -261,30 +261,16 @@ def test_5_2_integration():
         inflow_density=100.0,
         use_cache=False
     )
-    arz_config.rl_metadata = {
-        'observation_segment_ids': [s.id for s in arz_config.segments],
+    # Add RL metadata directly to the config
+    config.rl_metadata = {
+        'observation_segment_ids': [s.id for s in config.segments],
         'decision_interval': 15.0,
     }
-    
-    class SimpleConfig:
-        def __init__(self, arz_config):
-            self.arz_simulation_config = arz_config
-            # Copy rl_metadata to the config object
-            self.rl_metadata = arz_config.rl_metadata
-            # Expose segments attribute for observation segment extraction
-            self.segments = arz_config.segments
-            self.rl_env_params = {
-                'dt_decision': 15.0,
-                'observation_segment_ids': None,
-                'reward_weights': {'alpha': 1.0, 'kappa': 0.1, 'mu': 0.5}
-            }
-    
-    rl_config = SimpleConfig(arz_config)
     
     # Test 1: Run episode with ALL GREEN (action=0 = keep phase, initial phase=0=GREEN)
     print("\n[Test 1] Running episode with ALL GREEN phases...")
     try:
-        env_green = TrafficSignalEnvDirectV3(rl_config, quiet=True)
+        env_green = TrafficSignalEnvDirectV3(config, quiet=True)
         obs, info = env_green.reset()
         
         rewards_green = []
@@ -311,7 +297,7 @@ def test_5_2_integration():
     # Test 2: Run episode with ALL RED (action=1 = switch to phase 1 = RED, keep switching)
     print("\n[Test 2] Running episode with FREQUENT RED phases (switching every step)...")
     try:
-        env_red = TrafficSignalEnvDirectV3(rl_config, quiet=True)
+        env_red = TrafficSignalEnvDirectV3(config, quiet=True)
         obs, info = env_red.reset()
         
         rewards_red = []
@@ -397,7 +383,7 @@ def test_5_3_performance():
     
     # Standard config for performance testing
     print("\n[Setup] Creating standard Victoria Island config...")
-    arz_config = create_victoria_island_config(
+    config = create_victoria_island_config(
         t_final=300.0,  # 5 minutes
         output_dt=15.0,
         cells_per_100m=4,
@@ -405,29 +391,15 @@ def test_5_3_performance():
         inflow_density=70.0,
         use_cache=False
     )
-    arz_config.rl_metadata = {
-        'observation_segment_ids': [s.id for s in arz_config.segments],
+    # Add RL metadata directly to the config
+    config.rl_metadata = {
+        'observation_segment_ids': [s.id for s in config.segments],
         'decision_interval': 15.0,
     }
     
-    class SimpleConfig:
-        def __init__(self, arz_config):
-            self.arz_simulation_config = arz_config
-            # Copy rl_metadata to the config object
-            self.rl_metadata = arz_config.rl_metadata
-            # Expose segments attribute for observation segment extraction
-            self.segments = arz_config.segments
-            self.rl_env_params = {
-                'dt_decision': 15.0,
-                'observation_segment_ids': None,
-                'reward_weights': {'alpha': 1.0, 'kappa': 0.1, 'mu': 0.5}
-            }
-    
-    rl_config = SimpleConfig(arz_config)
-    
     print("\n[Benchmark] Running 50 steps with timing...")
     try:
-        env = TrafficSignalEnvDirectV3(rl_config, quiet=True)
+        env = TrafficSignalEnvDirectV3(config, quiet=True)
         obs, info = env.reset()
         
         # Warm-up (JIT compilation)
