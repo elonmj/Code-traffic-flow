@@ -11,7 +11,9 @@ from arz_model.config.config_factory import CityNetworkConfigFactory
 
 def verify_light_factors():
     print("Initializing SimulationRunner...")
-    config = CityNetworkConfigFactory.create_config()
+    # Instantiate the factory first
+    factory = CityNetworkConfigFactory(city_name="victoria_island")
+    config = factory.create_config()
     runner = SimulationRunner(simulation_config=config, device='gpu')
     
     # Get valid segment IDs
