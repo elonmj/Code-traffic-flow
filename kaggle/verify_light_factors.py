@@ -34,7 +34,8 @@ def verify_light_factors():
     red_phases = {seg_id: 1 for seg_id in test_segments} # 1 is NOT 0, so it should be RED (0.01)
     
     logger.info(f"Setting phases to RED for: {test_segments}")
-    runner.set_boundary_phases_bulk(red_phases)
+    # Use validate=False to bypass strict config checks, as we are testing the GPU mechanism directly
+    runner.set_boundary_phases_bulk(red_phases, validate=False)
     
     # Access GPU pool directly
     pool = runner.network_simulator.gpu_pool
