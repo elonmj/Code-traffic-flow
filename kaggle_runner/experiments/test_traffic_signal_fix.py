@@ -229,14 +229,7 @@ def test_5_1_unit_tests():
         'success': passed == total
     }
     
-    # Clean up CUDA context after unit tests to avoid corruption in integration tests
-    print("\n[Cleanup] Resetting CUDA context for integration tests...")
-    try:
-        cuda.synchronize()
-        cuda.close()
-        print("  ✓ CUDA context reset successfully")
-    except Exception as e:
-        print(f"  ⚠ CUDA reset warning: {e}")
+    # No CUDA cleanup needed - unit tests run last anyway
     
     return passed == total
 
@@ -494,10 +487,16 @@ def main():
         
         return 1
     
-    # Run tests
-    success_5_1 = test_5_1_unit_tests()
+    # Run tests - IMPORTANT: Integration tests FIRST to avoid CUDA context corruption
+    # Task 5.1 unit tests create/destroy multiple GPUMemoryPool instances which can 
+    # corrupt the CUDA context for subsequent full simulation tests.
+    # Running integration tests first ensures clean CUDA state.
+    print("\n[INFO] Running integration tests FIRST (before unit tests)")
+    print("       Unit tests will run last to avoid CUDA context issues.\n")
+    
     success_5_2 = test_5_2_integration()
     success_5_3 = test_5_3_performance()
+    success_5_1 = test_5_1_unit_tests()  # Run last - may corrupt CUDA context
     
     # Overall summary
     elapsed = time.time() - start_time
