@@ -80,7 +80,7 @@ class RLNetworkConfig:
         
         return self._phase_map
     
-    def get_phase_updates(self, phase: int) -> Dict[str, str]:
+    def get_phase_updates(self, phase: int) -> Dict[str, int]:
         """
         Generate phase updates dict for all signalized segments.
         
@@ -88,16 +88,26 @@ class RLNetworkConfig:
             phase: RL action (0 or 1)
             
         Returns:
-            Dict mapping segment_id -> phase_name for use with
-            runner.set_boundary_phases_bulk()
+            Dict mapping segment_id -> phase_value (int: 0=GREEN, 1=RED)
+            for use with runner.set_boundary_phases_bulk()
+            
+        Note:
+            SIMPLIFIED for testing: 
+            - Phase 0: ALL segments GREEN (light_factor=1.0)
+            - Phase 1: ALL segments RED (light_factor=0.01)
+            
+            This allows verifying the flux blocking mechanism works.
+            A more sophisticated implementation would have per-segment
+            phase mappings based on direction (NS vs EW).
             
         Example:
             >>> rl_config = RLNetworkConfig(simulation_config)
-            >>> updates = rl_config.get_phase_updates(phase=1)
+            >>> updates = rl_config.get_phase_updates(phase=1)  # All RED
             >>> runner.set_boundary_phases_bulk(updates)
         """
-        phase_name = self.phase_map[phase]
-        return {seg_id: phase_name for seg_id in self.signalized_segment_ids}
+        # SIMPLIFIED: phase value is passed directly (0=GREEN, 1=RED)
+        # This ensures set_boundary_phases_bulk() correctly interprets it
+        return {seg_id: phase for seg_id in self.signalized_segment_ids}
 
 
 def create_rl_training_config(
