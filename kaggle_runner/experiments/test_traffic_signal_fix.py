@@ -66,12 +66,11 @@ def test_5_1_unit_tests():
     
     from arz_model.numerics.gpu.memory_pool import GPUMemoryPool
     
-    # Test configuration
+    # Test configuration - matches the signature of GPUMemoryPool.__init__
     config = {
         'segment_ids': ['seg1', 'seg2', 'seg3'],
         'N_per_segment': {'seg1': 50, 'seg2': 100, 'seg3': 75},
-        'ghost_cells': 2,
-        'n_classes': 2
+        'ghost_cells': 3  # WENO5 needs 3 ghost cells
     }
     
     test_results = {}
@@ -270,6 +269,8 @@ def test_5_2_integration():
     class SimpleConfig:
         def __init__(self, arz_config):
             self.arz_simulation_config = arz_config
+            # Copy rl_metadata to the config object
+            self.rl_metadata = arz_config.rl_metadata
             self.rl_env_params = {
                 'dt_decision': 15.0,
                 'observation_segment_ids': None,
@@ -410,6 +411,8 @@ def test_5_3_performance():
     class SimpleConfig:
         def __init__(self, arz_config):
             self.arz_simulation_config = arz_config
+            # Copy rl_metadata to the config object
+            self.rl_metadata = arz_config.rl_metadata
             self.rl_env_params = {
                 'dt_decision': 15.0,
                 'observation_segment_ids': None,
