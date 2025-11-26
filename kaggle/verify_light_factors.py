@@ -7,13 +7,12 @@ from numba import cuda
 sys.path.append(os.getcwd())
 
 from arz_model.simulation.runner import SimulationRunner
-from arz_model.config.config_factory import CityNetworkConfigFactory
+from arz_model.config.config_factory import create_victoria_island_config
 
 def verify_light_factors():
     print("Initializing SimulationRunner...")
-    # Instantiate the factory first
-    factory = CityNetworkConfigFactory(city_name="victoria_island")
-    config = factory.create_config()
+    # Use the helper function that handles default paths
+    config = create_victoria_island_config()
     runner = SimulationRunner(simulation_config=config, device='gpu')
     
     # Get valid segment IDs
