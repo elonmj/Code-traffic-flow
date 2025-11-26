@@ -898,10 +898,12 @@ class SimulationRunner:
                     print(f"  ⚠️ WARNING: No segments matched! Pool has IDs like: {list(gpu_pool.segment_id_to_index.keys())[:3]}")
                     print(f"  ⚠️ But phase_updates has IDs like: {list(light_factors.keys())[:3]}")
                 
-                gpu_pool.update_light_factors(light_factors)
-                
-                if self.debug:
-                    print(f"[RL CONTROL] Updated GPU light_factors: {light_factors}")
+                # 2. Update GPU pool if available
+                if self.network_simulator and hasattr(self.network_simulator, 'gpu_pool'):
+                     # print(f"DEBUG: set_boundary_phases_bulk updating {len(light_factors)} segments on GPU")
+                     self.network_simulator.gpu_pool.update_light_factors(light_factors)
+                else:
+                     print("WARNING: set_boundary_phases_bulk called but GPU pool not available")
     
     def _validate_segment_phase(self, segment_id, phase: str) -> None:
         """

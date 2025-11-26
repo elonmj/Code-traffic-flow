@@ -167,7 +167,9 @@ class NetworkCouplingGPU:
         try:
             d_U_batched, d_R_batched, d_segment_lengths, d_batched_offsets, d_light_factors = self.gpu_pool.get_batched_arrays()
             use_batched = True
-        except (AttributeError, ValueError):
+            # print(f"DEBUG: apply_coupling using batched mode. d_light_factors available: {d_light_factors is not None}")
+        except (AttributeError, ValueError) as e:
+            # print(f"DEBUG: apply_coupling falling back to legacy mode. Error: {e}")
             # Fallback to legacy mega-pool if batched arrays not available
             d_U_mega_pool, d_segment_offsets, seg_lengths = self.gpu_pool.get_all_segment_states()
             d_light_factors = None  # Not available in legacy mode
