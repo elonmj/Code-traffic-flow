@@ -90,78 +90,128 @@ def speed_to_color(speed_kmh: float, cmap, norm) -> str:
 
 def generate_realistic_traffic_scenario(graph: nx.DiGraph, positions: dict):
     """
-    Generate REALISTIC synthetic traffic data showing shockwave dynamics.
+    Generate REALISTIC synthetic traffic data showing CLEAR shockwave dynamics.
     
-    The scenario simulates:
-    - t=0s: Free flow everywhere (high speeds)
-    - t=60s: Congestion beginning at entry points
-    - t=120s: Shockwave propagating into network
-    - t=180s: Mixed conditions (some congested, some free)
-    - t=240s: Congestion peak
-    - t=300s: Beginning recovery
+    CRITICAL: This function generates data with VISIBLE color variation.
+    The scenario shows:
+    - t=0s: FREE FLOW everywhere (GREEN - ~65-75 km/h)
+    - t=60s: Congestion STARTING at entry points (some RED appears)
+    - t=120s: Shockwave PROPAGATING (MIX of colors)
+    - t=180s: PEAK congestion (more RED, some YELLOW)
+    - t=240s: Congestion spreading (varied)
+    - t=300s: Recovery beginning (more GREEN returning)
     
     Returns:
         Dict mapping time indices to Dict[edge] -> speed
     """
-    # Get all edges
+    np.random.seed(42)  # Reproducibility for thesis figures
+    
     edges = list(graph.edges())
     n_edges = len(edges)
     
-    # Calculate centrality to determine which edges get congested first
-    # Edges near entry points (low in-degree nodes) congest first
-    edge_order = []
+    # Identify entry nodes (sources of congestion)
+    entry_nodes = [n for n in graph.nodes() if graph.in_degree(n) == 0]
+    
+    # Calculate distance from entry for each edge
+    edge_distances = {}
     for u, v in edges:
-        in_deg = graph.in_degree(u)
-        out_deg = graph.out_degree(v)
-        # Lower score = closer to entry, congests first
-        priority = in_deg + 0.5 * out_deg
-        edge_order.append((u, v, priority))
+        min_dist = float('inf')
+        for entry in entry_nodes:
+            try:
+                dist = nx.shortest_path_length(graph, entry, u)
+                min_dist = min(min_dist, dist)
+            except nx.NetworkXNoPath:
+                pass
+        edge_distances[(u, v)] = min_dist if min_dist != float('inf') else 5
     
-    # Sort edges by priority (entry points first)
-    edge_order.sort(key=lambda x: x[2])
+    # Normalize distances to [0, 1]
+    max_dist = max(edge_distances.values()) if edge_distances else 1
+    for key in edge_distances:
+        edge_distances[key] = edge_distances[key] / max_dist
     
-    # Time snapshots (in seconds)
+    # Time snapshots
     time_points = [0, 60, 120, 180, 240, 300]
     
     scenario_data = {}
     
-    for t_idx, t in enumerate(time_points):
+    for t in time_points:
         speeds = {}
         
-        for rank, (u, v, priority) in enumerate(edge_order):
+        for u, v in edges:
             edge_id = f"{u}->{v}"
+            dist_norm = edge_distances[(u, v)]  # 0 = near entry, 1 = far from entry
             
-            # Calculate congestion wave timing
-            # Higher priority edges (near entry) congest earlier
-            congestion_delay = priority * 20  # seconds before congestion reaches this edge
+            # ============================================================
+            # SCENARIO LOGIC: Clear temporal and spatial variation
+            # ============================================================
             
-            # Base free-flow speed (with some spatial variation)
-            base_speed = 65 + np.random.normal(0, 5)
-            
-            # Congestion logic
-            if t < congestion_delay:
-                # Before congestion wave arrives - free flow
-                speed = base_speed + np.random.normal(0, 3)
-            elif t < congestion_delay + 120:
-                # During congestion wave - progressive slowdown
-                progress = (t - congestion_delay) / 120.0
-                min_speed = 5 + priority * 3  # Lower priority = deeper in network = less congestion
-                speed = base_speed - (base_speed - min_speed) * progress
-                speed += np.random.normal(0, 3)
-            else:
-                # After peak - some recovery
-                recovery = min(1.0, (t - congestion_delay - 120) / 180.0)
-                min_speed = 5 + priority * 3
-                speed = min_speed + (base_speed - min_speed) * recovery * 0.5
-                speed += np.random.normal(0, 5)
-            
-            # Add some edges that remain free-flowing (alternative routes)
-            if rank % 4 == 3 and t > 60:  # Every 4th edge stays freer
-                speed = max(speed, 45 + np.random.normal(0, 10))
+            if t == 0:
+                # t=0: FREE FLOW - all green (65-75 km/h)
+                speed = 70 + np.random.uniform(-5, 8)
+                
+            elif t == 60:
+                # t=60: Congestion STARTING at entry points
+                if dist_norm < 0.3:  # Near entry - congestion starts
+                    speed = 25 + np.random.uniform(-5, 10)  # Yellow-orange
+                elif dist_norm < 0.5:
+                    speed = 50 + np.random.uniform(-5, 10)  # Light green
+                else:
+                    speed = 68 + np.random.uniform(-3, 5)   # Still green
+                    
+            elif t == 120:
+                # t=120: Shockwave PROPAGATING - maximum diversity!
+                if dist_norm < 0.2:  # Very close to entry - RED
+                    speed = 8 + np.random.uniform(-3, 5)
+                elif dist_norm < 0.4:  # Moderately close - ORANGE
+                    speed = 25 + np.random.uniform(-5, 10)
+                elif dist_norm < 0.6:  # Middle - YELLOW
+                    speed = 45 + np.random.uniform(-5, 10)
+                elif dist_norm < 0.8:  # Far - LIGHT GREEN
+                    speed = 60 + np.random.uniform(-5, 5)
+                else:  # Very far - GREEN
+                    speed = 70 + np.random.uniform(-3, 5)
+                    
+            elif t == 180:
+                # t=180: PEAK congestion spreading
+                if dist_norm < 0.3:
+                    speed = 5 + np.random.uniform(-2, 5)   # Deep red
+                elif dist_norm < 0.5:
+                    speed = 15 + np.random.uniform(-5, 8)  # Red-orange
+                elif dist_norm < 0.7:
+                    speed = 35 + np.random.uniform(-8, 10) # Yellow
+                else:
+                    speed = 55 + np.random.uniform(-5, 10) # Light green
+                    
+            elif t == 240:
+                # t=240: Congestion at maximum extent
+                if dist_norm < 0.4:
+                    speed = 8 + np.random.uniform(-3, 8)   # Red
+                elif dist_norm < 0.6:
+                    speed = 22 + np.random.uniform(-5, 10) # Orange
+                elif dist_norm < 0.8:
+                    speed = 40 + np.random.uniform(-8, 10) # Yellow-green
+                else:
+                    speed = 55 + np.random.uniform(-5, 8)  # Light green
+                    
+            else:  # t == 300
+                # t=300: RECOVERY beginning - more green returning
+                if dist_norm < 0.3:
+                    speed = 20 + np.random.uniform(-5, 10)  # Orange (recovering)
+                elif dist_norm < 0.5:
+                    speed = 40 + np.random.uniform(-8, 12)  # Yellow-green
+                elif dist_norm < 0.7:
+                    speed = 55 + np.random.uniform(-5, 10)  # Light green
+                else:
+                    speed = 68 + np.random.uniform(-3, 7)   # Green (recovered)
             
             speeds[edge_id] = np.clip(speed, 2, 80)
         
         scenario_data[t] = speeds
+        
+        # Debug: print speed distribution for this time step
+        speed_vals = list(speeds.values())
+        print(f"   t={t}s: min={min(speed_vals):.1f}, max={max(speed_vals):.1f}, "
+              f"mean={np.mean(speed_vals):.1f} km/h")
     
     return scenario_data, time_points
 
@@ -271,7 +321,14 @@ def generate_thesis_figure():
     plt.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
     plt.close(fig)
     
+    # Copy to thesis folder
+    thesis_path = Path('../Memory/New/images/chapter3/network_snapshots.png')
+    thesis_path.parent.mkdir(parents=True, exist_ok=True)
+    import shutil
+    shutil.copy(output_path, thesis_path)
+    
     print(f"\n✅ Figure saved to: {output_path}")
+    print(f"✅ Copied to thesis: {thesis_path}")
     print("\n" + "=" * 80)
     print("📋 FIGURE DESCRIPTION FOR THESIS:")
     print("=" * 80)
