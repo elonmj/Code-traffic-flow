@@ -833,8 +833,14 @@ def batched_ssp_rk3_kernel(
     # GREEN (1.0) = full flow out, RED (0.01) = 99% blocking
     # NOTE: Using pre-computed is_last_cell to avoid closure issues
     if is_last_cell:
+        # HARD BLOCKING: If light is RED (factor < 0.5), force flux to 0
+        # This ensures upstream congestion accumulates
+        effective_factor = light_factor
+        if effective_factor < 0.5:
+            effective_factor = 0.0
+            
         for v in range(4):
-            F_right[v] = F_right[v] * light_factor
+            F_right[v] = F_right[v] * effective_factor
     
     flux1 = cuda.local.array(4, dtype=nb.float64)
     for v in range(4):
@@ -876,8 +882,13 @@ def batched_ssp_rk3_kernel(
     
     # Traffic signal blocking at segment exit (Stage 2)
     if is_last_cell:
+        # HARD BLOCKING
+        effective_factor = light_factor
+        if effective_factor < 0.5:
+            effective_factor = 0.0
+            
         for v in range(4):
-            F_right[v] = F_right[v] * light_factor
+            F_right[v] = F_right[v] * effective_factor
     
     flux2 = cuda.local.array(4, dtype=nb.float64)
     for v in range(4):
@@ -918,8 +929,13 @@ def batched_ssp_rk3_kernel(
     
     # Traffic signal blocking at segment exit (Stage 3)
     if is_last_cell:
+        # HARD BLOCKING
+        effective_factor = light_factor
+        if effective_factor < 0.5:
+            effective_factor = 0.0
+            
         for v in range(4):
-            F_right[v] = F_right[v] * light_factor
+            F_right[v] = F_right[v] * effective_factor
     
     flux3 = cuda.local.array(4, dtype=nb.float64)
     for v in range(4):
