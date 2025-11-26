@@ -824,7 +824,25 @@ class NetworkTrafficVisualizer:
             axes[i].axis('off')
             
         fig.suptitle(title, fontsize=16, fontweight='bold', y=0.98)
-        plt.tight_layout(rect=[0, 0, 1, 0.96])
+        
+        # Add colorbar for speed interpretation
+        # Create a ScalarMappable for the colorbar
+        sm = plt.cm.ScalarMappable(cmap=self.speed_colormap, norm=self.speed_norm)
+        sm.set_array([])
+        
+        # Position colorbar at the bottom of the figure
+        cbar_ax = fig.add_axes([0.15, 0.02, 0.7, 0.02])  # [left, bottom, width, height]
+        cbar = fig.colorbar(sm, cax=cbar_ax, orientation='horizontal')
+        cbar.set_label('Vitesse moyenne (km/h)', fontsize=12, fontweight='bold')
+        
+        # Add speed regime labels
+        cbar.ax.text(0.06, -2.5, 'Bouchon', ha='center', va='top', fontsize=9, transform=cbar.ax.transAxes)
+        cbar.ax.text(0.25, -2.5, 'Congestion', ha='center', va='top', fontsize=9, transform=cbar.ax.transAxes)
+        cbar.ax.text(0.50, -2.5, 'Modéré', ha='center', va='top', fontsize=9, transform=cbar.ax.transAxes)
+        cbar.ax.text(0.75, -2.5, 'Fluide', ha='center', va='top', fontsize=9, transform=cbar.ax.transAxes)
+        cbar.ax.text(0.94, -2.5, 'Libre', ha='center', va='top', fontsize=9, transform=cbar.ax.transAxes)
+        
+        plt.tight_layout(rect=[0, 0.08, 1, 0.96])
         
         # Save
         output_file = Path(output_path)

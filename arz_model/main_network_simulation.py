@@ -67,16 +67,36 @@ def main():
         
         config = create_victoria_island_config(
             enriched_path=enriched_path,
-            # You can customize parameters here if needed:
-            default_density=40.0,  # veh/km - moderate baseline traffic
-            default_velocity=40.0,  # km/h - moderate speed
-            inflow_density=80.0,   # veh/km - HEAVY entry traffic (congestion source)
-            inflow_velocity=20.0,  # km/h - slow entry speed
-            t_final=300.0,         # 5 minutes to observe shockwave propagation
-            output_dt=2.0,         # Output every 2 seconds
-            cells_per_100m=10      # Grid resolution
+            # =================================================================
+            # SCENARIO: "Shockwave Formation and Propagation"
+            # =================================================================
+            # This scenario demonstrates the ARZ model's ability to capture
+            # realistic traffic dynamics with clear spatial and temporal variation.
+            #
+            # Initial state: Light, free-flowing traffic everywhere (high speed)
+            # Perturbation: Heavy inflow at entry points (congestion source)
+            # Expected result: Shockwaves form and propagate upstream
+            # =================================================================
+            
+            # Initial conditions: LIGHT traffic for contrast
+            default_density=15.0,   # veh/km - light baseline traffic (allows free flow)
+            default_velocity=65.0,  # km/h - high initial speed (near free flow)
+            
+            # Boundary conditions: MODERATE inflow to create progressive congestion
+            inflow_density=50.0,    # veh/km - moderate entry density
+            inflow_velocity=35.0,   # km/h - moderate entry speed
+            
+            # Simulation parameters
+            t_final=300.0,          # 5 minutes to observe shockwave propagation
+            output_dt=5.0,          # Output every 5 seconds (60 frames)
+            cells_per_100m=8        # Good resolution for wave capture
         )
         print("✅ Network configuration generated successfully from CSV topology.", flush=True)
+        print("   Scenario: Shockwave Formation and Propagation", flush=True)
+        print(f"   - Initial density: 15.0 veh/km (light traffic)", flush=True)
+        print(f"   - Initial velocity: 65.0 km/h (free flow)", flush=True)
+        print(f"   - Inflow density: 50.0 veh/km (moderate congestion source)", flush=True)
+        print(f"   - Inflow velocity: 35.0 km/h", flush=True)
     except Exception as e:
         print(f"❌ Error generating configuration: {e}", flush=True)
         import traceback
