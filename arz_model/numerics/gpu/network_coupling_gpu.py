@@ -165,11 +165,12 @@ class NetworkCouplingGPU:
 
         # Try to get batched arrays first (Phase GPU Batching)
         try:
-            d_U_batched, d_R_batched, d_segment_lengths, d_batched_offsets = self.gpu_pool.get_batched_arrays()
+            d_U_batched, d_R_batched, d_segment_lengths, d_batched_offsets, d_light_factors = self.gpu_pool.get_batched_arrays()
             use_batched = True
         except (AttributeError, ValueError):
             # Fallback to legacy mega-pool if batched arrays not available
             d_U_mega_pool, d_segment_offsets, seg_lengths = self.gpu_pool.get_all_segment_states()
+            d_light_factors = None  # Not available in legacy mode
             use_batched = False
 
         # Configure kernel launch
@@ -177,7 +178,7 @@ class NetworkCouplingGPU:
         blocks_per_grid = (self.num_nodes + (threads_per_block - 1)) // threads_per_block
 
         if use_batched:
-            # Launch batched kernel
+            # Launch batched kernel with light_factors for traffic signal control
             _apply_coupling_batched_kernel[blocks_per_grid, threads_per_block](
                 self.d_node_types,
                 self.d_node_incoming_gids,
@@ -201,6 +202,7 @@ class NetworkCouplingGPU:
                 d_U_batched,
                 d_batched_offsets,
                 d_segment_lengths,
+                d_light_factors,  # Traffic signal light factors per segment
                 self.d_fluxes  # Output array for fluxes
             )
         else:
@@ -252,6 +254,7 @@ def _apply_coupling_batched_kernel(
     d_U_batched,
     d_batched_offsets,
     d_segment_lengths,
+    d_light_factors,  # Traffic signal light factors per segment
     d_fluxes_out
 ):
     """
@@ -260,10 +263,17 @@ def _apply_coupling_batched_kernel(
     
     PHASE GPU BATCHING: Uses batched arrays layout [total_cells, 4] instead of legacy [4, total_cells].
     
+    TRAFFIC SIGNAL INTEGRATION:
+    - d_light_factors[seg_idx] controls flux from segment into junction
+    - light_factor = 1.0 (GREEN) allows full flux
+    - light_factor = 0.01 (RED) blocks 99% of flux
+    - Applied to incoming segment states before flux calculation
+    
     Args:
         d_U_batched: Device array [total_cells, 4] with concatenated segments (no ghost cells)
         d_batched_offsets: Start index of each segment in batched array
         d_segment_lengths: Number of physical cells per segment
+        d_light_factors: Light factors per segment (1.0=GREEN, 0.01=RED)
     """
     node_idx = cuda.grid(1)
     if node_idx >= node_types.shape[0]:
@@ -298,11 +308,17 @@ def _apply_coupling_batched_kernel(
             # Last physical cell index (batched layout: [N_phys, 4])
             last_idx = seg_offset + seg_len - 1
             
-            # Extract state (batched layout: [cell_idx, var])
-            U_L_m[i, 0] = d_U_batched[last_idx, 0]  # rho_m
-            U_L_m[i, 1] = d_U_batched[last_idx, 1]  # w_m
-            U_L_c[i, 0] = d_U_batched[last_idx, 2]  # rho_c
-            U_L_c[i, 1] = d_U_batched[last_idx, 3]  # w_c
+            # Get light_factor for this segment (traffic signal control)
+            # light_factor = 1.0 (GREEN) allows full flux
+            # light_factor = 0.01 (RED) blocks 99% of flux into the junction
+            light_factor = d_light_factors[gid]
+            
+            # Extract state and apply light_factor (batched layout: [cell_idx, var])
+            # This reduces the effective flux from RED segments into the junction
+            U_L_m[i, 0] = d_U_batched[last_idx, 0] * light_factor  # rho_m
+            U_L_m[i, 1] = d_U_batched[last_idx, 1] * light_factor  # w_m  
+            U_L_c[i, 0] = d_U_batched[last_idx, 2] * light_factor  # rho_c
+            U_L_c[i, 1] = d_U_batched[last_idx, 3] * light_factor  # w_c
 
         # --- 3. Solve for the intermediate state (fluxes) ---
         flux_m, flux_c = solve_node_fluxes_gpu(
