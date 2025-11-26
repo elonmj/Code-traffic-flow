@@ -798,60 +798,47 @@ def batched_ssp_rk3_kernel(
     F_left = cuda.local.array(4, dtype=nb.float64)
     F_right = cuda.local.array(4, dtype=nb.float64)
     
-    # Lambda for flux divergence computation using shared memory
-    def compute_flux_div_shared(flux_div_out):
-        """Compute flux divergence using shared memory stencils."""
-        # Left flux at i-1/2
-        for v in range(4):
-            # Build stencil for left interface
-            stencil[0] = shared_U[i_local + num_ghost - 2, v]
-            stencil[1] = shared_U[i_local + num_ghost - 1, v]
-            stencil[2] = shared_U[i_local + num_ghost, v]
-            stencil[3] = shared_U[i_local + num_ghost + 1, v]
-            stencil[4] = shared_U[i_local + num_ghost + 2, v]
-            
-            v_left, v_right = weno5_reconstruct_device(stencil, weno_epsilon)
-            U_L[v] = v_left
-            U_R[v] = v_right
-        
-        central_upwind_flux_device(U_L, U_R, F_left, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
-        
-        # Right flux at i+1/2
-        for v in range(4):
-            stencil[0] = shared_U[i_local + num_ghost - 1, v]
-            stencil[1] = shared_U[i_local + num_ghost, v]
-            stencil[2] = shared_U[i_local + num_ghost + 1, v]
-            stencil[3] = shared_U[i_local + num_ghost + 2, v]
-            stencil[4] = shared_U[i_local + num_ghost + 3, v]
-            
-            v_left, v_right = weno5_reconstruct_device(stencil, weno_epsilon)
-            U_L[v] = v_right
-            U_R[v] = v_left
-        
-        central_upwind_flux_device(U_L, U_R, F_right, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
-        
-        # ========== TRAFFIC SIGNAL FLUX BLOCKING (Task 3.2 - CORRECTED) ==========
-        # CRITICAL FIX (2025-11-26): Apply light_factor to RIGHT boundary flux
-        # at the LAST cell (i_local == N - 1), not LEFT boundary.
-        # 
-        # Reason: Traffic signals are at segment END (end_node), not START:
-        #   - segment.end_node → signalized node
-        #   - Signal controls OUTFLOW from segment (right boundary)
-        #   - RED blocks traffic LEAVING the segment toward the intersection
-        #
-        # GREEN (1.0) = full flow out, RED (0.01) = 99% blocking
-        if i_local == N - 1:
-            for v in range(4):
-                F_right[v] = F_right[v] * light_factor
-        
-        # Divergence
-        inv_dx = 1.0 / dx
-        for v in range(4):
-            flux_div_out[v] = -(F_right[v] - F_left[v]) * inv_dx
+    # Pre-compute constants outside loop
+    inv_dx = 1.0 / dx
+    is_last_cell = (i_local == N - 1)  # Pre-compute boundary condition
     
     # ========== SSP-RK3 STAGE 1 ==========
+    # INLINE FLUX DIVERGENCE COMPUTATION (no nested function - Numba CUDA closure fix)
+    # Left flux at i-1/2
+    for v in range(4):
+        stencil[0] = shared_U[i_local + num_ghost - 2, v]
+        stencil[1] = shared_U[i_local + num_ghost - 1, v]
+        stencil[2] = shared_U[i_local + num_ghost, v]
+        stencil[3] = shared_U[i_local + num_ghost + 1, v]
+        stencil[4] = shared_U[i_local + num_ghost + 2, v]
+        v_left, v_right = weno5_reconstruct_device(stencil, weno_epsilon)
+        U_L[v] = v_left
+        U_R[v] = v_right
+    central_upwind_flux_device(U_L, U_R, F_left, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
+    
+    # Right flux at i+1/2
+    for v in range(4):
+        stencil[0] = shared_U[i_local + num_ghost - 1, v]
+        stencil[1] = shared_U[i_local + num_ghost, v]
+        stencil[2] = shared_U[i_local + num_ghost + 1, v]
+        stencil[3] = shared_U[i_local + num_ghost + 2, v]
+        stencil[4] = shared_U[i_local + num_ghost + 3, v]
+        v_left, v_right = weno5_reconstruct_device(stencil, weno_epsilon)
+        U_L[v] = v_right
+        U_R[v] = v_left
+    central_upwind_flux_device(U_L, U_R, F_right, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
+    
+    # ========== TRAFFIC SIGNAL FLUX BLOCKING (CRITICAL FIX 2025-11-26) ==========
+    # Apply light_factor to RIGHT boundary flux at LAST cell (segment exit)
+    # GREEN (1.0) = full flow out, RED (0.01) = 99% blocking
+    # NOTE: Using pre-computed is_last_cell to avoid closure issues
+    if is_last_cell:
+        for v in range(4):
+            F_right[v] = F_right[v] * light_factor
+    
     flux1 = cuda.local.array(4, dtype=nb.float64)
-    compute_flux_div_shared(flux1)
+    for v in range(4):
+        flux1[v] = -(F_right[v] - F_left[v]) * inv_dx
     
     for v in range(4):
         u_stage1[v] = u_n_local[v] + dt * flux1[v]
@@ -861,9 +848,40 @@ def batched_ssp_rk3_kernel(
     u_stage1[2] = max(0.0, min(u_stage1[2], rho_max))  # rho_c
     
     # ========== SSP-RK3 STAGE 2 ==========
+    # INLINE FLUX DIVERGENCE COMPUTATION
     # Note: Approximation - uses shared_U (u^n) for stencils instead of u_stage1
+    # Left flux at i-1/2
+    for v in range(4):
+        stencil[0] = shared_U[i_local + num_ghost - 2, v]
+        stencil[1] = shared_U[i_local + num_ghost - 1, v]
+        stencil[2] = shared_U[i_local + num_ghost, v]
+        stencil[3] = shared_U[i_local + num_ghost + 1, v]
+        stencil[4] = shared_U[i_local + num_ghost + 2, v]
+        v_left, v_right = weno5_reconstruct_device(stencil, weno_epsilon)
+        U_L[v] = v_left
+        U_R[v] = v_right
+    central_upwind_flux_device(U_L, U_R, F_left, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
+    
+    # Right flux at i+1/2
+    for v in range(4):
+        stencil[0] = shared_U[i_local + num_ghost - 1, v]
+        stencil[1] = shared_U[i_local + num_ghost, v]
+        stencil[2] = shared_U[i_local + num_ghost + 1, v]
+        stencil[3] = shared_U[i_local + num_ghost + 2, v]
+        stencil[4] = shared_U[i_local + num_ghost + 3, v]
+        v_left, v_right = weno5_reconstruct_device(stencil, weno_epsilon)
+        U_L[v] = v_right
+        U_R[v] = v_left
+    central_upwind_flux_device(U_L, U_R, F_right, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
+    
+    # Traffic signal blocking at segment exit (Stage 2)
+    if is_last_cell:
+        for v in range(4):
+            F_right[v] = F_right[v] * light_factor
+    
     flux2 = cuda.local.array(4, dtype=nb.float64)
-    compute_flux_div_shared(flux2)
+    for v in range(4):
+        flux2[v] = -(F_right[v] - F_left[v]) * inv_dx
     
     for v in range(4):
         u_stage2[v] = 0.75 * u_n_local[v] + 0.25 * (u_stage1[v] + dt * flux2[v])
@@ -873,8 +891,39 @@ def batched_ssp_rk3_kernel(
     u_stage2[2] = max(0.0, min(u_stage2[2], rho_max))  # rho_c
     
     # ========== SSP-RK3 STAGE 3 ==========
+    # INLINE FLUX DIVERGENCE COMPUTATION
+    # Left flux at i-1/2
+    for v in range(4):
+        stencil[0] = shared_U[i_local + num_ghost - 2, v]
+        stencil[1] = shared_U[i_local + num_ghost - 1, v]
+        stencil[2] = shared_U[i_local + num_ghost, v]
+        stencil[3] = shared_U[i_local + num_ghost + 1, v]
+        stencil[4] = shared_U[i_local + num_ghost + 2, v]
+        v_left, v_right = weno5_reconstruct_device(stencil, weno_epsilon)
+        U_L[v] = v_left
+        U_R[v] = v_right
+    central_upwind_flux_device(U_L, U_R, F_left, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
+    
+    # Right flux at i+1/2
+    for v in range(4):
+        stencil[0] = shared_U[i_local + num_ghost - 1, v]
+        stencil[1] = shared_U[i_local + num_ghost, v]
+        stencil[2] = shared_U[i_local + num_ghost + 1, v]
+        stencil[3] = shared_U[i_local + num_ghost + 2, v]
+        stencil[4] = shared_U[i_local + num_ghost + 3, v]
+        v_left, v_right = weno5_reconstruct_device(stencil, weno_epsilon)
+        U_L[v] = v_right
+        U_R[v] = v_left
+    central_upwind_flux_device(U_L, U_R, F_right, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
+    
+    # Traffic signal blocking at segment exit (Stage 3)
+    if is_last_cell:
+        for v in range(4):
+            F_right[v] = F_right[v] * light_factor
+    
     flux3 = cuda.local.array(4, dtype=nb.float64)
-    compute_flux_div_shared(flux3)
+    for v in range(4):
+        flux3[v] = -(F_right[v] - F_left[v]) * inv_dx
     
     # Final result
     inv_3 = 1.0 / 3.0
