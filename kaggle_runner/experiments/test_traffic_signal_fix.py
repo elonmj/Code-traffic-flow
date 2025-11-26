@@ -251,6 +251,7 @@ def test_5_2_integration():
     print("=" * 60)
     
     from Code_RL.src.env.traffic_signal_env_direct_v3 import TrafficSignalEnvDirectV3
+    from Code_RL.src.config.rl_network_config import RLNetworkConfig
     from arz_model.config import create_victoria_island_config
     
     # Create congested scenario to make signal effects visible
@@ -268,6 +269,35 @@ def test_5_2_integration():
         'observation_segment_ids': [s.id for s in config.segments],
         'decision_interval': 15.0,
     }
+    
+    # ========== DEBUG: Verify signalized segments ==========
+    print("\n[DEBUG] Analyzing signalized segments...")
+    rl_config_helper = RLNetworkConfig(config)
+    signalized_ids = rl_config_helper.signalized_segment_ids
+    print(f"  Signalized segment IDs from RLNetworkConfig: {len(signalized_ids)}")
+    for sid in signalized_ids[:5]:
+        print(f"    - {sid}")
+    if len(signalized_ids) > 5:
+        print(f"    ... and {len(signalized_ids) - 5} more")
+    
+    # Check if these IDs exist in config.segments
+    config_segment_ids = set(s.id for s in config.segments)
+    print(f"\n  Total segments in config: {len(config_segment_ids)}")
+    print(f"  Sample segment IDs from config: {list(config_segment_ids)[:5]}")
+    
+    # Check intersection
+    matching_ids = set(signalized_ids) & config_segment_ids
+    print(f"\n  Signalized IDs matching config: {len(matching_ids)}")
+    if len(matching_ids) == 0:
+        print("  ⚠️ WARNING: No signalized segment IDs match config segments!")
+        print("  This means set_boundary_phases_bulk() will NOT update any segments!")
+    
+    # Check phase updates
+    phase_updates_0 = rl_config_helper.get_phase_updates(0)
+    phase_updates_1 = rl_config_helper.get_phase_updates(1)
+    print(f"\n  Phase updates for phase=0 (GREEN): {len(phase_updates_0)} segments")
+    print(f"  Phase updates for phase=1 (RED): {len(phase_updates_1)} segments")
+    print(f"  Sample phase update (phase=1): {dict(list(phase_updates_1.items())[:3])}")
     
     # Test 1: Run episode with ALL GREEN (action=0 = keep phase, initial phase=0=GREEN)
     print("\n[Test 1] Running episode with ALL GREEN phases...")

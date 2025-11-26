@@ -863,6 +863,9 @@ class SimulationRunner:
         #   - Integer 0 → GREEN (1.0)
         #   - Anything else → RED (0.01 = 99% blocking)
         light_factors = {}
+        segments_found = 0
+        segments_not_found = 0
+        
         for segment_id, phase in phase_updates.items():
             # Simple and direct: determine light_factor from phase value
             if isinstance(phase, int):
@@ -882,6 +885,19 @@ class SimulationRunner:
         if hasattr(self, 'network_simulator') and self.network_simulator is not None:
             gpu_pool = self.network_simulator.gpu_pool
             if gpu_pool is not None:
+                # Check how many segments will be updated
+                for seg_id in light_factors:
+                    if seg_id in gpu_pool.segment_id_to_index:
+                        segments_found += 1
+                    else:
+                        segments_not_found += 1
+                
+                # DEBUG: Always print this critical info
+                print(f"[DEBUG set_boundary_phases_bulk] Updating {segments_found} segments on GPU, {segments_not_found} not found in pool")
+                if segments_not_found > 0 and segments_found == 0:
+                    print(f"  ⚠️ WARNING: No segments matched! Pool has IDs like: {list(gpu_pool.segment_id_to_index.keys())[:3]}")
+                    print(f"  ⚠️ But phase_updates has IDs like: {list(light_factors.keys())[:3]}")
+                
                 gpu_pool.update_light_factors(light_factors)
                 
                 if self.debug:
