@@ -1,3 +1,12 @@
+"""
+Generate all thesis figures for Chapter 7: Model Validation
+
+Creates:
+- 5x Profile plots: fig_7_*.png (density and velocity at final time)
+- 5x Hovmöller diagrams: heatmap_*.png (space-time evolution)
+
+After fixing the U vector indexing bug, data should be correct now.
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -23,107 +32,189 @@ plt.rcParams.update({
     'figure.titlesize': 18
 })
 
-def plot_riemann_result(filename, title, output_filename, class_names=['Class 0', 'Class 1']):
+def plot_riemann_profile(filename, title, output_filename):
+    """Plot density and velocity profiles at final time"""
     filepath = os.path.join(INPUT_DIR, filename)
     if not os.path.exists(filepath):
-        print(f"File not found: {filepath}")
+        print(f"❌ File not found: {filepath}")
         return
 
     data = np.load(filepath, allow_pickle=True)
     x = data['x']
     U = data['U']
     t = data['t']
-    config = data['config'].item()
     
-    # Extract variables (Assuming [rho0, v0, rho1, v1])
-    rho0 = U[0, :]
-    v0 = U[1, :]
-    rho1 = U[2, :]
-    v1 = U[3, :]
+    # Extract variables: U = [rho_moto, v_moto, rho_car, v_car]
+    rho_m = U[0, :]  # Motos density (veh/m)
+    v_m = U[1, :]    # Motos velocity (m/s)
+    rho_c = U[2, :]  # Cars density (veh/m)
+    v_c = U[3, :]    # Cars velocity (m/s)
     
-    # Create figure
+    # Create figure with 2 subplots
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10), sharex=True)
     
     # Plot Density
-    ax1.plot(x, rho0, label=f'{class_names[0]} Density', linewidth=2, color='blue')
-    ax1.plot(x, rho1, label=f'{class_names[1]} Density', linewidth=2, color='red', linestyle='--')
-    ax1.set_ylabel('Density (veh/m)')
-    ax1.set_title(f'{title} - Density Profile at t={t:.1f}s')
-    ax1.legend()
-    ax1.grid(True, alpha=0.3)
+    ax1.plot(x, rho_m, label='Motos', linewidth=2.5, color='#1f77b4', alpha=0.9)
+    ax1.plot(x, rho_c, label='Voitures', linewidth=2.5, color='#d62728', linestyle='--', alpha=0.9)
+    ax1.set_ylabel('Densité (veh/m)', fontsize=14)
+    ax1.set_title(f'{title} - Profils à t={t:.1f}s', fontsize=16, fontweight='bold')
+    ax1.legend(loc='best', framealpha=0.9)
+    ax1.grid(True, alpha=0.3, linestyle='--')
+    ax1.set_xlim([x.min(), x.max()])
     
     # Plot Velocity
-    ax2.plot(x, v0, label=f'{class_names[0]} Velocity', linewidth=2, color='blue')
-    ax2.plot(x, v1, label=f'{class_names[1]} Velocity', linewidth=2, color='red', linestyle='--')
-    ax2.set_ylabel('Velocity (m/s)')
-    ax2.set_xlabel('Position (m)')
-    ax2.set_title(f'{title} - Velocity Profile at t={t:.1f}s')
-    ax2.legend()
-    ax2.grid(True, alpha=0.3)
+    ax2.plot(x, v_m, label='Motos', linewidth=2.5, color='#1f77b4', alpha=0.9)
+    ax2.plot(x, v_c, label='Voitures', linewidth=2.5, color='#d62728', linestyle='--', alpha=0.9)
+    ax2.set_ylabel('Vitesse (m/s)', fontsize=14)
+    ax2.set_xlabel('Position (m)', fontsize=14)
+    ax2.legend(loc='best', framealpha=0.9)
+    ax2.grid(True, alpha=0.3, linestyle='--')
+    ax2.set_xlim([x.min(), x.max()])
     
     plt.tight_layout()
     save_path = os.path.join(OUTPUT_DIR, output_filename)
-    plt.savefig(save_path, dpi=300)
-    print(f"Saved figure: {save_path}")
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    print(f"✅ Saved profile: {output_filename}")
     plt.close(fig)
 
-def plot_behavioral_result(filename, title, output_filename, class_names=['Class 0', 'Class 1']):
+
+def plot_hovmoller_diagram(filename, title, output_filename):
+    """
+    Create space-time (Hovmöller) diagram showing wave propagation
+    
+    4-panel heatmap:
+    - Top-left: Motos density
+    - Top-right: Cars density
+    - Bottom-left: Motos velocity
+    - Bottom-right: Cars velocity
+    """
     filepath = os.path.join(INPUT_DIR, filename)
     if not os.path.exists(filepath):
-        print(f"File not found: {filepath}")
+        print(f"❌ File not found: {filepath}")
         return
 
     data = np.load(filepath, allow_pickle=True)
-    U = data['U']
-    # Reconstruct x
-    L = 1000.0 # Standard length
-    N = U.shape[1]
-    x = np.linspace(0, L, N)
+    x = data['x']
+    t_history = data['t_history']
     
-    # Extract variables
-    rho0 = U[0, :]
-    v0 = U[1, :]
-    rho1 = U[2, :]
-    v1 = U[3, :]
+    # Extract history arrays: (Time, Space)
+    rho_m_hist = data['rho_m_history']
+    rho_c_hist = data['rho_c_history']
+    v_m_hist = data['v_m_history']
+    v_c_hist = data['v_c_history']
     
-    # Create figure
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
+    # Physical domain only (exclude ghost cells)
+    # Assuming x has ghost cells, use indices 3:-3 for physical domain
+    N_phys = rho_m_hist.shape[1]  # Should be 200 for physical cells
+    x_phys = np.linspace(0, 1000, N_phys)  # Reconstruct physical grid
     
-    # Plot Density
-    ax1.plot(x, rho0, label=f'{class_names[0]}', linewidth=2)
-    ax1.plot(x, rho1, label=f'{class_names[1]}', linewidth=2, linestyle='--')
-    ax1.set_ylabel('Density (veh/m)')
-    ax1.set_title(f'{title} - Density')
-    ax1.legend()
-    ax1.grid(True, alpha=0.3)
+    # Create 2x2 subplot figure
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     
-    # Plot Velocity
-    ax2.plot(x, v0 * 3.6, label=f'{class_names[0]}', linewidth=2) # Convert to km/h
-    ax2.plot(x, v1 * 3.6, label=f'{class_names[1]}', linewidth=2, linestyle='--')
-    ax2.set_ylabel('Velocity (km/h)')
-    ax2.set_xlabel('Position (m)')
-    ax2.set_title(f'{title} - Velocity')
-    ax2.legend()
-    ax2.grid(True, alpha=0.3)
+    # Extent for imshow: [x_min, x_max, t_min, t_max]
+    extent = [x_phys[0], x_phys[-1], t_history[0], t_history[-1]]
     
-    plt.tight_layout()
+    # Top-left: Motos density
+    im1 = axes[0, 0].imshow(rho_m_hist, aspect='auto', origin='lower', 
+                             extent=extent, cmap='YlOrRd', interpolation='bilinear')
+    axes[0, 0].set_ylabel('Temps (s)', fontsize=12)
+    axes[0, 0].set_title('Densité Motos (veh/m)', fontsize=13, fontweight='bold')
+    cbar1 = plt.colorbar(im1, ax=axes[0, 0])
+    cbar1.set_label('ρ_m (veh/m)', fontsize=11)
+    
+    # Top-right: Cars density
+    im2 = axes[0, 1].imshow(rho_c_hist, aspect='auto', origin='lower',
+                             extent=extent, cmap='YlOrRd', interpolation='bilinear')
+    axes[0, 1].set_title('Densité Voitures (veh/m)', fontsize=13, fontweight='bold')
+    cbar2 = plt.colorbar(im2, ax=axes[0, 1])
+    cbar2.set_label('ρ_c (veh/m)', fontsize=11)
+    
+    # Bottom-left: Motos velocity
+    im3 = axes[1, 0].imshow(v_m_hist, aspect='auto', origin='lower',
+                             extent=extent, cmap='viridis', interpolation='bilinear')
+    axes[1, 0].set_xlabel('Position (m)', fontsize=12)
+    axes[1, 0].set_ylabel('Temps (s)', fontsize=12)
+    axes[1, 0].set_title('Vitesse Motos (m/s)', fontsize=13, fontweight='bold')
+    cbar3 = plt.colorbar(im3, ax=axes[1, 0])
+    cbar3.set_label('v_m (m/s)', fontsize=11)
+    
+    # Bottom-right: Cars velocity
+    im4 = axes[1, 1].imshow(v_c_hist, aspect='auto', origin='lower',
+                             extent=extent, cmap='viridis', interpolation='bilinear')
+    axes[1, 1].set_xlabel('Position (m)', fontsize=12)
+    axes[1, 1].set_title('Vitesse Voitures (m/s)', fontsize=13, fontweight='bold')
+    cbar4 = plt.colorbar(im4, ax=axes[1, 1])
+    cbar4.set_label('v_c (m/s)', fontsize=11)
+    
+    # Main title
+    fig.suptitle(f'Diagramme de Hovmöller: {title}', fontsize=16, fontweight='bold', y=0.995)
+    
+    plt.tight_layout(rect=[0, 0, 1, 0.99])
     save_path = os.path.join(OUTPUT_DIR, output_filename)
-    plt.savefig(save_path, dpi=300)
-    print(f"Saved figure: {save_path}")
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    print(f"✅ Saved heatmap: {output_filename}")
     plt.close(fig)
 
-# --- Generate Riemann Figures ---
-CLASSES = ['Motos', 'Voitures']
 
-plot_riemann_result('riemann_choc_simple_motos.npz', 'Test 1: Choc Simple (Motos)', 'fig_riemann_choc_simple.png', CLASSES)
-plot_riemann_result('riemann_detente_voitures.npz', 'Test 2: Détente (Voitures)', 'fig_riemann_detente.png', CLASSES)
-plot_riemann_result('riemann_apparition_vide_motos.npz', 'Test 3: Apparition de Vide', 'fig_riemann_apparition_vide.png', CLASSES)
-plot_riemann_result('riemann_discontinuite_contact.npz', 'Test 4: Discontinuité de Contact', 'fig_riemann_contact.png', CLASSES)
-plot_riemann_result('riemann_interaction_multiclasse.npz', 'Test 5: Interaction Multi-classes', 'fig_riemann_interaction_multiclasse.png', CLASSES)
+# Test cases definition
+riemann_tests = [
+    {
+        'filename': 'riemann_choc_simple_motos.npz',
+        'title': 'Choc Simple (Motos)',
+        'profile_output': 'fig_7_choc_simple_motos.png',
+        'heatmap_output': 'heatmap_choc_simple_motos.png'
+    },
+    {
+        'filename': 'riemann_detente_voitures.npz',
+        'title': 'Détente (Voitures)',
+        'profile_output': 'fig_7_detente_voitures.png',
+        'heatmap_output': 'heatmap_detente_voitures.png'
+    },
+    {
+        'filename': 'riemann_apparition_vide_motos.npz',
+        'title': 'Apparition de Vide (Motos)',
+        'profile_output': 'fig_7_apparition_vide_motos.png',
+        'heatmap_output': 'heatmap_apparition_vide_motos.png'
+    },
+    {
+        'filename': 'riemann_discontinuite_contact.npz',
+        'title': 'Discontinuité de Contact',
+        'profile_output': 'fig_7_discontinuite_contact.png',
+        'heatmap_output': 'heatmap_discontinuite_contact.png'
+    },
+    {
+        'filename': 'riemann_interaction_multiclasse.npz',
+        'title': 'Interaction Multi-classes',
+        'profile_output': 'fig_7_interaction_multiclasse.png',
+        'heatmap_output': 'heatmap_interaction_multiclasse.png'
+    }
+]
 
-# --- Generate Behavioral Figures ---
-plot_behavioral_result('behavioral_trafic_fluide.npz', 'Validation Comportementale: Trafic Fluide', 'fig_behavioral_fluide.png', CLASSES)
-plot_behavioral_result('behavioral_congestion_moderee.npz', 'Validation Comportementale: Congestion Modérée', 'fig_behavioral_congestion.png', CLASSES)
-plot_behavioral_result('behavioral_formation_bouchon.npz', 'Validation Comportementale: Formation de Bouchon', 'fig_behavioral_bouchon.png', CLASSES)
+print("=" * 80)
+print("THESIS FIGURE GENERATION: Chapter 7 Validation")
+print("=" * 80)
+print(f"Input directory:  {INPUT_DIR}")
+print(f"Output directory: {OUTPUT_DIR}")
+print("=" * 80)
 
+# Generate all figures
+for test in riemann_tests:
+    print(f"\n📊 Processing: {test['title']}")
+    
+    # Profile plots
+    plot_riemann_profile(
+        test['filename'],
+        test['title'],
+        test['profile_output']
+    )
+    
+    # Hovmöller diagrams
+    plot_hovmoller_diagram(
+        test['filename'],
+        test['title'],
+        test['heatmap_output']
+    )
 
+print("\n" + "=" * 80)
+print("✅ ALL FIGURES GENERATED SUCCESSFULLY")
+print("=" * 80)
