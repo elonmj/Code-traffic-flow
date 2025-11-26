@@ -8,12 +8,15 @@ sys.path.append(os.getcwd())
 
 from arz_model.simulation.runner import SimulationRunner
 from arz_model.config.config_factory import create_victoria_island_config
+from arz_model.network.network_grid import NetworkGrid
 
 def verify_light_factors():
     print("Initializing SimulationRunner...")
     # Use the helper function that handles default paths
     config = create_victoria_island_config()
-    runner = SimulationRunner(simulation_config=config, device='gpu')
+    # Build the network grid explicitly
+    network_grid = NetworkGrid.from_config(config)
+    runner = SimulationRunner(network_grid=network_grid, simulation_config=config, device='gpu')
     
     # Get valid segment IDs
     segment_ids = list(runner.network_grid.segments.keys())
