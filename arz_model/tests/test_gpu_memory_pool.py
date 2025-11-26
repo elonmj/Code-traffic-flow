@@ -489,6 +489,131 @@ class TestGPUMemoryPoolIntegration:
         pool.cleanup()
 
 
+@pytest.mark.skipif(not cuda.is_available(), reason="CUDA not available")
+class TestGPUMemoryPoolLightFactors:
+    """Test traffic signal light factor functionality (Task 5.1)."""
+    
+    def test_light_factors_initialization(self, simple_config):
+        """Test that light factors are initialized to 1.0 (GREEN)."""
+        pool = GPUMemoryPool(**simple_config)
+        
+        # Check that d_light_factors was allocated
+        assert pool.d_light_factors is not None
+        assert pool.d_light_factors.shape == (len(simple_config['segment_ids']),)
+        
+        # Check initial values are all 1.0 (GREEN)
+        light_factors_cpu = pool.d_light_factors.copy_to_host()
+        np.testing.assert_array_almost_equal(light_factors_cpu, 1.0)
+        
+        pool.cleanup()
+    
+    def test_update_light_factors_single(self, simple_config):
+        """Test updating a single segment's light factor."""
+        pool = GPUMemoryPool(**simple_config)
+        
+        # Update seg1 to RED (0.01)
+        pool.update_light_factors({'seg1': 0.01})
+        
+        light_factors_cpu = pool.d_light_factors.copy_to_host()
+        
+        # seg1 should be 0.01, seg2 should still be 1.0
+        idx_seg1 = pool.segment_id_to_index['seg1']
+        idx_seg2 = pool.segment_id_to_index['seg2']
+        
+        assert light_factors_cpu[idx_seg1] == pytest.approx(0.01)
+        assert light_factors_cpu[idx_seg2] == pytest.approx(1.0)
+        
+        pool.cleanup()
+    
+    def test_update_light_factors_multiple(self, simple_config):
+        """Test updating multiple segments' light factors."""
+        pool = GPUMemoryPool(**simple_config)
+        
+        # Update both segments
+        pool.update_light_factors({'seg1': 0.01, 'seg2': 0.5})
+        
+        light_factors_cpu = pool.d_light_factors.copy_to_host()
+        
+        idx_seg1 = pool.segment_id_to_index['seg1']
+        idx_seg2 = pool.segment_id_to_index['seg2']
+        
+        assert light_factors_cpu[idx_seg1] == pytest.approx(0.01)
+        assert light_factors_cpu[idx_seg2] == pytest.approx(0.5)
+        
+        pool.cleanup()
+    
+    def test_update_light_factors_unknown_segment(self, simple_config):
+        """Test that unknown segments are silently skipped."""
+        pool = GPUMemoryPool(**simple_config)
+        
+        # Update with unknown segment - should not raise
+        pool.update_light_factors({'unknown_seg': 0.01, 'seg1': 0.5})
+        
+        light_factors_cpu = pool.d_light_factors.copy_to_host()
+        
+        # Only seg1 should be updated
+        idx_seg1 = pool.segment_id_to_index['seg1']
+        assert light_factors_cpu[idx_seg1] == pytest.approx(0.5)
+        
+        pool.cleanup()
+    
+    def test_update_light_factors_empty(self, simple_config):
+        """Test update with empty dict does nothing."""
+        pool = GPUMemoryPool(**simple_config)
+        
+        # Update with empty dict - should not raise
+        pool.update_light_factors({})
+        
+        # Values should still be 1.0
+        light_factors_cpu = pool.d_light_factors.copy_to_host()
+        np.testing.assert_array_almost_equal(light_factors_cpu, 1.0)
+        
+        pool.cleanup()
+    
+    def test_get_batched_arrays_includes_light_factors(self, simple_config):
+        """Test that get_batched_arrays returns light factors."""
+        pool = GPUMemoryPool(**simple_config)
+        
+        # Initialize segment states first
+        for seg_id in simple_config['segment_ids']:
+            N_phys = simple_config['N_per_segment'][seg_id]
+            U_init = np.random.rand(4, N_phys)
+            pool.initialize_segment_state(seg_id, U_init)
+        
+        # Get batched arrays
+        result = pool.get_batched_arrays()
+        
+        # Should return 5 elements now
+        assert len(result) == 5
+        d_U, d_R, d_offsets, d_lengths, d_light_factors = result
+        
+        # Check light factors
+        assert d_light_factors is not None
+        assert d_light_factors.shape == (len(simple_config['segment_ids']),)
+        
+        pool.cleanup()
+    
+    def test_light_factors_toggle_green_red(self, simple_config):
+        """Test toggling between GREEN and RED states."""
+        pool = GPUMemoryPool(**simple_config)
+        
+        # Start GREEN
+        light_factors_cpu = pool.d_light_factors.copy_to_host()
+        np.testing.assert_array_almost_equal(light_factors_cpu, 1.0)
+        
+        # Switch to RED
+        pool.update_light_factors({'seg1': 0.01, 'seg2': 0.01})
+        light_factors_cpu = pool.d_light_factors.copy_to_host()
+        np.testing.assert_array_almost_equal(light_factors_cpu, 0.01)
+        
+        # Switch back to GREEN
+        pool.update_light_factors({'seg1': 1.0, 'seg2': 1.0})
+        light_factors_cpu = pool.d_light_factors.copy_to_host()
+        np.testing.assert_array_almost_equal(light_factors_cpu, 1.0)
+        
+        pool.cleanup()
+
+
 if __name__ == '__main__':
     # Run tests with verbose output
     pytest.main([__file__, '-v'])
