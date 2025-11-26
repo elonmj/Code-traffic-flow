@@ -865,7 +865,11 @@ class NetworkTrafficVisualizer:
             time_array: Array of time steps
             
         Returns:
-            Dictionary mapping segment IDs to speed arrays
+            Dictionary mapping segment IDs to speed arrays IN KM/H
+            
+        Note:
+            The simulation stores speeds in m/s, but visualization uses km/h.
+            This method converts from m/s to km/h (multiply by 3.6).
         """
         segment_speeds = {}
         
@@ -882,13 +886,19 @@ class NetworkTrafficVisualizer:
                 # Compute spatial average at each time step
                 # speed_array shape: (n_times, nx)
                 if len(speed_array.shape) == 2:
-                    avg_speeds = np.mean(speed_array, axis=1)
+                    # Clip negative speeds (numerical artifacts) before averaging
+                    speed_array_clipped = np.maximum(speed_array, 0)
+                    avg_speeds = np.mean(speed_array_clipped, axis=1)
                 elif len(speed_array.shape) == 1:
-                    avg_speeds = speed_array
+                    avg_speeds = np.maximum(speed_array, 0)
                 else:
                     # Fallback: use first column or flatten
-                    avg_speeds = speed_array.flatten()
+                    avg_speeds = np.maximum(speed_array.flatten(), 0)
+                
+                # CRITICAL: Convert from m/s to km/h for visualization
+                # The simulation internally uses m/s, but colormap expects km/h
+                avg_speeds_kmh = avg_speeds * 3.6
                     
-                segment_speeds[seg_id] = avg_speeds
+                segment_speeds[seg_id] = avg_speeds_kmh
                 
         return segment_speeds

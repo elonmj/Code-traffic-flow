@@ -401,10 +401,12 @@ def calculate_spatial_discretization_weno_gpu_native(
     # --- 3. Flux Calculation: Central-Upwind ---
     # This kernel is now imported at the top level
     
-    # Determine junction blocking factor for this segment
-    light_factor = 1.0
-    # The logic for getting segment_info and light_factor needs to be handled
-    # by the caller (NetworkSimulator) and passed down. For now, we assume 1.0.
+    # NOTE (Task 4.3): Traffic signal light_factor is now handled by the batched
+    # kernel architecture via d_light_factors array in GPUMemoryPool.
+    # This legacy per-segment code path uses light_factor=1.0 (GREEN) as default.
+    # The batched_ssp_rk3_kernel in batched_time_step_gpu_native() handles the
+    # actual traffic signal control for RL training scenarios.
+    light_factor = 1.0  # Legacy default - batched kernel uses d_light_factors
 
     blockspergrid_flux = (N_total - 1 + threadsperblock - 1) // threadsperblock
     central_upwind_flux_cuda_kernel[blockspergrid_flux, threadsperblock](
@@ -608,8 +610,8 @@ def batched_strang_splitting_step_gpu_native(
     """
     from .gpu.ssp_rk3_cuda import batched_ssp_rk3_kernel
     
-    # Get batched arrays and metadata
-    d_U_batched, d_R_batched, d_batched_offsets, d_segment_lengths = gpu_pool.get_batched_arrays()
+    # Get batched arrays and metadata (including light factors for traffic signal control)
+    d_U_batched, d_R_batched, d_batched_offsets, d_segment_lengths, d_light_factors = gpu_pool.get_batched_arrays()
     
     # Allocate output array
     total_cells = d_U_batched.shape[0]
@@ -632,10 +634,12 @@ def batched_strang_splitting_step_gpu_native(
     num_ghost = 3  # WENO5 requires 3 ghost cells
     
     # Launch batched kernel (grid=70, block=256)
+    # d_light_factors controls traffic signal flux blocking at segment boundaries
     batched_ssp_rk3_kernel[blocks_per_grid, threads_per_block](
         d_U_batched,           # Input: [total_cells, 4]
         d_U_batched_out,       # Output: [total_cells, 4]
         d_R_batched,           # Road quality: [total_cells]
+        d_light_factors,       # Light factors: [num_segments] - traffic signal control
         d_batched_offsets,     # Segment offsets: [num_segments]
         d_segment_lengths,     # Segment lengths: [num_segments]
         dt, dx,

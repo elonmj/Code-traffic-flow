@@ -852,6 +852,44 @@ class SimulationRunner:
             
             if self.debug:
                 print(f"[RL CONTROL] t={self.current_time:.1f}s: Segment {segment_id} -> Phase '{phase}'")
+        
+        # ========== Task 2.1 & 2.2: Sync light_factors to GPU ==========
+        # Build light_factors dict from stored phases
+        light_factors = {}
+        for segment_id, phase in phase_updates.items():
+            segment = self.network_grid.segments.get(segment_id)
+            if not segment:
+                continue
+            
+            bc_config = segment.get('bc_config', {})
+            left_bc = bc_config.get('left', {})
+            traffic_signal_phases = left_bc.get('traffic_signal_phases', {})
+            
+            # Get light_factor from phase config (default: 1.0 if not specified)
+            if phase in traffic_signal_phases:
+                phase_config = traffic_signal_phases[phase]
+                # Phase config can specify light_factor directly, or infer from type
+                if isinstance(phase_config, dict) and 'light_factor' in phase_config:
+                    light_factors[segment_id] = phase_config['light_factor']
+                elif hasattr(phase_config, 'light_factor'):
+                    light_factors[segment_id] = phase_config.light_factor
+                elif phase == 0 or phase == 'green' or 'green' in str(phase).lower():
+                    # Convention: phase 0 or 'green*' = GREEN
+                    light_factors[segment_id] = 1.0
+                else:
+                    # phase 1+ or 'red*' = RED (99% blocking)
+                    light_factors[segment_id] = 0.01
+            else:
+                light_factors[segment_id] = 1.0  # Default GREEN
+        
+        # Update GPU light_factors array
+        if hasattr(self, 'network_simulator') and self.network_simulator is not None:
+            gpu_pool = self.network_simulator.gpu_pool
+            if gpu_pool is not None:
+                gpu_pool.update_light_factors(light_factors)
+                
+                if self.debug:
+                    print(f"[RL CONTROL] Updated GPU light_factors: {light_factors}")
     
     def _validate_segment_phase(self, segment_id, phase: str) -> None:
         """

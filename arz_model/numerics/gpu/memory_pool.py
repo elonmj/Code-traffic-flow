@@ -121,6 +121,10 @@ class GPUMemoryPool:
         self.segment_id_to_index: Dict[str, int] = {}  # Mapping seg_id -> array index
         self.num_segments: int = len(segment_ids)
         
+        # Traffic signal light factors per segment (for flux blocking)
+        # 1.0 = GREEN (no blocking), 0.01 = RED (99% blocking)
+        self.d_light_factors: Optional[cuda.devicearray.DeviceNDArray] = None
+        
         self.d_R_pool: Dict[str, cuda.devicearray.DeviceNDArray] = {}
         self.d_BC_pool: Dict[str, Dict[str, cuda.devicearray.DeviceNDArray]] = {}
         self.d_flux_pool: Dict[str, cuda.devicearray.DeviceNDArray] = {}
@@ -197,6 +201,11 @@ class GPUMemoryPool:
         # Transfer batched metadata to GPU
         self.d_batched_offsets = cuda.to_device(np.array(offsets_no_ghosts, dtype=np.int32))
         self.d_segment_lengths = cuda.to_device(np.array(lengths_no_ghosts, dtype=np.int32))
+        
+        # Allocate light factors array (one per segment, default=1.0 for GREEN)
+        # Used by batched_ssp_rk3_kernel for traffic signal flux blocking
+        light_factors_cpu = np.ones(self.num_segments, dtype=np.float64)
+        self.d_light_factors = cuda.to_device(light_factors_cpu)
         
         # Store CPU copies for fast checkpointing
         self.d_batched_offsets_host = np.array(offsets_no_ghosts, dtype=np.int32)
@@ -433,18 +442,62 @@ class GPUMemoryPool:
         self.d_U_batched[offset:offset+length, :] = new_U
     
     def get_batched_arrays(self) -> Tuple[cuda.devicearray.DeviceNDArray, cuda.devicearray.DeviceNDArray,
-                                            cuda.devicearray.DeviceNDArray, cuda.devicearray.DeviceNDArray]:
+                                            cuda.devicearray.DeviceNDArray, cuda.devicearray.DeviceNDArray,
+                                            cuda.devicearray.DeviceNDArray]:
         """
         Get all batched arrays and metadata for batched kernel launch.
         
         Returns:
-            Tuple of (d_U_batched, d_R_batched, d_batched_offsets, d_segment_lengths)
+            Tuple of (d_U_batched, d_R_batched, d_batched_offsets, d_segment_lengths, d_light_factors)
             - d_U_batched: [total_cells_no_ghosts, 4] state array
             - d_R_batched: [total_cells_no_ghosts] road quality
             - d_batched_offsets: [num_segments] starting index for each segment
             - d_segment_lengths: [num_segments] number of cells per segment
+            - d_light_factors: [num_segments] traffic signal light factors (1.0=GREEN, 0.01=RED)
         """
-        return self.d_U_batched, self.d_R_batched, self.d_batched_offsets, self.d_segment_lengths
+        return self.d_U_batched, self.d_R_batched, self.d_batched_offsets, self.d_segment_lengths, self.d_light_factors
+    
+    def update_light_factors(self, light_factors: Dict[str, float]) -> None:
+        """
+        Update light factors for specified segments on GPU.
+        
+        This method is called by SimulationRunner.set_boundary_phases_bulk() to
+        synchronize traffic signal phases to the GPU for flux blocking in the
+        batched_ssp_rk3_kernel.
+        
+        Args:
+            light_factors: Dict mapping segment_id to light_factor value.
+                          Values: 1.0 = GREEN (no blocking), 0.01 = RED (99% blocking)
+        
+        Example:
+            >>> pool.update_light_factors({'seg_0': 0.01, 'seg_1': 1.0})
+        
+        Raises:
+            RuntimeError: If GPUMemoryPool not initialized for batched operations
+        """
+        if self.d_light_factors is None:
+            raise RuntimeError("GPUMemoryPool not initialized for batched operations")
+        
+        # Build update array on CPU
+        update_indices = []
+        update_values = []
+        
+        for seg_id, light_factor in light_factors.items():
+            if seg_id not in self.segment_id_to_index:
+                continue  # Skip unknown segments
+            
+            idx = self.segment_id_to_index[seg_id]
+            update_indices.append(idx)
+            update_values.append(light_factor)
+        
+        if not update_indices:
+            return  # Nothing to update
+        
+        # Copy current to host, update, copy back (efficient for sparse updates)
+        light_factors_cpu = self.d_light_factors.copy_to_host()
+        for idx, val in zip(update_indices, update_values):
+            light_factors_cpu[idx] = val
+        self.d_light_factors.copy_to_device(light_factors_cpu)
     
     # ========== End Task 1.3 ==========
     

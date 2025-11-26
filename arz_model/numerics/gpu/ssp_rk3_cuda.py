@@ -711,6 +711,7 @@ def batched_ssp_rk3_kernel(
     all_U_n,            # [total_cells, 4] concatenated state
     all_U_np1,          # [total_cells, 4] output
     all_R,              # [total_cells] road quality
+    all_light_factors,  # [num_segments] traffic signal light factors (1.0=GREEN, 0.01=RED)
     segment_offsets,    # [num_segments] cumulative offsets
     segment_lengths,    # [num_segments] individual sizes
     dt, dx,
@@ -728,6 +729,11 @@ def batched_ssp_rk3_kernel(
     This kernel eliminates NumbaPerformanceWarning by launching 70 blocks
     instead of 70 sequential single-block launches.
     
+    Traffic Signal Integration (Phase 3):
+    - all_light_factors[seg_idx] controls flux blocking at segment LEFT boundary
+    - 1.0 = GREEN (full flow), 0.01 = RED (99% blocking)
+    - Applied to inflow flux at i_local == 0
+    
     Expected GPU utilization: 70 blocks / 56 SMs = 125%
     Expected performance: 4-6× speedup vs per-segment architecture
     """
@@ -738,6 +744,9 @@ def batched_ssp_rk3_kernel(
     # Get this segment's data range
     offset = segment_offsets[seg_idx]
     N = segment_lengths[seg_idx]
+    
+    # Get light factor for this segment (1.0=GREEN, 0.01=RED)
+    light_factor = all_light_factors[seg_idx]
     
     # Thread index within segment
     i_local = cuda.threadIdx.x
@@ -806,6 +815,14 @@ def batched_ssp_rk3_kernel(
             U_R[v] = v_right
         
         central_upwind_flux_device(U_L, U_R, F_left, alpha, rho_max, epsilon, K_m, gamma_m, K_c, gamma_c)
+        
+        # ========== TRAFFIC SIGNAL FLUX BLOCKING (Task 3.2) ==========
+        # Apply light_factor to LEFT boundary flux (i_local == 0)
+        # This blocks inflow when signal is RED (light_factor = 0.01)
+        # GREEN (1.0) = full flow, RED (0.01) = 99% blocking
+        if i_local == 0:
+            for v in range(4):
+                F_left[v] = F_left[v] * light_factor
         
         # Right flux at i+1/2
         for v in range(4):
