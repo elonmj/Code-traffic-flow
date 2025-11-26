@@ -257,7 +257,7 @@ def test_5_2_integration():
     # Create congested scenario to make signal effects visible
     print("\n[Setup] Creating congested traffic scenario...")
     config = create_victoria_island_config(
-        t_final=120.0,  # Short episode for testing
+        t_final=300.0,  # Longer episode (5 minutes) to see flux blocking effects
         output_dt=15.0,
         cells_per_100m=4,
         default_density=80.0,   # HIGH congestion
@@ -301,9 +301,14 @@ def test_5_2_integration():
     
     # Test 1: Run episode with ALL GREEN (action=0 = keep phase, initial phase=0=GREEN)
     print("\n[Test 1] Running episode with ALL GREEN phases...")
+    print("  → All segments will have light_factor=1.0 (full flow)")
     try:
         env_green = TrafficSignalEnvDirectV3(config, quiet=True)
         obs, info = env_green.reset()
+        
+        # IMPORTANT: Force phase=0 (GREEN) at start
+        env_green.current_phase = 0
+        env_green._apply_phase_to_network(0)
         
         rewards_green = []
         done = False
@@ -326,17 +331,22 @@ def test_5_2_integration():
         results['task_5_2_integration_test'] = {'success': False, 'error': str(e)}
         return False
     
-    # Test 2: Run episode with ALL RED (action=1 = switch to phase 1 = RED, keep switching)
-    print("\n[Test 2] Running episode with FREQUENT RED phases (switching every step)...")
+    # Test 2: Run episode with CONSTANT RED (force phase=1 the whole time)
+    print("\n[Test 2] Running episode with CONSTANT RED phases (blocking flow)...")
+    print("  → All signalized segments will have light_factor=0.01 (99% blocking)")
     try:
         env_red = TrafficSignalEnvDirectV3(config, quiet=True)
         obs, info = env_red.reset()
+        
+        # IMPORTANT: Force phase=1 (RED) at start and keep it
+        env_red.current_phase = 1
+        env_red._apply_phase_to_network(1)
         
         rewards_red = []
         done = False
         step = 0
         while not done:
-            action = 1  # Switch phase every step → more RED time
+            action = 0  # Keep current phase (which is RED=1)
             obs, reward, terminated, truncated, info = env_red.step(action)
             rewards_red.append(reward)
             done = terminated or truncated
