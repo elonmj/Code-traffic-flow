@@ -398,16 +398,33 @@ class NetworkSimulator:
         self.logger.info("✅ NetworkSimulator reset to t=0.")
 
     def sync_state_to_cpu(self):
-        """Downloads current GPU state to NetworkGrid segments on CPU."""
+        """
+        Downloads current GPU state to NetworkGrid segments on CPU.
+        
+        CRITICAL FIX (2025-11-26): Uses batched array (d_U_batched) instead of
+        legacy mega_pool (d_U_mega_pool). The batched array is what actually
+        gets updated during simulation via batched_strang_splitting_step_gpu_native.
+        
+        Note: Batched array is [total_cells, 4] (physical cells only, no ghosts).
+        NetworkGrid segments expect [4, N_total] with ghost cells.
+        """
         if not self.gpu_pool:
             return
             
         for seg_id, segment_data in self.network.segments.items():
-            d_U = self.gpu_pool.get_segment_state(seg_id)
-            # Fix for stride mismatch: copy to new host array then assign
-            # d_U is a slice of a larger array, so it has different strides than a contiguous segment array
-            host_U = d_U.copy_to_host()
-            segment_data['U'][:] = host_U
+            # Get batched state: shape [N_phys, 4]
+            d_U_batched = self.gpu_pool.get_segment_state_batched(seg_id)
+            host_U_batched = d_U_batched.copy_to_host()  # [N_phys, 4]
+            
+            # Transpose to legacy format: [4, N_phys]
+            host_U_phys = host_U_batched.T  # [4, N_phys]
+            
+            # Get grid info for proper indexing
+            grid = segment_data['grid']
+            
+            # Copy into the physical cell region (preserve ghost cells)
+            # NetworkGrid U is [4, N_total] where N_total = N_phys + 2*ghost_cells
+            segment_data['U'][:, grid.physical_cell_indices] = host_U_phys
 
     def _debug_dump_state(self, label: str):
         """Prints min/max/mean stats for each segment's density and speed (DEBUG mode only)."""
