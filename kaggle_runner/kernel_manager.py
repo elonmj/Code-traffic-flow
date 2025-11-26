@@ -391,8 +391,8 @@ try:
     # ========== STEP 2: INSTALL DEPENDENCIES ==========
     log_and_print("info", "\\n[STEP 2/4] Installing dependencies...")
     
-    # Add pytest for running test suites
-    dependencies = ["pytest", "pydantic", "tqdm", "numba"]
+    # Add pytest for running test suites, gymnasium for RL environments
+    dependencies = ["pytest", "pydantic", "tqdm", "numba", "gymnasium"]
     
     for dep in dependencies:
         log_and_print("info", f"Installing {{dep}}...")
