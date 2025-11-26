@@ -268,6 +268,19 @@ Néanmoins, la cohérence physique du modèle a été validée à travers des si
 
 Cette section valide le comportement dynamique du jumeau numérique à l'échelle du réseau, testant ainsi les Hypothèses de Travail H4 (comportement global). Contrairement aux tests sur segments isolés, cette validation met en jeu les interactions complexes aux intersections et la propagation des ondes de trafic à travers la topologie réelle.
 
+\paragraph{Topologie et Infrastructure du Réseau}
+
+Avant d'analyser les dynamiques de trafic, la Figure~\ref{fig:comprehensive_network} présente une vue d'ensemble du réseau simulé avec tous ses éléments d'infrastructure. Cette représentation synthétique combine la topologie du graphe routier, les équipements de régulation (feux de signalisation), et les points d'accès (entrées/sorties).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{images/chapter3/comprehensive_network.png}
+    \caption{Vue d'ensemble du réseau de Victoria Island avec infrastructure complète. Le graphe routier comprend 60 intersections connectées par 70 segments. Les \textbf{triangles verts} ($\triangleright$) indiquent les 4 points d'entrée du trafic, les \textbf{hexagones rouges} les 4 points de sortie. Les \textbf{carrés jaunes} marquent les 8 intersections équipées de feux de signalisation (contrôlables par l'agent RL). Les noms des 4 artères principales (Akin Adesola Street, Ahmadu Bello Way, Adeola Odeku Street, Saka Tinubu Street) sont indiqués une seule fois chacun. La coloration des segments reflète un état de trafic instantané (rouge=congestion, vert=fluide).}
+    \label{fig:comprehensive_network}
+\end{figure}
+
+Cette infrastructure constitue le support physique sur lequel l'agent RL apprendra à optimiser les cycles de feux. La présence de 8 carrefours signalisés offre 8 points de contrôle pour la politique apprise.
+
 \paragraph{Analyse des Instantanés du Réseau (Network Snapshots)}
 
 La Figure~\ref{fig:network_snapshots} présente une série temporelle d'instantanés de l'état du trafic sur le corridor simulé. Ces visualisations permettent d'observer l'évolution des densités et des vitesses sur l'ensemble des 70 segments du réseau.
