@@ -1,4 +1,4 @@
-"""
+﻿"""
 Test Traffic Signal Fix: Validate that RL actions affect traffic flow
 
 This script tests the critical fix for the traffic signal flux blocking bug:
@@ -87,7 +87,7 @@ def test_5_1_unit_tests():
         
         test_results['initialization'] = 'PASSED'
         print("  ✓ PASSED: Light factors initialized to 1.0 (GREEN)")
-        pool.clear()
+        # pool.clear()  # Removed to avoid CUDA context corruption
     except Exception as e:
         test_results['initialization'] = f'FAILED: {e}'
         print(f"  ✗ FAILED: {e}")
@@ -107,7 +107,7 @@ def test_5_1_unit_tests():
         
         test_results['single_update'] = 'PASSED'
         print("  ✓ PASSED: Single segment updated correctly")
-        pool.clear()
+        # pool.clear()  # Removed to avoid CUDA context corruption
     except Exception as e:
         test_results['single_update'] = f'FAILED: {e}'
         print(f"  ✗ FAILED: {e}")
@@ -126,7 +126,7 @@ def test_5_1_unit_tests():
         
         test_results['multiple_updates'] = 'PASSED'
         print("  ✓ PASSED: Multiple segments updated correctly")
-        pool.clear()
+        # pool.clear()  # Removed to avoid CUDA context corruption
     except Exception as e:
         test_results['multiple_updates'] = f'FAILED: {e}'
         print(f"  ✗ FAILED: {e}")
@@ -142,7 +142,7 @@ def test_5_1_unit_tests():
         
         test_results['unknown_segment'] = 'PASSED'
         print("  ✓ PASSED: Unknown segment silently skipped")
-        pool.clear()
+        # pool.clear()  # Removed to avoid CUDA context corruption
     except Exception as e:
         test_results['unknown_segment'] = f'FAILED: {e}'
         print(f"  ✗ FAILED: {e}")
@@ -158,7 +158,7 @@ def test_5_1_unit_tests():
         
         test_results['empty_update'] = 'PASSED'
         print("  ✓ PASSED: Empty update does nothing")
-        pool.clear()
+        # pool.clear()  # Removed to avoid CUDA context corruption
     except Exception as e:
         test_results['empty_update'] = f'FAILED: {e}'
         print(f"  ✗ FAILED: {e}")
@@ -184,7 +184,7 @@ def test_5_1_unit_tests():
         
         test_results['toggle_green_red'] = 'PASSED'
         print("  ✓ PASSED: Toggle GREEN ↔ RED works correctly")
-        pool.clear()
+        # pool.clear()  # Removed to avoid CUDA context corruption
     except Exception as e:
         test_results['toggle_green_red'] = f'FAILED: {e}'
         print(f"  ✗ FAILED: {e}")
@@ -209,7 +209,7 @@ def test_5_1_unit_tests():
         
         test_results['get_batched_arrays'] = 'PASSED'
         print("  ✓ PASSED: get_batched_arrays returns 5 elements including light_factors")
-        pool.clear()
+        # pool.clear()  # Removed to avoid CUDA context corruption
     except Exception as e:
         test_results['get_batched_arrays'] = f'FAILED: {e}'
         print(f"  ✗ FAILED: {e}")
@@ -527,3 +527,4 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
