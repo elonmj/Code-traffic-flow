@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 
 # Configuration
-INPUT_DIR = r"d:\Projets\Alibi\Code project\kaggle\results\generic-test-runner-kernel\thesis_stage1"
+INPUT_DIR = r"d:\Projets\Alibi\Code project\results"
 OUTPUT_DIR = r"d:\Projets\Alibi\Memory\New\images\chapter3"
 
 # Ensure output directory exists
