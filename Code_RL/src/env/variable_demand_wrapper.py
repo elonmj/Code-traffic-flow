@@ -13,6 +13,7 @@ Scientific Rationale (Webster's Formula):
 """
 import gymnasium as gym
 import numpy as np
+import gc
 from typing import Tuple, Dict, Any, Optional
 
 from arz_model.config import create_victoria_island_config
@@ -110,6 +111,12 @@ class VariableDemandEnv(gym.Env):
     
     def reset(self, seed=None, options=None):
         """Reset with randomized demand parameters (Domain Randomization)."""
+        # CLEANUP: Close previous environment to free memory (CRITICAL for long training)
+        if self._inner_env is not None:
+            self._inner_env.close()
+            self._inner_env = None
+            gc.collect()  # Force garbage collection of large simulation objects
+
         # Sample new demand parameters from uniform distribution
         self._current_inflow_density = float(self._rng.uniform(*self.density_range))
         self._current_inflow_velocity = float(self._rng.uniform(*self.velocity_range))
