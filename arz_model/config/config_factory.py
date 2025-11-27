@@ -257,6 +257,33 @@ class CityNetworkConfigFactory:
             print(f"   ⚠️  Could not load OSM signals: {e}", flush=True)
             return set()
     
+    def _load_csv_signalized_nodes(self) -> Set[str]:
+        """
+        Load signalized nodes directly from the topology CSV file.
+        
+        Looks for 'has_signal_end' column which marks the v (end) node
+        of each segment as having a traffic signal.
+        
+        Returns:
+            Set of node IDs that have traffic signals
+        """
+        if self.df is None:
+            return set()
+        
+        signalized = set()
+        
+        # Check for has_signal_end column (from corridor_generator.py / convert_to_arz_format.py)
+        if 'has_signal_end' in self.df.columns:
+            # Get v nodes (end of segment) where has_signal_end == 1 or True
+            signal_mask = self.df['has_signal_end'].isin([1, True, '1', 'True', 'true'])
+            v_signals = self.df.loc[signal_mask, 'v'].astype(str).unique()
+            signalized.update(v_signals)
+            
+            if signalized:
+                print(f"   🚦 Detected {len(signalized)} signalized nodes from CSV (has_signal_end)", flush=True)
+        
+        return signalized
+    
     def _create_traffic_light_config(self, node_id: str) -> Dict[str, Any]:
         """
         Create traffic light configuration with regional defaults.
@@ -435,8 +462,11 @@ class CityNetworkConfigFactory:
         # Step 3: Analyze network structure (global reflection)
         self._analyze_network_structure()
         
-        # Step 3.5: Load OSM signalized nodes
-        self.signalized_nodes = self._load_osm_signalized_nodes()
+        # Step 3.5: Load signalized nodes from all available sources
+        # Priority: OSM enriched file > CSV has_signal_end column
+        osm_signals = self._load_osm_signalized_nodes()
+        csv_signals = self._load_csv_signalized_nodes()
+        self.signalized_nodes = osm_signals | csv_signals  # Union of both sources
         
         # Step 4: Generate segment configurations
         print("\n   🔧 Generating segment configurations...", flush=True)
