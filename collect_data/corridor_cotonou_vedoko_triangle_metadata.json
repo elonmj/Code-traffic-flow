@@ -1,0 +1,70 @@
+{
+  "corridor_id": "cotonou_vedoko",
+  "name": "Cotonou_Vedoko_Triangle",
+  "description": "Triangle Vêdoko - Stade Amitié - Étoile Rouge (Cotonou, Bénin)",
+  "generated_at": "2025-11-27T23:02:30.990875",
+  "bbox": {
+    "south": 6.365,
+    "west": 2.375,
+    "north": 6.395,
+    "east": 2.41
+  },
+  "statistics": {
+    "total_segments": 645,
+    "total_length_m": 34535.8,
+    "total_length_km": 34.54,
+    "avg_segment_length_m": 53.5,
+    "signals_osm": 1,
+    "signals_forced": 3,
+    "signals_total": 4,
+    "segments_with_signal_end": 4
+  },
+  "roads": {
+    "Unknown": 219,
+    "Rue 12.191": 115,
+    "Avenue du Renouveau": 106,
+    "Boulevard de l’Europe": 83,
+    "Avenue Dorothée Lima": 48,
+    "Avenue du Canada": 33,
+    "Rue 11.056": 21,
+    "Rue 150": 19,
+    "Pont de Fifadji": 1
+  },
+  "rl_suitability": {
+    "asymmetric_branches": true,
+    "conflicting_movements": true,
+    "variable_bottleneck": true,
+    "irregular_spacing": true,
+    "score": "EXCELLENT"
+  },
+  "config_used": {
+    "highway_types": [
+      "trunk",
+      "primary",
+      "secondary"
+    ],
+    "road_filter": null,
+    "force_signals": [
+      {
+        "name": "Carrefour Vêdoko (Toyota)",
+        "lat": 6.3770938,
+        "lon": 2.3898028
+      },
+      {
+        "name": "Carrefour Stade Amitié",
+        "lat": 6.386221,
+        "lon": 2.384248
+      },
+      {
+        "name": "Carrefour Rue 150",
+        "lat": 6.37538,
+        "lon": 2.405042
+      }
+    ],
+    "defaults": {
+      "lanes": 2,
+      "maxspeed": 50,
+      "surface": "asphalt"
+    }
+  }
+}
