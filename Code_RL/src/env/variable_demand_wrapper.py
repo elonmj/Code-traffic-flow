@@ -13,7 +13,6 @@ Scientific Rationale (Webster's Formula):
 """
 import gymnasium as gym
 import numpy as np
-import gc
 from typing import Tuple, Dict, Any, Optional
 
 from arz_model.config import create_victoria_island_config
@@ -111,40 +110,67 @@ class VariableDemandEnv(gym.Env):
     
     def reset(self, seed=None, options=None):
         """Reset with randomized demand parameters (Domain Randomization)."""
-        # CLEANUP: Close previous environment to free memory (CRITICAL for long training)
-        if self._inner_env is not None:
-            self._inner_env.close()
-            self._inner_env = None
-            gc.collect()  # Force garbage collection of large simulation objects
-
         # Sample new demand parameters from uniform distribution
         self._current_inflow_density = float(self._rng.uniform(*self.density_range))
         self._current_inflow_velocity = float(self._rng.uniform(*self.velocity_range))
         
-        # Recreate environment with new parameters
-        self._inner_env = self._create_env_with_demand(
-            inflow_density=self._current_inflow_density,
-            inflow_velocity=self._current_inflow_velocity
-        )
+        # Strategy: Reuse existing environment if possible, recreate only if needed
+        # This avoids the costly and error-prone recreation of CUDA contexts
+        if self._inner_env is not None:
+            try:
+                # Try to reset the existing environment
+                # This is much faster and more stable than recreating
+                obs, info = self._inner_env.reset(seed=seed, options=options)
+                
+                # Add demand info to info dict for logging
+                info['inflow_density'] = self._current_inflow_density
+                info['inflow_velocity'] = self._current_inflow_velocity
+                
+                if not self.quiet:
+                    print(f"📊 Episode demand: ρ={self._current_inflow_density:.1f} veh/km, v={self._current_inflow_velocity:.1f} km/h")
+                
+                return obs, info
+            except Exception as e:
+                # If reset fails, we'll try to recreate the environment
+                if not self.quiet:
+                    print(f"⚠️ Reset failed, recreating environment: {e}")
+                self._inner_env = None
         
-        # Reset the new environment
-        obs, info = self._inner_env.reset(seed=seed, options=options)
-        
-        # Add demand info to info dict for logging
-        info['inflow_density'] = self._current_inflow_density
-        info['inflow_velocity'] = self._current_inflow_velocity
-        
-        if not self.quiet:
-            print(f"📊 Episode demand: ρ={self._current_inflow_density:.1f} veh/km, v={self._current_inflow_velocity:.1f} km/h")
-        
-        return obs, info
+        # If we get here, we need to create a new environment
+        try:
+            self._inner_env = self._create_env_with_demand(
+                inflow_density=self._current_inflow_density,
+                inflow_velocity=self._current_inflow_velocity
+            )
+            
+            if self._inner_env is None:
+                raise RuntimeError("Failed to create environment: _create_env_with_demand returned None")
+            
+            # Reset the new environment
+            obs, info = self._inner_env.reset(seed=seed, options=options)
+            
+            # Add demand info to info dict for logging
+            info['inflow_density'] = self._current_inflow_density
+            info['inflow_velocity'] = self._current_inflow_velocity
+            
+            if not self.quiet:
+                print(f"📊 Episode demand (new env): ρ={self._current_inflow_density:.1f} veh/km, v={self._current_inflow_velocity:.1f} km/h")
+            
+            return obs, info
+            
+        except Exception as e:
+            raise RuntimeError(f"Failed to create/reset VariableDemandEnv: {e}") from e
     
     def step(self, action):
         """Forward step to inner environment."""
+        if self._inner_env is None:
+            raise RuntimeError("Cannot call step() before reset(): inner environment is None")
         return self._inner_env.step(action)
     
     def render(self):
         """Forward render to inner environment."""
+        if self._inner_env is None:
+            return None
         return self._inner_env.render()
     
     def close(self):
