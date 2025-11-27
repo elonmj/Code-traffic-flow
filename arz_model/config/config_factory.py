@@ -603,3 +603,34 @@ def create_victoria_island_config(
         region='west_africa',
         **kwargs
     )
+
+
+def create_cotonou_vedoko_config(
+    csv_path: Optional[str] = None,
+    enriched_path: Optional[str] = None,
+    **kwargs
+) -> NetworkSimulationConfig:
+    """
+    Convenience function to create a Cotonou Vedoko network configuration.
+    
+    Args:
+        csv_path: Path to topology CSV. If None, uses default location.
+        enriched_path: Optional path to OSM-enriched Excel file
+        **kwargs: Additional parameters to pass to CityNetworkConfigFactory
+        
+    Returns:
+        Complete NetworkSimulationConfig ready for simulation
+    """
+    if csv_path is None:
+        # Default path relative to this file
+        # Path: Code project/collect_data/arz_topology_cotonou_vedoko_triangle.csv
+        config_dir = Path(__file__).parent
+        csv_path = config_dir.parent.parent / 'collect_data' / 'arz_topology_cotonou_vedoko_triangle.csv'
+    
+    return create_city_network_config(
+        city_name="Cotonou Vedoko",
+        csv_path=str(csv_path),
+        enriched_path=enriched_path,
+        region='west_africa',
+        **kwargs
+    )
