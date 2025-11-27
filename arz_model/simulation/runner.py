@@ -892,8 +892,8 @@ class SimulationRunner:
                     else:
                         segments_not_found += 1
                 
-                # DEBUG: Always print this critical info
-                print(f"[DEBUG set_boundary_phases_bulk] Updating {segments_found} segments on GPU, {segments_not_found} not found in pool")
+                # DEBUG: Suppress debug output in production
+                # print(f"[DEBUG set_boundary_phases_bulk] Updating {segments_found} segments on GPU, {segments_not_found} not found in pool")
                 if segments_not_found > 0 and segments_found == 0:
                     print(f"  ⚠️ WARNING: No segments matched! Pool has IDs like: {list(gpu_pool.segment_id_to_index.keys())[:3]}")
                     print(f"  ⚠️ But phase_updates has IDs like: {list(light_factors.keys())[:3]}")
