@@ -165,7 +165,7 @@ class NetworkCouplingGPU:
 
         # Try to get batched arrays first (Phase GPU Batching)
         try:
-            d_U_batched, d_R_batched, d_segment_lengths, d_batched_offsets, d_light_factors = self.gpu_pool.get_batched_arrays()
+            d_U_batched, d_R_batched, d_batched_offsets, d_segment_lengths, d_light_factors = self.gpu_pool.get_batched_arrays()
             use_batched = True
             # print(f"DEBUG: apply_coupling using batched mode. d_light_factors available: {d_light_factors is not None}")
         except (AttributeError, ValueError) as e:

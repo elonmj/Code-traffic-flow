@@ -443,8 +443,8 @@ def cfl_condition_gpu_batched(gpu_pool: 'GPUMemoryPool', dx: float, params: 'Mod
         - .copilot-tracking/research/20251117-gpu-occupancy-warning-research.md
         - .copilot-tracking/plans/20251117-gpu-batching-architecture-plan.instructions.md
     """
-    # Get batched arrays
-    d_U_batched, _, d_segment_lengths, d_batched_offsets = gpu_pool.get_batched_arrays()
+    # Get batched arrays (order: U, R, offsets, lengths, light_factors)
+    d_U_batched, _, d_batched_offsets, d_segment_lengths, _ = gpu_pool.get_batched_arrays()
     num_segments = len(gpu_pool.segment_ids)
     
     # Allocate output array for per-segment max ratios
