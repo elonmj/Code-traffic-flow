@@ -109,57 +109,74 @@ class VariableDemandEnv(gym.Env):
         )
     
     def reset(self, seed=None, options=None):
-        """Reset with randomized demand parameters (Domain Randomization)."""
-        # Sample new demand parameters from uniform distribution
-        self._current_inflow_density = float(self._rng.uniform(*self.density_range))
-        self._current_inflow_velocity = float(self._rng.uniform(*self.velocity_range))
+        """Reset with randomized demand parameters (Domain Randomization).
         
-        # Strategy: Reuse existing environment if possible, recreate only if needed
-        # This avoids the costly and error-prone recreation of CUDA contexts
-        if self._inner_env is not None:
-            try:
-                # Try to reset the existing environment
-                # This is much faster and more stable than recreating
-                obs, info = self._inner_env.reset(seed=seed, options=options)
-                
-                # Add demand info to info dict for logging
-                info['inflow_density'] = self._current_inflow_density
-                info['inflow_velocity'] = self._current_inflow_velocity
-                
-                if not self.quiet:
-                    print(f"📊 Episode demand: ρ={self._current_inflow_density:.1f} veh/km, v={self._current_inflow_velocity:.1f} km/h")
-                
-                return obs, info
-            except Exception as e:
-                # If reset fails, we'll try to recreate the environment
-                if not self.quiet:
-                    print(f"⚠️ Reset failed, recreating environment: {e}")
-                self._inner_env = None
+        TRUE Domain Randomization: At each episode reset, samples new inflow
+        parameters and applies them to the simulator BEFORE resetting state.
         
-        # If we get here, we need to create a new environment
-        try:
+        Args:
+            seed: Optional random seed
+            options: Optional dict that can override demand parameters:
+                - 'inflow_density': Override sampled density (veh/km)
+                - 'inflow_velocity': Override sampled velocity (km/h)
+        """
+        # Parse options for external control of demand
+        if options is None:
+            options = {}
+        
+        # Sample new demand parameters OR use provided values
+        if 'inflow_density' in options:
+            self._current_inflow_density = float(options['inflow_density'])
+        else:
+            self._current_inflow_density = float(self._rng.uniform(*self.density_range))
+            
+        if 'inflow_velocity' in options:
+            self._current_inflow_velocity = float(options['inflow_velocity'])
+        else:
+            self._current_inflow_velocity = float(self._rng.uniform(*self.velocity_range))
+        
+        # Ensure inner environment exists
+        if self._inner_env is None:
             self._inner_env = self._create_env_with_demand(
                 inflow_density=self._current_inflow_density,
                 inflow_velocity=self._current_inflow_velocity
             )
-            
             if self._inner_env is None:
                 raise RuntimeError("Failed to create environment: _create_env_with_demand returned None")
-            
-            # Reset the new environment
+        
+        # ✅ CRITICAL: Update BC params BEFORE reset (TRUE Domain Randomization)
+        # This modifies the inflow boundary conditions that will be applied
+        # during simulation, without recreating the environment
+        self._inner_env.set_inflow_conditions(
+            density=self._current_inflow_density,
+            velocity=self._current_inflow_velocity
+        )
+        
+        # Reset the simulator (restores initial state but uses NEW BC params)
+        try:
             obs, info = self._inner_env.reset(seed=seed, options=options)
-            
-            # Add demand info to info dict for logging
-            info['inflow_density'] = self._current_inflow_density
-            info['inflow_velocity'] = self._current_inflow_velocity
-            
-            if not self.quiet:
-                print(f"📊 Episode demand (new env): ρ={self._current_inflow_density:.1f} veh/km, v={self._current_inflow_velocity:.1f} km/h")
-            
-            return obs, info
-            
         except Exception as e:
-            raise RuntimeError(f"Failed to create/reset VariableDemandEnv: {e}") from e
+            # If reset fails catastrophically, try recreating environment
+            if not self.quiet:
+                print(f"⚠️ Reset failed, recreating environment: {e}")
+            self._inner_env = self._create_env_with_demand(
+                inflow_density=self._current_inflow_density,
+                inflow_velocity=self._current_inflow_velocity
+            )
+            self._inner_env.set_inflow_conditions(
+                density=self._current_inflow_density,
+                velocity=self._current_inflow_velocity
+            )
+            obs, info = self._inner_env.reset(seed=seed, options=options)
+        
+        # Add demand info to info dict for logging/monitoring
+        info['inflow_density'] = self._current_inflow_density
+        info['inflow_velocity'] = self._current_inflow_velocity
+        
+        if not self.quiet:
+            print(f"📊 Episode demand: ρ={self._current_inflow_density:.1f} veh/km, v={self._current_inflow_velocity:.1f} km/h")
+        
+        return obs, info
     
     def step(self, action):
         """Forward step to inner environment."""

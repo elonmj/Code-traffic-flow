@@ -277,6 +277,62 @@ class TrafficSignalEnvDirectV3(gym.Env):
             if not self.quiet:
                 print(f"Warning: Failed to apply phase {phase} to network: {e}")
 
+    def set_inflow_conditions(self, density: float, velocity: float) -> None:
+        """
+        Update inflow boundary conditions for all entry segments.
+        
+        This enables TRUE Domain Randomization by allowing the inflow parameters
+        to be changed at reset time WITHOUT recreating the environment.
+        
+        MUST be called BEFORE reset() for changes to take effect on the next episode.
+        
+        Args:
+            density: Inflow density in veh/km (will be converted to veh/m)
+            velocity: Inflow velocity in km/h (will be converted to m/s)
+            
+        Example:
+            >>> env.set_inflow_conditions(density=200.0, velocity=40.0)
+            >>> obs, info = env.reset()  # New episode uses updated inflow
+        """
+        if self.network_grid is None:
+            if not self.quiet:
+                print("Warning: set_inflow_conditions called before environment initialized")
+            return
+            
+        phys = self.simulation_config.physics
+        
+        # Convert units: veh/km → veh/m, km/h → m/s
+        rho_total = density / 1000.0  # veh/km → veh/m
+        v_ms = velocity / 3.6  # km/h → m/s
+        
+        # Split density by vehicle class using alpha (motorcycle fraction)
+        alpha = phys.alpha
+        rho_m = rho_total * alpha           # Motorcycle density
+        rho_c = rho_total * (1.0 - alpha)   # Car density
+        
+        # Use characteristic velocities (w = v + p, but at low density p ≈ 0)
+        w_m = v_ms  # Motorcycle Lagrangian velocity
+        w_c = v_ms  # Car Lagrangian velocity
+        
+        # Update BC params for ALL segments with inflow boundary conditions
+        segments_updated = 0
+        for seg_id, segment in self.network_grid.segments.items():
+            # Check if segment has current_bc_params (created during grid initialization)
+            if 'current_bc_params' not in segment:
+                segment['current_bc_params'] = {}
+            
+            bc_params = segment['current_bc_params']
+            
+            # Check if LEFT boundary is inflow type
+            left_bc = bc_params.get('left', {})
+            if left_bc.get('type') == 'inflow':
+                # Update the inflow state vector [rho_m, w_m, rho_c, w_c]
+                left_bc['state'] = [rho_m, w_m, rho_c, w_c]
+                segments_updated += 1
+                
+        if not self.quiet and segments_updated > 0:
+            print(f"📊 Updated inflow BC for {segments_updated} segments: ρ={density:.0f} veh/km, v={velocity:.0f} km/h")
+
     def render(self):
         pass
 
