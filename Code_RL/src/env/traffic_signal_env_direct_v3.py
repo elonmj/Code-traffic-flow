@@ -395,9 +395,8 @@ class TrafficSignalEnvDirectV3(gym.Env):
         should_log = (self._dr_call_count <= 5) or (self._dr_call_count % 50 == 0)
         
         if segments_updated > 0 and should_log:
-            print(f"🔄 DR[{self._dr_call_count}]: ρ={density:.0f} veh/km, v={velocity:.0f} km/h → {segments_updated} segments modified")
-            for detail in log_details[:2]:  # Show first 2 segments
-                print(f"   └─ {detail}")
+            # Concise log: just the summary, no per-segment details
+            print(f"🔄 DR[{self._dr_call_count}]: ρ={density:.0f} veh/km, v={velocity:.0f} km/h → {segments_updated} segments updated")
 
     def render(self):
         pass
