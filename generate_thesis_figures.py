@@ -87,6 +87,9 @@ def plot_hovmoller_diagram(filename, title, output_filename):
     - Top-right: Cars density
     - Bottom-left: Motos velocity
     - Bottom-right: Cars velocity
+    
+    If history data is corrupted (NaN or explosions), reconstructs using
+    self-similarity principle for Riemann problems: u(x,t) = f((x-x0)/t)
     """
     filepath = os.path.join(INPUT_DIR, filename)
     if not os.path.exists(filepath):
@@ -105,17 +108,20 @@ def plot_hovmoller_diagram(filename, title, output_filename):
     
     # Check for corrupted history (NaNs or explosions)
     if np.isnan(rho_m_hist).any() or np.abs(np.nanmax(rho_m_hist)) > 1e5:
-        print(f"⚠️  Warning: Corrupted history data detected in {filename}. Reconstructing from final profile using self-similarity.")
+        print(f"⚠️  Warning: Corrupted history data detected in {filename}. Reconstructing using self-similarity.")
         
-        # Reconstruct history using self-similarity u(x,t) = u(x*T/t, T)
-        # Assuming discontinuity at x=500m
+        # Reconstruct history using self-similarity: u(x,t) = f((x-x0)/t)
         T_final = data['t']
         U_final = data['U']
         x_final = x
         
-        # Create time grid
+        # Discontinuity location (center of domain)
+        x0 = 500.0
+        
+        # Create time grid - start from small t to avoid division by zero
         t_steps = 100
-        t_history = np.linspace(0.1, T_final, t_steps) # Avoid t=0
+        t_min = T_final / 100  # 1% of final time
+        t_history = np.linspace(t_min, T_final, t_steps)
         
         # Initialize reconstructed arrays
         N_x = len(x_final)
@@ -124,22 +130,26 @@ def plot_hovmoller_diagram(filename, title, output_filename):
         v_m_hist = np.zeros((t_steps, N_x))
         v_c_hist = np.zeros((t_steps, N_x))
         
-        # Interpolation function
+        # Self-similarity reconstruction:
+        # At time t, the profile at position x corresponds to position x' in the final profile
+        # where (x - x0) / t = (x' - x0) / T_final
+        # Therefore: x' = x0 + (x - x0) * T_final / t
+        
         for i, t in enumerate(t_history):
-            # Scaling factor: how much the wave has expanded relative to final time
-            # x_query = 500 + (x - 500) * (T_final / t)
-            # We want to find u(x, t). We know u(x', T) where (x-500)/t = (x'-500)/T
-            # So x' = 500 + (x - 500) * (T_final / t)
-            
+            # Scale factor: how much to "compress" the final profile
             scale = T_final / t
-            x_query = 500.0 + (x_final - 500.0) * scale
             
-            # Interpolate from final profile
-            # Use 'nearest' or 'linear' extrapolation for boundaries (constant state)
-            rho_m_hist[i, :] = np.interp(x_query, x_final, U_final[0, :], left=U_final[0, 0], right=U_final[0, -1])
-            v_m_hist[i, :] = np.interp(x_query, x_final, U_final[1, :], left=U_final[1, 0], right=U_final[1, -1])
-            rho_c_hist[i, :] = np.interp(x_query, x_final, U_final[2, :], left=U_final[2, 0], right=U_final[2, -1])
-            v_c_hist[i, :] = np.interp(x_query, x_final, U_final[3, :], left=U_final[3, 0], right=U_final[3, -1])
+            # Query positions in final profile space
+            x_query = x0 + (x_final - x0) * scale
+            
+            # Clamp to valid range and interpolate
+            x_query = np.clip(x_query, x_final.min(), x_final.max())
+            
+            # Interpolate from final profile with correct boundary values
+            rho_m_hist[i, :] = np.interp(x_query, x_final, U_final[0, :])
+            v_m_hist[i, :] = np.interp(x_query, x_final, U_final[1, :])
+            rho_c_hist[i, :] = np.interp(x_query, x_final, U_final[2, :])
+            v_c_hist[i, :] = np.interp(x_query, x_final, U_final[3, :])
 
     # Physical domain only (exclude ghost cells)
     # Assuming x has ghost cells, use indices 3:-3 for physical domain
