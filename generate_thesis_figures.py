@@ -87,9 +87,6 @@ def plot_hovmoller_diagram(filename, title, output_filename):
     - Top-right: Cars density
     - Bottom-left: Motos velocity
     - Bottom-right: Cars velocity
-    
-    If history data is corrupted (NaN or explosions), reconstructs using
-    self-similarity principle for Riemann problems: u(x,t) = f((x-x0)/t)
     """
     filepath = os.path.join(INPUT_DIR, filename)
     if not os.path.exists(filepath):
@@ -108,61 +105,20 @@ def plot_hovmoller_diagram(filename, title, output_filename):
     
     # Check for corrupted history (NaNs or explosions)
     if np.isnan(rho_m_hist).any() or np.abs(np.nanmax(rho_m_hist)) > 1e5:
-        print(f"⚠️  Warning: Corrupted history data detected in {filename}. Reconstructing using self-similarity.")
-        
-        # Reconstruct history using self-similarity: u(x,t) = f((x-x0)/t)
-        T_final = data['t']
-        U_final = data['U']
-        x_final = x
-        
-        # Discontinuity location (center of domain)
-        x0 = 500.0
-        
-        # Create time grid - start from small t to avoid division by zero
-        t_steps = 100
-        t_min = T_final / 100  # 1% of final time
-        t_history = np.linspace(t_min, T_final, t_steps)
-        
-        # Initialize reconstructed arrays
-        N_x = len(x_final)
-        rho_m_hist = np.zeros((t_steps, N_x))
-        rho_c_hist = np.zeros((t_steps, N_x))
-        v_m_hist = np.zeros((t_steps, N_x))
-        v_c_hist = np.zeros((t_steps, N_x))
-        
-        # Self-similarity reconstruction:
-        # At time t, the profile at position x corresponds to position x' in the final profile
-        # where (x - x0) / t = (x' - x0) / T_final
-        # Therefore: x' = x0 + (x - x0) * T_final / t
-        
-        for i, t in enumerate(t_history):
-            # Scale factor: how much to "compress" the final profile
-            scale = T_final / t
-            
-            # Query positions in final profile space
-            x_query = x0 + (x_final - x0) * scale
-            
-            # Clamp to valid range and interpolate
-            x_query = np.clip(x_query, x_final.min(), x_final.max())
-            
-            # Interpolate from final profile with correct boundary values
-            rho_m_hist[i, :] = np.interp(x_query, x_final, U_final[0, :])
-            v_m_hist[i, :] = np.interp(x_query, x_final, U_final[1, :])
-            rho_c_hist[i, :] = np.interp(x_query, x_final, U_final[2, :])
-            v_c_hist[i, :] = np.interp(x_query, x_final, U_final[3, :])
+        print(f"❌ ERREUR: Données corrompues dans {filename}!")
+        print(f"   rho_m range: [{np.nanmin(rho_m_hist):.2e}, {np.nanmax(rho_m_hist):.2e}]")
+        print(f"   → Relancez thesis_stage1 sur Kaggle pour régénérer les données.")
+        print(f"   → Utilisez: python launch_thesis_stage1.py")
+        return  # Ne pas générer de figure avec des données corrompues
 
-    # Physical domain only (exclude ghost cells)
-    # Assuming x has ghost cells, use indices 3:-3 for physical domain
-    # But if we reconstructed, we used full x. Let's check shape.
+    # Physical domain only (exclude ghost cells if present)
     if rho_m_hist.shape[1] == len(x):
-        # Reconstructed case or full grid
         x_phys = x
         rho_m_plot = rho_m_hist
         rho_c_plot = rho_c_hist
         v_m_plot = v_m_hist
         v_c_plot = v_c_hist
     else:
-        # Original history case (might have different shape)
         N_phys = rho_m_hist.shape[1]
         x_phys = np.linspace(0, 1000, N_phys)
         rho_m_plot = rho_m_hist
