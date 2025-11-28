@@ -36,6 +36,29 @@ print(f"Working dir: {os.getcwd()}")
 print(f"Project root: {project_root}")
 print("=" * 80)
 
+# CRITICAL: Clean old outputs on Kaggle to ensure fresh data
+# Kaggle persists /kaggle/working across kernel versions - old corrupted files remain
+if os.path.exists("/kaggle/working"):
+    import shutil
+    old_dirs = [
+        "/kaggle/working/thesis_stage1",
+        "/kaggle/working/simulation_results",
+        "/kaggle/working/thesis_figures"
+    ]
+    for old_dir in old_dirs:
+        if os.path.exists(old_dir):
+            print(f"🗑️ Cleaning old output: {old_dir}")
+            shutil.rmtree(old_dir)
+    # Also clean old NPZ files at root
+    for f in Path("/kaggle/working").glob("*.npz"):
+        print(f"🗑️ Removing old file: {f}")
+        f.unlink()
+    for f in Path("/kaggle/working").glob("*.json"):
+        if "kernel-metadata" not in f.name:
+            print(f"🗑️ Removing old file: {f}")
+            f.unlink()
+    print("✅ Old outputs cleaned")
+
 from arz_model.config.config_factory import create_victoria_island_config
 from arz_model.simulation.runner import SimulationRunner
 from arz_model.network.network_grid import NetworkGrid
