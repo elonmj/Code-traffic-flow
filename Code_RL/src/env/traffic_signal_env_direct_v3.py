@@ -284,6 +284,16 @@ class TrafficSignalEnvDirectV3(gym.Env):
         This enables TRUE Domain Randomization by allowing the inflow parameters
         to be changed at reset time WITHOUT recreating the environment.
         
+        ARCHITECTURE NOTE (Critical Fix 2025-11-28):
+        ============================================
+        The GPU-batched architecture does NOT dynamically apply boundary conditions
+        during simulation. Ghost cells use simple reflection/extrapolation, and
+        the network_coupling only handles internal junctions.
+        
+        Therefore, to implement TRUE Domain Randomization, we must:
+        1. Modify U_initial (stored initial state) for entry segments
+        2. These modified states will be restored on reset() and uploaded to GPU
+        
         MUST be called BEFORE reset() for changes to take effect on the next episode.
         
         Args:
@@ -310,28 +320,63 @@ class TrafficSignalEnvDirectV3(gym.Env):
         rho_m = rho_total * alpha           # Motorcycle density
         rho_c = rho_total * (1.0 - alpha)   # Car density
         
-        # Use characteristic velocities (w = v + p, but at low density p ≈ 0)
-        w_m = v_ms  # Motorcycle Lagrangian velocity
-        w_c = v_ms  # Car Lagrangian velocity
+        # Calculate pressure for Lagrangian momentum w = v + p
+        # At the densities we're using, pressure is non-negligible
+        from arz_model.core.physics import calculate_pressure
+        import numpy as np
         
-        # Update BC params for ALL segments with inflow boundary conditions
+        # Create temporary arrays for pressure calculation
+        rho_m_arr = np.array([rho_m])
+        rho_c_arr = np.array([rho_c])
+        p_m, p_c = calculate_pressure(
+            rho_m_arr, rho_c_arr,
+            phys.alpha, phys.rho_max, phys.epsilon,
+            phys.k_m, phys.gamma_m, phys.k_c, phys.gamma_c
+        )
+        
+        # Lagrangian momentum: w = v + p
+        w_m = v_ms + p_m[0]
+        w_c = v_ms + p_c[0]
+        
+        # =====================================================================
+        # TRUE DOMAIN RANDOMIZATION: Modify U_initial for entry segments
+        # =====================================================================
+        # Find entry nodes (boundary nodes with outgoing but no incoming segments)
+        entry_segments = []
+        for node_id, node in self.network_grid.nodes.items():
+            if node.node_type == 'boundary':
+                incoming = node.incoming_segments or []
+                outgoing = node.outgoing_segments or []
+                # Entry node: has outgoing segments but no incoming
+                if len(outgoing) > 0 and len(incoming) == 0:
+                    entry_segments.extend(outgoing)
+        
+        # Update U_initial for each entry segment
         segments_updated = 0
-        for seg_id, segment in self.network_grid.segments.items():
-            # Check if segment has current_bc_params (created during grid initialization)
-            if 'current_bc_params' not in segment:
-                segment['current_bc_params'] = {}
+        for seg_id in entry_segments:
+            segment = self.network_grid.segments[seg_id]
+            U_initial = segment.get('U_initial')
+            grid = segment.get('grid')
             
-            bc_params = segment['current_bc_params']
+            if U_initial is None or grid is None:
+                continue
+                
+            # Get ghost cell count
+            n_ghost = grid.num_ghost_cells
             
-            # Check if LEFT boundary is inflow type
-            left_bc = bc_params.get('left', {})
-            if left_bc.get('type') == 'inflow':
-                # Update the inflow state vector [rho_m, w_m, rho_c, w_c]
-                left_bc['state'] = [rho_m, w_m, rho_c, w_c]
-                segments_updated += 1
+            # Update ghost cells (left boundary) AND first few physical cells
+            # This ensures the inflow state is properly propagated
+            cells_to_update = n_ghost + 3  # Ghost cells + 3 physical cells
+            
+            U_initial[0, :cells_to_update] = rho_m  # Motorcycle density
+            U_initial[1, :cells_to_update] = w_m    # Motorcycle Lagrangian momentum
+            U_initial[2, :cells_to_update] = rho_c  # Car density
+            U_initial[3, :cells_to_update] = w_c    # Car Lagrangian momentum
+            
+            segments_updated += 1
                 
         if not self.quiet and segments_updated > 0:
-            print(f"📊 Updated inflow BC for {segments_updated} segments: ρ={density:.0f} veh/km, v={velocity:.0f} km/h")
+            print(f"📊 Domain Randomization: Updated {segments_updated} entry segments: ρ={density:.0f} veh/km, v={velocity:.0f} km/h")
 
     def render(self):
         pass
