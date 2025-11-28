@@ -68,6 +68,10 @@ class VariableDemandEnv(gym.Env):
         self.reward_weights = reward_weights or {'alpha': 5.0, 'kappa': 0.0, 'mu': 0.1}
         self.quiet = quiet
         
+        # Domain Randomization logging (can be enabled separately from quiet)
+        self.log_dr = False  # Set to True to see DR logs during training
+        self._episode_count = 0  # Track episode count for periodic logging
+        
         self._rng = np.random.default_rng(seed)
         self._current_inflow_density = None
         self._current_inflow_velocity = None
@@ -172,6 +176,14 @@ class VariableDemandEnv(gym.Env):
         # Add demand info to info dict for logging/monitoring
         info['inflow_density'] = self._current_inflow_density
         info['inflow_velocity'] = self._current_inflow_velocity
+        
+        # Track episode count
+        self._episode_count += 1
+        
+        # Log Domain Randomization (every 10 episodes or if log_dr is True)
+        should_log = self.log_dr or (self._episode_count <= 5) or (self._episode_count % 50 == 0)
+        if should_log:
+            print(f"🎲 DR Episode {self._episode_count}: ρ={self._current_inflow_density:.0f} veh/km, v={self._current_inflow_velocity:.0f} km/h")
         
         if not self.quiet:
             print(f"📊 Episode demand: ρ={self._current_inflow_density:.1f} veh/km, v={self._current_inflow_velocity:.1f} km/h")

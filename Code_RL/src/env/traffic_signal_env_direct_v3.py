@@ -75,6 +75,9 @@ class TrafficSignalEnvDirectV3(gym.Env):
         # Reward weights
         self.reward_weights = reward_weights or {'alpha': 1.0, 'kappa': 0.1, 'mu': 0.5}
         
+        # Domain Randomization logging control
+        self._dr_call_count = 0  # Track set_inflow_conditions calls
+        
         # Traffic signal state
         self.current_phase = 0
         self.n_phases = 2
@@ -353,6 +356,8 @@ class TrafficSignalEnvDirectV3(gym.Env):
         
         # Update U_initial for each entry segment
         segments_updated = 0
+        log_details = []  # Collect details for logging
+        
         for seg_id in entry_segments:
             segment = self.network_grid.segments[seg_id]
             U_initial = segment.get('U_initial')
@@ -364,6 +369,9 @@ class TrafficSignalEnvDirectV3(gym.Env):
             # Get ghost cell count
             n_ghost = grid.num_ghost_cells
             
+            # Capture BEFORE values for logging (first ghost cell)
+            rho_before = (U_initial[0, 0] + U_initial[2, 0]) * 1000  # Convert to veh/km
+            
             # Update ghost cells (left boundary) AND first few physical cells
             # This ensures the inflow state is properly propagated
             cells_to_update = n_ghost + 3  # Ghost cells + 3 physical cells
@@ -373,10 +381,23 @@ class TrafficSignalEnvDirectV3(gym.Env):
             U_initial[2, :cells_to_update] = rho_c  # Car density
             U_initial[3, :cells_to_update] = w_c    # Car Lagrangian momentum
             
+            # Capture AFTER values for logging
+            rho_after = (U_initial[0, 0] + U_initial[2, 0]) * 1000  # Convert to veh/km
+            
             segments_updated += 1
-                
-        if not self.quiet and segments_updated > 0:
-            print(f"📊 Domain Randomization: Updated {segments_updated} entry segments: ρ={density:.0f} veh/km, v={velocity:.0f} km/h")
+            log_details.append(f"{seg_id[:20]}...: {rho_before:.0f}→{rho_after:.0f}")
+        
+        # Track call count for logging
+        self._dr_call_count += 1
+        
+        # Log Domain Randomization (first 5 calls, then every 50 calls)
+        # This ensures we can verify DR is working without flooding logs
+        should_log = (self._dr_call_count <= 5) or (self._dr_call_count % 50 == 0)
+        
+        if segments_updated > 0 and should_log:
+            print(f"🔄 DR[{self._dr_call_count}]: ρ={density:.0f} veh/km, v={velocity:.0f} km/h → {segments_updated} segments modified")
+            for detail in log_details[:2]:  # Show first 2 segments
+                print(f"   └─ {detail}")
 
     def render(self):
         pass
